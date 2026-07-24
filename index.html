@@ -181,6 +181,7 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
 <div class="screen" id="sc-analyze">
   <h2>薄弱点分析</h2>
   <div class="card" id="hero" style="border-left:4px solid var(--red)"></div>
+  <div class="card" id="score-prediction" style="background:rgba(0,113,227,0.03);border:1px solid rgba(0,113,227,0.2)"></div>
   <div class="card" style="text-align:center">
     <h3>掌握度雷达图</h3>
     <div id="radar"></div>
@@ -510,6 +511,83 @@ A.saveBatch = async function(){
 };
 
 /* ============ ANALYZE SCREEN ============ */
+// Score prediction (有效化 — 分数体验)
+A.renderScorePrediction = async function(sorted, totalProblems){
+  if (sorted.length === 0){
+    A.$('score-prediction').innerHTML = '';
+    return;
+  }
+
+  // Weight: each knowledge point contributes roughly equally to exam score
+  // Estimate: baseline 85 (perfect), subtract errorRate * weight for each KP
+  const totalKPs = sorted.length;
+  const avgErrorRate = sorted.reduce((s,m) => s + m.errorRate, 0) / totalKPs;
+  // Map to a 0-100 score: assume if all mastered = 90+, all wrong = 30-
+  let baseScore = Math.round(90 - avgErrorRate * 70);
+  baseScore = Math.max(30, Math.min(95, baseScore));
+
+  // Calculate "if fix weakest" score
+  let fixedScore = baseScore;
+  if (sorted[0] && sorted[0].errorRate > 0.3) {
+    const fixImpact = Math.round(sorted[0].errorRate * 15);
+    fixedScore = Math.min(95, baseScore + fixImpact);
+  }
+
+  // Calculate "if fix all" score
+  const allFixedScore = Math.min(95, Math.round(90 - (avgErrorRate * 0.3 * 70)));
+
+  // Improvement path
+  const weakOnes = sorted.filter(m => m.errorRate >= 0.3);
+  const masteredCount = sorted.filter(m => m.errorRate < 0.1).length;
+
+  // Get past exam questions for weakest KP
+  const bank = await DB.getAllBank();
+  const examQs = bank.filter(q => {
+    if (sorted.length === 0) return false;
+    return q.knowledgePointKey === sorted[0].key;
+  }).slice(0, 3);
+
+  let html = '<h3>📊 成绩预估</h3>';
+  html += '<div style="display:flex;gap:8px;margin-bottom:10px">';
+  html += '<div style="flex:1;text-align:center;padding:12px;background:rgba(255,59,48,0.06);border-radius:12px">';
+  html += '<div style="font-size:28px;font-weight:700;color:var(--red)">' + baseScore + '分</div>';
+  html += '<div style="font-size:11px;color:var(--text2)">当前预估</div></div>';
+  html += '<div style="flex:1;text-align:center;padding:12px;background:rgba(255,149,0,0.06);border-radius:12px">';
+  html += '<div style="font-size:28px;font-weight:700;color:var(--orange)">' + fixedScore + '分</div>';
+  html += '<div style="font-size:11px;color:var(--text2)">攻克最弱项后</div></div>';
+  html += '<div style="flex:1;text-align:center;padding:12px;background:rgba(52,199,89,0.06);border-radius:12px">';
+  html += '<div style="font-size:28px;font-weight:700;color:var(--green)">' + allFixedScore + '分</div>';
+  html += '<div style="font-size:11px;color:var(--text2)">全部掌握后</div></div>';
+  html += '</div>';
+
+  // Improvement path
+  if (weakOnes.length > 0) {
+    html += '<div style="font-weight:600;font-size:14px;margin-bottom:4px">🎯 提分路径</div>';
+    html += '<div style="font-size:13px;color:var(--text2);margin-bottom:6px">已掌握 ' + masteredCount + '/' + totalKPs + ' 个知识点，攻克剩余 ' + weakOnes.length + ' 个可提升 ' + (allFixedScore - baseScore) + ' 分</div>';
+    for (let i = 0; i < Math.min(weakOnes.length, 4); i++) {
+      const w = weakOnes[i];
+      const gain = Math.round(w.errorRate * 12);
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;font-size:12px">';
+      html += '<span style="min-width:18px;color:var(--blue);font-weight:600">' + (i+1) + '.</span>';
+      html += '<span style="flex:1">攻克「' + A.esc(w.name) + '」</span>';
+      html += '<span style="color:var(--green);font-weight:500">+' + gain + '分</span>';
+      html += '<button class="primary sm" style="font-size:11px;padding:4px 10px;min-height:28px" onclick="A.genTargeted(&apos;' + w.key + '&apos;)">练 →</button>';
+      html += '</div>';
+    }
+  }
+
+  // Past exam questions
+  if (examQs.length > 0 && sorted.length > 0) {
+    html += '<div style="margin-top:10px;font-weight:600;font-size:14px;margin-bottom:4px">📝 「' + A.esc(sorted[0].name) + '」相关真题</div>';
+    html += examQs.map((q, i) =>
+      '<div class="card" style="margin-bottom:4px;font-size:13px"><strong>真题' + (i+1) + '：</strong>' + A.esc(q.text.substring(0, 80)) +
+      (q.text.length > 80 ? '...' : '') + '</div>'
+    ).join('');
+  }
+
+  A.$('score-prediction').innerHTML = html;
+};
+
 A.renderAnalyze = async function(){
   const problems = await DB.getAllProblems();
   if (problems.length === 0){
@@ -539,6 +617,9 @@ A.renderAnalyze = async function(){
       (w2?'<div style="font-size:13px;color:var(--text2);margin-top:2px">其次是「'+A.esc(w2.name)+'」——'+w2.total+'道错题，错误率'+Math.round(w2.errorRate*100)+'%</div>':'') +
       '<button class="primary sm" style="margin-top:8px" onclick="A.nav(&apos;practice&apos;);A.setMode(&apos;solution&apos;)">🎯 针对性攻克 →</button>';
   }
+
+  // === SCORE PREDICTION (有效化) ===
+  A.renderScorePrediction(sorted, problems.length);
 
   const top6 = sorted.slice(0,6);
   if (top6.length >= 3){
