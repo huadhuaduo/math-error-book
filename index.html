@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="数学错题本">
+<meta name="theme-color" content="#f5f5f7">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi5pWw5a2m6ZSZ6aKY5pysIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmNWY1ZjciLCJ0aGVtZV9jb2xvciI6IiNmNWY1ZjciLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsInNjb3BlIjoiLi8iLCJzdGFydF91cmwiOiIuLyJ9">
+<title>数学错题本 — 六年级</title>
+<style>
+/* ============================================================
+   SECTION A: CSS Custom Properties (Apple HIG Tokens)
+   ============================================================ */
+:root {
+  --blue: #0071e3; --blue-light: #409cff; --blue-bg: rgba(0,113,227,0.08);
+  --green: #34c759; --green-bg: rgba(52,199,89,0.08);
+  --red: #ff3b30; --red-bg: rgba(255,59,48,0.08);
+  --orange: #ff9500; --orange-bg: rgba(255,149,0,0.08);
+  --yellow: #ffcc00;
+  --purple: #af52de; --purple-bg: rgba(175,82,222,0.08);
+  --teal: #5ac8fa;
+
+  --bg-primary: #f5f5f7;
+  --bg-card: rgba(255,255,255,0.72);
+  --bg-card-solid: #ffffff;
+  --bg-nav: rgba(255,255,255,0.72);
+
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+
+  --border: #d2d2d7;
+  --border-light: rgba(0,0,0,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+
+  --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
+  --touch-min: 44px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ============================================================
+   SECTION B: Reset & Base
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:var(--font-stack);
+  color:var(--text-primary);
+  background:var(--bg-primary);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow:hidden;
+  height:100dvh;
+  position:relative;
+  user-select:none;
+}
+input,textarea,select,button{font-family:inherit;font-size:inherit}
+input[type="text"],input[type="number"],textarea,select{
+  -webkit-appearance:none;appearance:none;
+  width:100%;padding:12px 16px;border:1px solid var(--border);
+  border-radius:var(--radius-sm);background:var(--bg-card-solid);
+  color:var(--text-primary);outline:none;transition:border var(--transition-fast);
+  font-size:16px; /* prevent iOS zoom on focus */
+}
+input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,113,227,0.12)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+button{
+  -webkit-appearance:none;appearance:none;
+  border:none;cursor:pointer;font-weight:500;
+  transition:all var(--transition-fast);
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:6px;min-height:var(--touch-min);
+}
+button:active{transform:scale(0.97)}
+a{color:var(--blue);text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ============================================================
+   SECTION C: Ambient Background
+   ============================================================ */
+.amb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;opacity:0.5}
+.amb-1{width:300px;height:300px;background:radial-gradient(circle,rgba(0,113,227,0.15),transparent 70%);top:-80px;right:-60px}
+.amb-2{width:250px;height:250px;background:radial-gradient(circle,rgba(52,199,89,0.12),transparent 70%);bottom:15%;left:-80px}
+.amb-3{width:200px;height:200px;background:radial-gradient(circle,rgba(255,149,0,0.1),transparent 70%);bottom:-60px;right:20%}
+
+/* ============================================================
+   SECTION D: Navigation Bar
+   ============================================================ */
+.nav-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--bg-nav);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border-light);
+  display:flex;justify-content:space-around;
+  padding:6px 0 calc(6px + var(--safe-bottom));
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:4px 12px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all var(--transition-fast);
+  color:var(--text-tertiary);font-size:11px;font-weight:500;
+  min-width:56px;min-height:var(--touch-min);
+  justify-content:center;
+}
+.nav-item.active{color:var(--blue)}
+.nav-item svg{width:22px;height:22px}
+.nav-item.active svg{color:var(--blue)}
+
+/* Desktop: top nav */
+@media(min-width:768px){
+  .nav-bar{
+    top:0;bottom:auto;padding:0 var(--space-lg);
+    height:52px;align-items:center;justify-content:flex-start;gap:0;
+  }
+  .nav-item{flex-direction:row;font-size:14px;gap:6px;padding:8px 16px}
+  .nav-item svg{width:18px;height:18px}
+  body{padding-top:52px}
+  .nav-bar .nav-brand{margin-right:auto;font-weight:600;font-size:16px;color:var(--text-primary)}
+}
+
+/* ============================================================
+   SECTION E: Screen Layouts
+   ============================================================ */
+.screen-container{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  overflow-y:auto;overflow-x:hidden;
+  z-index:10;padding:var(--space-lg) var(--space-md);
+  padding-bottom: calc(80px + var(--safe-bottom));
+  display:none;
+  -webkit-overflow-scrolling:touch;
+}
+.screen-container.active{display:block}
+@media(min-width:768px){
+  .screen-container{top:52px;padding-bottom:var(--space-xl)}
+}
+
+.screen-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:var(--space-lg);gap:var(--space-md);
+}
+.screen-title{font-size:28px;font-weight:700;letter-spacing:-0.02em}
+.screen-subtitle{font-size:15px;color:var(--text-secondary);margin-top:2px}
+
+/* ============================================================
+   SECTION F: Component Library
+   ============================================================ */
+
+/* Cards */
+.card{
+  background:var(--bg-card);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:var(--radius-md);padding:var(--space-md);
+  border:1px solid var(--border-light);
+  box-shadow:var(--shadow-sm);
+}
+
+/* Stat Cards */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-sm)}
+.stat-card{
+  background:var(--bg-card-solid);
+  border-radius:var(--radius-md);padding:var(--space-md);
+  border:1px solid var(--border-light);
+  text-align:center;
+}
+.stat-value{font-size:32px;font-weight:700;letter-spacing:-0.02em}
+.stat-label{font-size:13px;color:var(--text-secondary);margin-top:2px}
+
+/* Practice Mode Grid */
+.practice-mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-sm)}
+.practice-mode-card{
+  background:var(--bg-card-solid);
+  border-radius:var(--radius-md);padding:var(--space-md);
+  border:2px solid transparent;
+  cursor:pointer;text-align:center;
+  transition:all var(--transition-fast);
+}
+.practice-mode-card:hover{border-color:var(--border);box-shadow:var(--shadow-md)}
+.practice-mode-card.selected{border-color:var(--blue);background:var(--blue-bg)}
+.practice-mode-card .mode-icon{font-size:36px;margin-bottom:4px}
+.practice-mode-card .mode-name{font-weight:600;font-size:15px}
+.practice-mode-card .mode-desc{font-size:12px;color:var(--text-secondary);margin-top:2px}
+@media(min-width:480px){.practice-mode-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:768px){.practice-mode-grid{grid-template-columns:repeat(5,1fr)}}
+
+/* Badges */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;
+}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-orange{background:var(--orange-bg);color:var(--orange)}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-blue{background:var(--blue-bg);color:var(--blue)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+.badge-gray{background:rgba(0,0,0,0.05);color:var(--text-tertiary)}
+
+/* Buttons */
+.btn{
+  padding:10px 20px;border-radius:var(--radius-xl);
+  font-weight:500;font-size:15px;gap:6px;
+  min-height:var(--touch-min);
+}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:#0066cc}
+.btn-secondary{background:rgba(0,0,0,0.05);color:var(--text-primary)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-primary)}
+.btn-sm{padding:6px 14px;font-size:13px;min-height:36px;border-radius:var(--radius-xl)}
+.btn-lg{padding:14px 28px;font-size:17px;border-radius:var(--radius-xl)}
+.btn-block{width:100%}
+.btn:disabled{opacity:0.4;pointer-events:none}
+
+/* Toast */
+#toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  z-index:9999;pointer-events:none;
+}
+.toast-item{
+  background:var(--text-primary);color:#fff;
+  padding:12px 20px;border-radius:var(--radius-xl);
+  font-size:14px;font-weight:500;margin-bottom:8px;
+  animation:toastIn 0.3s ease,toastOut 0.3s ease 2.2s forwards;
+  box-shadow:var(--shadow-lg);text-align:center;
+  max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.toast-item.success{background:var(--green)}
+.toast-item.error{background:var(--red)}
+
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+
+/* Modal */
+.modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.3);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+}
+.modal-overlay.active{display:flex}
+.modal-box{
+  background:var(--bg-card-solid);border-radius:var(--radius-lg);
+  padding:var(--space-lg);max-width:420px;width:90%;
+  max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg);
+}
+
+/* Tabs */
+.tab-bar{
+  display:flex;gap:4px;background:rgba(0,0,0,0.04);
+  border-radius:var(--radius-sm);padding:4px;margin-bottom:var(--space-md);
+}
+.tab-item{
+  flex:1;padding:8px 12px;border-radius:8px;
+  font-size:13px;font-weight:500;text-align:center;
+  cursor:pointer;transition:all var(--transition-fast);
+  color:var(--text-secondary);
+}
+.tab-item.active{background:var(--bg-card-solid);color:var(--text-primary);box-shadow:var(--shadow-sm)}
+
+/* Form */
+.form-group{margin-bottom:var(--space-md)}
+.form-label{display:block;font-size:14px;font-weight:600;margin-bottom:var(--space-xs);color:var(--text-primary)}
+.form-hint{font-size:12px;color:var(--text-tertiary);margin-top:4px}
+
+/* Tag Picker */
+.tag-grid{display:flex;flex-wrap:wrap;gap:6px}
+.tag-chip{
+  padding:6px 14px;border-radius:20px;font-size:13px;
+  background:rgba(0,0,0,0.04);color:var(--text-secondary);
+  cursor:pointer;transition:all var(--transition-fast);
+  border:1.5px solid transparent;
+}
+.tag-chip.selected{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
+.tag-chip:hover:not(.selected){background:rgba(0,0,0,0.08)}
+
+/* Empty State */
+.empty-state{
+  text-align:center;padding:var(--space-xl) var(--space-md);
+  color:var(--text-tertiary);
+}
+.empty-state-icon{font-size:48px;margin-bottom:var(--space-md)}
+
+/* Progress Bar */
+.progress-bar{
+  height:6px;background:rgba(0,0,0,0.06);
+  border-radius:3px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:3px;transition:width 0.5s ease;
+}
+.progress-fill.red{background:var(--red)}
+.progress-fill.orange{background:var(--orange)}
+.progress-fill.green{background:var(--green)}
+.progress-fill.blue{background:var(--blue)}
+
+/* Search Bar */
+.search-bar{
+  display:flex;align-items:center;gap:var(--space-sm);
+  background:rgba(0,0,0,0.04);border-radius:var(--radius-sm);
+  padding:10px 14px;margin-bottom:var(--space-md);
+}
+.search-bar svg{width:18px;height:18px;color:var(--text-tertiary);flex-shrink:0}
+.search-bar input{
+  border:none;background:none;outline:none;flex:1;
+  padding:0;font-size:15px;color:var(--text-primary);
+}
+
+/* ============================================================
+   SECTION G: Print Styles
+   ============================================================ */
+@media print{
+  body{background:#fff!important;overflow:visible!important}
+  .nav-bar,.amb,.toast-container,.modal-overlay,.btn,.screen-header button,
+  .tab-bar,.search-bar,#toast{display:none!important}
+  .screen-container{position:static!important;display:block!important;overflow:visible!important;padding:0!important}
+  .screen-container:not(.print-active){display:none!important}
+  .print-only{display:block!important}
+  .print-sheet{page-break-after:always;padding:15mm}
+  .print-problem{border:1px solid #ccc;border-radius:4px;padding:12px;margin-bottom:8px;page-break-inside:avoid}
+  .print-problem img{max-width:100%;max-height:50mm;object-fit:contain}
+  .print-answer-blank{width:100%;height:40px;border-bottom:2px solid #000;margin:8px 0}
+}
+.print-only{display:none}
+
+/* ============================================================
+   SECTION H: Responsive Breakpoints
+   ============================================================ */
+@media(min-width:768px){
+  .stat-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(min-width:1024px){
+  .screen-container{max-width:800px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient Background -->
+<div class="amb amb-1"></div>
+<div class="amb amb-2"></div>
+<div class="amb amb-3"></div>
+
+<!-- Toast Container -->
+<div id="toast"></div>
+
+<!-- ============================================================
+     SCREEN 1: Dashboard (仪表盘)
+     ============================================================ -->
+<div class="screen-container active" id="screen-dashboard">
+  <div class="screen-header">
+    <div><div class="screen-title">数学错题本</div><div class="screen-subtitle">六年级 · 人教版</div></div>
+  </div>
+  <div class="stat-grid" id="dash-stats"></div>
+  <div style="margin-top:var(--space-lg)">
+    <div style="font-weight:600;font-size:17px;margin-bottom:var(--space-sm)">⚠️ 需要关注的薄弱点</div>
+    <div id="dash-weak-alerts"></div>
+  </div>
+  <div style="margin-top:var(--space-lg);display:flex;gap:var(--space-sm)">
+    <button class="btn btn-primary btn-block" onclick="M.switchScreen('add')">＋ 添加错题</button>
+    <button class="btn btn-secondary" onclick="M.switchScreen('practice')">🎯 开始练习</button>
+  </div>
+  <div style="margin-top:var(--space-lg)">
+    <div style="font-weight:600;font-size:17px;margin-bottom:var(--space-sm)">📝 最近错题</div>
+    <div id="dash-recent"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2: Add Problem (添加错题)
+     ============================================================ -->
+<div class="screen-container" id="screen-add">
+  <div class="screen-header">
+    <button class="btn btn-outline btn-sm" onclick="M.switchScreen('dashboard')">← 返回</button>
+    <div class="screen-title" style="font-size:22px">添加错题</div>
+    <div></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab-item active" data-tab="manual" onclick="M.switchAddTab('manual')">✏️ 手动录入</div>
+    <div class="tab-item" data-tab="camera" onclick="M.switchAddTab('camera')">📷 拍照识别</div>
+    <div class="tab-item" data-tab="file" onclick="M.switchAddTab('file')">📁 上传文件</div>
+  </div>
+  <!-- Manual Entry -->
+  <div id="add-manual">
+    <div class="form-group"><label class="form-label">题目内容 *</label><textarea id="add-problem-text" placeholder="请输入或粘贴题目内容..."></textarea></div>
+    <div class="form-group"><label class="form-label">我的答案（错的）</label><input type="text" id="add-your-answer" placeholder="你当时写的答案"></div>
+    <div class="form-group"><label class="form-label">正确答案 *</label><input type="text" id="add-correct-answer" placeholder="正确的答案是什么"></div>
+    <div class="form-group"><label class="form-label">错因反思</label><input type="text" id="add-error-reason" placeholder="为什么会做错？（可选）"></div>
+  </div>
+  <!-- Camera -->
+  <div id="add-camera" style="display:none">
+    <div style="text-align:center;padding:var(--space-lg)">
+      <input type="file" accept="image/*" capture="environment" id="add-camera-input" style="display:none" onchange="M.handleCameraCapture(event)">
+      <button class="btn btn-primary btn-lg" onclick="document.getElementById('add-camera-input').click()">📷 拍照</button>
+      <button class="btn btn-outline btn-lg" style="margin-left:8px" onclick="document.getElementById('add-gallery-input').click()">🖼️ 从相册选</button>
+      <input type="file" accept="image/*" id="add-gallery-input" style="display:none" onchange="M.handleCameraCapture(event)">
+    </div>
+    <div id="add-camera-preview" style="display:none">
+      <img id="add-camera-img" style="max-height:300px;margin:0 auto;border-radius:var(--radius-md)">
+      <div style="text-align:center;margin-top:var(--space-md)">
+        <button class="btn btn-primary" onclick="M.runOCR()" id="btn-ocr">🔍 OCR 文字识别</button>
+        <div id="ocr-progress" style="display:none;margin-top:8px;font-size:13px;color:var(--text-secondary)"></div>
+      </div>
+      <textarea id="add-ocr-result" style="margin-top:var(--space-md);display:none" placeholder="OCR 识别结果，请检查修正..."></textarea>
+      <div style="margin-top:var(--space-md)" id="add-ocr-actions" style="display:none">
+        <button class="btn btn-primary btn-sm" onclick="M.confirmOCR()">✓ 确认，填入表单</button>
+        <button class="btn btn-outline btn-sm" onclick="M.retakePhoto()">↺ 重新拍照</button>
+      </div>
+    </div>
+  </div>
+  <!-- File Upload -->
+  <div id="add-file" style="display:none">
+    <div style="text-align:center;padding:var(--space-lg)">
+      <input type="file" accept="image/*,.pdf,.docx,.xlsx,.xls" id="add-file-input" style="display:none" onchange="M.handleFileUpload(event)">
+      <button class="btn btn-outline btn-lg" onclick="document.getElementById('add-file-input').click()">📁 选择文件</button>
+      <div class="form-hint">支持图片、PDF、Word、Excel</div>
+    </div>
+    <div id="add-file-info" style="display:none"></div>
+  </div>
+  <!-- Shared fields for all tabs -->
+  <div class="form-group"><label class="form-label">难度自评</label>
+    <div style="display:flex;gap:6px" id="add-difficulty">
+      <span class="tag-chip" data-d="1" onclick="M.selectDifficulty(1)">⭐ 很简单</span>
+      <span class="tag-chip" data-d="2" onclick="M.selectDifficulty(2)">⭐⭐ 有点难</span>
+      <span class="tag-chip selected" data-d="3" onclick="M.selectDifficulty(3)">⭐⭐⭐ 一般</span>
+      <span class="tag-chip" data-d="4" onclick="M.selectDifficulty(4)">⭐⭐⭐⭐ 比较难</span>
+      <span class="tag-chip" data-d="5" onclick="M.selectDifficulty(5)">⭐⭐⭐⭐⭐ 非常难</span>
+    </div>
+  </div>
+  <div class="form-group"><label class="form-label">错因类型</label>
+    <div class="tag-grid" id="add-error-type">
+      <span class="tag-chip" data-et="calculation" onclick="M.selectErrorType('calculation')">计算错误</span>
+      <span class="tag-chip" data-et="concept" onclick="M.selectErrorType('concept')">概念不清</span>
+      <span class="tag-chip" data-et="careless" onclick="M.selectErrorType('careless')">粗心大意</span>
+      <span class="tag-chip" data-et="application" onclick="M.selectErrorType('application')">不会应用</span>
+    </div>
+  </div>
+  <div class="form-group"><label class="form-label">知识点标签（可多选）</label>
+    <div style="margin-bottom:8px">
+      <select id="add-semester" onchange="M.renderTagPicker()" style="width:auto;display:inline-block">
+        <option value="1">六年级上册</option>
+        <option value="2">六年级下册</option>
+      </select>
+    </div>
+    <div class="tag-grid" id="add-tag-picker"></div>
+    <div class="form-hint" id="add-tag-suggest" style="margin-top:8px"></div>
+  </div>
+  <div class="form-group"><label class="form-label">错题图片（可选）</label>
+    <input type="file" accept="image/*" id="add-image-input" onchange="M.handleImageUpload(event)">
+    <img id="add-image-preview" style="max-height:200px;margin-top:8px;border-radius:var(--radius-sm);display:none">
+  </div>
+  <div style="display:flex;gap:8px;margin-top:var(--space-lg)">
+    <button class="btn btn-primary btn-block" onclick="M.saveProblem()">💾 保存错题</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3: Problem Library (错题本)
+     ============================================================ -->
+<div class="screen-container" id="screen-library">
+  <div class="screen-header">
+    <div class="screen-title" style="font-size:22px">📚 错题本</div>
+    <button class="btn btn-outline btn-sm" onclick="M.exportBackup()">📤 导出备份</button>
+  </div>
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="lib-search" placeholder="搜索错题..." oninput="M.renderLibrary()">
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--space-md)" id="lib-filters"></div>
+  <div class="tab-bar" id="lib-status-filter">
+    <div class="tab-item active" data-status="all" onclick="M.setLibFilter('all')">全部</div>
+    <div class="tab-item" data-status="active" onclick="M.setLibFilter('active')">待复习</div>
+    <div class="tab-item" data-status="mastered" onclick="M.setLibFilter('mastered')">已掌握</div>
+  </div>
+  <div id="lib-problems"></div>
+  <div class="empty-state" id="lib-empty" style="display:none">
+    <div class="empty-state-icon">📭</div>
+    <div>还没有错题，去添加第一道吧！</div>
+    <button class="btn btn-primary" style="margin-top:12px" onclick="M.switchScreen('add')">＋ 添加错题</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 4: Problem Detail (错题详情)
+     ============================================================ -->
+<div class="screen-container" id="screen-detail">
+  <div class="screen-header">
+    <button class="btn btn-outline btn-sm" onclick="M.switchScreen('library')">← 返回错题本</button>
+    <div></div>
+  </div>
+  <div id="detail-content"></div>
+</div>
+
+<!-- ============================================================
+     SCREEN 5: Analysis (薄弱点分析)
+     ============================================================ -->
+<div class="screen-container" id="screen-analysis">
+  <div class="screen-header">
+    <div class="screen-title" style="font-size:22px">📊 薄弱点分析</div>
+  </div>
+  <div class="card" style="margin-bottom:var(--space-md)">
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">知识点掌握热力图</div>
+    <div id="analysis-heatmap"></div>
+  </div>
+  <div class="card" style="margin-bottom:var(--space-md)">
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">🔍 检测到的错因模式</div>
+    <div id="analysis-patterns"></div>
+  </div>
+  <div class="card" style="margin-bottom:var(--space-md)">
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">📈 掌握度趋势</div>
+    <div id="analysis-trend"></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">💡 智能推荐</div>
+    <div id="analysis-recommend"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 6: Practice Generator (智能出题)
+     ============================================================ -->
+<div class="screen-container" id="screen-practice">
+  <div class="screen-header">
+    <div class="screen-title" style="font-size:22px">🎯 智能出题</div>
+  </div>
+  <div style="margin-bottom:var(--space-md);font-weight:500">选择练习模式</div>
+  <div class="stat-grid" id="practice-modes"></div>
+  <div style="margin-top:var(--space-lg)" id="practice-config"></div>
+  <div style="margin-top:var(--space-lg)" id="practice-questions"></div>
+  <div style="margin-top:var(--space-lg)" id="practice-actions"></div>
+  <div style="margin-top:var(--space-lg)" id="practice-results"></div>
+</div>
+
+<!-- ============================================================
+     SCREEN 7: Settings (设置)
+     ============================================================ -->
+<div class="screen-container" id="screen-settings">
+  <div class="screen-header">
+    <div class="screen-title" style="font-size:22px">⚙️ 设置</div>
+  </div>
+  <div class="card" style="margin-bottom:var(--space-md)">
+    <div class="form-group"><label class="form-label">学生姓名</label><input type="text" id="set-name" placeholder="输入姓名"></div>
+    <div class="form-group"><label class="form-label">每周目标（题数）</label><input type="number" id="set-weekly-goal" value="10" min="1" max="50"></div>
+    <button class="btn btn-primary btn-block" onclick="M.saveSettings()">保存设置</button>
+  </div>
+  <div class="card" style="margin-bottom:var(--space-md)">
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">数据管理</div>
+    <button class="btn btn-outline btn-block" style="margin-bottom:8px" onclick="M.exportBackup()">📤 导出 JSON 备份</button>
+    <button class="btn btn-outline btn-block" style="margin-bottom:8px" onclick="document.getElementById('import-backup-input').click()">📥 导入 JSON 备份</button>
+    <input type="file" accept=".json" id="import-backup-input" style="display:none" onchange="M.importBackup(event)">
+    <button class="btn btn-danger btn-block" onclick="M.confirmClearData()">🗑️ 清除所有数据</button>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">关于</div>
+    <p style="font-size:13px;color:var(--text-secondary)">数学错题本 v1.0<br>专为六年级（人教版）设计<br>所有数据存储在本地浏览器，不上传任何服务器</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODALS
+     ============================================================ -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal-box">
+    <div style="font-weight:600;font-size:17px;margin-bottom:var(--space-sm)" id="modal-confirm-title">确认操作</div>
+    <div style="color:var(--text-secondary);margin-bottom:var(--space-md)" id="modal-confirm-msg"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-outline btn-sm" onclick="M.closeModal('modal-confirm')">取消</button>
+      <button class="btn btn-danger btn-sm" id="modal-confirm-btn">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     NAVIGATION BAR
+     ============================================================ -->
+<nav class="nav-bar" id="nav-bar">
+  <span class="nav-brand" style="display:none">数学错题本</span>
+  <div class="nav-item active" data-screen="dashboard" onclick="M.switchScreen('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span>首页</span>
+  </div>
+  <div class="nav-item" data-screen="add" onclick="M.switchScreen('add')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <span>加错题</span>
+  </div>
+  <div class="nav-item" data-screen="library" onclick="M.switchScreen('library')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    <span>错题本</span>
+  </div>
+  <div class="nav-item" data-screen="analysis" onclick="M.switchScreen('analysis')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span>分析</span>
+  </div>
+  <div class="nav-item" data-screen="practice" onclick="M.switchScreen('practice')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    <span>出题</span>
+  </div>
+  <div class="nav-item" data-screen="settings" onclick="M.switchScreen('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    <span>设置</span>
+  </div>
+</nav>
+
+<script>
+/* ============================================================
+   SECTION I: Namespace & Utilities
+   ============================================================ */
+const M = {
+  _currentScreen: 'dashboard',
+  _db: null,
+  _addState: { tab:'manual', difficulty:3, errorType:null, knowledgePoints:[], imageBlob:null, imageThumb:null, ocrText:'' },
+  _libFilter: 'all',
+  _libKpFilter: null,
+  _practiceState: { mode:null, questions:[], answers:{}, startTime:0 },
+};
+
+M.$ = (id) => document.getElementById(id);
+M.escapeHTML = (str) => { const d=document.createElement('div'); d.textContent=str; return d.innerHTML; };
+
+M.showToast = (msg, type='') => {
+  const el = document.createElement('div');
+  el.className = 'toast-item ' + type;
+  el.textContent = msg;
+  M.$('toast').appendChild(el);
+  setTimeout(() => el.remove(), 2600);
+};
+
+M.switchScreen = (name) => {
+  document.querySelectorAll('.screen-container').forEach(s => s.classList.remove('active'));
+  const screen = M.$('screen-' + name);
+  if (screen) screen.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.querySelector(`.nav-item[data-screen="${name}"]`);
+  if (navItem) navItem.classList.add('active');
+  M._currentScreen = name;
+  // Refresh screen content
+  if (name === 'dashboard') M.renderDashboard();
+  if (name === 'library') M.renderLibrary();
+  if (name === 'analysis') M.renderAnalysis();
+  if (name === 'practice') M.renderPracticeModes();
+  if (name === 'add') M.renderTagPicker();
+};
+
+M.closeModal = (id) => M.$(id).classList.remove('active');
+
+M.confirmDialog = (title, msg, onConfirm) => {
+  M.$('modal-confirm-title').textContent = title;
+  M.$('modal-confirm-msg').textContent = msg;
+  const btn = M.$('modal-confirm-btn');
+  btn.onclick = () => { M.closeModal('modal-confirm'); onConfirm(); };
+  M.$('modal-confirm').classList.add('active');
+};
+
+/* ============================================================
+   SECTION II: IndexedDB Layer
+   ============================================================ */
+const DB = {
+  _db: null,
+  NAME: 'MathErrorBookDB',
+  VERSION: 2,
+
+  open() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(this.NAME, this.VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        // Store 1: problems
+        if (!db.objectStoreNames.contains('problems')) {
+          const problems = db.createObjectStore('problems', { keyPath: 'id', autoIncrement: true });
+          problems.createIndex('kp', 'knowledgePoints', { multiEntry: true });
+          problems.createIndex('semester', 'semester');
+          problems.createIndex('status', 'status');
+          problems.createIndex('nextReviewAt', 'nextReviewAt');
+          problems.createIndex('createdAt', 'createdAt');
+        }
+        // Store 2: knowledgeMastery
+        if (!db.objectStoreNames.contains('knowledgeMastery')) {
+          const mastery = db.createObjectStore('knowledgeMastery', { keyPath: 'knowledgePointKey' });
+          mastery.createIndex('parentKey', 'parentKey');
+          mastery.createIndex('semester', 'semester');
+          mastery.createIndex('masteryLevel', 'masteryLevel');
+        }
+        // Store 3: practiceSessions
+        if (!db.objectStoreNames.contains('practiceSessions')) {
+          const sessions = db.createObjectStore('practiceSessions', { keyPath: 'id', autoIncrement: true });
+          sessions.createIndex('mode', 'mode');
+          sessions.createIndex('createdAt', 'createdAt');
+        }
+        // Store 4: settings
+        if (!db.objectStoreNames.contains('settings')) {
+          db.createObjectStore('settings', { keyPath: 'id' });
+        }
+        // Store 5: questionBank
+        if (!db.objectStoreNames.contains('questionBank')) {
+          const qb = db.createObjectStore('questionBank', { keyPath: 'id', autoIncrement: true });
+          qb.createIndex('knowledgePointKey', 'knowledgePointKey');
+          qb.createIndex('source', 'source');
+        }
+      };
+      req.onsuccess = (e) => { this._db = e.target.result; M._db = this._db; resolve(this._db); };
+      req.onerror = () => reject(req.error);
+    });
+  },
+
+  _tx(store, mode='readonly') {
+    const tx = this._db.transaction(store, mode);
+    return tx.objectStore(store);
+  },
+
+  _promisify(req) { return new Promise((resolve, reject) => { req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); }); },
+
+  // Problem CRUD
+  async addProblem(data) {
+    const store = this._tx('problems','readwrite');
+    data.createdAt = Date.now();
+    data.updatedAt = Date.now();
+    data.status = 'active';
+    data.reviewCount = 0;
+    data.nextReviewAt = Date.now() + 24*60*60*1000; // review tomorrow
+    const id = await this._promisify(store.add(data));
+    await this._updateMasteryForProblem(data);
+    return id;
+  },
+
+  async updateProblem(id, data) {
+    const store = this._tx('problems','readwrite');
+    const existing = await this._promisify(store.get(id));
+    if (!existing) return;
+    Object.assign(existing, data, { updatedAt: Date.now() });
+    await this._promisify(store.put(existing));
+    await this._updateMasteryForProblem(existing);
+  },
+
+  async getProblem(id) {
+    return this._promisify(this._tx('problems').get(id));
+  },
+
+  async getAllProblems() {
+    return this._promisify(this._tx('problems').getAll());
+  },
+
+  async getProblemsByStatus(status) {
+    const idx = this._tx('problems').index('status');
+    return this._promisify(idx.getAll(status));
+  },
+
+  async getProblemsByKP(knowledgePointKey) {
+    const idx = this._tx('problems').index('kp');
+    return this._promisify(idx.getAll(knowledgePointKey));
+  },
+
+  async deleteProblem(id) {
+    const store = this._tx('problems','readwrite');
+    const p = await this._promisify(store.get(id));
+    await this._promisify(store.delete(id));
+    if (p) await this._updateMasteryForProblem(p);
+  },
+
+  // Mastery
+  async getAllMastery() {
+    return this._promisify(this._tx('knowledgeMastery').getAll());
+  },
+
+  async _updateMasteryForProblem(problem) {
+    if (!problem.knowledgePoints || !problem.knowledgePoints.length) return;
+    const store = this._tx('knowledgeMastery','readwrite');
+    for (const kp of problem.knowledgePoints) {
+      let m = await this._promisify(store.get(kp));
+      if (!m) {
+        m = { knowledgePointKey: kp, knowledgePointName: M.getKPName(kp), parentKey: M.getKPParent(kp), semester: M.getKPSemester(kp), totalAttempts:0, totalErrors:0, errorRate:0, recentErrorRate:0, masteryLevel:0, lastPracticedAt:0, updatedAt:Date.now() };
+      }
+      m.totalAttempts++;
+      if (problem.status !== 'mastered') m.totalErrors++;
+      m.errorRate = m.totalErrors / m.totalAttempts;
+      m.recentErrorRate = m.errorRate; /* simplified */
+      m.masteryLevel = m.errorRate > 0.5 ? 0 : m.errorRate > 0.3 ? 1 : m.errorRate > 0.1 ? 2 : m.errorRate === 0 ? 4 : 3;
+      m.lastPracticedAt = Date.now();
+      m.updatedAt = Date.now();
+      await this._promisify(store.put(m));
+    }
+  },
+
+  // Settings
+  async getSettings() { const r = await this._promisify(this._tx('settings').get('app_settings')); return r || { id:'app_settings', studentName:'', weeklyGoal:10 }; },
+  async saveSettings(s) { s.id='app_settings'; s.updatedAt=Date.now(); await this._promisify(this._tx('settings','readwrite').put(s)); },
+
+  // Sessions
+  async addSession(data) {
+    data.createdAt = Date.now();
+    return this._promisify(this._tx('practiceSessions','readwrite').add(data));
+  },
+  async getAllSessions() { return this._promisify(this._tx('practiceSessions').getAll()); },
+
+  // Question Bank
+  async getQuestionsByKP(kp) {
+    const idx = this._tx('questionBank').index('knowledgePointKey');
+    return this._promisify(idx.getAll(kp));
+  },
+  async getAllQuestions() { return this._promisify(this._tx('questionBank').getAll()); },
+  async addQuestion(q) { return this._promisify(this._tx('questionBank','readwrite').add(q)); },
+  async countQuestions() { return this._promisify(this._tx('questionBank').count()); },
+
+  // Full export
+  async exportAll() {
+    return {
+      version: 2,
+      exportedAt: Date.now(),
+      problems: await this.getAllProblems(),
+      mastery: await this.getAllMastery(),
+      settings: await this.getSettings(),
+      sessions: await this.getAllSessions()
+    };
+  },
+
+  async importAll(data) {
+    if (!data.version || !data.problems) throw new Error('无效备份文件');
+    const pStore = this._tx('problems','readwrite');
+    for (const p of data.problems) { await this._promisify(pStore.put(p)); }
+    if (data.mastery) {
+      const mStore = this._tx('knowledgeMastery','readwrite');
+      for (const m of data.mastery) { await this._promisify(mStore.put(m)); }
+    }
+    if (data.settings) { await this.saveSettings(data.settings); }
+    if (data.sessions) {
+      const sStore = this._tx('practiceSessions','readwrite');
+      for (const s of data.sessions) { await this._promisify(sStore.put(s)); }
+    }
+  },
+
+  async clearAll() {
+    for (const store of ['problems','knowledgeMastery','practiceSessions','settings']) {
+      await this._promisify(this._tx(store,'readwrite').clear());
+    }
+  }
+};
+
+/* ============================================================
+   SECTION III: Knowledge Point Tree (人教版六年级完整体系)
+   ============================================================ */
+M.KNOWLEDGE_TREE = {
+  semester1: { name:'六年级上册', chapters: [
+    { key:'fraction_multiplication', name:'分数乘法', points:[
+      {key:'frac_mul_meaning',name:'分数乘整数/分数的意义'},{key:'frac_mul_rules',name:'分数乘法计算法则（先约分再乘）'},{key:'frac_mul_mixed',name:'分数混合运算（运算顺序）'},{key:'frac_mul_reciprocal',name:'倒数的概念（乘积为1）'},{key:'frac_mul_word',name:'分数乘法应用题（求一个数的几分之几）'}
+    ]},
+    { key:'position_direction', name:'位置与方向(二)', points:[
+      {key:'pos_dir_angle',name:'用方向和距离确定位置'},{key:'pos_dir_route',name:'路线图（描述和绘制）'}
+    ]},
+    { key:'fraction_division', name:'分数除法', points:[
+      {key:'frac_div_rule',name:'分数除法计算法则（除以一个数=乘它的倒数）'},{key:'frac_div_mixed',name:'分数乘除混合运算'},{key:'frac_div_word',name:'分数除法应用题（已知一个数的几分之几，求这个数）'},{key:'frac_div_eng',name:'工程问题（工作效率×时间=工作量）'}
+    ]},
+    { key:'ratio', name:'比', points:[
+      {key:'ratio_meaning',name:'比的意义（两个数相除）'},{key:'ratio_properties',name:'比的基本性质（同时乘除相同数）'},{key:'ratio_simplify',name:'化简比（整数比/分数比/小数比）'},{key:'ratio_distribute',name:'按比例分配'}
+    ]},
+    { key:'circle', name:'圆', points:[
+      {key:'circle_pi',name:'圆周率与圆的周长（C=πd=2πr）'},{key:'circle_area',name:'圆的面积公式（S=πr²）'},{key:'circle_sector',name:'扇形（S=πr²×n/360）'},{key:'circle_ring',name:'圆环面积（S=π(R²-r²)）'},{key:'composite_shape_area',name:'组合图形面积（割补法/分割法/添补法）'},{key:'circle_irregular',name:'不规则图形面积（转化思想）'}
+    ]},
+    { key:'percent_one', name:'百分数(一)', points:[
+      {key:'pct_meaning',name:'百分数的意义和读写'},{key:'pct_convert',name:'百分数/小数/分数互化'},{key:'pct_discount',name:'折扣问题'},{key:'pct_tax_rate',name:'税率/利率问题'}
+    ]},
+    { key:'pie_chart', name:'扇形统计图', points:[
+      {key:'pie_read',name:'扇形统计图的解读'},{key:'pie_calc',name:'根据统计图计算'}
+    ]},
+    { key:'number_shape', name:'数学广角——数与形', points:[
+      {key:'num_pattern_seq',name:'数列规律（连续奇数和=n²）'},{key:'shape_pattern',name:'图形规律'},{key:'induction',name:'归纳推理'}
+    ]}
+  ]},
+  semester2: { name:'六年级下册', chapters: [
+    { key:'negative_numbers', name:'负数', points:[
+      {key:'neg_meaning',name:'负数的意义（<0）'},{key:'neg_numberline',name:'数轴上的负数'},{key:'neg_calc',name:'负数简单计算'}
+    ]},
+    { key:'percent_two', name:'百分数(二)', points:[
+      {key:'pct_discount_adv',name:'折扣进阶（满减/折上折）'},{key:'pct_tax_adv',name:'税率进阶'},{key:'pct_interest',name:'利率（本金×利率×时间）'}
+    ]},
+    { key:'cylinder_cone', name:'圆柱与圆锥', points:[
+      {key:'cyl_surface',name:'圆柱表面积（S=2πrh+2πr²）'},{key:'cyl_volume',name:'圆柱体积（V=Sh=πr²h）'},{key:'cone_volume',name:'圆锥体积（V=⅓Sh⚠️牢记1/3）'},{key:'composite_solid_volume',name:'组合体体积（圆柱+圆锥）'}
+    ]},
+    { key:'proportion', name:'比例', points:[
+      {key:'prop_direct',name:'正比例（y/x=k）'},{key:'prop_inverse',name:'反比例（xy=k）'},{key:'prop_scale',name:'比例尺（图上距离:实际距离）'},{key:'prop_graph',name:'比例关系图像'}
+    ]},
+    { key:'pigeonhole', name:'数学广角——鸽巢问题', points:[
+      {key:'pigeonhole_basic',name:'鸽巢原理（n+1放入n，至少一个≥2）'}
+    ]},
+    { key:'review', name:'整理与复习', points:[
+      {key:'num_algebra_review',name:'数与代数综合复习'},{key:'geometry_review',name:'图形与几何综合复习'},{key:'stats_prob_review',name:'统计与概率综合复习'}
+    ]}
+  ]},
+  crossSkills: {
+    distributive_property: { name:'乘法分配律', desc:'(a+b)×c=a×c+b×c，在分数/小数/百分数中灵活运用', errorPatterns:['forget_second_term','sign_error','reverse_extract_error'] },
+    transform_thinking: { name:'转化思想', desc:'将不规则/组合图形通过割补、平移、旋转转化为规则图形', errorPatterns:['miss_overlap','wrong_method','incomplete_decomp'] },
+    equation_method: { name:'方程方法', desc:'设未知数列方程 vs 算术反向推导', errorPatterns:['wrong_variable','equation_unbalanced'] },
+    unit_conversion: { name:'单位换算', desc:'长度/面积/体积/时间/货币单位换算', errorPatterns:['area_unit_10000','volume_unit_1000','time_base60'] }
+  }
+};
+
+M._kpFlat = {};
+(function buildFlat() {
+  for (const sem of ['semester1','semester2']) {
+    for (const ch of M.KNOWLEDGE_TREE[sem].chapters) {
+      for (const pt of ch.points) {
+        M._kpFlat[pt.key] = { name:pt.name, chapter:ch.name, chapterKey:ch.key, semester: sem==='semester1'?1:2 };
+      }
+    }
+  }
+  for (const [k,v] of Object.entries(M.KNOWLEDGE_TREE.crossSkills)) {
+    M._kpFlat[k] = { name:v.name, chapter:'跨章技能', chapterKey:'cross', semester:0 };
+  }
+})();
+
+M.getKPName = (key) => M._kpFlat[key]?.name || key;
+M.getKPParent = (key) => M._kpFlat[key]?.chapterKey || '';
+M.getKPSemester = (key) => M._kpFlat[key]?.semester || 0;
+
+M.renderTagPicker = () => {
+  const sem = M.$('add-semester').value;
+  const treeKey = sem === '1' ? 'semester1' : 'semester2';
+  const container = M.$('add-tag-picker');
+  let html = '';
+  for (const ch of M.KNOWLEDGE_TREE[treeKey].chapters) {
+    html += `<div style="font-size:12px;color:var(--text-tertiary);margin:8px 0 4px;width:100%">${ch.name}</div>`;
+    for (const pt of ch.points) {
+      const sel = M._addState.knowledgePoints.includes(pt.key) ? ' selected' : '';
+      html += `<span class="tag-chip${sel}" data-kp="${pt.key}" onclick="M.toggleKPTag(this,'${pt.key}')">${pt.name}</span>`;
+    }
+  }
+  html += `<div style="font-size:12px;color:var(--text-tertiary);margin:8px 0 4px;width:100%">跨章技能</div>`;
+  for (const [k,v] of Object.entries(M.KNOWLEDGE_TREE.crossSkills)) {
+    const sel = M._addState.knowledgePoints.includes(k) ? ' selected' : '';
+    html += `<span class="tag-chip${sel}" data-kp="${k}" onclick="M.toggleKPTag(this,'${k}')">${v.name}</span>`;
+  }
+  container.innerHTML = html;
+};
+
+M.toggleKPTag = (el, key) => {
+  if (M._addState.knowledgePoints.includes(key)) {
+    M._addState.knowledgePoints = M._addState.knowledgePoints.filter(k => k!==key);
+    el.classList.remove('selected');
+  } else {
+    M._addState.knowledgePoints.push(key);
+    el.classList.add('selected');
+  }
+};
+
+/* ============================================================
+   SECTION IV: OCR Engine (Tesseract.js lazy load)
+   ============================================================ */
+M._ocrWorker = null;
+M._ocrLoading = false;
+
+M.initOCR = async () => {
+  if (M._ocrWorker) return;
+  if (M._ocrLoading) return;
+  M._ocrLoading = true;
+  M.$('btn-ocr').disabled = true;
+  M.$('btn-ocr').textContent = '⏳ 正在加载OCR引擎...';
+  try {
+    if (!window.Tesseract) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('OCR引擎加载失败'));
+        document.head.appendChild(s);
+      });
+    }
+    M._ocrWorker = await Tesseract.createWorker('chi_sim', 1);
+    M.$('btn-ocr').textContent = '🔍 OCR 文字识别';
+    M.$('btn-ocr').disabled = false;
+    M._ocrLoading = false;
+    M.showToast('OCR 引擎就绪', 'success');
+  } catch(e) {
+    M._ocrLoading = false;
+    M.$('btn-ocr').disabled = false;
+    M.$('btn-ocr').textContent = '🔍 OCR 文字识别';
+    M.showToast('OCR引擎加载失败，请检查网络后重试', 'error');
+    console.error('OCR init error:', e);
+  }
+};
+
+M.runOCR = async () => {
+  await M.initOCR();
+  if (!M._ocrWorker || !M._addState.imageBlob) return;
+  M.$('ocr-progress').style.display = 'block';
+  M.$('ocr-progress').textContent = '正在识别中...';
+  M.$('btn-ocr').disabled = true;
+  try {
+    // Preprocess: resize + grayscale + contrast
+    const img = await createImageBitmap(M._addState.imageBlob);
+    const scale = Math.min(1, 1500 / Math.max(img.width, img.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.filter = 'contrast(1.2) grayscale(1)';
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.8));
+
+    const { data: { text } } = await M._ocrWorker.recognize(blob);
+    // Post-process
+    let cleaned = text
+      .replace(/(\d)\s*x\s*(\d)/gi, '$1×$2')
+      .replace(/X(?=\d)/g, '×')
+      .replace(/(\d)十(\d)/g, '$1+$2')
+      .replace(/\b几\b/g, '?')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    M._addState.ocrText = cleaned;
+    M.$('add-ocr-result').style.display = 'block';
+    M.$('add-ocr-result').value = cleaned;
+    M.$('add-ocr-actions').style.display = 'block';
+    M.$('ocr-progress').textContent = '✅ 识别完成，请检查修正';
+  } catch(e) {
+    M.$('ocr-progress').textContent = '识别失败: ' + e.message;
+    M.showToast('OCR识别失败，请尝试手动输入', 'error');
+  }
+  M.$('btn-ocr').disabled = false;
+};
+
+M.confirmOCR = () => {
+  const text = M.$('add-ocr-result').value.trim();
+  if (!text) { M.showToast('识别结果为空','error'); return; }
+  M.$('add-problem-text').value = text;
+  // Auto-suggest knowledge points
+  M._autoSuggestKP(text);
+  M.showToast('已填入题目，请补充答案和知识点', 'success');
+};
+
+M._autoSuggestKP = (text) => {
+  const map = {
+    'composite_shape_area': [/组合|阴影|圆.*方|方.*圆|半圆.*三角|拼接|环形/],
+    'cone_volume': [/圆锥|锥|沙堆/],
+    'cyl_volume': [/圆柱|水桶|柱子|管道/],
+    'cyl_surface': [/表面积|侧面积|铁皮|围成/],
+    'distributive_property': [/简便|分配律|提取|×\s*\(.*\+.*\)|\(.*\+.*\)\s*×/],
+    'frac_mul_word': [/几分之几|的.*分之/],
+    'frac_div_word': [/已知.*几分之几|求.*单位/],
+    'prop_scale': [/比例尺|图上距离|实际距离|千米.*厘米/],
+    'pct_discount': [/打折|折扣|几折|原价|现价/],
+    'circle_area': [/圆的面积|半径.*面积|直径.*面积/],
+    'circle_ring': [/环形|圆环|外圆|内圆/],
+    'ratio_distribute': [/按.*分|分配/],
+    'pct_interest': [/利息|本金|利率|存.*年/],
+    'negative_numbers': [/负数|零下|低于|亏/],
+    'frac_mul_rules': [/分数.*乘|约分/],
+    'frac_div_rule': [/分数.*除|除以.*分数/],
+  };
+  M._addState.knowledgePoints = [];
+  for (const [key, patterns] of Object.entries(map)) {
+    if (patterns.some(p => p.test(text))) {
+      M._addState.knowledgePoints.push(key);
+    }
+  }
+  M.renderTagPicker();
+  if (M._addState.knowledgePoints.length > 0) {
+    M.$('add-tag-suggest').textContent = '💡 已根据题目内容自动推荐 ' + M._addState.knowledgePoints.length + ' 个知识点标签，请确认';
+  }
+};
+
+M.retakePhoto = () => {
+  M.$('add-camera-preview').style.display = 'none';
+  M.$('add-ocr-result').style.display = 'none';
+  M.$('add-ocr-actions').style.display = 'none';
+  M._addState.imageBlob = null;
+  M._addState.ocrText = '';
+};
+
+M.handleCameraCapture = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  // Compress and preview
+  M._addState.imageBlob = file;
+  const url = URL.createObjectURL(file);
+  M.$('add-camera-img').src = url;
+  M.$('add-camera-preview').style.display = 'block';
+  M.$('add-ocr-result').style.display = 'none';
+  M.$('add-ocr-actions').style.display = 'none';
+};
+
+M.handleFileUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  M.$('add-file-info').style.display = 'block';
+  const info = M.$('add-file-info');
+  info.innerHTML = `<div class="card"><strong>已选择:</strong> ${M.escapeHTML(file.name)} (${(file.size/1024).toFixed(1)}KB)<br><span class="form-hint">${file.type}</span></div>`;
+  // For images: process like camera
+  if (file.type.startsWith('image/')) {
+    M._addState.imageBlob = file;
+    const url = URL.createObjectURL(file);
+    M.$('add-camera-img').src = url;
+    M.$('add-camera-preview').style.display = 'block';
+  } else {
+    M.showToast('PDF/Word/Excel 支持将在后续版本添加，请先使用图片或手动录入', 'error');
+  }
+};
+
+/* ============================================================
+   SECTION V: Seed Question Bank (~100 problems)
+   ============================================================ */
+M.SEED_QUESTIONS = [
+  // === 组合图形面积 (重点: ~25题) ===
+  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'一个正方形边长4cm，以每条边为直径向正方形内画半圆，求四个半圆重叠部分的面积。', answer:'阴影面积 = 4 × (半圆面积 - 等腰直角三角形面积) = 4 × (π×2²/2 - 2×2/2) = 4 × (2π - 2) = 8π - 8 ≈ 17.12 cm²', solution:'步骤1：连接正方形各边中点\n步骤2：每个半圆的圆心在边的中点\n步骤3：四个半圆的四块重叠部分=4×(半圆-三角形)\n步骤4：代入计算', errorPatterns:['miss_overlap'], year:2023 },
+  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'seed', problemText:'在一个直径为10cm的圆内画一个最大的正方形，求圆内正方形以外的面积（阴影部分）。', answer:'正方形面积=对角线²/2=10²/2=50cm²\n圆的面积=π×5²=25π≈78.5cm²\n阴影=78.5-50=28.5cm²', solution:'思路：圆内最大正方形的对角线=圆的直径\n方法1（对角线法）：正方形面积=对角线²÷2\n方法2（三角形法）：正方形=4个等腰直角三角形', errorPatterns:['wrong_method'], year:2023 },
+  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'如右图，正方形ABCD边长为6cm，以A为圆心、AB为半径画弧；以C为圆心、CB为半径画弧。求两弧之间的阴影面积。', answer:'阴影=正方形面积 - 两个1/4圆面积 = 36 - 2×(π×36/4) = 36 - 18π ≈ 36 - 56.52 = 无法直接减（两弧有重叠）\n正确解法：阴影=2×(正方形-1/4圆)=2×(36-9π)=72-18π≈15.48cm²', solution:'关键：两弧以对角顶点为圆心\n阴影是两弧之间的部分\n= 两弧总面积 - 正方形\n= 2个1/4圆 - 正方形', errorPatterns:['miss_overlap'] },
+  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'seed', problemText:'一个直角三角形的两条直角边分别是6cm和8cm。以三条边为直径分别向三角形外画半圆。求三个半圆的面积之和与三角形面积的关系。', answer:'以6cm为直径的半圆面积=π×3²/2=4.5π\n以8cm为直径的半圆面积=π×4²/2=8π\n斜边=10cm，以10cm为直径的半圆面积=π×5²/2=12.5π\n总面积=25π≈78.5cm²\n三角形面积=6×8/2=24cm²\n两个小半圆面积之和=三角形面积+两个小半圆在三角形外的部分', solution:'这是著名的勾股定理+半圆面积推论\n直角边上两个半圆面积之和=斜边上半圆面积', errorPatterns:['wrong_method'] },
+  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'past_exam', problemText:'下图是一个半圆和一个等腰直角三角形拼成的图形。半圆直径=三角形的底=10cm，三角形高=5cm。求整个组合图形的面积。', answer:'半圆面积=π×5²/2=12.5π≈39.25cm²\n三角形面积=10×5/2=25cm²\n总面积=39.25+25=64.25cm²', solution:'分别计算再相加（分割法）\n注意：半圆直径=三角形底边，两者共用一条边', errorPatterns:['incomplete_decomp'] },
+  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'求下面阴影部分的面积：在一个长8cm、宽6cm的长方形中，减去一个直径为6cm的半圆（半圆直径与宽边重合）。', answer:'长方形面积=8×6=48cm²\n半圆面积=π×3²/2=4.5π≈14.13cm²\n阴影=48-14.13=33.87cm²', solution:'添补法：用长方形减去半圆\n检查半圆是否完全在长方形内: 半圆半径3cm，长方形宽6cm，刚好吻合', errorPatterns:['wrong_method'], year:2022 },
+  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'seed', problemText:'一个环形，外圆半径5cm，内圆半径3cm。在环形中切出一个60°的扇形。求这个扇环的面积。', answer:'环面积=π(R²-r²)=π(25-9)=16π≈50.24cm²\n60°扇环=16π×60/360=16π/6≈8.37cm²', solution:'两步：先求完整圆环面积，再按角度比例\n圆环面积=S大圆-S小圆=π(R²-r²)\n扇环=圆环×圆心角/360°', errorPatterns:['area_unit_10000'] },
+  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'如图所示，大正方形边长为10cm，里面有一个内切圆，圆内又有一个内接小正方形。求小正方形的面积。', answer:'大正方形边长=10，内切圆直径=10，半径=5\n小正方形对角线=圆的直径=10\n小正方形面积=对角线²/2=10²/2=50cm²', solution:'关键：小正方形的对角线就是圆的直径\n同一个圆，外切正方形和内接正方形的面积比=2:1', errorPatterns:['wrong_method'], year:2024 },
+  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'seed', problemText:'四个相同的圆如图排列（两行两列），每个圆半径3cm，四个圆的圆心构成一个正方形。求四个圆之间围成的中间空白区域的面积。', answer:'四个圆心构成正方形边长=直径=6cm\n中间空白=正方形面积-4个1/4圆面积\n=6²-4×(π×3²/4)=36-9π≈36-28.26=7.74cm²', solution:'连接四个圆心形成正方形\n中间空白=正方形-4个1/4圆', errorPatterns:['miss_overlap'] },
+  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'学校操场由一个长方形和两个半圆组成。长方形长100m、宽60m（两个半圆的直径=宽=60m）。求操场面积。', answer:'长方形面积=100×60=6000m²\n两个半圆=一个整圆=π×30²=900π≈2826m²\n总面积=6000+2826=8826m²', solution:'两个半圆正好拼成一个完整的圆！\n总面积=长方形+整圆', errorPatterns:[] },
+  // 更多组合图形题
+  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'seed', problemText:'在一个半径为4cm的圆中，画一个圆心角为90°的扇形。求这个扇形的面积和弧长。', answer:'扇形面积=π×4²×90/360=16π/4=4π≈12.56cm²\n弧长=2π×4×90/360=8π/4=2π≈6.28cm', solution:'扇形面积=圆面积×圆心角/360°\n弧长=圆周长×圆心角/360°', errorPatterns:[] },
+  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'如图，一个边长为8cm的正方形，以四个顶点为圆心，边长为半径各画一个1/4圆，四个1/4圆在正方形内部形成阴影。求阴影面积。', answer:'阴影=正方形-4个空白花瓣\n=正方形-(正方形-一个整圆)\n=一个整圆=π×8²=64π≈200.96cm²\n等等，思考：四个1/4圆正好拼成一个整圆...\n实际阴影=四个1/4圆在正方形内的重叠部分\n=正方形面积-(正方形-整圆)\n=整圆=64π≈200.96\n但200.96>64，不可能！\n正确：四个顶点1/4圆覆盖正方形但不完全重叠\n阴影=四个1/4圆面积之和-正方形×1', answer:'四个1/4圆面积=πr²=64π\n正方形面积=64\n四种重叠=64π-64≈136.96cm²\n这是花瓣形（四个1/4圆的交叠部分）', errorPatterns:['miss_overlap'] },
+  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'seed', problemText:'一个梯形上底4cm、下底10cm、高6cm。以梯形的高为直径在梯形内画一个半圆。求梯形内半圆外的面积。', answer:'梯形面积=(4+10)×6/2=42cm²\n半圆直径=6,半径=3,半圆面积=π×9/2=4.5π≈14.13cm²\n梯形内半圆外=42-14.13=27.87cm²', solution:'确定半圆完全在梯形内：直径6=高，半圆宽度=直径=6\n梯形的下底10>6，所以半圆完全在梯形内\n用分割法：梯形-半圆', errorPatterns:['incomplete_decomp'] },
+  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'求阴影面积：一个直径为20cm的半圆，以它的直径为底边，向上画一个等腰直角三角形（顶点在半圆弧上）。求半圆内、三角形外的阴影面积。', answer:'半圆面积=π×10²/2=50π≈157cm²\n三角形底=20cm,高=10cm(半径)\n三角形面积=20×10/2=100cm²\n阴影=157-100=57cm²', solution:'添补法：半圆-三角形\n等腰直角三角形顶点在半圆最高点（圆心正上方）', errorPatterns:[] },
+  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'一个正方形面积是64cm²，剪去四个角上的四个相同的等腰直角三角形（直角边2cm），求剩余八边形的面积和周长。', answer:'正方形边长=√64=8cm\n四个三角形总面积=4×(2×2/2)=8cm²\n八边形面积=64-8=56cm²\n八边形周长=(8-2×2)×4+4×斜边\n=4×4+4×√(2²+2²)=16+4×2√2=16+8√2≈27.31cm', solution:'先求边长，再减去三角形\n周长=四条原边减去被切部分+四条新斜边', errorPatterns:['incomplete_decomp'], year:2021 },
+  // 乘法分配律 (重点: ~25题)
+  { knowledgePointKey:'distributive_property', difficulty:1, source:'seed', problemText:'用简便方法计算：25×(40+4)', answer:'25×40+25×4=1000+100=1100', solution:'直接展开：a×(b+c)=a×b+a×c', errorPatterns:['forget_second_term'] },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：3/7×5/6+3/7×1/6', answer:'=3/7×(5/6+1/6)=3/7×1=3/7', solution:'逆向使用：提取公因数3/7\nac+bc=(a+b)c', errorPatterns:['reverse_extract_error'] },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'past_exam', problemText:'计算：99×7/8', answer:'=(100-1)×7/8=100×7/8-1×7/8=700/8-7/8=693/8=86.625', solution:'技巧：99=100-1\n(a-b)×c=a×c-b×c', errorPatterns:['sign_error'], year:2023 },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：36×(1/4+1/6-1/9)', answer:'=36×1/4+36×1/6-36×1/9=9+6-4=11', solution:'三个加数都要分配！\n(a+b-c)×d=a×d+b×d-c×d', errorPatterns:['sign_error'] },
+  { knowledgePointKey:'distributive_property', difficulty:3, source:'seed', problemText:'计算：73×64+27×64', answer:'=(73+27)×64=100×64=6400', solution:'观察：64是公共因数\n提取公因数后，括号里正好凑整', errorPatterns:['reverse_extract_error'] },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'past_exam', problemText:'计算：5.6×1.7+0.56×83', answer:'=5.6×1.7+5.6×8.3 （0.56×83=0.56×10×8.3=5.6×8.3）\n=5.6×(1.7+8.3)=5.6×10=56', solution:'关键：0.56×83=5.6×8.3\n先把各项化成含相同因数', errorPatterns:['reverse_extract_error'], year:2024 },
+  { knowledgePointKey:'distributive_property', difficulty:1, source:'seed', problemText:'用简便方法计算：125×88', answer:'=125×(80+8)=125×80+125×8=10000+1000=11000\n或=125×8×11=1000×11=11000', solution:'方法1:拆分88=80+8\n方法2:125×8=1000是关键数', errorPatterns:['forget_second_term'] },
+  { knowledgePointKey:'distributive_property', difficulty:3, source:'seed', problemText:'计算：(1/2+1/3+1/4)×12', answer:'=12/2+12/3+12/4=6+4+3=13', solution:'三个分数分别与12相乘再相加\n先约分后计算更简便', errorPatterns:['sign_error'] },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'past_exam', problemText:'计算：4.7×9.9', answer:'=4.7×(10-0.1)=4.7×10-4.7×0.1=47-0.47=46.53', solution:'9.9=10-0.1\n利用分配律简化小数乘法', errorPatterns:['sign_error'], year:2022 },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：17/25×3/8+8/25×3/8', answer:'=(17/25+8/25)×3/8=25/25×3/8=1×3/8=3/8', solution:'提取公因数3/8\n17/25+8/25=1，刚好凑整', errorPatterns:['reverse_extract_error'] },
+  { knowledgePointKey:'distributive_property', difficulty:1, source:'seed', problemText:'判断对错：25×(4×8)=(25×4)×(25×8)。如果错，请改正。', answer:'错！乘法分配律不适用于连乘。\n25×(4×8)=(25×4)×8=100×8=800\n(25×4)×(25×8)=100×200=20000，显然错误', solution:'警示：分配律适用a×(b+c)，不适用a×(b×c)\n连乘用结合律：a×(b×c)=(a×b)×c', errorPatterns:['reverse_extract_error'] },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'计算：53×46+53×54-53×20', answer:'=53×(46+54-20)=53×80=4240', solution:'三个项都有公因数53\n合并：a×b+a×c-a×d=a×(b+c-d)', errorPatterns:['sign_error'] },
+  { knowledgePointKey:'distributive_property', difficulty:3, source:'past_exam', problemText:'计算：3.6×11.1+2.8×11.1+3.6×11.1', answer:'=11.1×(3.6+2.8+3.6)=11.1×10=111', solution:'公因数11.1\n3.6+2.8+3.6=10', errorPatterns:['reverse_extract_error'], year:2024 },
+  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：201×35', answer:'=(200+1)×35=200×35+1×35=7000+35=7035', solution:'拆分接近整百的数\n201=200+1', errorPatterns:['forget_second_term'] },
+  // === 圆 ===
+  { knowledgePointKey:'circle_area', difficulty:1, source:'seed', problemText:'一个圆的周长是31.4cm，求这个圆的面积。（π取3.14）', answer:'C=2πr=31.4 → r=31.4/(2×3.14)=5cm\nS=πr²=3.14×25=78.5cm²', solution:'第一步：由周长求半径 r=C/(2π)\n第二步：代入面积公式 S=πr²', errorPatterns:[] },
+  { knowledgePointKey:'circle_area', difficulty:2, source:'past_exam', problemText:'用一根长12.56m的绳子在草地上围成一个圈，一只羊拴在圈的中心。羊能吃到的最大草地面积是多少？（π取3.14）', answer:'这其实是求圆的面积，绳子围成的圈是圆的周长。\n但羊拴在中心，半径=绳长。等等，题目有歧义。\n如果是绳子围一圈=周长，求围成的面积：\nC=12.56→r=2m→S=12.56m²\n如果是羊绳长=半径，求羊能吃到的面积：\nS=π×12.56²...不对\n\n正确理解：绳子12.56m是周长，围成圆。羊栓在圆心，能吃到的面积就是这个圆的面积。\nC=2πr=12.56→r=2→S=π×4=12.56m²', solution:'周长→半径→面积', errorPatterns:[], year:2022 },
+  { knowledgePointKey:'circle_ring', difficulty:2, source:'seed', problemText:'一个环形铁片，外圆直径20cm，内圆直径12cm。求这个铁片的面积。', answer:'外圆半径=10cm,内圆半径=6cm\n环面积=π(10²-6²)=π(100-36)=64π≈200.96cm²', solution:'圆环面积=π(R²-r²)\n不需要分别算再减，直接用公式', errorPatterns:['area_unit_10000'] },
+  { knowledgePointKey:'circle_sector', difficulty:1, source:'seed', problemText:'一个半径为9cm的圆，圆心角为120°的扇形面积是多少？', answer:'S=π×9²×120/360=81π×1/3=27π≈84.78cm²', solution:'扇形面积=πr²×n/360\n120°正好是360°的1/3', errorPatterns:[] },
+  // === 圆柱与圆锥 ===
+  { knowledgePointKey:'cyl_volume', difficulty:1, source:'seed', problemText:'一个圆柱形水桶，底面半径20cm，高50cm。这个水桶能装多少升水？（π取3.14）', answer:'V=πr²h=3.14×20²×50=3.14×400×50=62800cm³=62.8L', solution:'1升=1000cm³\n注意单位换算：cm³→L', errorPatterns:['volume_unit_1000'] },
+  { knowledgePointKey:'cone_volume', difficulty:2, source:'past_exam', problemText:'一个圆锥形沙堆，底面周长12.56m，高1.5m。每立方米沙重1.7吨，这堆沙重多少吨？（π取3.14）', answer:'r=C/(2π)=12.56/6.28=2m\nV=πr²h/3=3.14×4×1.5/3=18.84/3=6.28m³\n重量=6.28×1.7=10.676吨', solution:'①周长→半径 ②圆锥体积=πr²h/3 ⚠️牢记1/3 ③体积×密度=重量', errorPatterns:['forget_cone_one_third'], year:2023 },
+  { knowledgePointKey:'cone_volume', difficulty:1, source:'seed', problemText:'判断：圆锥的体积等于圆柱体积的1/3。这个说法对吗？', answer:'错！必须加上前提：等底等高。\n正确说法：等底等高的圆锥体积是圆柱体积的1/3。\n如果底或高不同，这个关系不成立。', solution:'V锥=πr²h/3\nV柱=πr²h\n当r和h都相等时，V锥=V柱/3', errorPatterns:['forget_cone_one_third'] },
+  { knowledgePointKey:'cyl_surface', difficulty:2, source:'seed', problemText:'一个无盖的圆柱形铁皮水桶，底面直径40cm，高60cm。做这个水桶至少需要多少铁皮？（π取3.14）', answer:'底面面积=πr²=3.14×20²=1256cm²\n侧面积=πdh=3.14×40×60=7536cm²\n总面积=1256+7536=8792cm²≈0.88m²', solution:'⚠️无盖！只需一个底面+侧面\n有盖的话要加两个底面积', errorPatterns:['incomplete_decomp'] },
+  { knowledgePointKey:'composite_solid_volume', difficulty:3, source:'past_exam', problemText:'一个粮仓，下面是圆柱形（底面直径4m，高3m），上面是圆锥形（高1.5m）。求粮仓的总容积。（π取3.14）', answer:'圆柱V=πr²h=3.14×4×3=37.68m³\n圆锥V=πr²h/3=3.14×4×1.5/3=18.84/3=6.28m³\n总容积=37.68+6.28=43.96m³', solution:'组合体=圆柱+圆锥\n分别计算再相加\n⚠️圆锥记得除以3', errorPatterns:['forget_cone_one_third'], year:2022 },
+  // === 分数运算 ===
+  { knowledgePointKey:'frac_mul_word', difficulty:2, source:'past_exam', problemText:'小明看一本120页的故事书，第一天看了全书的1/4，第二天看了剩下的2/5。第二天看了多少页？', answer:'第一天看:120×1/4=30页\n剩下:120-30=90页\n第二天看:90×2/5=36页', solution:'分步计算：\n①先求第一天看的量\n②再求剩余量\n③对剩余量求几分之几', errorPatterns:[], year:2023 },
+  { knowledgePointKey:'frac_div_word', difficulty:2, source:'seed', problemText:'一袋大米，吃了3/5后还剩24kg。这袋大米原来有多少kg？', answer:'吃了3/5 → 还剩1-3/5=2/5\n设原来x kg：2x/5=24 → x=24×5/2=60kg\n或直接：24÷(2/5)=24×5/2=60kg', solution:'方法1（方程）：设原来x，列方程\n方法2（算术）：已知部分求整体→除法', errorPatterns:[] },
+  { knowledgePointKey:'frac_mul_mixed', difficulty:2, source:'seed', problemText:'计算：(5/6+3/4)×12', answer:'=5/6×12+3/4×12=10+9=19', solution:'用分配律展开，每项约分后都是整数', errorPatterns:['forget_second_term'] },
+  { knowledgePointKey:'frac_div_rule', difficulty:1, source:'seed', problemText:'计算：3/4÷2/5', answer:'=3/4×5/2=15/8=1又7/8', solution:'除以一个分数=乘它的倒数\n倒数：分子分母互换', errorPatterns:[] },
+  // === 比和比例 ===
+  { knowledgePointKey:'ratio_simplify', difficulty:1, source:'seed', problemText:'化简比：0.25:0.75', answer:'=25:75=1:3\n或同时×4 → 1:3', solution:'方法1:化为整数比再化简\n方法2:同时乘4消去小数', errorPatterns:[] },
+  { knowledgePointKey:'ratio_distribute', difficulty:2, source:'past_exam', problemText:'学校把360本图书按4:5分给五、六年级。六年级比五年级多分多少本？', answer:'总份数=4+5=9\n每份=360/9=40本\n五年级=4×40=160本\n六年级=5×40=200本\n六年级多=200-160=40本', solution:'①求总份数 ②求每份量 ③分别计算', errorPatterns:[], year:2022 },
+  { knowledgePointKey:'prop_scale', difficulty:2, source:'seed', problemText:'在比例尺1:5000000的地图上，量得甲乙两城距离为4.8cm。一辆汽车以每小时80km的速度从甲城开往乙城，需要多少小时？', answer:'实际距离=4.8×5000000=24000000cm=240km\n时间=240/80=3小时', solution:'①图上距离×比例尺分母=实际距离（cm）\n②cm→km要除以100000\n③时间=路程÷速度', errorPatterns:['unit_conversion'] },
+  { knowledgePointKey:'prop_direct', difficulty:2, source:'seed', problemText:'判断：正方形的边长和面积成正比例吗？', answer:'不成正比例。\n面积=边长²，是二次关系，不是y/x=k的线性关系。\n边长从1到2：面积从1到4，比值变化（1→2），不是常数。\n正确：正方形边长和周长成正比例（C=4a）', solution:'正比例的判断：y/x=k（常数）\n面积/边长=边长（不是常数）', errorPatterns:[] },
+  // === 百分数 ===
+  { knowledgePointKey:'pct_discount', difficulty:1, source:'seed', problemText:'一件上衣原价280元，打八五折出售，现在的价格是多少元？', answer:'280×85%=280×0.85=238元\n或280×0.8+280×0.05=224+14=238元', solution:'八五折=85%=0.85\n现价=原价×折扣', errorPatterns:[] },
+  { knowledgePointKey:'pct_discount_adv', difficulty:2, source:'past_exam', problemText:'商场促销：满200减40。小丽买了一件原价350元的衣服，相当于打了几折？（精确到百分位）', answer:'350>200，减40\n实付=350-40=310元\n折扣=310/350≈0.8857≈88.6%\n答：相当于打了八八六折', solution:'实际折扣=实付金额÷原价\n注意对比：满减和打折的计算方式不同', errorPatterns:[], year:2024 },
+  { knowledgePointKey:'pct_interest', difficulty:2, source:'seed', problemText:'妈妈把5000元存入银行，定期3年，年利率2.75%。到期后妈妈能取回多少钱？', answer:'利息=5000×2.75%×3=5000×0.0275×3=412.5元\n本息=5000+412.5=5412.5元', solution:'利息=本金×年利率×年数\n本息=本金+利息', errorPatterns:['unit_conversion'] },
+  // === 负数 ===
+  { knowledgePointKey:'neg_calc', difficulty:1, source:'seed', problemText:'某天北京的最低气温是-8°C，最高气温是5°C。这天的温差是多少？', answer:'温差=5-(-8)=5+8=13°C', solution:'温差=最高-最低\n减去负数=加上它的绝对值', errorPatterns:[] },
+  // === 鸽巢 ===
+  { knowledgePointKey:'pigeonhole_basic', difficulty:2, source:'past_exam', problemText:'有红、黄、蓝三种颜色的球各10个，放在一个袋子里。至少摸出几个球，才能保证有2个同色的球？', answer:'最坏情况：先摸3个球，恰好各颜色一个\n再摸第4个球，无论什么颜色，都会有2个同色\n答：至少摸4个', solution:'鸽巢原理：n=3种颜色（鸽巢）\n保证2个同色 → 摸3+1=4个\n公式：m×n+1(m=每种期望数-1)', errorPatterns:[] },
+  // === 位置与方向 ===
+  { knowledgePointKey:'pos_dir_angle', difficulty:1, source:'seed', problemText:'小明从家出发，向东偏北30°方向走400m到学校。放学回家应该怎么走？', answer:'向西偏南30°方向走400m回家。\n或：南偏西60°方向走400m。', solution:'往返方向相反：东↔西，北↔南\n角度不变，方向完全相反', errorPatterns:[] },
+  // === 数与形 ===
+  { knowledgePointKey:'num_pattern_seq', difficulty:2, source:'seed', problemText:'观察规律：1=1²，1+3=2²，1+3+5=3²。利用这个规律求：1+3+5+7+9+11+13+15+17', answer:'共有9个连续奇数（从1开始）\n和=9²=81', solution:'从1开始的n个连续奇数和=n²\n这里的奇数个数：第1个=1，第9个=17\n所以n=9，和=81', errorPatterns:[] },
+  // === 工程问题 ===
+  { knowledgePointKey:'frac_div_eng', difficulty:3, source:'past_exam', problemText:'一项工程，甲队单独做需要12天，乙队单独做需要18天。两队合作4天后，剩下的由乙队单独完成，还需要多少天？', answer:'甲效率=1/12，乙效率=1/18\n合作4天完成：4×(1/12+1/18)=4×(3/36+2/36)=4×5/36=20/36=5/9\n剩下：1-5/9=4/9\n乙单独做还需要：4/9÷1/18=4/9×18=8天', solution:'①求各自工作效率 ②求合作完成量 ③求剩余量 ④求乙单独完成剩余的时间', errorPatterns:[], year:2023 },
+  // === 综合复习 ===
+  { knowledgePointKey:'geometry_review', difficulty:3, source:'past_exam', problemText:'一个长方体容器，从里面量长20cm、宽15cm、高10cm。容器中装有水，水面高6cm。放入一个石头后，水面上升到8cm（石头完全浸没）。求石头的体积。', answer:'石头体积=上升水体积\n=20×15×(8-6)=300×2=600cm³', solution:'排水法：物体体积=升高水的体积\n=底面积×升高高度', errorPatterns:['volume_unit_1000'], year:2023 },
+  { knowledgePointKey:'num_algebra_review', difficulty:2, source:'seed', problemText:'解方程：2/3x-1/2=1/6', answer:'2/3x=1/6+1/2=1/6+3/6=4/6=2/3\nx=2/3÷2/3=1', solution:'①移项（把-1/2移到右边变+1/2）\n②通分计算右边\n③两边同时除以2/3（即乘3/2）', errorPatterns:[] },
+  { knowledgePointKey:'stats_prob_review', difficulty:1, source:'seed', problemText:'六(1)班有男生24人，女生20人。男生人数是女生人数的百分之几？女生人数占全班人数的百分之几？', answer:'男生是女生的：24/20=1.2=120%\n全班=24+20=44人\n女生占全班：20/44≈45.5%', solution:'a是b的百分之几=a/b×100%\n注意区分基数（"比"后面的量）', errorPatterns:[] },
+];
+
+/* ============================================================
+   SECTION VI: Analysis Engine
+   ============================================================ */
+M.analysis = {
+  async computeMastery() {
+    const problems = await DB.getAllProblems();
+    const mastery = {};
+    for (const p of problems) {
+      for (const kp of (p.knowledgePoints || [])) {
+        if (!mastery[kp]) mastery[kp] = { errors:0, total:0 };
+        mastery[kp].total++;
+        if (p.status !== 'mastered') mastery[kp].errors++;
+      }
+    }
+    const report = [];
+    for (const [key, data] of Object.entries(mastery)) {
+      const errRate = data.errors / data.total;
+      report.push({
+        key, name: M.getKPName(key),
+        totalProblems: data.total,
+        errorRate: errRate,
+        masteryLevel: errRate > 0.5 ? 0 : errRate > 0.3 ? 1 : errRate > 0.1 ? 2 : errRate === 0 ? 4 : 3,
+        needsAttention: errRate >= 0.3
+      });
+    }
+    report.sort((a,b) => b.errorRate - a.errorRate);
+    return report;
+  },
+
+  async detectErrorPatterns() {
+    const problems = await DB.getAllProblems();
+    const active = problems.filter(p => p.status !== 'mastered');
+    const patterns = [];
+
+    // Pattern: forget cone 1/3
+    const coneProbs = active.filter(p => (p.knowledgePoints||[]).includes('cone_volume'));
+    if (coneProbs.length >= 2) {
+      let count = 0;
+      for (const p of coneProbs) {
+        if (p.yourAnswer && p.correctAnswer) {
+          const y = parseFloat(p.yourAnswer), c = parseFloat(p.correctAnswer);
+          if (!isNaN(y) && !isNaN(c) && c !== 0 && Math.abs(y/c - 3) < 0.15) count++;
+        }
+      }
+      if (count >= 2) patterns.push({
+        id:'forget_cone_one_third', name:'圆锥体积忘记乘以1/3', count,
+        suggestion:'每次计算圆锥体积前，先在草稿纸上写下 V=1/3×S底×h，然后再代入数字。做3道专项练习巩固。',
+        recommendedMode:'targeted'
+      });
+    }
+
+    // Pattern: distributive second term
+    const distProbs = active.filter(p => (p.knowledgePoints||[]).includes('distributive_property'));
+    if (distProbs.length >= 3) {
+      const withSecondTerm = distProbs.filter(p => p.errorType === 'calculation');
+      if (withSecondTerm.length >= 2) patterns.push({
+        id:'distributive_second_term', name:'乘法分配律使用不当（漏乘项/符号错）', count: distProbs.length,
+        suggestion:'分配律关键：括号里的每一项都要乘外面的数。先用小数字做练习建立感觉，再扩展到分数。',
+        recommendedMode:'pattern'
+      });
+    }
+
+    // Pattern: composite shape
+    const compProbs = active.filter(p => (p.knowledgePoints||[]).includes('composite_shape_area'));
+    if (compProbs.length >= 3) patterns.push({
+      id:'composite_shape_weak', name:'组合图形面积整体偏弱', count: compProbs.length,
+      suggestion:'从最简单的分割法开始，先练长方形+半圆、正方形-圆，再过渡到复杂组合。每次画图标注已知数据。',
+      recommendedMode:'multi_solution'
+    });
+
+    return patterns;
+  },
+
+  async getRecommendation() {
+    const mastery = await this.computeMastery();
+    const patterns = await this.detectErrorPatterns();
+    const weak = mastery.filter(m => m.needsAttention);
+    let bestMode = 'targeted';
+    if (patterns.length > 0) bestMode = patterns[0].recommendedMode || 'targeted';
+    else if (weak.length === 1) bestMode = 'multi_solution';
+    else if (weak.length >= 2) bestMode = 'variant';
+    return { weakestTopics: weak.slice(0, 5), errorPatterns: patterns, recommendedMode: bestMode };
+  }
+};
+
+/* ============================================================
+   SECTION VII: Practice Generator (5 modes)
+   ============================================================ */
+M.practice = {
+  MODES: [
+    { key:'targeted', name:'针对性练习', icon:'🎯', desc:'针对薄弱知识点，生成难度递进的练习题' },
+    { key:'multi_solution', name:'一题多解', icon:'💡', desc:'从不同角度解同一道题，理解本质' },
+    { key:'pattern', name:'多题找规律', icon:'🔍', desc:'对比多道同类题，发现共同规律' },
+    { key:'variant', name:'变式训练', icon:'🔄', desc:'同一概念变换数字/形式/情境，举一反三' },
+    { key:'exam', name:'真题演练', icon:'📋', desc:'历年真题模拟，检验真实水平' },
+  ],
+
+  async generate(mode, kpKeys, count) {
+    const allQ = await DB.getAllQuestions();
+    let pool = allQ.filter(q => kpKeys.length===0 || kpKeys.includes(q.knowledgePointKey));
+    if (pool.length === 0) pool = allQ; // fallback
+    // Shuffle and pick
+    const shuffled = pool.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+    return selected.map((q,i) => ({ ...q, index:i+1 }));
+  },
+
+  async generateVariants(baseProblem) {
+    // Generate 3 levels of variants
+    const variants = [];
+    const base = baseProblem;
+    // Level 1: same structure, different numbers
+    variants.push({
+      level:1, label:'基础变式（换数字）',
+      problemText: base.problemText.replace(/(\d+)/g, (m) => {
+        const n = parseInt(m);
+        if (n > 1) return Math.round(n * (0.6 + Math.random() * 0.8)) + '';
+        return m;
+      }),
+      answer:'（请自行计算验证）', solution: base.solution
+    });
+    // Level 2: reversed direction
+    variants.push({
+      level:2, label:'进阶变式（反向思考）',
+      problemText: '【逆向】' + base.problemText + ' 如果已知答案是' + base.answer + '，求原来的条件。',
+      answer:'逆向推导验证', solution:'利用答案反推条件，验证理解是否透彻'
+    });
+    // Level 3: add a step
+    variants.push({
+      level:3, label:'挑战变式（增加步骤）',
+      problemText: base.problemText + ' 再回答：如果条件翻倍，答案变化多少？为什么？',
+      answer:'请思考并写出推理过程', solution:'考察对公式中变量关系的理解：是线性关系还是平方/立方关系'
+    });
+    return variants;
+  },
+
+  async findPatterns(kpKey) {
+    const problems = await DB.getProblemsByKP(kpKey);
+    if (problems.length < 3) return null;
+    // Find common structure
+    const commonWords = this._extractCommonWords(problems.map(p => p.problemText));
+    return {
+      knowledgePoint: M.getKPName(kpKey),
+      problemCount: problems.length,
+      commonStructure: commonWords.length > 0 ? `这些题都涉及「${commonWords.join('」「')}」` : '请仔细对比以下题目',
+      goldenRule: this._getGoldenRule(kpKey),
+      sampleProblems: problems.slice(0, 5)
+    };
+  },
+
+  _extractCommonWords(texts) {
+    const keywords = ['面积','周长','半径','直径','半圆','正方形','长方形','三角形',
+      '分配律','简便','提取','公因数','分数','百分数','比例','折扣','体积','圆锥','圆柱'];
+    return keywords.filter(kw => texts.every(t => t.includes(kw)));
+  },
+
+  _getGoldenRule(kpKey) {
+    const rules = {
+      'composite_shape_area': '黄金法则：分割→分别算→加减。看到组合图形先问：能切成几个规则图形？',
+      'cone_volume': '黄金法则：V锥=V柱/3。写出公式先写1/3！',
+      'distributive_property': '黄金法则：括号里每一项都要乘。展开时用手指逐项检查。',
+      'circle_area': '黄金法则：半径是关键。给直径先÷2，给周长先÷π÷2。',
+      'prop_scale': '黄金法则：比例尺=图上:实际。单位统一是第一步（1km=100000cm）。',
+    };
+    return rules[kpKey] || '黄金法则：先确定题目类型，回忆对应公式，分步骤计算。';
+  }
+};
+
+/* ============================================================
+   SECTION VIII: Print/Export Engine
+   ============================================================ */
+M.exportBackup = async () => {
+  try {
+    const data = await DB.exportAll();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+    M._download(blob, `数学错题备份_${new Date().toISOString().slice(0,10)}.json`);
+    M.showToast('备份导出成功', 'success');
+  } catch(e) { M.showToast('导出失败','error'); }
+};
+
+M.importBackup = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  M.confirmDialog('导入备份', '导入将合并数据（不会覆盖已有错题），确认继续？', async () => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await DB.importAll(data);
+      M.showToast(`导入成功：${data.problems.length} 道错题`, 'success');
+      M.switchScreen('dashboard');
+    } catch(e) { M.showToast('导入失败，请检查文件格式','error'); }
+  });
+};
+
+M.printProblems = (problems, title) => {
+  // Add print elements
+  const existing = document.querySelectorAll('.print-only');
+  existing.forEach(el => el.remove());
+  const container = document.createElement('div');
+  container.className = 'print-only';
+  container.innerHTML = `<div class="print-sheet">
+    <h2>${M.escapeHTML(title)}</h2>
+    <p style="margin-bottom:16px">姓名: ________  日期: ${new Date().toLocaleDateString('zh-CN')}</p>
+    ${problems.map((p,i) => `
+      <div class="print-problem">
+        <strong>${i+1}.</strong> ${M.escapeHTML(p.problemText||'')}
+        ${p.answer ? `<div style="margin-top:4px;color:#999;font-size:12px">答案: ${M.escapeHTML(p.answer)}</div>` : ''}
+      </div>
+    `).join('')}
+  </div>`;
+  document.body.appendChild(container);
+  document.querySelectorAll('.screen-container').forEach(s => s.classList.add('print-active'));
+  window.print();
+  setTimeout(() => {
+    container.remove();
+    document.querySelectorAll('.screen-container').forEach(s => s.classList.remove('print-active'));
+  }, 500);
+};
+
+M._download = (blob, filename) => {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+M.confirmClearData = () => {
+  M.confirmDialog('清除所有数据', '此操作不可撤销！建议先导出备份。确认清除？', async () => {
+    await DB.clearAll();
+    M.showToast('所有数据已清除');
+    M.switchScreen('dashboard');
+  });
+};
+
+/* ============================================================
+   SECTION IX: Screen Controllers
+   ============================================================ */
+
+// --- Dashboard ---
+M.renderDashboard = async () => {
+  const problems = await DB.getAllProblems();
+  const totalProblems = problems.length;
+  const activeProblems = problems.filter(p => p.status === 'active').length;
+  const masteredProblems = problems.filter(p => p.status === 'mastered').length;
+  const mastery = await M.analysis.computeMastery();
+  const weak = mastery.filter(m => m.needsAttention);
+
+  // Stats
+  M.$('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${totalProblems}</div><div class="stat-label">全部错题</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--red)">${activeProblems}</div><div class="stat-label">待复习</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--green)">${masteredProblems}</div><div class="stat-label">已掌握</div></div>
+    <div class="stat-card"><div class="stat-value">${totalProblems ? Math.round(masteredProblems/totalProblems*100) : 0}%</div><div class="stat-label">掌握率</div></div>
+  `;
+
+  // Weak alerts
+  if (weak.length > 0) {
+    M.$('dash-weak-alerts').innerHTML = weak.map(w => `
+      <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <span class="badge ${w.errorRate >= 0.5 ? 'badge-red' : 'badge-orange'}">${Math.round(w.errorRate*100)}%错误率</span>
+          <span style="margin-left:8px;font-weight:500">${M.escapeHTML(w.name)}</span>
+          <span style="margin-left:8px;font-size:12px;color:var(--text-tertiary)">${w.totalProblems}道错题</span>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="M.switchScreen('practice');M.focusPracticeOn('${w.key}')">去练习 →</button>
+      </div>
+    `).join('');
+  } else {
+    M.$('dash-weak-alerts').innerHTML = totalProblems > 0
+      ? '<div class="card" style="text-align:center;color:var(--green)">👍 各知识点掌握良好，继续保持！</div>'
+      : '<div class="card" style="text-align:center;color:var(--text-tertiary)">还没有错题数据，去添加第一道吧</div>';
+  }
+
+  // Recent problems
+  const recent = [...problems].sort((a,b) => b.createdAt - a.createdAt).slice(0, 5);
+  M.$('dash-recent').innerHTML = recent.length > 0 ? recent.map(p => `
+    <div class="card" style="margin-bottom:6px;cursor:pointer" onclick="M.viewProblem(${p.id})">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="flex:1;overflow:hidden">
+          <div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${M.escapeHTML(p.problemText||'(无题目文字)')}</div>
+          <div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">
+            ${(p.knowledgePoints||[]).map(k => `<span class="badge badge-blue">${M.getKPName(k)}</span>`).join('')}
+          </div>
+        </div>
+        <span class="badge ${p.status==='mastered'?'badge-green':'badge-orange'}">${p.status==='mastered'?'已掌握':'待复习'}</span>
+      </div>
+    </div>
+  `).join('') : '<div class="empty-state"><div>还没有错题</div></div>';
+};
+
+// --- Add Problem Tab Switching ---
+M.switchAddTab = (tab) => {
+  M._addState.tab = tab;
+  document.querySelectorAll('#screen-add .tab-item').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  M.$('add-manual').style.display = tab==='manual'?'block':'none';
+  M.$('add-camera').style.display = tab==='camera'?'block':'none';
+  M.$('add-file').style.display = tab==='file'?'block':'none';
+};
+
+// --- Difficulty Selection ---
+M.selectDifficulty = (d) => {
+  M._addState.difficulty = d;
+  M.$('add-difficulty').querySelectorAll('.tag-chip').forEach(ch => {
+    ch.classList.toggle('selected', parseInt(ch.dataset.d) === d);
+  });
+};
+
+// --- Error Type Selection ---
+M.selectErrorType = (et) => {
+  M._addState.errorType = M._addState.errorType === et ? null : et;
+  M.$('add-error-type').querySelectorAll('.tag-chip').forEach(ch => {
+    ch.classList.toggle('selected', ch.dataset.et === M._addState.errorType);
+  });
+};
+
+// --- Image Upload ---
+M.handleImageUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  // Compress
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    const img = await createImageBitmap(await fetch(ev.target.result).then(r=>r.blob()));
+    const scale = Math.min(1, 800 / Math.max(img.width, img.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.7));
+    M._addState.imageBlob = blob;
+    // Thumbnail
+    const thumbCanvas = document.createElement('canvas');
+    const thumbScale = Math.min(1, 200 / Math.max(img.width, img.height));
+    thumbCanvas.width = img.width * thumbScale;
+    thumbCanvas.height = img.height * thumbScale;
+    const thumbCtx = thumbCanvas.getContext('2d');
+    thumbCtx.drawImage(img, 0, 0, thumbCanvas.width, thumbCanvas.height);
+    M._addState.imageThumb = await new Promise(r => thumbCanvas.toBlob(r, 'image/jpeg', 0.6));
+    // Preview
+    const url = URL.createObjectURL(blob);
+    M.$('add-image-preview').src = url;
+    M.$('add-image-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+};
+
+// --- Save Problem ---
+M.saveProblem = async () => {
+  const problemText = M.$('add-problem-text').value.trim();
+  const correctAnswer = M.$('add-correct-answer').value.trim();
+  if (!problemText) { M.showToast('请输入题目内容', 'error'); return; }
+  if (!correctAnswer) { M.showToast('请输入正确答案', 'error'); return; }
+
+  const data = {
+    problemText,
+    yourAnswer: M.$('add-your-answer').value.trim(),
+    correctAnswer,
+    errorReason: M.$('add-error-reason').value.trim(),
+    knowledgePoints: M._addState.knowledgePoints,
+    semester: parseInt(M.$('add-semester').value),
+    difficulty: M._addState.difficulty,
+    errorType: M._addState.errorType || 'unknown',
+    hasImage: !!M._addState.imageBlob,
+    imageData: M._addState.imageBlob,
+    imageThumbnail: M._addState.imageThumb,
+    sourceFileName: '',
+    sourceFileType: M._addState.tab === 'camera' ? 'image' : 'manual'
+  };
+
+  try {
+    const id = await DB.addProblem(data);
+    M.showToast('错题已保存！', 'success');
+    // Reset form
+    M.$('add-problem-text').value = '';
+    M.$('add-your-answer').value = '';
+    M.$('add-correct-answer').value = '';
+    M.$('add-error-reason').value = '';
+    M._addState.knowledgePoints = [];
+    M._addState.imageBlob = null;
+    M._addState.imageThumb = null;
+    M._addState.errorType = null;
+    M._addState.ocrText = '';
+    M.$('add-image-preview').style.display = 'none';
+    M.$('add-camera-preview').style.display = 'none';
+    M.$('add-ocr-result').style.display = 'none';
+    M.$('add-ocr-actions').style.display = 'none';
+    M.$('add-file-info').style.display = 'none';
+    M.renderTagPicker();
+    M.$('add-error-type').querySelectorAll('.tag-chip').forEach(ch => ch.classList.remove('selected'));
+    M.switchScreen('dashboard');
+  } catch(e) {
+    M.showToast('保存失败: ' + e.message, 'error');
+  }
+};
+
+// --- Library ---
+M.renderLibrary = async () => {
+  let problems = await DB.getAllProblems();
+  // Status filter
+  if (M._libFilter === 'active') problems = problems.filter(p => p.status !== 'mastered');
+  else if (M._libFilter === 'mastered') problems = problems.filter(p => p.status === 'mastered');
+  // KP filter
+  if (M._libKpFilter) problems = problems.filter(p => (p.knowledgePoints||[]).includes(M._libKpFilter));
+  // Search
+  const search = M.$('lib-search').value.trim().toLowerCase();
+  if (search) problems = problems.filter(p => p.problemText && p.problemText.toLowerCase().includes(search));
+  // Sort by date desc
+  problems.sort((a,b) => b.createdAt - a.createdAt);
+
+  // Render KP filter chips
+  const allKPs = {};
+  for (const p of await DB.getAllProblems()) {
+    for (const kp of (p.knowledgePoints||[])) {
+      allKPs[kp] = (allKPs[kp]||0) + 1;
+    }
+  }
+  M.$('lib-filters').innerHTML = Object.entries(allKPs).sort((a,b) => b[1]-a[1]).slice(0,8).map(([k,v]) =>
+    `<span class="tag-chip${M._libKpFilter===k?' selected':''}" onclick="M.setLibKPFilter('${k}')">${M.getKPName(k)} (${v})</span>`
+  ).join('');
+
+  if (problems.length === 0) {
+    M.$('lib-problems').innerHTML = '';
+    M.$('lib-empty').style.display = 'block';
+  } else {
+    M.$('lib-empty').style.display = 'none';
+    M.$('lib-problems').innerHTML = problems.map(p => `
+      <div class="card" style="margin-bottom:8px;cursor:pointer" onclick="M.viewProblem(${p.id})">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          ${p.imageThumbnail ? `<img src="${URL.createObjectURL(p.imageThumbnail)}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0">` : ''}
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px">${M.escapeHTML(p.problemText||'(无题目文字)')}</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+              ${(p.knowledgePoints||[]).slice(0,3).map(k => `<span class="badge badge-blue">${M.getKPName(k)}</span>`).join('')}
+              <span class="badge ${p.status==='mastered'?'badge-green':'badge-orange'}">${p.status==='mastered'?'✓已掌握':'待复习'}</span>
+              ${p.difficulty ? `<span class="badge badge-gray">${'⭐'.repeat(p.difficulty)}</span>` : ''}
+              <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto">${new Date(p.createdAt).toLocaleDateString('zh-CN')}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+};
+
+M.setLibFilter = (status) => {
+  M._libFilter = status;
+  M.$('lib-status-filter').querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.status === status));
+  M.renderLibrary();
+};
+
+M.setLibKPFilter = (kp) => {
+  M._libKpFilter = M._libKpFilter === kp ? null : kp;
+  M.renderLibrary();
+};
+
+// --- Problem Detail ---
+M.viewProblem = async (id) => {
+  const p = await DB.getProblem(id);
+  if (!p) { M.showToast('找不到该错题','error'); return; }
+  M.switchScreen('detail');
+  M.$('detail-content').innerHTML = `
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:600;font-size:17px;margin-bottom:8px">📝 题目</div>
+      <div style="font-size:15px;line-height:1.6;white-space:pre-wrap">${M.escapeHTML(p.problemText||'(无题目文字)')}</div>
+      ${p.hasImage && p.imageData ? `<img src="${URL.createObjectURL(p.imageData)}" style="max-height:300px;margin-top:12px;border-radius:var(--radius-sm)">` : ''}
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;gap:16px">
+        <div style="flex:1"><span style="font-size:12px;color:var(--text-tertiary)">我的答案（错）</span><div style="font-weight:500;color:var(--red)">${M.escapeHTML(p.yourAnswer||'-')}</div></div>
+        <div style="flex:1"><span style="font-size:12px;color:var(--text-tertiary)">正确答案</span><div style="font-weight:500;color:var(--green)">${M.escapeHTML(p.correctAnswer||'-')}</div></div>
+      </div>
+      ${p.errorReason ? `<div style="margin-top:8px"><span style="font-size:12px;color:var(--text-tertiary)">反思</span><div>${M.escapeHTML(p.errorReason)}</div></div>` : ''}
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+        ${(p.knowledgePoints||[]).map(k => `<span class="badge badge-blue">${M.getKPName(k)}</span>`).join('')}
+        ${p.errorType ? `<span class="badge badge-orange">${p.errorType==='calculation'?'计算错误':p.errorType==='concept'?'概念不清':p.errorType==='careless'?'粗心大意':p.errorType==='application'?'不会应用':'其他'}</span>` : ''}
+        <span class="badge badge-gray">${p.semester===1?'上册':'下册'}</span>
+        <span class="badge ${p.status==='mastered'?'badge-green':'badge-orange'}">${p.status==='mastered'?'已掌握':'待复习'}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${p.status !== 'mastered'
+        ? `<button class="btn btn-green btn-block" style="background:var(--green);color:#fff" onclick="M.markMastered(${p.id})">✅ 标记为已掌握</button>`
+        : `<button class="btn btn-outline btn-block" onclick="M.markReviewing(${p.id})">🔄 重新开始复习</button>`
+      }
+      <button class="btn btn-primary btn-block" onclick="M.practiceSimilar(${p.id})">🎯 练习同类题</button>
+      <button class="btn btn-outline btn-block" onclick="M.deleteProblemConfirm(${p.id})">🗑️ 删除</button>
+    </div>
+  `;
+};
+
+M.markMastered = async (id) => {
+  await DB.updateProblem(id, { status:'mastered', masteredAt:Date.now() });
+  M.showToast('已标记为掌握！👍', 'success');
+  M.viewProblem(id);
+};
+
+M.markReviewing = async (id) => {
+  await DB.updateProblem(id, { status:'active' });
+  M.showToast('已恢复到待复习', 'success');
+  M.viewProblem(id);
+};
+
+M.deleteProblemConfirm = (id) => {
+  M.confirmDialog('删除错题', '删除后不可恢复，确认删除？', async () => {
+    await DB.deleteProblem(id);
+    M.showToast('已删除');
+    M.switchScreen('library');
+  });
+};
+
+M.practiceSimilar = async (id) => {
+  const p = await DB.getProblem(id);
+  if (!p || !p.knowledgePoints || !p.knowledgePoints.length) {
+    M.showToast('该错题没有知识点标签，无法推荐同类题','error');
+    return;
+  }
+  M.switchScreen('practice');
+  M._practiceState.targetKPs = p.knowledgePoints;
+  M.startPractice('targeted');
+};
+
+// --- Analysis ---
+M.renderAnalysis = async () => {
+  const rec = await M.analysis.getRecommendation();
+
+  // Heatmap
+  const mastery = await M.analysis.computeMastery();
+  M.$('analysis-heatmap').innerHTML = mastery.length > 0 ? mastery.slice(0,12).map(m => `
+    <div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">
+        <span>${M.escapeHTML(m.name)}</span>
+        <span style="color:${m.errorRate>=0.5?'var(--red)':m.errorRate>=0.3?'var(--orange)':'var(--green)'}">${Math.round(m.errorRate*100)}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${m.errorRate>=0.5?'red':m.errorRate>=0.3?'orange':'green'}" style="width:${Math.max(5, m.errorRate*100)}%"></div></div>
+    </div>
+  `).join('') : '<div class="empty-state"><div>还没有足够的数据来分析</div></div>';
+
+  // Patterns
+  const patterns = rec.errorPatterns;
+  M.$('analysis-patterns').innerHTML = patterns.length > 0 ? patterns.map(pp => `
+    <div class="card" style="margin-bottom:8px;border-left:3px solid var(--red)">
+      <div style="font-weight:600">⚠️ ${M.escapeHTML(pp.name)} (出现${pp.count}次)</div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">${M.escapeHTML(pp.suggestion)}</div>
+    </div>
+  `).join('') : '<div style="color:var(--text-tertiary);text-align:center;padding:12px">未检测到明显错因模式，继续积累错题后系统将自动分析</div>';
+
+  // Trend (simplified)
+  const sessions = await DB.getAllSessions();
+  const recentSessions = [...sessions].sort((a,b) => b.createdAt - a.createdAt).slice(0,10).reverse();
+  M.$('analysis-trend').innerHTML = recentSessions.length > 0 ? recentSessions.map(s => {
+    const rate = s.totalQuestions > 0 ? Math.round(s.correctCount/s.totalQuestions*100) : 0;
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:13px">
+      <span style="min-width:80px;color:var(--text-tertiary)">${new Date(s.createdAt).toLocaleDateString('zh-CN')}</span>
+      <div class="progress-bar" style="flex:1"><div class="progress-fill ${rate>=80?'green':rate>=60?'blue':'orange'}" style="width:${rate}%"></div></div>
+      <span style="min-width:36px;text-align:right">${rate}%</span>
+    </div>`;
+  }).join('') : '<div style="color:var(--text-tertiary);text-align:center;padding:12px">还没有练习记录</div>';
+
+  // Recommendation
+  M.$('analysis-recommend').innerHTML = `
+    <p style="margin-bottom:8px">🎯 <strong>推荐练习模式：</strong>${rec.recommendedMode==='targeted'?'针对性练习':rec.recommendedMode==='multi_solution'?'一题多解':'变式训练'}</p>
+    ${rec.weakestTopics.length > 0 ? `<p>📌 <strong>最需关注：</strong>${rec.weakestTopics.map(t => M.escapeHTML(t.name)).join('、')}</p>` : ''}
+    <button class="btn btn-primary" style="margin-top:8px" onclick="M.switchScreen('practice')">开始智能练习 →</button>
+  `;
+};
+
+// --- Practice ---
+M.renderPracticeModes = () => {
+  M.$('practice-modes').innerHTML = '<div class="practice-mode-grid">' + M.practice.MODES.map(m => `
+    <div class="practice-mode-card${M._practiceState.mode===m.key?' selected':''}" onclick="M.selectPracticeMode('${m.key}')">
+      <div class="mode-icon">${m.icon}</div>
+      <div class="mode-name">${m.name}</div>
+      <div class="mode-desc">${m.desc}</div>
+    </div>
+  `).join('') + '</div>';
+  if (M._practiceState.mode) {
+    M.renderPracticeConfig();
+  } else {
+    M.$('practice-config').innerHTML = '<div class="empty-state"><div>👆 请先选择一种练习模式</div></div>';
+    M.$('practice-questions').innerHTML = '';
+    M.$('practice-actions').innerHTML = '';
+    M.$('practice-results').innerHTML = '';
+  }
+};
+
+M.selectPracticeMode = (mode) => {
+  M._practiceState.mode = mode;
+  M._practiceState.questions = [];
+  M._practiceState.answers = {};
+  M._practiceState.startTime = 0;
+  M.renderPracticeModes();
+};
+
+M.renderPracticeConfig = () => {
+  const mode = M._practiceState.mode;
+  M.$('practice-config').innerHTML = `
+    <div class="card">
+      <div style="font-weight:600;margin-bottom:8px">${M.practice.MODES.find(m=>m.key===mode)?.icon} ${M.practice.MODES.find(m=>m.key===mode)?.name} — 设置</div>
+      <div class="form-group"><label class="form-label">目标知识点</label>
+        <div class="tag-grid" id="practice-kp-selector">
+          ${Object.entries(M._kpFlat).slice(0,20).map(([k,v]) =>
+            `<span class="tag-chip${(M._practiceState.targetKPs||[]).includes(k)?' selected':''}" data-kp="${k}" onclick="M.togglePracticeKP('${k}',this)">${v.name}</span>`
+          ).join('')}
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">题目数量</label>
+        <div style="display:flex;gap:6px">
+          ${[3,5,10,15,20].map(n => `<span class="tag-chip${M._practiceState.count===n?' selected':''}" onclick="M.setPracticeCount(${n})">${n}题</span>`).join('')}
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="M.startPractice()">🚀 开始练习</button>
+    </div>
+  `;
+  if (!M._practiceState.count) M._practiceState.count = 5;
+  if (!M._practiceState.targetKPs) M._practiceState.targetKPs = [];
+};
+
+M.togglePracticeKP = (kp, el) => {
+  if (!M._practiceState.targetKPs) M._practiceState.targetKPs = [];
+  if (M._practiceState.targetKPs.includes(kp)) {
+    M._practiceState.targetKPs = M._practiceState.targetKPs.filter(k => k!==kp);
+    el.classList.remove('selected');
+  } else {
+    M._practiceState.targetKPs.push(kp);
+    el.classList.add('selected');
+  }
+};
+
+M.setPracticeCount = (n) => {
+  M._practiceState.count = n;
+  M.renderPracticeConfig();
+};
+
+M.focusPracticeOn = (kp) => {
+  M._practiceState.targetKPs = [kp];
+  M._practiceState.mode = 'targeted';
+  M.renderPracticeModes();
+  M.renderPracticeConfig();
+};
+
+M.startPractice = async (forceMode) => {
+  if (forceMode) M._practiceState.mode = forceMode;
+  const mode = M._practiceState.mode;
+  if (!mode) { M.showToast('请先选择练习模式','error'); return; }
+  const kps = M._practiceState.targetKPs || [];
+  const count = M._practiceState.count || 5;
+
+  const questions = await M.practice.generate(mode, kps, count);
+  if (questions.length === 0) { M.showToast('题库中没有匹配的题目，请扩充知识点范围','error'); return; }
+
+  M._practiceState.questions = questions;
+  M._practiceState.answers = {};
+  M._practiceState.startTime = Date.now();
+  M.renderPracticeQuestions();
+};
+
+M.renderPracticeQuestions = () => {
+  const qs = M._practiceState.questions;
+  M.$('practice-config').innerHTML = '';
+  M.$('practice-questions').innerHTML = `
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:600;margin-bottom:8px">📝 练习中 (共${qs.length}题)</div>
+      <div class="progress-bar" style="margin-bottom:16px">
+        <div class="progress-fill blue" style="width:${Object.keys(M._practiceState.answers).length/qs.length*100}%"></div>
+      </div>
+      ${qs.map((q,i) => {
+        const answered = M._practiceState.answers[i] !== undefined;
+        const isCorrect = M._practiceState.answers[i];
+        return `<div class="card" style="margin-bottom:8px;border-left:3px solid ${answered?(isCorrect?'var(--green)':'var(--red)'):'var(--border)'}">
+          <div style="font-weight:600;margin-bottom:4px">第${i+1}题</div>
+          <div style="font-size:14px;margin-bottom:8px;white-space:pre-wrap">${M.escapeHTML(q.problemText)}</div>
+          ${answered
+            ? `<div style="font-size:13px;color:${isCorrect?'var(--green)':'var(--red)'}">${isCorrect ? '✅ 正确！' : '❌ 错误'} 正确答案: ${M.escapeHTML(q.answer||'')}</div>`
+            : `<input type="text" placeholder="输入你的答案..." id="practice-answer-${i}" style="margin-bottom:4px">
+               <button class="btn btn-primary btn-sm" onclick="M.submitAnswer(${i})">提交</button>`
+          }
+          ${q.solution && answered ? `<div style="font-size:12px;color:var(--text-tertiary);margin-top:4px">💡 ${M.escapeHTML(q.solution)}</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  M.$('practice-actions').innerHTML = `
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline btn-block" onclick="M.cancelPractice()">退出练习</button>
+      ${Object.keys(M._practiceState.answers).length === qs.length
+        ? `<button class="btn btn-primary btn-block" onclick="M.finishPractice()">📊 查看结果</button>`
+        : `<span style="color:var(--text-tertiary);font-size:13px;align-self:center">还剩 ${qs.length - Object.keys(M._practiceState.answers).length} 题</span>`
+      }
+    </div>
+  `;
+};
+
+M.submitAnswer = (i) => {
+  const input = M.$('practice-answer-' + i);
+  if (!input) return;
+  const userAnswer = input.value.trim();
+  if (!userAnswer) { M.showToast('请输入答案','error'); return; }
+  const q = M._practiceState.questions[i];
+  // Simple correctness check (case-insensitive contains)
+  const correct = q.answer && (q.answer.includes(userAnswer) || userAnswer.includes(q.answer.replace(/[≈\s]/g,'')) || userAnswer === q.answer);
+  M._practiceState.answers[i] = correct;
+  M.renderPracticeQuestions();
+};
+
+M.cancelPractice = () => {
+  M.confirmDialog('退出练习', '当前练习进度将丢失，确认退出？', () => {
+    M._practiceState.questions = [];
+    M._practiceState.answers = {};
+    M.renderPracticeModes();
+  });
+};
+
+M.finishPractice = async () => {
+  const qs = M._practiceState.questions;
+  const answers = M._practiceState.answers;
+  const totalQuestions = qs.length;
+  const correctCount = Object.values(answers).filter(Boolean).length;
+  const wrongProblems = [];
+  for (let i = 0; i < qs.length; i++) {
+    if (answers[i] === false) {
+      wrongProblems.push({ problemText: qs[i].problemText, correctAnswer: qs[i].answer, knowledgePointKey: qs[i].knowledgePointKey });
+    }
+  }
+  const durationMs = Date.now() - M._practiceState.startTime;
+  const durationMin = Math.round(durationMs / 60000 * 10) / 10;
+
+  // Save session
+  const modeName = M.practice.MODES.find(m=>m.key===M._practiceState.mode)?.name || '练习';
+  await DB.addSession({
+    mode: M._practiceState.mode,
+    knowledgePoints: M._practiceState.targetKPs || [],
+    totalQuestions, correctCount, wrongProblems, durationMs
+  });
+
+  // Auto-save wrong problems
+  let savedCount = 0;
+  for (const wp of wrongProblems) {
+    await DB.addProblem({
+      problemText: wp.problemText,
+      yourAnswer: '',
+      correctAnswer: wp.correctAnswer,
+      errorReason: '练习中做错',
+      knowledgePoints: [wp.knowledgePointKey].filter(Boolean),
+      semester: 1,
+      difficulty: 3,
+      errorType: 'unknown',
+      status: 'active',
+      hasImage: false,
+      sourceFileType: 'practice'
+    });
+    savedCount++;
+  }
+
+  // Render results
+  M.$('practice-questions').innerHTML = '';
+  M.$('practice-actions').innerHTML = '';
+  const score = Math.round(correctCount / totalQuestions * 100);
+  M.$('practice-results').innerHTML = `
+    <div class="card" style="text-align:center">
+      <div style="font-size:48px">${score >= 80 ? '🎉' : score >= 60 ? '💪' : '📚'}</div>
+      <div style="font-size:36px;font-weight:700;color:${score>=80?'var(--green)':score>=60?'var(--orange)':'var(--red)'}">${score}分</div>
+      <div style="color:var(--text-secondary)">${correctCount}/${totalQuestions} 正确 · 用时${durationMin}分钟</div>
+      ${savedCount > 0 ? `<div style="margin-top:8px;font-size:13px;color:var(--text-tertiary)">📌 ${savedCount}道错题已自动加入错题本</div>` : ''}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-outline btn-block" onclick="M.renderPracticeModes();M.$('practice-results').innerHTML=''">🔄 再练一次</button>
+      ${wrongProblems.length > 0 ? `<button class="btn btn-primary btn-block" onclick="M.reviewWrongProblems()">🔍 复习错题</button>` : ''}
+      <button class="btn btn-outline btn-block" onclick="M.printProblems(qs, '练习卷')">🖨️ 打印</button>
+    </div>
+  `;
+};
+
+M.reviewWrongProblems = () => {
+  M._practiceState.mode = 'targeted';
+  // Re-generate similar
+  M.startPractice('targeted');
+};
+
+// --- Settings ---
+M.loadSettings = async () => {
+  const s = await DB.getSettings();
+  M.$('set-name').value = s.studentName || '';
+  M.$('set-weekly-goal').value = s.weeklyGoal || 10;
+};
+
+M.saveSettings = async () => {
+  await DB.saveSettings({
+    studentName: M.$('set-name').value.trim(),
+    weeklyGoal: parseInt(M.$('set-weekly-goal').value) || 10,
+  });
+  M.showToast('设置已保存', 'success');
+};
+
+/* ============================================================
+   SECTION X: Init & Seed Data
+   ============================================================ */
+M.init = async () => {
+  try {
+    await DB.open();
+    // Seed question bank if empty
+    const count = await DB.countQuestions();
+    if (count === 0) {
+      for (const q of M.SEED_QUESTIONS) {
+        await DB.addQuestion(q);
+      }
+      console.log('✅ 种子题库已初始化: ' + M.SEED_QUESTIONS.length + ' 题');
+    }
+    // Load settings
+    await M.loadSettings();
+    // Render initial screen
+    M.renderDashboard();
+    M.renderTagPicker();
+    console.log('✅ 数学错题本初始化完成');
+
+    // Register PWA service worker
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE = 'math-error-book-v1';
+        const URLS = [self.location.href, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'];
+        self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).catch(()=>{})); });
+        self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
+      `;
+      const blob = new Blob([swCode], {type:'application/javascript'});
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+    }
+  } catch(e) {
+    console.error('初始化失败:', e);
+    M.showToast('初始化失败，请刷新页面重试', 'error');
+  }
+};
+
+// Start when DOM ready
+document.addEventListener('DOMContentLoaded', M.init);
+
+// Handle settings screen activation
+const origSwitch = M.switchScreen;
+M.switchScreen = function(name) {
+  origSwitch.call(this, name);
+  if (name === 'settings') M.loadSettings();
+};
+
+// Global error handler for IndexedDB
+window.addEventListener('unhandledrejection', (e) => {
+  if (e.reason && e.reason.name === 'QuotaExceededError') {
+    M.showToast('存储空间不足！请导出备份后清理旧数据', 'error');
+  }
+});
+</script>
+</body>
+</html>
