@@ -161,7 +161,7 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
   </div>
 
   <div style="margin-bottom:12px">
-    <input type="text" id="prob-ans" placeholder="正确答案（必填）">
+    <input type="text" id="prob-ans" placeholder="这道题应该怎么做才对？（必填）">
   </div>
 
   <button class="primary block lg" onclick="A.save()">💾 保存错题</button>
@@ -405,9 +405,9 @@ A.handlePhoto = function(e){
   A.$('photo-img').src = URL.createObjectURL(f);
   A.$('photo-empty').style.display = 'none';
   A.$('photo-preview').style.display = 'block';
-  A.$('btn-ocr').disabled = false;
-  A.$('btn-ocr').textContent = '🔍 识别文字';
-  A.$('ocr-msg').textContent = '';
+  // Auto-start OCR after short delay (let image render first)
+  A.$('ocr-msg').textContent = '⏳ 正在自动识别...';
+  setTimeout(function(){ A.doOCR(); }, 300);
 };
 
 A.clearPhoto = function(){
@@ -494,7 +494,7 @@ A.splitBatch = function(){
     '<div class="card" style="margin-bottom:6px"><strong>第'+(i+1)+'题</strong> ' +
     (p.kps.length>0 ? p.kps.map(k => '<span class="tag">'+A.kpName(k)+'</span>').join('') : '<span style="color:var(--orange);font-size:11px">未识别</span>') +
     '<div style="font-size:13px;margin:4px 0">'+A.esc(p.text)+'</div>' +
-    '<input type="text" placeholder="正确答案" id="ba-'+i+'" style="font-size:13px"></div>'
+    '<input type="text" placeholder="应该怎么写才对？" id="ba-'+i+'" style="font-size:13px"></div>'
   ).join('') + '<button class="primary block" style="margin-top:8px" onclick="A.saveBatch()">💾 保存全部 '+A._batch.length+' 道错题</button>';
 };
 
@@ -510,6 +510,17 @@ A.saveBatch = async function(){
   A._batch = []; A.$('batch-out').innerHTML = ''; A.$('batch-text').value = '';
 };
 
+/* ============ REDO WRONG PROBLEMS ============ */
+A.redoWrongProblems = async function(){
+  const problems = await DB.getAllProblems();
+  const active = problems.filter(function(p){ return p.status !== 'mastered'; });
+  if (active.length === 0) { A.toast('没有待复习的错题', 'err'); return; }
+  // Take up to 10 active wrong problems, shuffle, use as quiz
+  const selected = active.sort(function(){ return Math.random() - 0.5; }).slice(0, 10);
+  A.renderQuiz(selected, '重做错题', '把之前做错的题再做一遍，看看是否真的掌握了');
+  A.nav('practice');
+};
+
 /* ============ ANALYZE SCREEN ============ */
 // Score prediction (有效化 — 分数体验)
 A.renderScorePrediction = async function(sorted, totalProblems){
@@ -518,12 +529,26 @@ A.renderScorePrediction = async function(sorted, totalProblems){
     return;
   }
 
-  // Weight: each knowledge point contributes roughly equally to exam score
-  // Estimate: baseline 85 (perfect), subtract errorRate * weight for each KP
-  const totalKPs = sorted.length;
-  const avgErrorRate = sorted.reduce((s,m) => s + m.errorRate, 0) / totalKPs;
-  // Map to a 0-100 score: assume if all mastered = 90+, all wrong = 30-
-  let baseScore = Math.round(90 - avgErrorRate * 70);
+  // Exam weights: how many points each KP typically worth in a 100-point exam
+  const examWeights = {
+    composite_shape_area:10, cone_volume:5, cyl_volume:5, cyl_surface:4,
+    composite_solid_volume:4, distributive_property:8, frac_mul_word:6,
+    frac_div_word:6, frac_div_eng:3, prop_scale:4, prop_direct:3, prop_inverse:3,
+    pct_discount:5, pct_interest:3, circle_area:5, circle_pi:3, circle_ring:3,
+    circle_sector:2, ratio_distribute:4, ratio_simplify:2, negative_numbers:2,
+    frac_mul_rules:8, frac_div_rule:8, pct_convert:3, num_pattern_seq:2,
+    pigeonhole_basic:2, unit_conversion:2, equation_method:5, transform_thinking:3,
+  };
+  // Calculate weighted score
+  let totalWeight = 0, lostPoints = 0;
+  for (const m of sorted) {
+    const w = examWeights[m.key] || 3;
+    totalWeight += w;
+    lostPoints += w * m.errorRate;
+  }
+  const maxScore = Math.max(totalWeight, 1);
+  let baseScore = Math.round(100 - (lostPoints / maxScore) * 100);
+  baseScore = Math.max(25, Math.min(98, baseScore));
   baseScore = Math.max(30, Math.min(95, baseScore));
 
   // Calculate "if fix weakest" score
@@ -569,7 +594,7 @@ A.renderScorePrediction = async function(sorted, totalProblems){
       const gain = Math.round(w.errorRate * 12);
       html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;font-size:12px">';
       html += '<span style="min-width:18px;color:var(--blue);font-weight:600">' + (i+1) + '.</span>';
-      html += '<span style="flex:1">攻克「' + A.esc(w.name) + '」</span>';
+      html += '<span style="flex:1">攻克「' + A.esc(w.name) + '」<span style="font-size:10px;color:var(--text3)">（' + A.esc(kpSimpleDesc[w.key] || '') + '）</span></span>';
       html += '<span style="color:var(--green);font-weight:500">+' + gain + '分</span>';
       html += '<button class="primary sm" style="font-size:11px;padding:4px 10px;min-height:28px" onclick="A.genTargeted(&apos;' + w.key + '&apos;)">练 →</button>';
       html += '</div>';
@@ -615,7 +640,7 @@ A.renderAnalyze = async function(){
       '<div style="font-weight:700;font-size:18px;margin-bottom:4px">🔴 最需要攻克：<span style="color:var(--red)">'+A.esc(w.name)+'</span></div>' +
       '<div style="font-size:14px;color:var(--text2)">'+w.total+'道错题 · 错误率'+Math.round(w.errorRate*100)+'% · '+rc+'</div>' +
       (w2?'<div style="font-size:13px;color:var(--text2);margin-top:2px">其次是「'+A.esc(w2.name)+'」——'+w2.total+'道错题，错误率'+Math.round(w2.errorRate*100)+'%</div>':'') +
-      '<button class="primary sm" style="margin-top:8px" onclick="A.nav(&apos;practice&apos;);A.setMode(&apos;solution&apos;)">🎯 针对性攻克 →</button>';
+      '<button class="primary sm" style="margin-top:8px" onclick="A.nav(&apos;practice&apos;);A.setMode(&apos;solution&apos;)">🎯 针对性攻克 →</button><button class="outline sm" style="margin-left:6px;margin-top:8px" onclick="A.redoWrongProblems()">🔄 重做所有错题</button>';
   }
 
   // === SCORE PREDICTION (有效化) ===
@@ -719,6 +744,38 @@ A.renderPatternMode = async function(){
     cone_volume:'这些题都涉及<strong>圆锥体积V=Sh/3</strong>。最容易错的地方永远是"除以3"。',
     frac_div_word:'这些题都在考<strong>已知部分求整体</strong>。规律：已知一个数的几分之几是多少→用除法。',
     pct_discount:'这些题都在考<strong>原价×折扣=现价</strong>。几折就是百分之几十。',
+  };
+  // Simple descriptions for improvement path (学渣友好)
+  const kpSimpleDesc = {
+    composite_shape_area:'带阴影的图形题',
+    cone_volume:'圆锥（沙堆、漏斗）',
+    cyl_volume:'圆柱（水桶、柱子）',
+    cyl_surface:'圆柱表面积（铁皮、围栏）',
+    composite_solid_volume:'组合体（粮仓）',
+    distributive_property:'简便计算、分配律',
+    frac_mul_word:'求一个数的几分之几',
+    frac_div_word:'已知部分求整体',
+    frac_div_eng:'工程问题（合作完成）',
+    prop_scale:'比例尺、地图',
+    prop_direct:'正比例关系',
+    prop_inverse:'反比例关系',
+    pct_discount:'打折、几折',
+    pct_interest:'利息、存款',
+    circle_area:'圆的面积',
+    circle_pi:'圆的周长',
+    circle_ring:'圆环（环形小路）',
+    circle_sector:'扇形',
+    ratio_distribute:'按比例分配',
+    ratio_simplify:'化简比',
+    negative_numbers:'负数（零下、亏损）',
+    frac_mul_rules:'分数乘法计算',
+    frac_div_rule:'分数除法计算',
+    pct_convert:'百分数转化',
+    num_pattern_seq:'找规律填数',
+    pigeonhole_basic:'至少/保证问题',
+    unit_conversion:'单位换算',
+    equation_method:'列方程解题',
+    transform_thinking:'割补、平移、旋转',
   };
   const pat = patDesc[kp] || '这些题属于同一知识点，<strong>解题方法和步骤高度相似</strong>。掌握一道，其他只是换数字。';
   A.$('practice-area').innerHTML =

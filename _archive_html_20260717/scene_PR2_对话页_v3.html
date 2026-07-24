@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对话 · 管理者B · 绩效面谈</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:#F5F3F0;min-height:100vh;-webkit-font-smoothing:antialiased}
+  .app{display:flex;height:100vh}
+
+  /* Chat area */
+  .chat-area{flex:1;display:flex;flex-direction:column;max-width:720px;margin:0 auto;width:100%}
+
+  /* Header — natural state indicator */
+  .chat-header{
+    padding:12px 20px;background:rgba(255,255,255,.75);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(0,0,0,.05);
+    display:flex;align-items:center;gap:14px;
+  }
+  .npc-mini{display:flex;align-items:center;gap:10px}
+  .npc-avatar-sm{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg,#F472B6,#EC4899);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:14px;font-weight:700;flex-shrink:0;
+  }
+  .npc-name-sm{font-size:14px;font-weight:600;color:#1C1917}
+
+  /* Natural state - not a metric, a description */
+  .state-indicator{
+    margin-left:auto;display:flex;align-items:center;gap:6px;
+    padding:5px 12px;border-radius:100px;
+    font-size:11px;font-weight:500;color:#78716C;
+    background:rgba(0,0,0,.03);
+  }
+  .state-dot{width:6px;height:6px;border-radius:50%}
+  .state-dot.positive{background:#16A34A}
+  .state-dot.caution{background:#D97706}
+  .state-dot.tense{background:#DC2626}
+
+  /* Messages */
+  .msg-list{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+  .msg{max-width:82%;animation:fadeIn .3s ease}
+  .msg.npc{align-self:flex-start}
+  .msg.user{align-self:flex-end}
+  .msg-bubble{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6}
+  .msg.npc .msg-bubble{background:#fff;border:1px solid rgba(0,0,0,.05);border-bottom-left-radius:6px}
+  .msg.user .msg-bubble{background:#1C1917;color:#fff;border-bottom-right-radius:6px}
+
+  /* Subtle awareness — like a coach whispering */
+  .whisper{
+    align-self:stretch;margin:6px 0;padding:10px 14px;
+    background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.2);
+    border-radius:12px;font-size:12px;color:#3B82F6;line-height:1.55;
+    display:flex;align-items:flex-start;gap:8px;
+  }
+  .whisper-icon{flex-shrink:0;margin-top:1px}
+
+  /* Scene note */
+  .scene-note{align-self:center;font-size:11px;color:#A8A29E;padding:6px 14px}
+
+  /* Input */
+  .chat-input-area{
+    padding:14px 20px;background:rgba(255,255,255,.75);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-top:1px solid rgba(0,0,0,.05);
+    display:flex;gap:10px;align-items:flex-end;
+  }
+  .chat-input{
+    flex:1;border:1px solid rgba(0,0,0,.08);border-radius:14px;
+    padding:12px 16px;font-size:14px;font-family:inherit;
+    resize:none;outline:none;background:rgba(255,255,255,.5);
+    line-height:1.5;
+  }
+  .chat-input:focus{border-color:#EC4899;box-shadow:0 0 0 3px rgba(236,72,153,.08)}
+  .send-btn{
+    width:40px;height:40px;border-radius:50%;border:none;
+    background:#1C1917;color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:all .2s;
+  }
+  .send-btn:hover{background:#EC4899}
+
+  /* Side panel — minimal, contextual */
+  .side-panel{
+    width:240px;background:rgba(255,255,255,.45);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-left:1px solid rgba(0,0,0,.05);padding:14px;
+    display:flex;flex-direction:column;gap:12px;overflow-y:auto;
+  }
+  .side-card{background:rgba(255,255,255,.5);border-radius:12px;border:1px solid rgba(0,0,0,.04);padding:12px}
+  .side-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A8A29E;margin-bottom:6px}
+  .side-text{font-size:12px;color:#44403C;line-height:1.55}
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:768px){.side-panel{display:none}.msg{max-width:90%}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="chat-area">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="npc-mini">
+      <div class="npc-avatar-sm">林</div>
+      <span class="npc-name-sm">管理者B</span>
+    </div>
+    <div class="state-indicator" id="stateIndicator">
+      <span class="state-dot positive"></span>
+      <span id="stateText">在听你说话</span>
+    </div>
+    <span style="font-size:11px;color:#A8A29E" id="roundLabel">第 1 轮</span>
+  </div>
+
+  <!-- Messages -->
+  <div class="msg-list" id="msgList">
+
+    <div class="scene-note">下午3点 · 小会议室 · 她推门进来了</div>
+
+    <!-- NPC opening -->
+    <div class="msg npc">
+      <div class="msg-bubble">
+        "经理好！我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"
+      </div>
+    </div>
+
+    <!-- Subtle whisper — not a system alert, a coach's nudge -->
+    <div class="whisper">
+      <i data-lucide="eye" class="w-3.5 h-3.5 whisper-icon"></i>
+      <span>她心情不错。她还不知道接下来会发生什么。<strong>你的下一句话会决定她是准备听，还是准备防御。</strong></span>
+    </div>
+
+    <!-- User: good response example -->
+    <div class="msg user">
+      <div class="msg-bubble">
+        管理者B，我先给你结果——这半年的评估是C。我知道这个结果跟你的预期可能有差距。我先说为什么，说完你跟我说说你的想法。
+      </div>
+    </div>
+
+    <!-- NPC response -->
+    <div class="msg npc">
+      <div class="msg-bubble">
+        她脸上的笑僵住了。愣了两秒。<br><br>
+        "...C？"<br><br>
+        眼眶有点红，但忍住了。声音变低了。<br>
+        "经理，我不理解。我真的每天都在加班。张姐上个月还说我方案进步很大——为什么是C？"
+      </div>
+    </div>
+
+    <!-- State update — natural language -->
+    <div class="scene-note" style="color:#D97706;font-style:italic;">她不是愤怒。她是真的困惑——"努力了为什么是C？"</div>
+
+    <!-- Whisper -->
+    <div class="whisper">
+      <i data-lucide="eye" class="w-3.5 h-3.5 whisper-icon"></i>
+      <span>她在等你的解释。<strong>如果你现在给她具体的事例——她会开始理解。如果你只说"还需要加油"——她心里那扇门会开始关。</strong></span>
+    </div>
+
+    <!-- User: good follow-up with facts -->
+    <div class="msg user">
+      <div class="msg-bubble">
+        管理者B，你的努力我看得到。这半年你花在工作上的时间，大家都看在眼里。但C级的依据是交付质量。我说三件事：上个月客户方案改了四版才通过——不是因为要求高，是因为前三版都有数据错误。季度的竞品分析，截止日延了两天，最后是李哥帮你改完的。还有日常的流程文件，三个月里五次返工记录。这些不是我一个人的判断。
+      </div>
+    </div>
+
+    <!-- NPC response — starting to accept -->
+    <div class="msg npc">
+      <div class="msg-bubble">
+        管理者B听着，慢慢低下头。沉默了几秒。<br><br>
+        "...那几次返工我确实记得。我以为改完就好了——没人跟我说这个会影响评估。李哥帮我那次，他说'没事，下次注意'——我以为那不算什么大问题。"<br><br>
+        她抬头看你，眼神不是对抗，是<strong>困惑</strong>。<br>
+        "经理，我真的不是不认真。我就是...有时候做着做着就不知道对不对了。不知道该问谁。"
+      </div>
+    </div>
+
+    <!-- State update -->
+    <div class="scene-note" style="color:#16A34A;font-style:italic;">她从"为什么是C"变成了"我不知道标准是什么"——这是对话的转折点。</div>
+
+    <!-- Whisper -->
+    <div class="whisper">
+      <i data-lucide="eye" class="w-3.5 h-3.5 whisper-icon"></i>
+      <span>她说出了真正的问题——不是不努力，是<strong>不知道标准</strong>。你接下来给她具体的方向，比任何安慰都有用。</span>
+    </div>
+
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <textarea class="chat-input" rows="2" placeholder="输入你的回应..." id="chatInput"></textarea>
+    <button class="send-btn" onclick="sendMsg()"><i data-lucide="send" class="w-4 h-4"></i></button>
+  </div>
+</div>
+
+<!-- Side panel — contextual, no abstract metrics -->
+<div class="side-panel">
+  <div class="side-card">
+    <div class="side-label">管理者B现在</div>
+    <div class="side-text" id="sideState">刚听到C级，情绪在起伏。需要具体的事例来理解为什么——不是安慰。</div>
+  </div>
+  <div class="side-card">
+    <div class="side-label">你要做到的</div>
+    <div class="side-text">告诉她C。用事实解释。接住反应。帮她看到下一步。</div>
+  </div>
+  <div class="side-card">
+    <div class="side-label" style="color:#DC2626;">注意</div>
+    <div class="side-text" style="color:#DC2626;">别说"但是你还不够努力"——她需要的不是否定付出，是调整方向。</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+lucide.createIcons();
+function sendMsg(){
+  const i=document.getElementById('chatInput');const m=i.value.trim();
+  if(!m)return;const l=document.getElementById('msgList');
+  const d=document.createElement('div');d.className='msg user';
+  d.innerHTML='<div class="msg-bubble">'+m+'</div>';
+  l.appendChild(d);i.value='';l.scrollTop=l.scrollHeight;
+  setTimeout(()=>{const r=document.createElement('div');r.className='msg npc';
+  r.innerHTML='<div class="msg-bubble">管理者B看着你，等你继续说下去。</div>';
+  l.appendChild(r);l.scrollTop=l.scrollHeight},1500)
+}
+document.getElementById('chatInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}
+})
+</script>
+</body>
+</html>

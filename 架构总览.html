@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>架构总览 · AI 管理陪练</title>
+<style>
+  :root{--bg:#f5f5f7;--text-primary:#1d1d1f;--text-secondary:#86868b;--text-tertiary:#6e6e73;--accent-blue:#0071e3;--accent-green:#34c759;--accent-orange:#ff9500;--accent-red:#ff3b30;--accent-purple:#af52de;--shadow-sm:0 1px 3px rgba(0,0,0,.04);--shadow-md:0 4px 16px rgba(0,0,0,.06);--radius-sm:12px;--radius-md:16px;--radius-lg:20px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC',sans-serif;background:var(--bg);color:var(--text-primary);-webkit-font-smoothing:antialiased;min-height:100vh}
+  .nav{position:sticky;top:0;z-index:100;background:rgba(245,245,247,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(0,0,0,.06)}
+  .nav-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;height:50px;padding:0 20px;gap:4px}
+  .nav .logo{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-right:16px;display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--text-primary)}
+  .nav .logo .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-blue)}
+  .nav a.nav-link{font-size:13px;color:var(--text-secondary);text-decoration:none;padding:7px 14px;border-radius:100px;transition:all .2s;font-weight:450}
+  .nav a.nav-link:hover{background:rgba(0,0,0,.04);color:var(--text-primary)}
+  .nav a.nav-link.active{color:var(--accent-purple);font-weight:600;background:rgba(175,82,222,.06)}
+  .page{max-width:960px;margin:0 auto;padding:32px 20px 60px}
+  h1{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+  .subtitle{font-size:13px;color:var(--text-secondary);margin-bottom:32px}
+  .layer-card{background:#fff;border-radius:var(--radius-lg);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);margin-bottom:20px}
+  .layer-card h2{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+  .layer-card h2 .badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;color:#fff}
+  .badge.l1{background:var(--accent-blue)}.badge.l2{background:var(--accent-green)}.badge.l3{background:var(--accent-purple)}
+  .layer-card .layer-desc{font-size:12px;color:var(--text-secondary);margin-bottom:16px;line-height:1.5}
+  .page-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+  .page-card{background:rgba(0,0,0,.015);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid rgba(0,0,0,.03);text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;transition:all .2s}
+  .page-card:hover{background:rgba(0,113,227,.04);border-color:rgba(0,113,227,.1)}
+  .page-card .pc-icon{font-size:20px;flex-shrink:0}
+  .page-card .pc-info .pc-name{font-size:13px;font-weight:600}
+  .page-card .pc-info .pc-file{font-size:10px;color:var(--text-tertiary)}
+  .page-card .pc-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;margin-left:auto;flex-shrink:0}
+  .pc-status.ready{background:rgba(52,199,89,.1);color:#248a3d}
+  .pc-status.wip{background:rgba(255,149,0,.1);color:#c46e00}
+  .pc-status.planned{background:rgba(142,142,147,.08);color:#8e8e93}
+  .flow-box{background:rgba(0,0,0,.015);border:1px solid rgba(0,0,0,.04);border-radius:var(--radius-md);padding:20px 24px;font-family:'SF Mono',Menlo,monospace;font-size:11px;line-height:1.8;white-space:pre;overflow-x:auto;color:var(--text-primary);margin-top:16px}
+  @media(max-width:768px){.nav-inner{padding:0 12px}.page{padding:20px 14px 48px}.page-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="陪练首页.html" class="logo"><span class="dot"></span>AI 管理陪练</a>
+    <a href="陪练首页.html" class="nav-link">首页</a>
+    <a href="preview_MTP陪练专区.html" class="nav-link">全部场景</a>
+    <a href="练习记录.html" class="nav-link">记录</a>
+    <a href="管理看板.html" class="nav-link">看板</a>
+    <a href="架构总览.html" class="nav-link active">架构</a>
+    <span style="margin-left:auto;font-size:12px;color:var(--text-secondary)"><a href="陪练首页.html" style="color:var(--accent-blue);text-decoration:none">← 返回首页</a></span>
+  </div>
+</nav>
+
+<div class="page">
+  <h1>🏗️ 陪练平台 · 架构总览</h1>
+  <p class="subtitle">三层页面体系。每个页面都可点击浏览。绿色=已就绪，橙色=进行中，灰色=规划中。</p>
+
+  <!-- Layer 1 -->
+  <div class="layer-card">
+    <h2><span class="badge l1">Layer 1</span> 入口层 · 6 个页面</h2>
+    <p class="layer-desc">用户和管理员进入平台的第一层。共享统一顶部导航栏。所有页面通过导航栏互相连通。</p>
+    <div class="page-grid">
+      <a class="page-card" href="陪练首页.html">
+        <span class="pc-icon">🪞</span>
+        <div class="pc-info"><div class="pc-name">镜像室（首页）</div><div class="pc-file">陪练首页.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <a class="page-card" href="preview_MTP陪练专区.html">
+        <span class="pc-icon">📚</span>
+        <div class="pc-info"><div class="pc-name">全部 12 场景</div><div class="pc-file">preview_MTP陪练专区.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <div class="page-card">
+        <span class="pc-icon">🤖</span>
+        <div class="pc-info"><div class="pc-name">智能生成场景</div><div class="pc-file">/scenario/generate</div></div>
+        <span class="pc-status planned">低代码平台上线</span>
+      </div>
+      <a class="page-card" href="练习记录.html">
+        <span class="pc-icon">📋</span>
+        <div class="pc-info"><div class="pc-name">我的练习记录</div><div class="pc-file">练习记录.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <a class="page-card" href="管理看板.html">
+        <span class="pc-icon">📊</span>
+        <div class="pc-info"><div class="pc-name">管理看板</div><div class="pc-file">管理看板.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <div class="page-card">
+        <span class="pc-icon">🎓</span>
+        <div class="pc-info"><div class="pc-name">MTP 课程中心</div><div class="pc-file">外链至学习平台</div></div>
+        <span class="pc-status planned">外链</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flow diagram -->
+  <div class="layer-card">
+    <h2>🔄 用户在页面间的流转</h2>
+    <div class="flow-box">┌─────────────────────────────────────────────────────────┐
+│  用户打开链接 → <span style="color:var(--accent-blue)">管理镜像室</span>（入口动画 → 首页）            │
+│                                                         │
+│  ┌──────────────────┐                                   │
+│  │ 选择场景          │                                   │
+│  │ ├ TG-001 NPC-周 ✅  │──→ scene_TG001_准备页.html       │
+│  │ ├ PR-002 管理者B ✅  │──→ scene_PR2_沉浸式准备页_v2.html│
+│  │ ├ TG-002 NPC-张 🔜  │──→ 预览弹窗（场景背景故事）       │
+│  │ └ TG-003 李经理🔜│──→ 预览弹窗（场景背景故事）       │
+│  └──────────────────┘                                   │
+│           │                                              │
+│           ↓                                              │
+│  ┌──────────────────┐    ┌──────────────────┐           │
+│  │ 对话引擎页        │──→ │ 反馈页            │           │
+│  │ AI NPC + 陷阱检测 │    │ 雷达图 + 行为分析  │           │
+│  └──────────────────┘    └────────┬─────────┘           │
+│                                   │                      │
+│                    ┌──────────────┼──────────────┐       │
+│                    ↓              ↓              ↓       │
+│              <span style="color:var(--accent-green)">练习记录</span>      <span style="color:var(--accent-orange)">管理看板</span>      <span style="color:var(--accent-purple)">课程中心</span>     │
+│             （看自己的）    （管理员看团队）  （连接学习）   │
+└─────────────────────────────────────────────────────────┘</div>
+  </div>
+
+  <!-- Layer 2 -->
+  <div class="layer-card">
+    <h2><span class="badge l2">Layer 2</span> 练习层 · 场景三件套</h2>
+    <p class="layer-desc">每个场景的完整练习链路。准备页（场景设定+自评）→ 对话引擎页（AI NPC+陷阱检测+语音输入）→ 反馈页（雷达图+行为分析+行动承诺）。</p>
+    <div class="page-grid">
+      <a class="page-card" href="scene_TG001_准备页.html">
+        <span class="pc-icon">🎯</span><div class="pc-info"><div class="pc-name">TG-001 准备页</div><div class="pc-file">scene_TG001_准备页.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <a class="page-card" href="scene_TG001_引擎页.html">
+        <span class="pc-icon">💬</span><div class="pc-info"><div class="pc-name">TG-001 对话引擎</div><div class="pc-file">scene_TG001_引擎页.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <a class="page-card" href="scene_TG001_反馈页.html">
+        <span class="pc-icon">📊</span><div class="pc-info"><div class="pc-name">TG-001 反馈页</div><div class="pc-file">scene_TG001_反馈页.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <a class="page-card" href="scene_PR2_沉浸式准备页_v2.html">
+        <span class="pc-icon">🎯</span><div class="pc-info"><div class="pc-name">PR-002 准备页</div><div class="pc-file">scene_PR2_沉浸式准备页_v2.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <a class="page-card" href="scene_PR2_引擎驱动版_v7.html">
+        <span class="pc-icon">💬</span><div class="pc-info"><div class="pc-name">PR-002 对话引擎</div><div class="pc-file">scene_PR2_引擎驱动版_v7.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+      <a class="page-card" href="scene_PR2_反馈页_v22.html">
+        <span class="pc-icon">📊</span><div class="pc-info"><div class="pc-name">PR-002 反馈页</div><div class="pc-file">scene_PR2_反馈页_v22.html</div></div>
+        <span class="pc-status ready">已就绪</span>
+      </a>
+    </div>
+    <p style="font-size:11px;color:var(--text-tertiary);margin-top:12px">TG-002 和 TG-003 有 JSON 场景卡数据，对话引擎页待建设。</p>
+  </div>
+
+  <!-- Layer 3 -->
+  <div class="layer-card">
+    <h2><span class="badge l3">Layer 3</span> 深度层 · 数据积累后建设</h2>
+    <p class="layer-desc">当练习数据积累到 50+ 人次后建设的深度功能。对标 BetterUp 跨场景行为画像 + 北森组织级洞察。</p>
+    <div class="page-grid">
+      <div class="page-card"><span class="pc-icon">🧬</span><div class="pc-info"><div class="pc-name">跨场景行为画像</div><div class="pc-file">同一学员在≥2场景的模式识别</div></div><span class="pc-status planned">规划中</span></div>
+      <div class="page-card"><span class="pc-icon">💡</span><div class="pc-info"><div class="pc-name">绩优话术参考库</div><div class="pc-file">golden_path_match≥0.8的文本</div></div><span class="pc-status planned">规划中</span></div>
+      <div class="page-card"><span class="pc-icon">🏋️</span><div class="pc-info"><div class="pc-name">微练习系统</div><div class="pc-file">5分钟·不离开页面·可验证</div></div><span class="pc-status planned">规划中</span></div>
+      <div class="page-card"><span class="pc-icon">📈</span><div class="pc-info"><div class="pc-name">NPS 追踪面板</div><div class="pc-file">每次反馈后单题 NPS</div></div><span class="pc-status planned">规划中</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

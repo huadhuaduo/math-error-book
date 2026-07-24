@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>准备 · 陈睿 · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(160deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.16}
+  .amb-1{width:360px;height:360px;background:#DBEAFE;top:-90px;right:-50px}
+  .amb-2{width:260px;height:260px;background:#DCFCE7;bottom:-50px;left:-30px}
+  .wrapper{position:relative;z-index:10;max-width:800px;width:92vw;display:flex;flex-direction:column;gap:18px}
+  .title-area{padding:0 4px}
+  .tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.04em;margin-bottom:8px}
+  h1{font-size:22px;font-weight:700;color:#1C1917;line-height:1.25;letter-spacing:-.01em}
+  .subtitle{font-size:13px;color:#A8A29E;margin-top:4px}
+  .cards-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:24px 22px;box-shadow:0 4px 16px rgba(0,0,0,.03)}
+  .person-top{display:flex;align-items:center;gap:18px;margin-bottom:14px}
+  .photo{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#93C5FD,#3B82F6);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+  .photo-placeholder{font-size:22px;color:#fff;font-weight:600}
+  .person-name{font-size:16px;font-weight:700;color:#1C1917}
+  .person-role{font-size:12px;color:#78716C}
+  .person-fact{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;margin-top:4px}
+  .card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#A8A29E;margin-bottom:8px}
+  .person-bio{font-size:12px;color:#44403C;line-height:1.6}
+  .person-bio strong{color:#1C1917}
+  .goal-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0}
+  .goal-item+.goal-item{border-top:1px solid rgba(0,0,0,.04)}
+  .goal-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+  .goal-text{font-size:13px;color:#44403C;line-height:1.55}
+  .goal-text strong{color:#1C1917}
+  .note{font-size:11px;color:#A8A29E;line-height:1.5;padding:4px 0}
+  .actions{display:flex;align-items:center;gap:12px;padding:0 4px}
+  .btn-start{display:flex;align-items:center;justify-content:center;gap:6px;padding:13px 28px;border:none;border-radius:14px;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.08);transition:all .25s ease}
+  .btn-start:hover{background:#000;transform:translateY(-1px)}
+  .lv-row{display:flex;gap:3px;margin-left:auto}
+  .lv-btn{padding:5px 12px;border-radius:100px;border:1px solid rgba(0,0,0,.06);background:transparent;cursor:pointer;font-size:11px;color:#A8A29E;font-family:inherit;transition:all .2s}
+  .lv-btn.active{background:#1C1917;color:#fff;border-color:#1C1917}
+  @media(max-width:500px){.cards-row{grid-template-columns:1fr}.card{padding:18px 14px}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="wrapper">
+  <div class="title-area">
+    <span class="tag" style="background:#DBEAFE;color:#1D4ED8">绩效面谈 · A级员工</span>
+    <h1>他做得很好。<br>但他在想——下一步在哪。</h1>
+    <p class="subtitle">两个月前他说"发展空间不明确"——你说"帮你问问"。两个月过去了。</p>
+  </div>
+  <div class="cards-row">
+    <div class="card">
+      <div class="card-label">你即将面谈的人</div>
+      <div class="person-top">
+        <div class="photo"><span class="photo-placeholder">陈</span></div>
+        <div>
+          <div class="person-name">陈睿</div>
+          <div class="person-role">投资经理 · 31岁 · 入职3年</div>
+          <span class="person-fact" style="background:#DBEAFE;color:#1D4ED8">今年3个重点项目全部超预期</span>
+        </div>
+      </div>
+      <p class="person-bio">专业扎实，理性克制。今年三个项目投资回报超预期，领导评价很高。两个月前跟你提过"发展空间不明确"和"薪酬一般"——你说"我帮你问问"，然后两个月没有答复。<strong>现在有几家同业公司在接触他，他还没决定走不走。</strong></p>
+      <p class="person-bio" style="margin-top:6px">他对你是基本信任的——但你两次没回应他的发展诉求，这个信任在消耗。他今天来面谈，想听的不是"你很优秀"——<strong>是一个信号。</strong></p>
+      <div style="background:rgba(0,0,0,.02);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:11px;color:#44403C;line-height:1.55"><div style="font-weight:700;color:#1C1917;margin-bottom:6px;font-size:11px">📊 你手里有的绩效数据</div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>上半年完成重点项目</span><strong style="color:#16A34A">3 个 · 全部超预期</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>投资回报率</span><strong style="color:#16A34A">超目标 22%</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>领导评价</span><strong style="color:#16A34A">高</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0;margin-top:4px;border-top:1px solid rgba(0,0,0,.05);padding-top:4px"><span>上次提发展诉求</span><strong style="color:#DC2626">2 个月前 · 至今无反馈</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>外部接触（HR侧面）</span><strong style="color:#D97706">至少 2 家同业公司</strong></div><div style="font-size:10px;color:#A8A29E;margin-top:4px">他的业绩无可挑剔——问题不在"做了什么"，在"往哪走"。</div></div>
+    </div>
+    <div class="card">
+      <div class="card-label">这次面谈，你要做到的</div>
+      <div class="goal-item">
+        <div class="goal-num" style="background:#ECFDF5;color:#065F46">1</div>
+        <div class="goal-text"><strong>用具体数据肯定他的业绩。</strong>说"三个项目全部超预期，投资回报率XX%"——不是"你做得很好"。</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num" style="background:#EFF6FF;color:#1D4ED8">2</div>
+        <div class="goal-text"><strong>正面回应发展空间问题。</strong>不给空头承诺，但给具体时间线和下一步动作。不是"公司对你很认可"——是"下季度我们会启动XX，你可以参与XX"。</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num" style="background:#FFFBEB;color:#B45309">3</div>
+        <div class="goal-text"><strong>了解外面机会的真实情况。</strong>不质问"你是不是在看机会"——用关心的方式问"你对未来的方向有没有什么想法"。</div>
+      </div>
+      <div style="background:rgba(254,243,199,.2);border:1px solid rgba(251,191,36,.1);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:#44403C;line-height:1.5"><strong style="color:#92400E">他可能的反应</strong><br>表情平静、陈述理性、不会情绪化。<strong>但平静≠不在乎。</strong>他今晚可能会打开那些公司的邮件。</div>
+      <div style="background:rgba(254,226,226,.25);border:1px solid rgba(239,68,68,.1);border-radius:10px;padding:10px 12px;margin-top:6px;font-size:11px;color:#44403C;line-height:1.5"><strong style="color:#DC2626">⚠️ 最容易踩的坑</strong><br>① 觉得"业绩好没什么好谈的"→走过场，浪费了一次发展对话<br>② 用"公司对你很认可"回避发展问题→他听到的是"没有规划"<br>③ 给模糊承诺（"我们会考虑"）→比不给承诺更消耗信任</div>
+      <div style="background:rgba(239,246,255,.25);border:1px solid rgba(147,197,253,.1);border-radius:10px;padding:10px 12px;margin-top:6px;font-size:11px;color:#44403C;line-height:1.5"><strong style="color:#3B82F6">⏱️ 面谈结构建议（30分钟）</strong><br>前10分钟：肯定业绩+给出评估→中间10分钟：讨论发展方向+了解外面机会→最后10分钟：形成发展动作+约定下一步</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn-start" onclick="start()">开始面谈</button>
+    <div class="lv-row" id="lvGroup">
+      <button class="lv-btn" data-lv="A" onclick="selLv('A')">新手</button>
+      <button class="lv-btn active" data-lv="B" onclick="selLv('B')">中等</button>
+      <button class="lv-btn" data-lv="C" onclick="selLv('C')">高手</button>
+    </div>
+  </div>
+</div>
+<script>let cl='B';function selLv(l){cl=l;document.querySelectorAll('#lvGroup .lv-btn').forEach(b=>b.classList.toggle('active',b.dataset.lv===l))}function start(){console.log('进入面谈：陈睿')}</script>
+</body>
+</html>

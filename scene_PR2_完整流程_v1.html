@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>绩效面谈 · 管理者B · 完整陪练流程</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;
+    background:linear-gradient(175deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);
+    min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  .amb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.2}
+  .amb-1{width:420px;height:420px;background:#FEE2E2;top:-120px;left:-70px}
+  .amb-2{width:320px;height:320px;background:#FEF3C7;bottom:-80px;right:-50px}
+
+  /* Phase containers — only one visible at a time */
+  .phase{display:none;position:relative;z-index:10}
+  .phase.active{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+
+  /* ====== PHASE 1: PREPARATION ====== */
+  .prep-card{
+    max-width:480px;width:100%;
+    background:rgba(255,255,255,.5);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    border:1px solid rgba(255,255,255,.55);border-radius:24px;padding:40px 32px;
+    box-shadow:0 8px 40px rgba(0,0,0,.05);animation:fadeUp .5s ease;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .atmo{display:flex;align-items:center;gap:12px;font-size:12px;color:#A8A29E;margin-bottom:24px}
+  .hero-fact{font-size:13px;color:#DC2626;font-weight:600;margin-bottom:8px;letter-spacing:.02em}
+  .hero-title{font-size:22px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:10px}
+  .divider{height:1px;background:linear-gradient(to right,transparent,rgba(0,0,0,.08),transparent);margin:22px 0}
+  .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A8A29E;margin-bottom:8px}
+  .body-text{font-size:14px;color:#44403C;line-height:1.7}
+  .opening-box{background:rgba(254,243,199,.3);border:1px solid rgba(251,191,36,.15);border-radius:16px;padding:18px 20px;margin-top:8px}
+  .opening-quote{font-size:14px;color:#1C1917;line-height:1.6;font-style:italic}
+  .goal-line{font-size:13px;color:#44403C;line-height:1.6;margin-top:6px;padding-left:12px;border-left:2px solid rgba(16,185,129,.3)}
+  .btn-primary{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;padding:16px;margin-top:28px;border:none;border-radius:16px;
+    background:#1C1917;color:#fff;font-size:15px;font-weight:600;
+    cursor:pointer;font-family:inherit;
+    box-shadow:0 4px 20px rgba(0,0,0,.1);transition:all .25s ease;
+  }
+  .btn-primary:hover{background:#000;transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.16)}
+  .btn-primary:active{transform:scale(.97)}
+
+  /* ====== PHASE 2: TRANSITION (THE DOOR) ====== */
+  .door-overlay{
+    position:fixed;inset:0;z-index:100;
+    background:linear-gradient(175deg,rgba(28,25,23,.97),rgba(28,25,23,.94));
+    display:flex;align-items:center;justify-content:center;
+    animation:fadeIn .6s ease;
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .door-content{text-align:center;max-width:400px;padding:40px}
+  .door-icon{margin-bottom:24px;opacity:.3}
+  .door-line{font-size:14px;color:rgba(255,255,255,.5);line-height:2;margin-bottom:8px}
+  .door-highlight{font-size:18px;color:rgba(255,255,255,.85);font-weight:500;line-height:1.6;margin:20px 0}
+  .door-action{font-size:13px;color:rgba(255,255,255,.35);margin-top:24px;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:.7}}
+
+  /* ====== PHASE 3: DIALOGUE ====== */
+  .dialogue-app{display:flex;width:100%;max-width:880px;height:85vh;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.08)}
+  .chat-area{flex:1;display:flex;flex-direction:column;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+  .chat-header{padding:10px 18px;background:rgba(255,255,255,.5);border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:center;gap:12px}
+  .npc-mini{display:flex;align-items:center;gap:8px}
+  .npc-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#F472B6,#EC4899);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+  .state-ind{display:flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:10px;color:#78716C;background:rgba(0,0,0,.03);margin-left:auto}
+  .state-dot{width:5px;height:5px;border-radius:50%}
+  .msg-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:82%;animation:msgIn .3s ease}
+  @keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .msg.npc{align-self:flex-start}
+  .msg.user{align-self:flex-end}
+  .msg-bubble{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55}
+  .msg.npc .msg-bubble{background:#fff;border:1px solid rgba(0,0,0,.04);border-bottom-left-radius:4px}
+  .msg.user .msg-bubble{background:#1C1917;color:#fff;border-bottom-right-radius:4px}
+  .whisper{align-self:stretch;margin:4px 0;padding:8px 12px;background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.15);border-radius:10px;font-size:11px;color:#3B82F6;line-height:1.5;display:flex;align-items:flex-start;gap:6px}
+  .scene-note{align-self:center;font-size:10px;color:#A8A29E;padding:4px 12px}
+  .chat-input-area{padding:12px 16px;background:rgba(255,255,255,.5);border-top:1px solid rgba(0,0,0,.04);display:flex;gap:8px}
+  .chat-input{flex:1;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:10px 14px;font-size:13px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.5);line-height:1.5}
+  .chat-input:focus{border-color:#EC4899;box-shadow:0 0 0 3px rgba(236,72,153,.06)}
+  .send-btn{width:36px;height:36px;border-radius:50%;border:none;background:#1C1917;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .send-btn:hover{background:#EC4899}
+  .side-panel{width:200px;background:rgba(255,255,255,.35);border-left:1px solid rgba(0,0,0,.04);padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+  .side-card{background:rgba(255,255,255,.5);border-radius:10px;border:1px solid rgba(0,0,0,.03);padding:10px}
+  .side-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A8A29E;margin-bottom:4px}
+  .side-text{font-size:11px;color:#44403C;line-height:1.5}
+
+  /* ====== PHASE 4: FEEDBACK ====== */
+  .fb-container{max-width:560px;width:100%;padding:24px 0 60px}
+  .fb-card{background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.55);border-radius:20px;padding:24px 22px;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,.03);animation:fadeUp .5s ease}
+  .fb-reveal{font-size:14px;color:#44403C;line-height:1.7}
+  .fb-insight{background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.2);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:13px;color:#3B82F6;line-height:1.55}
+  .fb-fork{background:rgba(254,243,199,.3);border:1px solid rgba(251,191,36,.15);border-radius:12px;padding:16px 18px;margin:8px 0}
+  .fb-scale{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:6px}
+  .fb-path{padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.55;margin:6px 0}
+  .fb-actual{background:rgba(254,226,226,.4);border:1px solid rgba(239,68,68,.08)}
+  .fb-alt{background:rgba(209,250,229,.4);border:1px solid rgba(16,185,129,.08)}
+  .fb-pattern{background:rgba(243,232,255,.4);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:16px 18px;margin:8px 0;font-size:13px;color:#7C3AED;line-height:1.6}
+  .fb-scores{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .fb-score-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,.02);border-radius:8px;font-size:11px}
+  .fb-bar{width:50px;height:3px;border-radius:2px;background:#E5E7EB;overflow:hidden;margin-left:6px}
+  .fb-fill{height:100%;border-radius:2px}
+
+  /* Phase nav (debug) */
+  .phase-indicator{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:200;opacity:.5}
+  .phase-dot{width:6px;height:6px;border-radius:50%;background:#A8A29E}
+  .phase-dot.current{background:#1C1917}
+
+  @media(max-width:640px){
+    .side-panel{display:none}
+    .dialogue-app{height:90vh;border-radius:0}
+    .msg{max-width:90%}
+    .fb-scores{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+
+<!-- ================================================================ -->
+<!-- PHASE 1: PREPARATION -->
+<!-- ================================================================ -->
+<div class="phase active" id="phase1">
+  <div class="prep-card">
+    <div class="atmo"><span>下午 3:00</span><span>·</span><span>小会议室</span><span>·</span><span>半年度面谈</span></div>
+    <div class="hero-fact">绩效评估结果：C</div>
+    <h1 class="hero-title">她以为自己是B。<br>数据说的是C。</h1>
+    <div class="divider"></div>
+    <div class="sec-label">你即将面谈的人</div>
+    <p class="body-text">管理者B，25岁，你带了两年的管培生。她对工作很上心，对你一直比较认可。同事关系处得不错——张姐常夸她进步大，李哥帮她改过几次方案。这些善意让她相信自己做的不错。她不知道的是——返工率全组最高，细节错误让同事补位多次。同事们碍于情面，没人当面说过。</p>
+    <div class="divider"></div>
+    <div class="sec-label">这次面谈最难的地方</div>
+    <p class="body-text" style="font-size:13px;">她的<strong>努力是真的</strong>——加班到九点是常态。数据<strong>也是真的</strong>——五次返工记录摆在那里。这两件事同时存在。你的任务是让她看到第二件事，同时不让她觉得你否定了第一件。</p>
+    <div class="divider"></div>
+    <div class="sec-label">她推门进来</div>
+    <div class="opening-box">
+      <p class="opening-quote">"经理好！我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"</p>
+      <p style="font-size:11px;color:#A8A29E;margin-top:6px;">她脸上带着笑。没有带笔记本。她以为这是一场确认，不是一场挑战。</p>
+    </div>
+    <div style="margin-top:20px;"><div class="sec-label">你要做的</div><p class="goal-line">告诉她C级的结果。用事实解释为什么。接住她的反应。帮她看到下一步。</p></div>
+    <button class="btn-primary" onclick="goPhase(2)"><i data-lucide="door-open" class="w-4 h-4"></i> 准备好了，推门进去</button>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PHASE 2: TRANSITION — THE DOOR -->
+<!-- ================================================================ -->
+<div class="phase" id="phase2">
+  <div class="door-overlay" id="doorOverlay" onclick="goPhase(3)">
+    <div class="door-content">
+      <div class="door-icon"><i data-lucide="door-open" style="width:48px;height:48px;color:rgba(255,255,255,.2)"></i></div>
+      <p class="door-line">你站在会议室门口。</p>
+      <p class="door-line">手放在门把手上。</p>
+      <p class="door-line">她不知道接下来会发生什么。</p>
+      <p class="door-highlight">你知道了。<br>记住一件事：<br><strong style="color:#fff;">别让她猜。</strong></p>
+      <p class="door-line" style="font-size:12px;margin-top:16px;">结论放在前30秒。事实跟在后面。</p>
+      <p class="door-action">点击任意位置，推门进去</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PHASE 3: DIALOGUE -->
+<!-- ================================================================ -->
+<div class="phase" id="phase3">
+  <div class="dialogue-app">
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="npc-mini"><div class="npc-av">林</div><span style="font-size:13px;font-weight:600;color:#1C1917">管理者B</span></div>
+        <div class="state-ind" id="stateInd"><span class="state-dot" style="background:#16A34A"></span><span id="stateTxt">在听你说话</span></div>
+        <span style="font-size:10px;color:#A8A29E" id="rnd">第 1 轮</span>
+      </div>
+      <div class="msg-list" id="msgList">
+        <div class="scene-note">下午3点 · 小会议室 · 你推门进去</div>
+        <div class="msg npc"><div class="msg-bubble">"经理好！我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"</div></div>
+        <div class="whisper"><i data-lucide="eye" class="w-3 h-3" style="flex-shrink:0;margin-top:2px"></i><span>她还不知道。你的下一句话会决定她是准备听，还是准备防御。<strong>别让她猜。</strong></span></div>
+      </div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" rows="2" placeholder="输入你的回应..." id="chatInput"></textarea>
+        <button class="send-btn" onclick="sendMsg()"><i data-lucide="send" class="w-3.5 h-3.5"></i></button>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="side-card"><div class="side-label">管理者B现在</div><div class="side-text" id="sideState">心情不错。她还不知道是C。她在等你开口。</div></div>
+      <div class="side-card"><div class="side-label">记住</div><div class="side-text">告诉她C。用事实解释。接住反应。帮她看到下一步。</div></div>
+      <div class="side-card"><div class="side-label" style="color:#DC2626">注意</div><div class="side-text" style="color:#DC2626">别说"但是你还不够努力"——否定她的付出是最大的风险。</div></div>
+      <div style="margin-top:auto;text-align:center;"><button onclick="goPhase(4)" style="padding:8px 16px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:rgba(0,0,0,.03);font-size:11px;color:#78716C;cursor:pointer;font-family:inherit">结束对话，查看反馈 →</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- PHASE 4: FEEDBACK -->
+<!-- ================================================================ -->
+<div class="phase" id="phase4">
+  <div class="fb-container">
+    <div style="text-align:center;margin-bottom:24px">
+      <p style="font-size:12px;color:#A8A29E">对话结束 · 现在回头看看发生了什么</p>
+    </div>
+
+    <!-- Reveal -->
+    <div class="fb-card">
+      <div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">对话结束后，你可能想知道的</div>
+      <p class="fb-reveal">推门进来的时候，管理者B对你是有信任的。两年的相处，你平时对她不算差——她走进来时心情是好的，甚至笑着问了你等级。</p>
+      <p class="fb-reveal" style="margin-top:8px">你给她C级的那一刻，信任掉了一点——冲击本身就会消耗信任。但你紧接着说"我先说为什么""第一，五次返工记录"——信任立刻回升了。<strong>她怕的不是C。她怕的是"不知道为什么是C"。</strong>你给了她为什么，她就从"我不理解"变成了"那几次返工我确实记得"。</p>
+      <div class="fb-insight"><strong>你做得对的一件事：</strong>结论和事实之间的间隔很短。她没有在猜测中消耗自己——冲击来了，解释紧接着就到了。</div>
+    </div>
+
+    <!-- A moment missed -->
+    <div class="fb-card">
+      <div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">你可能没注意到的一个时刻</div>
+      <p class="fb-reveal">她在对话中说了一句话：<strong>"我真的不是不认真——我就是有时候做着做着就不知道对不对了。不知道该问谁。"</strong></p>
+      <p class="fb-reveal" style="margin-top:8px">这句话是根因。她不是不会做，不是不想做——是<strong>不知道标准</strong>。她前面两年没人告诉她"什么算做好"。李哥说"没事"、张姐说"进步大"——但没有一个人说过："这个方案不需要别人改才叫合格。"</p>
+    </div>
+
+    <!-- Fork -->
+    <div class="fb-card">
+      <div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">一个当时可以走、但你没走的路</div>
+      <p class="fb-reveal" style="font-size:13px;margin-bottom:8px">在你说完三个具体事例之后，她说了"那几次返工我确实记得"。这是一个岔路口。</p>
+      <div class="fb-fork">
+        <div class="fb-scale">你走的路</div>
+        <div class="fb-path fb-actual"><strong>你选择了继续提问：</strong>"你觉得可以从哪个方向开始改进？"<br><span style="font-size:11px;color:#78716C">→ 她在思考。但她在等的不是一个问题——是一个她能抓住的东西。</span></div>
+        <div class="fb-scale" style="margin-top:8px">旁边那条路</div>
+        <div class="fb-path fb-alt"><strong>如果你说：</strong>"从下个月开始，你每次做方案之前花五分钟跟我对一下框架。你告诉我方向对不对——我告诉你对不对。这个习惯变了，你可能再也不用改四版方案。"<br><span style="font-size:11px;color:#78716C">→ 这不是给她建议——是给她一根拐杖。她说了"不知道对不对"——你在给她一个"对"的确认机制。</span></div>
+      </div>
+    </div>
+
+    <!-- Pattern -->
+    <div class="fb-card">
+      <div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">你身上可能有一个模式</div>
+      <div class="fb-pattern">她每次表达困惑的时候，你都给了她更多的解释——更多的事例、更多的数据。这本身没有问题。但到后面，她其实已经理解了。她需要的不再是"为什么是C"，而是<strong>"那我现在该怎么办"</strong>。你多解释的那几轮——不是错了，是<strong>晚了</strong>。她已经准备好往前走了，你还在帮她理解过去。<br><br>这个模式可能不只是在这个场景里出现——你在其他需要传递不好消息的场合，会不会也习惯"多解释几轮"才转入行动？</div>
+    </div>
+
+    <!-- Scores -->
+    <div class="fb-card">
+      <div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">这次面谈</div>
+      <div class="fb-scores">
+        <div class="fb-score-item"><span>用事实说话</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">68</span><div class="fb-bar"><div class="fb-fill" style="width:68%;background:#3B82F6"></div></div></div></div>
+        <div class="fb-score-item"><span>接住她的情绪</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">55</span><div class="fb-bar"><div class="fb-fill" style="width:55%;background:#10B981"></div></div></div></div>
+        <div class="fb-score-item"><span>帮她看到下一步</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">42</span><div class="fb-bar"><div class="fb-fill" style="width:42%;background:#F59E0B"></div></div></div></div>
+        <div class="fb-score-item"><span>形成具体的约定</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">40</span><div class="fb-bar"><div class="fb-fill" style="width:40%;background:#8B5CF6"></div></div></div></div>
+      </div>
+      <p style="font-size:12px;color:#78716C;margin-top:8px;line-height:1.5">你把"为什么是C"讲得很清楚。接下来值得练的是——当她开始理解之后，更快地把对话从"过去为什么"转向"接下来怎么办"。</p>
+    </div>
+
+    <!-- ONE thing -->
+    <div class="fb-card" style="border:1.5px solid rgba(16,185,129,.2)">
+      <div class="sec-label" style="font-size:10px;font-weight:700;color:#16A34A;margin-bottom:8px">下次只练一件事</div>
+      <p class="fb-reveal" style="font-size:15px;font-weight:500;color:#1C1917">当她开始接受事实了——像"那几次返工我确实记得"——<strong>不再继续解释。问一句："那你觉得，从哪个地方开始改，对你来说最顺手？"</strong></p>
+      <p class="fb-reveal" style="font-size:12px;color:#78716C;margin-top:6px">把方向盘递给她。她需要的不是更多的理解——是一个她能抓住的东西。</p>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button onclick="goPhase(1)" style="padding:12px 22px;border-radius:12px;border:none;background:#1C1917;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">带着这个提醒，再练一次</button>
+        <button onclick="goPhase(1)" style="padding:12px 22px;border-radius:12px;border:none;background:rgba(0,0,0,.04);color:#44403C;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">换个场景</button>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:#D6D3D1;margin-top:20px">建议 3-7 天内再练一次。这个窗口里，你的大脑还在消化这次体验。</p>
+  </div>
+</div>
+
+<!-- Phase indicators -->
+<div class="phase-indicator" id="phaseDots">
+  <div class="phase-dot current" id="dot1"></div>
+  <div class="phase-dot" id="dot2"></div>
+  <div class="phase-dot" id="dot3"></div>
+  <div class="phase-dot" id="dot4"></div>
+</div>
+
+<script>
+lucide.createIcons();
+
+let currentPhase = 1;
+function goPhase(n) {
+  document.getElementById('phase'+currentPhase).classList.remove('active');
+  document.getElementById('phase'+n).classList.add('active');
+  document.getElementById('dot'+currentPhase).classList.remove('current');
+  document.getElementById('dot'+n).classList.add('current');
+  currentPhase = n;
+  if (n === 4) {
+    document.getElementById('phase4').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+// Dialogue
+let roundNum = 1;
+const states = [
+  '在听你说话', '眼眶有点红', '在消化你说的话', '开始理解原因了',
+  '愿意聊真正的问题了', '需要具体的方向', '主动提改进想法'
+];
+const whispers = [
+  null,
+  '她在等你的解释。如果给具体事例→理解。如果只说"加油"→关门。',
+  '她说出了根因——"不知道标准"。接下来给她方向，比任何安慰都有用。',
+  '她已经接受了C级。现在是帮她从"知道为什么"走到"知道怎么办"的时候。'
+];
+
+function sendMsg() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const list = document.getElementById('msgList');
+  const d = document.createElement('div');
+  d.className = 'msg user';
+  const b = document.createElement('div');
+  b.className = 'msg-bubble';
+  b.textContent = msg;
+  d.appendChild(b);
+  list.appendChild(d);
+  input.value = '';
+  roundNum++;
+
+  // Update round
+  document.getElementById('rnd').textContent = '第 ' + roundNum + ' 轮';
+
+  // Update state randomly for demo
+  const si = Math.min(roundNum - 1, states.length - 1);
+  document.getElementById('stateTxt').textContent = states[si];
+  const dotColors = ['#16A34A','#D97706','#D97706','#16A34A','#16A34A','#16A34A','#16A34A'];
+  document.getElementById('stateInd').querySelector('.state-dot').style.background = dotColors[si];
+
+  // Update side state
+  const sideStates = [
+    '她在等你的回应。', '情绪在起伏。需要你接住。', '在消化。给她一点时间。',
+    '开始理解原因了。继续。', '她在暴露真正的问题——抓住。', '准备好讨论下一步了。',
+    '在主动想方案了。'
+  ];
+  document.getElementById('sideState').textContent = sideStates[Math.min(si, sideStates.length - 1)];
+
+  // Add whisper if applicable
+  if (whispers[Math.min(si, whispers.length - 1)]) {
+    const w = document.createElement('div');
+    w.className = 'whisper';
+    w.innerHTML = '<i data-lucide="eye" class="w-3 h-3" style="flex-shrink:0;margin-top:2px"></i><span>' + whispers[Math.min(si, whispers.length - 1)] + '</span>';
+    list.appendChild(w);
+    lucide.createIcons();
+  }
+
+  // NPC response (simplified demo)
+  setTimeout(() => {
+    const r = document.createElement('div');
+    r.className = 'msg npc';
+    const responses = [
+      '她沉默了一下，眼眶有点红。 "...C？经理，我不理解。我真的每天都在加班。"',
+      '"那几次返工我确实记得。但我以为改完就好了——没人跟我说这个会影响评估。李哥说"没事，下次注意"。"',
+      '"其实我不是不认真。我就是...有时候做着做着就不知道对不对了。不知道该问谁。"',
+      '"那以后我做方案之前能不能先跟你对一下框架？五分钟就行。不用多——就告诉我方向对不对。"',
+      '"谢谢你没有只说"下次努力"——你告诉我具体怎么做了。这个对我很重要。"'
+    ];
+    const ri = Math.min(si - 1, responses.length - 1);
+    r.innerHTML = '<div class="msg-bubble">' + (responses[ri] || '她看着你，等你继续说。') + '</div>';
+    list.appendChild(r);
+    list.scrollTop = list.scrollHeight;
+  }, 1200);
+
+  list.scrollTop = list.scrollHeight;
+}
+
+// Enter to send
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+
+// Space to enter door
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target === document.body && currentPhase === 2) {
+    e.preventDefault(); goPhase(3);
+  }
+});
+</script>
+</body>
+</html>

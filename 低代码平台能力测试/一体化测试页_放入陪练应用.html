@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>低代码平台能力测试 · 一体化测试页</title>
+<style>
+:root { --bg:#F8F6F2; --card:#fff; --border:#e8e4dc; --text:#2a2a2a; --muted:#8a8578; --accent:#1a2a3a; --success:#2d8a56; --danger:#c0443c; --warn:#d97706; --radius:14px; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); padding:32px 20px; max-width:680px; margin:0 auto; line-height:1.65; }
+h1 { font-size:22px; letter-spacing:-0.3px; margin-bottom:4px; }
+.subtitle { color:var(--muted); font-size:13px; margin-bottom:20px; }
+.banner { padding:14px 18px; border-radius:var(--radius); font-size:14px; font-weight:600; margin-bottom:20px; }
+.banner.ai { background:#edf7f0; color:#1a5c36; border:1px solid #a3d9b1; }
+.banner.local { background:#fef2f2; color:#7f1d1d; border:1px solid #f5c6c6; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
+.card h3 { font-size:16px; margin-bottom:4px; }
+.card .desc { font-size:13px; color:var(--muted); margin-bottom:14px; }
+.btn { padding:10px 24px; border:none; border-radius:10px; font-size:14px; cursor:pointer; font-family:inherit; font-weight:600; background:var(--accent); color:#fff; transition:opacity .15s; }
+.btn:hover { opacity:.85; }
+.btn:disabled { opacity:.4; cursor:not-allowed; }
+.btn.secondary { background:#eceae4; color:var(--text); }
+.status { display:inline-block; margin-left:10px; font-size:13px; font-weight:600; }
+.status.running { color:var(--warn); }
+.status.pass { color:var(--success); }
+.status.fail { color:var(--danger); }
+.status.partial { color:var(--warn); }
+.detail { margin-top:12px; font-size:12px; background:#faf9f6; border:1px solid var(--border); border-radius:8px; padding:10px 14px; white-space:pre-wrap; word-break:break-all; max-height:220px; overflow-y:auto; display:none; font-family:'SF Mono','Menlo',monospace; }
+.toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); background:rgba(26,42,58,.92); color:#fff; padding:10px 22px; border-radius:10px; font-size:13px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:99; }
+.hint { font-size:12px; color:var(--muted); margin-top:10px; padding:8px 12px; background:#fdfbf3; border-left:3px solid #d9b306; border-radius:6px; }
+.summary-box { margin-top:12px; }
+textarea.export { width:100%; height:180px; font-family:'SF Mono','Menlo',monospace; font-size:11px; padding:12px; border:1px solid var(--border); border-radius:8px; resize:vertical; background:#faf9f6; display:none; }
+</style>
+</head>
+<body>
+
+<h1>低代码平台能力测试 · 一体化</h1>
+<div class="subtitle">放入陪练应用后依次点击三个按钮 → 自动判定 → 一键导出结果 · 2026-07-15</div>
+
+<div id="modeBanner" class="banner local">正在检测运行环境…</div>
+
+<!-- 测试 1 -->
+<div class="card">
+  <h3>测试 1 · AI 能否输出纯 JSON</h3>
+  <div class="desc">调用陪练应用已接入的 AI 插件，要求它只输出 JSON，自动解析判定。</div>
+  <button class="btn" id="btn1" onclick="runTest1()">开始测试 1</button>
+  <span class="status" id="status1"></span>
+  <div class="detail" id="detail1"></div>
+</div>
+
+<!-- 测试 2 -->
+<div class="card">
+  <h3>测试 2 · 两次 AI 调用能否串联传 JSON</h3>
+  <div class="desc">AI 第一次生成数据 JSON → 原样传给 AI 第二次做统计 → 自动校验算得对不对。</div>
+  <button class="btn" id="btn2" onclick="runTest2()">开始测试 2</button>
+  <span class="status" id="status2"></span>
+  <div class="detail" id="detail2"></div>
+</div>
+
+<!-- 测试 3 -->
+<div class="card">
+  <h3>测试 3 · 场景卡数据能否存储</h3>
+  <div class="desc">写入约 3KB 模拟场景卡 → 刷新本页 → 点"读取验证"看数据是否还在。</div>
+  <button class="btn" id="btn3w" onclick="runTest3Write()">① 写入数据</button>
+  <button class="btn secondary" id="btn3r" onclick="runTest3Read()">② 刷新页面后点我读取验证</button>
+  <span class="status" id="status3"></span>
+  <div class="detail" id="detail3"></div>
+  <div class="hint">正确顺序：点①写入 → 按 F5 或下拉刷新本页 → 点②读取。刷新后数据还在才算通过。</div>
+</div>
+
+<!-- 导出 -->
+<div class="card">
+  <h3>导出结果</h3>
+  <div class="desc">三项测完后点击，把结果发回给 Claude 即可。</div>
+  <button class="btn" onclick="exportResults()">生成结果报告</button>
+  <button class="btn secondary" onclick="copyResults()">复制到剪贴板</button>
+  <textarea class="export" id="exportBox" readonly></textarea>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ================= 工具 ================= */
+function showToast(msg, duration){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.opacity = '0'; }, duration || 2500);
+}
+function setStatus(id, cls, text){
+  var el = document.getElementById(id);
+  el.className = 'status ' + cls; el.textContent = text;
+}
+function setDetail(id, text){
+  var el = document.getElementById(id);
+  el.style.display = 'block'; el.textContent = text; /* textContent 防 XSS */
+}
+/* 结果状态（存 localStorage，刷新不丢） */
+function saveResult(key, val){
+  try {
+    var r = JSON.parse(localStorage.getItem('mdp_cap_results') || '{}');
+    r[key] = val;
+    localStorage.setItem('mdp_cap_results', JSON.stringify(r));
+  } catch(e){}
+}
+function loadResults(){
+  try { return JSON.parse(localStorage.getItem('mdp_cap_results') || '{}'); } catch(e){ return {}; }
+}
+
+/* ================= 环境检测（测试 0） ================= */
+var hasAI = (typeof window !== 'undefined') && !!window.capabilityClient;
+(function(){
+  var b = document.getElementById('modeBanner');
+  if (hasAI) {
+    b.className = 'banner ai';
+    b.textContent = '🤖 AI 模式：capabilityClient 已注入，可以开始测试';
+    console.log('🤖 AI模式：capabilityClient 可用');
+  } else {
+    b.className = 'banner local';
+    b.textContent = '📋 本地模式：capabilityClient 未注入 —— 测试1/2无法进行。这本身就是重要结果：说明本页未部署进低代码平台，或低代码平台没有给自定义页面注入AI能力。测试3仍可执行。';
+    console.log('📋 本地模式：capabilityClient 不可用');
+    document.getElementById('btn1').disabled = true;
+    document.getElementById('btn2').disabled = true;
+  }
+  saveResult('env', hasAI ? 'AI模式' : '本地模式');
+})();
+
+/* ================= AI 调用（与引擎页完全同款） ================= */
+async function callAI(systemPrompt, userMessage){
+  var plugin = window.capabilityClient.load('mdp_coach_ai_conversation_reply_1');
+  var result = await plugin.call('textGenerate', {
+    system_prompt: systemPrompt,
+    user_message_history: JSON.stringify([{ role:'user', content: userMessage }])
+  });
+  return result.content || result.text || '';
+}
+/* JSON 判定：严格解析→通过；能从文字中抠出JSON→部分通过 */
+function judgeJSON(raw){
+  try { return { level:'strict', data: JSON.parse(raw) }; } catch(e){}
+  var m = raw.match(/\{[\s\S]*\}/);
+  if (m) { try { return { level:'loose', data: JSON.parse(m[0]) }; } catch(e){} }
+  return { level:'fail', data:null };
+}
+
+/* ================= 测试 1 ================= */
+var P1 = '你是一个测试助手。用户会给你三个词，你需要把它们组织成 JSON 格式输出。\n\n你必须只输出 JSON。不得在 JSON 前后添加任何解释、markdown 标记、或额外文字。输出必须以 { 开始，以 } 结束。\n\nJSON 格式：\n{\n  "words": ["词1", "词2", "词3"],\n  "count": 3,\n  "reversed": ["词3", "词2", "词1"]\n}';
+async function runTest1(){
+  setStatus('status1','running','⏳ 调用中…');
+  try {
+    var raw = await callAI(P1, '苹果 香蕉 橘子');
+    var j = judgeJSON(raw);
+    var verdict;
+    if (j.level === 'strict' && j.data && j.data.words && j.data.words.length === 3) verdict = '通过';
+    else if (j.level === 'loose') verdict = '部分通过（JSON外有多余文字，需加格式锁）';
+    else verdict = '不通过（无法解析出JSON）';
+    setStatus('status1', j.level==='strict' ? 'pass' : (j.level==='loose' ? 'partial' : 'fail'),
+      (j.level==='strict' ? '✅ ' : (j.level==='loose' ? '⚠️ ' : '❌ ')) + verdict);
+    setDetail('detail1', 'AI 原始输出：\n' + raw);
+    saveResult('t1', { verdict: verdict, raw: raw.slice(0, 800) });
+  } catch(e) {
+    setStatus('status1','fail','❌ 调用失败');
+    setDetail('detail1', '错误：' + e.message);
+    saveResult('t1', { verdict: '调用失败：' + e.message });
+  }
+}
+
+/* ================= 测试 2 ================= */
+var P2A = '你是一个数据生成器。用户给你一个数字 N，你输出一个 JSON 数组，包含 N 个 1-100 之间的随机整数。\n\n你必须只输出 JSON。不得添加任何其他文字。格式：\n{ "numbers": [数字列表], "sum": 总和 }';
+var P2B = '你是一个数据分析器。你会收到一个 JSON 对象，格式为 { "numbers": [数字列表], "sum": 总和 }。\n你需要输出一个新的 JSON：\n{\n  "original": [原数字列表],\n  "sum": 原总和,\n  "average": 平均值(保留2位小数),\n  "max": 最大值,\n  "min": 最小值,\n  "above_average": [所有大于平均值的数字]\n}\n\n你必须只输出 JSON。不得添加任何其他文字。';
+async function runTest2(){
+  setStatus('status2','running','⏳ 第1步：AI生成数据…');
+  try {
+    var rawA = await callAI(P2A, '5');
+    var jA = judgeJSON(rawA);
+    if (jA.level === 'fail' || !jA.data || !jA.data.numbers) {
+      setStatus('status2','fail','❌ 节点A未输出可用JSON');
+      setDetail('detail2', '节点A原始输出：\n' + rawA);
+      saveResult('t2', { verdict: '不通过——A的输出无法解析', rawA: rawA.slice(0,500) });
+      return;
+    }
+    setStatus('status2','running','⏳ 第2步：传给AI分析…');
+    var rawB = await callAI(P2B, JSON.stringify(jA.data));
+    var jB = judgeJSON(rawB);
+    if (jB.level === 'fail' || !jB.data) {
+      setStatus('status2','fail','❌ 节点B未输出可用JSON');
+      setDetail('detail2', 'A输出：\n' + rawA + '\n\nB原始输出：\n' + rawB);
+      saveResult('t2', { verdict: '部分通过——A可以，B的输出无法解析', rawA: rawA.slice(0,500), rawB: rawB.slice(0,500) });
+      return;
+    }
+    /* JS 独立复算，校验 B 的数学 */
+    var nums = jA.data.numbers;
+    var sum = nums.reduce(function(a,b){ return a+b; }, 0);
+    var avg = parseFloat((sum/nums.length).toFixed(2));
+    var checks = [
+      ['数据传递(original一致)', JSON.stringify(jB.data.original) === JSON.stringify(nums)],
+      ['sum正确', Math.abs((jB.data.sum||0) - sum) < 0.01],
+      ['average正确', Math.abs((jB.data.average||0) - avg) < 0.05],
+      ['max正确', jB.data.max === Math.max.apply(null,nums)],
+      ['min正确', jB.data.min === Math.min.apply(null,nums)]
+    ];
+    var passed = checks.filter(function(c){ return c[1]; }).length;
+    var report = checks.map(function(c){ return (c[1]?'✅':'❌') + ' ' + c[0]; }).join('\n');
+    var verdict = passed === 5 ? '通过' : (passed >= 3 ? '部分通过（'+passed+'/5，AI计算不完全可靠，数值计算应放JS层）' : '不通过（'+passed+'/5）');
+    setStatus('status2', passed===5?'pass':(passed>=3?'partial':'fail'),
+      (passed===5?'✅ ':(passed>=3?'⚠️ ':'❌ ')) + verdict);
+    setDetail('detail2', report + '\n\nA输出：\n' + rawA + '\n\nB输出：\n' + rawB);
+    saveResult('t2', { verdict: verdict, checks: report, rawA: rawA.slice(0,500), rawB: rawB.slice(0,500) });
+  } catch(e) {
+    setStatus('status2','fail','❌ 调用失败');
+    setDetail('detail2', '错误：' + e.message);
+    saveResult('t2', { verdict: '调用失败：' + e.message });
+  }
+}
+
+/* ================= 测试 3 ================= */
+function buildMockCard(){
+  var dp = [];
+  for (var i=1; i<=3; i++) dp.push({ id:'DP-'+i, ability:'团队激励', options:['A','B','C','D'],
+    consequence:'这是第'+i+'个决策点的模拟后果描述，用于撑起数据体积，模拟真实场景卡中的因果链文本。'.repeat(4) });
+  return { scenario_id:'CAP-TEST-001', title:'能力测试模拟场景卡',
+    context:{ learner_role:'空降销售管理者', situation:'首开倒计时20天，127套房源，团队过劳士气低迷。'.repeat(10) },
+    decision_points: dp, ts:'2026-07-15' };
+}
+function runTest3Write(){
+  try {
+    var card = buildMockCard();
+    var s = JSON.stringify(card);
+    localStorage.setItem('mdp_cap_card', s);
+    var size = new Blob([s]).size;
+    setStatus('status3','partial','⚠️ 已写入 '+(size/1024).toFixed(1)+'KB —— 现在刷新页面，再点②');
+    setDetail('detail3','写入成功，数据大小：'+size+' 字节。\n下一步：刷新本页（F5）→ 点"② 读取验证"。');
+    saveResult('t3write', { ok:true, size:size });
+    showToast('写入成功，请刷新页面后点②');
+  } catch(e) {
+    setStatus('status3','fail','❌ 写入失败');
+    setDetail('detail3','写入失败：'+e.message+'\n说明低代码平台环境禁用或限制了localStorage，需改用低代码平台变量/数据库方案。');
+    saveResult('t3write', { ok:false, err:e.message });
+  }
+}
+function runTest3Read(){
+  try {
+    var raw = localStorage.getItem('mdp_cap_card');
+    if (!raw) {
+      setStatus('status3','fail','❌ 数据不在了');
+      setDetail('detail3','读取结果：空。\n可能原因：①还没点过①写入 ②低代码平台刷新后清空了localStorage（沙箱隔离）——若是②，方式B部署需改用低代码平台变量/数据库存场景卡。');
+      saveResult('t3read', { ok:false });
+      return;
+    }
+    var card = JSON.parse(raw);
+    var intact = card.scenario_id === 'CAP-TEST-001' && card.decision_points && card.decision_points.length === 3;
+    setStatus('status3', intact?'pass':'fail', intact?'✅ 通过——刷新后数据完整':'❌ 数据存在但不完整');
+    setDetail('detail3','读取成功。场景ID：'+card.scenario_id+'，决策点数：'+(card.decision_points||[]).length+'，数据完整性：'+(intact?'完整':'受损'));
+    saveResult('t3read', { ok:intact });
+  } catch(e) {
+    setStatus('status3','fail','❌ 读取失败');
+    setDetail('detail3','读取失败：'+e.message);
+    saveResult('t3read', { ok:false, err:e.message });
+  }
+}
+
+/* ================= 导出 ================= */
+function buildReport(){
+  var r = loadResults();
+  var lines = [];
+  lines.push('# 低代码平台能力测试 · 结果（一体化测试页自动生成）');
+  lines.push('测试日期：2026-07-15');
+  lines.push('');
+  lines.push('## 环境：' + (r.env || '未检测'));
+  lines.push('');
+  lines.push('## 测试1（AI输出纯JSON）：' + (r.t1 ? r.t1.verdict : '未执行'));
+  if (r.t1 && r.t1.raw) lines.push('AI原始输出：\n```\n' + r.t1.raw + '\n```');
+  lines.push('');
+  lines.push('## 测试2（串联传JSON）：' + (r.t2 ? r.t2.verdict : '未执行'));
+  if (r.t2 && r.t2.checks) lines.push(r.t2.checks);
+  if (r.t2 && r.t2.rawA) lines.push('A输出：\n```\n' + r.t2.rawA + '\n```\nB输出：\n```\n' + (r.t2.rawB||'') + '\n```');
+  lines.push('');
+  var t3;
+  if (!r.t3write) t3 = '未执行';
+  else if (!r.t3write.ok) t3 = '不通过——写入失败：' + (r.t3write.err||'');
+  else if (!r.t3read) t3 = '写入成功(' + r.t3write.size + '字节)，但还没做刷新后读取验证';
+  else t3 = r.t3read.ok ? '通过——写入' + r.t3write.size + '字节，刷新后数据完整' : '不通过——刷新后数据丢失或受损';
+  lines.push('## 测试3（localStorage存储）：' + t3);
+  return lines.join('\n');
+}
+function exportResults(){
+  var box = document.getElementById('exportBox');
+  box.value = buildReport(); box.style.display = 'block';
+  showToast('报告已生成，把内容发给 Claude');
+}
+function copyResults(){
+  var box = document.getElementById('exportBox');
+  box.value = buildReport(); box.style.display = 'block';
+  box.select();
+  try { document.execCommand('copy'); showToast('已复制到剪贴板'); }
+  catch(e){ showToast('复制失败，请手动全选复制'); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI陪练场景</title>
+<style>
+  :root{--green:#5B9A8B;--text:#44403c;--t2:#78716c;--t3:#a8a29e;--white:#fff;--bg:#fafaf9;--border:rgba(0,0,0,.05);--r:14px;--r-lg:18px;--r-btn:99px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5}
+
+  .nav{position:sticky;top:0;z-index:100;background:rgba(11,61,46,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .nav-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;height:50px;padding:0 24px;gap:8px}
+  .nav-logo{font-size:15px;font-weight:700;color:#fff;text-decoration:none;display:flex;align-items:center;gap:8px}
+  .nav-logo::before{content:'';width:7px;height:7px;border-radius:50%;background:#6ee7b7}
+  .nav-links{display:flex;gap:4px}
+  .nav-links a{font-size:13px;color:rgba(255,255,255,.7);text-decoration:none;padding:6px 14px;border-radius:8px}
+  .nav-links a:hover{color:#fff;background:rgba(255,255,255,.06)}
+  .nav-links a.active{color:#6ee7b7;font-weight:600;background:rgba(110,231,183,.08)}
+
+  .page{max-width:1160px;margin:0 auto;padding:0 24px 48px}
+
+  .hero-w{background:#fff;border-bottom:1px solid var(--border)}
+  .hero-inner{max-width:1160px;margin:0 auto;padding:20px 24px;text-align:center}
+  .hero-inner h1{font-size:22px;font-weight:600;margin-bottom:4px;letter-spacing:-.01em}
+  .hero-inner p{font-size:14px;color:var(--t2)}
+
+  .sec{margin-top:24px}
+  .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .sec-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .sec-icon.gr{background:rgba(91,154,139,.08)}.sec-icon.bl{background:rgba(59,130,246,.08)}.sec-icon.or{background:rgba(249,115,22,.08)}
+  .sec-head h2{font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .sec-head .sec-tag{font-size:11px;color:var(--t3);background:rgba(0,0,0,.03);padding:2px 10px;border-radius:var(--r-btn)}
+  .sec-desc{font-size:13px;color:var(--t2);margin-bottom:10px;padding-left:42px;line-height:1.6}
+  .scene-summary{font-size:11px;color:var(--t3);margin-bottom:12px}
+  .scene-summary strong{color:var(--green);font-weight:700}
+
+  .rec-label{font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .rec-badge{font-size:10px;padding:2px 8px;border-radius:var(--r-btn)}
+  .rec-badge.popular{background:rgba(249,115,22,.08);color:#c2410c}
+  .rec-badge.data{background:rgba(91,154,139,.1);color:var(--green)}
+
+  .tab-bar{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+  .tab-bar button{font-size:12px;padding:6px 16px;border-radius:var(--r-btn);border:1px solid var(--border);background:var(--white);color:var(--t2);cursor:pointer;font-family:inherit;transition:all .15s}
+  .tab-bar button:hover{border-color:var(--green);color:var(--green)}
+  .tab-bar button.on{background:rgba(91,154,139,.08);border-color:var(--green);color:var(--green);font-weight:600}
+
+  .filter-bar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+  .f-label{font-size:11px;color:var(--t3);font-weight:600}
+  .f-chip{font-size:11px;padding:4px 12px;border-radius:var(--r-btn);border:1px solid var(--border);background:var(--white);color:var(--t2);cursor:pointer;font-family:inherit;transition:all .15s}
+  .f-chip:hover{border-color:var(--green);color:var(--green)}
+  .f-chip.on{background:rgba(91,154,139,.08);border-color:var(--green);color:var(--green);font-weight:600}
+  .f-divider{width:1px;height:16px;background:var(--border);margin:0 4px}
+  .f-hint{font-size:11px;color:var(--green);font-weight:500;cursor:pointer;margin-left:auto}
+
+  .card-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .card-grid.col3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--white);border-radius:var(--r);overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .2s;display:block;text-decoration:none;color:inherit}
+  .card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.08)}
+  .card .c-media{height:100px;position:relative;overflow:hidden}
+  .c-cover-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700}
+  .c-badge{position:absolute;top:8px;right:8px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-btn)}
+  .c-badge.easy{background:rgba(0,0,0,.06);color:var(--t3)}.c-badge.medium{background:rgba(59,130,246,.1);color:#2563eb}.c-badge.hard{background:rgba(249,115,22,.1);color:#c2410c}
+  .c-status{position:absolute;top:8px;left:8px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-btn)}
+  .c-status.ready{background:rgba(91,154,139,.85);color:#fff}.c-status.soon{background:rgba(249,115,22,.8);color:#fff}.c-status.archived{background:rgba(142,142,147,.7);color:#fff}
+  .card .c-body{padding:12px 14px 14px}
+  .c-tags{display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap}
+  .c-tags span{font-size:10px;padding:2px 7px;border-radius:var(--r-btn);background:rgba(0,0,0,.03);color:var(--t3)}
+  .c-title{font-size:13px;font-weight:600;margin-bottom:3px}
+  .c-desc{font-size:11px;color:var(--t2);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .c-action{font-size:12px;font-weight:600;color:var(--green)}
+  .c-extra{font-size:10px;color:var(--t3);margin-top:6px;display:flex;gap:8px}
+
+  .empty-card{border:2px dashed rgba(0,0,0,.06);border-radius:var(--r);padding:24px 14px;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .empty-card:hover{border-color:var(--green);background:rgba(91,154,139,.02)}
+  .ec-icon{font-size:24px;opacity:.4}.ec-text{font-size:12px;color:var(--t2)}.ec-sub{font-size:10px;color:var(--t3)}
+
+  .link-bar{display:flex;align-items:center;gap:16px;padding:20px 24px;border-radius:var(--r-lg);border:2px dashed rgba(91,154,139,.3);background:linear-gradient(135deg,rgba(91,154,139,.08),rgba(20,184,166,.06));cursor:pointer;transition:all .2s;margin-top:24px}
+  .link-bar:hover{border-color:rgba(91,154,139,.5);box-shadow:0 2px 16px rgba(91,154,139,.08)}
+  .link-icon{width:44px;height:44px;border-radius:12px;background:rgba(91,154,139,.1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .link-info{flex:1}.link-info h3{font-size:15px;font-weight:600}.link-info p{font-size:12px;color:var(--t2)}
+
+  .as-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+  .as-box{background:#fff;border-radius:20px;padding:28px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.15);max-height:85vh;overflow-y:auto}
+  .as-box h2{font-size:19px;font-weight:700;margin-bottom:4px}.as-sub{font-size:12px;color:var(--t2);margin-bottom:18px}
+  .as-q{margin-bottom:14px}.as-q-label{font-size:12px;font-weight:600;margin-bottom:6px}
+  .as-opts{display:flex;gap:6px;flex-wrap:wrap}
+  .as-opt{padding:7px 14px;border-radius:var(--r-btn);border:1px solid var(--border);background:#fff;font-size:12px;cursor:pointer;font-family:inherit}
+  .as-opt:hover{border-color:var(--green)}.as-opt.sel{background:rgba(91,154,139,.08);border-color:var(--green);color:var(--green);font-weight:600}
+  .as-input{width:100%;height:48px;border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:12px;font-family:inherit;resize:none;outline:none;line-height:1.5}
+  .as-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(91,154,139,.06)}
+  .as-result{display:none;background:rgba(91,154,139,.04);border:1px solid rgba(91,154,139,.15);border-radius:14px;padding:18px;text-align:center;margin-top:10px}
+  .as-rec-scene{font-size:15px;font-weight:700;margin-bottom:4px}.as-rec-why{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:4px}
+  .as-rec-focus{font-size:11px;color:var(--green);font-weight:600;margin-bottom:10px;background:rgba(91,154,139,.06);padding:6px 12px;border-radius:8px;display:inline-block}
+  .as-rec-btn{display:inline-flex;padding:8px 20px;border-radius:var(--r-btn);background:var(--green);color:#fff;font-size:13px;font-weight:600;text-decoration:none}
+  .as-close{display:block;width:100%;padding:10px;border:none;border-radius:10px;background:rgba(0,0,0,.03);color:var(--t2);font-size:12px;cursor:pointer;margin-top:12px;font-family:inherit}
+
+  @media(max-width:900px){.card-grid,.card-grid.col3{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:500px){.card-grid,.card-grid.col3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a href="#" class="nav-logo">AI 陪练</a>
+  <div class="nav-links"><a href="#">首页</a><a href="#" class="active">场景</a><a href="#">记录</a></div>
+</div></nav>
+
+<div class="page">
+
+<!-- ====== Hero ====== -->
+<div class="hero-w"><div class="hero-inner">
+  <h1>AI陪练场景</h1>
+  <p>通过模拟真实工作场景，提升作战能力</p>
+</div></div>
+
+<!-- ====== 推荐给你 ====== -->
+<div class="sec" style="margin-top:20px">
+  <div class="rec-label">
+    <span class="rec-badge popular" id="recBadge">🔥 热门场景</span>
+    <span style="font-size:11px;color:var(--t3);font-weight:400" id="recHint">完成测评后可获得个性化推荐</span>
+  </div>
+  <div class="card-grid" id="recGrid"></div>
+</div>
+
+<!-- ====== 训战陪练 ====== -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon gr">⚡</span><h2>训战陪练</h2><span class="sec-tag">课程/项目 · 班级练习</span></div>
+  <p class="sec-desc">上完课不等于学会了。按课程或项目组织的课后练习——点进去就是该班级的专属场景，老师能看到全班数据和薄弱分布。</p>
+  <div class="scene-summary"><strong id="courseCount">2</strong> 个课程 · <strong id="courseScenes">7</strong> 个场景 · <strong id="courseReady">1</strong> 个可练</div>
+  <div class="card-grid col3" id="courseGrid"></div>
+</div>
+
+<!-- ====== 管理陪练 ====== -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon bl">🎯</span><h2>管理陪练</h2><span class="sec-tag">自主练习 · 管理发展 · <span id="mgmtTotal">17</span>个场景</span></div>
+  <p class="sec-desc">绩效面谈、跨部门协调、向上汇报……管理虽然没有标准答案，但这里给你一个安全的练习场。对话是自由的——练完之后，你会看到自己没注意到的习惯和盲区。</p>
+  <div class="scene-summary"><strong id="mgmtReady">1</strong> 个可练 · <strong id="mgmtSoon">12</strong> 个待建 · <strong id="mgmtArchived">4</strong> 个已归档</div>
+  <div class="tab-bar" id="tabBar">
+    <button class="on" data-tab="all">全部</button>
+    <button data-tab="对下管理">对下管理</button>
+    <button data-tab="跨部门协作">跨部门协作</button>
+    <button data-tab="拿结果">拿结果</button>
+    <button data-tab="向上管理">向上管理</button>
+    <button data-tab="绩效面谈">绩效面谈</button>
+  </div>
+  <div class="filter-bar">
+    <span class="f-label">难度</span><button class="f-chip on" data-g="diff" data-v="all">全部</button><button class="f-chip" data-g="diff" data-v="入门">入门</button><button class="f-chip" data-g="diff" data-v="进阶">进阶</button><button class="f-chip" data-g="diff" data-v="挑战">挑战</button>
+    <span class="f-divider"></span><span class="f-label">条线</span><button class="f-chip on" data-g="prof" data-v="all">全部</button><button class="f-chip" data-g="prof" data-v="营销">营销</button><button class="f-chip" data-g="prof" data-v="工程">工程</button><button class="f-chip" data-g="prof" data-v="综合">综合</button>
+    <span class="f-divider"></span><button class="f-chip" id="fReady" onclick="toggleReady()">仅可练</button>
+    <span class="f-hint" onclick="openAssessment()">先测再练 →</span>
+  </div>
+  <div class="card-grid" id="mgmtGrid"></div>
+</div>
+
+<!-- ====== 业务陪练 ====== -->
+<div class="sec">
+  <div class="sec-head"><span class="sec-icon or">💼</span><h2>业务陪练</h2><span class="sec-tag">上传话术 · 自动生成</span></div>
+  <p class="sec-desc">把你的产品手册或话术模板上传，AI 自动生成练习场景。练的是你自己的真实任务、真实场景，练完就能用。</p>
+  <div class="scene-summary">3 个场景 · 全部待建</div>
+  <div class="card-grid col3">
+    <div class="empty-card"><span class="ec-icon">📞</span><span class="ec-text">销售场景 · 话术训练</span><span class="ec-sub">上传产品手册 → AI生成</span></div>
+    <div class="empty-card"><span class="ec-icon">🎧</span><span class="ec-text">客服场景 · 投诉处理</span><span class="ec-sub">上传话术模板 → AI生成</span></div>
+    <div class="empty-card"><span class="ec-icon">📋</span><span class="ec-text">自定义场景</span><span class="ec-sub">自建模板上传</span></div>
+  </div>
+</div>
+
+<!-- ====== AI智能生成 ====== -->
+<div class="link-bar" onclick="alert('跳转到 /scenario/generate')">
+  <div class="link-icon">🤖</div>
+  <div class="link-info"><h3>AI 智能生成场景</h3><p>根据你的维度评估，AI 为你定制专属陪练场景</p></div>
+  <span style="font-size:13px;color:var(--green);font-weight:600;white-space:nowrap">去看看 →</span>
+</div>
+
+</div><!-- /page -->
+
+<div id="modalContainer"></div>
+
+<script>
+// ====== Dynamic rec label ======
+var hasAssessmentData = false;
+function updateRecLabel(){var b=document.getElementById('recBadge'),h=document.getElementById('recHint');if(hasAssessmentData){b.textContent='📊 根据你的薄弱维度推荐';b.className='rec-badge data';h.textContent='上次练习 P₂信任 35分 → 建议优先练习绩效面谈'}else{b.textContent='🔥 热门场景';b.className='rec-badge popular';h.textContent='完成测评后可获得个性化推荐'}}
+updateRecLabel();
+
+// ====== 推荐（4张）======
+var REC=[{id:'scene_pr_002',title:'C级员工·绩效面谈',mod:'对下管理',prof:'综合',diff:'进阶',desc:'她不知道今天是C。笑着推开会议室的门。',status:'ready'},{id:'TG-001',title:'首开倒计时——空降者的20天',mod:'对下管理',prof:'营销',diff:'进阶',desc:'被紧急派往新项目支援。团队过劳，NPC-周在看你。',status:'ready'},{id:'scene_R1',title:'季度目标对齐·拆解沟通',mod:'拿结果',prof:'营销',diff:'挑战',desc:'上级要6500万，他认为过高。需达成真正共识。',status:'soon'},{id:'_self_assess',title:'不知道练哪个？快速自评',mod:'推荐',prof:'全部',diff:'入门',desc:'3道题帮你找到最适合开始的场景。',status:'ready',isAssess:true}];
+(function renderRec(){var h='';REC.forEach(function(s){var bg=s.id.charCodeAt(0)%4,bgs=['linear-gradient(135deg,#0f3460,#1a1a2e)','linear-gradient(135deg,#1e3a5f,#1b2838)','linear-gradient(135deg,#2d2d2d,#3d3d3d)','linear-gradient(135deg,#3d2a5e,#1a1a2e)'];if(s.isAssess){h+='<div class="card" onclick="openAssessment()"><div class="c-media"><div class="c-cover-fallback" style="background:rgba(91,154,139,.1);font-size:28px">🎯</div><span class="c-status ready">推荐</span></div><div class="c-body"><div class="c-tags"><span>推荐</span></div><div class="c-title">'+s.title+'</div><div class="c-desc">'+s.desc+'</div><span class="c-action">开始自评</span></div></div>'}else{h+='<a class="card" href="#"><div class="c-media"><div class="c-cover-fallback" style="background:'+bgs[bg]+'">'+s.title.charAt(0)+'</div><span class="c-status '+(s.status==='ready'?'ready':'soon')+'">'+(s.status==='ready'?'可练':'待建')+'</span><span class="c-badge '+(s.diff==='入门'?'easy':s.diff==='挑战'?'hard':'medium')+'">'+s.diff+'</span></div><div class="c-body"><div class="c-tags"><span>'+s.mod+'</span><span>'+s.prof+'</span></div><div class="c-title">'+s.title+'</div><div class="c-desc">'+s.desc+'</div><span class="c-action">'+(s.status==='ready'?'开始练习':'即将上线')+'</span></div></a>'}});document.getElementById('recGrid').innerHTML=h})();
+
+// ====== 训战陪练 · 课程卡片 ======
+var COURSES=[{id:'mtp_mgmt',name:'MTP对下管理',tag:'MTP训后',mod:'对下管理',prof:'营销',desc:'空降管理、老员工激活、跨部门协作——MTP课堂学完马上练。',scenes:[{name:'首开倒计时——空降者的20天',diff:'进阶',status:'ready'},{name:'大户型攻坚——能力在，意愿呢？',diff:'进阶',status:'soon'},{name:'线索断了——数渠团队的重建',diff:'挑战',status:'soon'},{name:'MTP知识点练习',diff:'入门',status:'soon'}],status:'ready'},{id:'new_mgr',name:'新经理培训',tag:'新经理项目',mod:'对下管理',prof:'综合',desc:'新晋管理者的必修课——绩效面谈、冲突调解、代际管理。',scenes:[{name:'C级员工·绩效面谈',diff:'进阶',status:'ready'},{name:'团队内部冲突调解',diff:'进阶',status:'soon'},{name:'跨代际员工管理',diff:'进阶',status:'soon'}],status:'soon'}];
+(function renderCourses(){var h='',totalScenes=0,totalReady=0;COURSES.forEach(function(c){var ready=c.scenes.filter(function(s){return s.status==='ready'}).length;totalScenes+=c.scenes.length;totalReady+=ready;var sceneList=c.scenes.map(function(s){return (s.status==='ready'?'✅ ':'🔜 ')+s.name+'（'+s.diff+'）'}).join('\n');var bg=c.id.charCodeAt(0)%4,bgs=['linear-gradient(135deg,#0f3460,#1a1a2e)','linear-gradient(135deg,#1e3a5f,#1b2838)','linear-gradient(135deg,#2d2d2d,#3d3d3d)','linear-gradient(135deg,#3d2a5e,#1a1a2e)'];h+='<div class="card" onclick="alert(\''+c.name+' · 课程场景：\\n\\n'+sceneList+'\')"><div class="c-media" style="height:120px"><div class="c-cover-fallback" style="background:'+bgs[bg]+';flex-direction:column;gap:6px"><span style="font-size:28px">📚</span><span style="font-size:14px;font-weight:600">'+c.name+'</span></div><span class="c-status '+(c.status==='ready'?'ready':'soon')+'">'+(c.status==='ready'?ready+'个可练':'待上线')+'</span><span class="c-badge medium">'+c.scenes.length+'个场景</span></div><div class="c-body"><div class="c-tags"><span>'+c.mod+'</span><span>'+c.prof+'</span><span>'+c.tag+'</span></div><div class="c-title">'+c.name+' · 课程陪练</div><div class="c-desc">'+c.desc+'</div><span class="c-action">'+(c.status==='ready'?'查看场景 →':'即将上线')+'</span><div class="c-extra">'+(ready?'<span style="color:var(--green)">✅ '+ready+'个可练</span>':'')+'<span>共'+c.scenes.length+'个场景</span></div></div></div>'});h+='<div class="empty-card"><span class="ec-icon">➕</span><span class="ec-text">创建课程练习</span><span class="ec-sub">上传学员名单+选择场景→生成班级练习</span></div>';document.getElementById('courseGrid').innerHTML=h;document.getElementById('courseScenes').textContent=totalScenes;document.getElementById('courseReady').textContent=totalReady})();
+
+// ====== 管理陪练 ======
+var MGMT=[{id:'scene_pr_002',title:'C级员工·自评与绩效落差大',mod:'对下管理',prof:'综合',diff:'进阶',desc:'她不知道今天是C。笑着推开会议室的门。',status:'ready'},{id:'TG-004',title:'尾盘清仓——谁在害怕被抛弃？',mod:'对下管理',prof:'营销',diff:'进阶',desc:'32套尾盘，人心散了。',status:'soon'},{id:'scene_gt_P4',title:'三线城市新媒体营销团队激活',mod:'对下管理',prof:'营销',diff:'进阶',desc:'帮老销售跨过面子关和能力关。',status:'soon'},{id:'scene_gt_F4',title:'跨部门资源争夺·平衡品质与成本',mod:'跨部门协作',prof:'工程',diff:'挑战',desc:'设计坚持效果，成本要求节约。',status:'soon'},{id:'scene_P2',title:'跨部门协作冲突协调',mod:'跨部门协作',prof:'工程',diff:'挑战',desc:'营销催交付，工程强调质量。',status:'soon'},{id:'scene_R1',title:'季度目标对齐·拆解沟通',mod:'拿结果',prof:'营销',diff:'挑战',desc:'上级要6500万，他认为过高。',status:'soon'},{id:'scene_R2',title:'销售人员目标拆解指导',mod:'拿结果',prof:'营销',diff:'入门',desc:'新人管理者B200万目标无从下手。',status:'soon'},{id:'scene_adv_upward_01',title:'向上汇报·项目延期问责',mod:'向上管理',prof:'工程',diff:'挑战',desc:'项目延期一周，赵总当众质问。',status:'soon'},{id:'scene_conflict_001',title:'团队内部冲突调解',mod:'对下管理',prof:'综合',diff:'进阶',desc:'两名核心成员冷战一周。',status:'soon'},{id:'scene_adv_gen_01',title:'跨代际员工管理',mod:'对下管理',prof:'综合',diff:'进阶',desc:'95后尊重逻辑不尊重权威。',status:'soon'},{id:'PR-PF-A',title:'A级员工·职业发展不明确',mod:'对下管理',prof:'综合',diff:'进阶',desc:'业绩A级但职业迷茫。',status:'soon',tag:'绩效面谈'},{id:'PR-PF-B',title:'B级员工·转型诉求受阻',mod:'对下管理',prof:'综合',diff:'进阶',desc:'能力B+，消极让他变成B。',status:'soon',tag:'绩效面谈'},{id:'PR-PF-C2',title:'C级×2·选择性工作+法律风险',mod:'对下管理',prof:'综合',diff:'挑战',desc:'涉及法律风险。',status:'soon',tag:'绩效面谈'},{id:'PR1',title:'PR1 · 跨部门协作',mod:'跨部门协作',prof:'综合',diff:'进阶',desc:'已有HTML可恢复。',status:'archived'},{id:'PR3',title:'PR3 · 绩效面谈场景',mod:'对下管理',prof:'综合',diff:'进阶',desc:'已有HTML可恢复。',status:'archived',tag:'绩效面谈'},{id:'PR4',title:'PR4 · 绩效面谈场景',mod:'对下管理',prof:'综合',diff:'进阶',desc:'已有HTML可恢复。',status:'archived',tag:'绩效面谈'},{id:'PR5',title:'PR5 · 绩效面谈场景',mod:'对下管理',prof:'综合',diff:'进阶',desc:'已有HTML(v4-v15)。',status:'archived',tag:'绩效面谈'}];
+var activeTab='all',filters={diff:'all',prof:'all'},readyOnly=false;
+function toggleReady(){readyOnly=!readyOnly;var b=document.getElementById('fReady');b.classList.toggle('on',readyOnly);b.textContent=readyOnly?'仅可练 ✓':'仅可练';renderMgmt()}
+document.querySelectorAll('#tabBar button').forEach(function(b){b.addEventListener('click',function(){activeTab=this.dataset.tab;document.querySelectorAll('#tabBar button').forEach(function(x){x.classList.remove('on')});this.classList.add('on');renderMgmt()})});
+document.querySelectorAll('.f-chip[data-g]').forEach(function(c){c.addEventListener('click',function(){var g=this.dataset.g,v=this.dataset.v;document.querySelectorAll('.f-chip[data-g="'+g+'"]').forEach(function(x){x.classList.remove('on')});this.classList.add('on');filters[g]=v;renderMgmt()})});
+function renderMgmt(){var filtered=MGMT.filter(function(s){if(activeTab!=='all'&&s.mod!==activeTab&&s.tag!==activeTab)return false;if(filters.diff!=='all'&&s.diff!==filters.diff)return false;if(filters.prof!=='all'&&s.prof!==filters.prof)return false;if(readyOnly&&s.status!=='ready')return false;return true});document.getElementById('mgmtTotal').textContent=MGMT.length;document.getElementById('mgmtReady').textContent=MGMT.filter(function(s){return s.status==='ready'}).length;document.getElementById('mgmtSoon').textContent=MGMT.filter(function(s){return s.status==='soon'}).length;document.getElementById('mgmtArchived').textContent=MGMT.filter(function(s){return s.status==='archived'}).length;filtered.sort(function(a,b){var o={ready:0,soon:1,archived:2};return o[a.status]-o[b.status]});var h='';filtered.forEach(function(s){var sc=s.status==='ready'?'ready':(s.status==='archived'?'archived':'soon'),st=s.status==='ready'?'可练':(s.status==='archived'?'已归档':'待建'),db=s.diff==='入门'?'easy':(s.diff==='挑战'?'hard':'medium'),bg=s.id.charCodeAt(0)%4,bgs=['linear-gradient(135deg,#0f3460,#1a1a2e)','linear-gradient(135deg,#1e3a5f,#1b2838)','linear-gradient(135deg,#2d2d2d,#3d3d3d)','linear-gradient(135deg,#3d2a5e,#1a1a2e)'];h+='<a class="card" href="#"><div class="c-media"><div class="c-cover-fallback" style="background:'+bgs[bg]+'">'+s.title.charAt(0)+'</div><span class="c-status '+sc+'">'+st+'</span><span class="c-badge '+db+'">'+s.diff+'</span></div><div class="c-body"><div class="c-tags"><span>'+s.mod+'</span><span>'+s.prof+'</span>'+(s.tag?'<span>'+s.tag+'</span>':'')+'</div><div class="c-title">'+s.title+'</div><div class="c-desc">'+s.desc+'</div><span class="c-action" style="'+(s.status!=='ready'?'color:var(--t3)':'')+'">'+(s.status==='ready'?'开始练习':(s.status==='archived'?'已归档':'待建对话页'))+'</span></div></a>'});document.getElementById('mgmtGrid').innerHTML=h||'<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--t3)">没有匹配的场景</div>'}renderMgmt();
+
+// ====== Assessment ======
+function openAssessment(){var ov=document.createElement('div');ov.className='as-overlay';ov.onclick=function(e){if(e.target===ov)ov.remove()};var q1='',q2='',q3='';ov.innerHTML='<div class="as-box"><h2>快速自评</h2><p class="as-sub">回答3个问题，帮你匹配最适合的场景。</p><div class="as-q"><div class="as-q-label">1. 你目前的管理经验？</div><div class="as-opts"><button class="as-opt" data-q="1" data-v="new">新经理（<1年）</button><button class="as-opt" data-q="1" data-v="mid">有经验（1-5年）</button><button class="as-opt" data-q="1" data-v="senior">资深（>5年）</button></div></div><div class="as-q"><div class="as-q-label">2. 最近遇到的主要挑战？</div><div class="as-opts"><button class="as-opt" data-q="2" data-v="team">带团队·激励下属</button><button class="as-opt" data-q="2" data-v="cross">跨部门协作</button><button class="as-opt" data-q="2" data-v="up">向上管理</button></div></div><div class="as-q"><div class="as-q-label">3. 你更想练什么？</div><div class="as-opts"><button class="as-opt" data-q="3" data-v="face">绩效面谈</button><button class="as-opt" data-q="3" data-v="motivate">团队激励</button><button class="as-opt" data-q="3" data-v="target">目标管理</button></div></div><div class="as-q"><div class="as-q-label">补充描述（可选）</div><textarea class="as-input" id="asInput" placeholder="比如：项目尾盘人心惶惶；刚升经理第一次谈绩效…"></textarea></div><div class="as-result" id="asResult"><div class="as-rec-scene"></div><div class="as-rec-why"></div><div class="as-rec-focus"></div><br><a class="as-rec-btn" href="#">开始练习 →</a></div><button class="as-close" onclick="this.parentElement.parentElement.remove()">关闭</button></div>';document.body.appendChild(ov);ov.querySelectorAll('.as-opt').forEach(function(b){b.addEventListener('click',function(){var q=this.dataset.q,v=this.dataset.v;if(q==='1')q1=v;if(q==='2')q2=v;if(q==='3')q3=v;this.parentElement.querySelectorAll('.as-opt').forEach(function(x){x.classList.remove('sel')});this.classList.add('sel');refresh()})});ov.querySelector('#asInput').addEventListener('input',refresh);function refresh(){var r=ov.querySelector('#asResult');if(!q1&&!q2&&!q3&&(!ov.querySelector('#asInput').value||ov.querySelector('#asInput').value.trim().length<3)){r.style.display='none';return}r.style.display='block';var t,why,focus,lk;if(q3==='face'){t='C级员工·绩效面谈';why='绩效面谈是管理者最高频的挑战。管理者B场景帮你练习。';focus='🎯 重点：如何在不破坏关系的前提下，让下属接受评估结果并愿意改进'}else if(q3==='motivate'){t='首开倒计时·空降者的20天';why='团队激励是核心能力。用行动建立信任，不是开会。';focus='🎯 重点：不要一上来就发号施令——先用行动证明自己，再说话'}else if(q3==='target'){t='季度目标对齐·拆解沟通';why='目标管理不是下命令。';focus='🎯 重点：先理解他的顾虑，再一起找方案'}else if(q2==='cross'){t='跨部门协作·冲突调解';why='跨部门协调是管理中最容易踩坑的。';focus='🎯 重点：找到双方利益的交集点'}else if(q2==='up'){t='向上汇报·项目延期问责';why='既承认责任又争取支持。';focus='🎯 重点：把解决方案和数据一起带上去'}else{t='C级员工·绩效面谈';why='绩效面谈是每个管理者都要面对的。';focus='🎯 重点：先让下属自己说，你再补充'}r.querySelector('.as-rec-scene').textContent=t;r.querySelector('.as-rec-why').textContent=why;r.querySelector('.as-rec-focus').textContent=focus;r.querySelector('.as-rec-btn').href='#'}}</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG-001 · 对话 · NPC-周</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;
+  background:linear-gradient(175deg,#F8F6F2,#EDE8E0,#F5F2ED,#EAE4DC);
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+.amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+.amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+.amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+
+.app{position:relative;z-index:10;display:flex;max-width:960px;margin:0 auto;height:94vh;padding:16px;gap:14px}
+
+/* 对话区 */
+.chat-area{flex:1;display:flex;flex-direction:column;
+  background:rgba(255,255,255,.45);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.5);border-radius:18px;overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.03)}
+
+.chat-header{padding:12px 18px;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.04);
+  display:flex;align-items:center;gap:10px}
+.npc-av{width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:16px;font-weight:700;flex-shrink:0}
+.npc-name{font-size:14px;font-weight:600;color:#1C1917}
+.npc-mood{font-size:11px;color:#D97706;margin-left:4px}
+
+.msg-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:82%;animation:msgIn .3s ease}@keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.msg.npc{align-self:flex-start}.msg.user{align-self:flex-end}
+.msg-bubble{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55}
+.msg.npc .msg-bubble{background:#fff;border:1px solid rgba(0,0,0,.04);border-bottom-left-radius:4px;color:#44403C;white-space:pre-wrap}
+.msg.user .msg-bubble{background:#1C1917;color:#fff;border-bottom-right-radius:4px}
+
+/* 轻声提醒 — 明显区分于对话 */
+.whisper{
+  align-self:stretch;margin:4px 0;padding:8px 12px 8px 14px;
+  background:rgba(239,246,255,.25);border:none;border-left:3px solid #3B82F6;
+  border-radius:0 10px 10px 0;font-size:10px;color:#3B82F6;
+  line-height:1.5;display:flex;align-items:flex-start;gap:6px;font-style:italic
+}
+.whisper.warn{
+  background:rgba(254,243,199,.2);border-left:3px solid #D97706;color:#92400E
+}
+
+.chat-input-area{padding:10px 14px;background:rgba(255,255,255,.4);border-top:1px solid rgba(0,0,0,.04);display:flex;gap:8px}
+.chat-input{flex:1;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:10px 14px;
+  font-size:13px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.5);line-height:1.5}
+.chat-input:focus{border-color:#D97706;box-shadow:0 0 0 3px rgba(245,158,11,.06)}
+.send-btn{width:38px;height:38px;border-radius:50%;border:none;background:#1C1917;color:#fff;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.send-btn:hover{background:#D97706}
+
+/* 侧边栏 — 极简 */
+.side-panel{width:200px;
+  background:rgba(255,255,255,.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:14px;
+  display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.03)}
+.side-card{background:rgba(255,255,255,.5);border-radius:10px;border:1px solid rgba(0,0,0,.03);padding:10px}
+.side-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A8A29E;margin-bottom:4px}
+.side-text{font-size:11px;color:#44403C;line-height:1.5}
+
+/* 健康度条 */
+.health-bar{height:4px;border-radius:2px;background:rgba(0,0,0,.05);margin-top:6px;overflow:hidden}
+.health-fill{height:100%;border-radius:2px;transition:width .5s ease}
+
+.side-end{font-size:10px;color:#A8A29E;cursor:pointer;text-align:center;padding:6px;
+  border-radius:8px;border:1px solid rgba(0,0,0,.06);background:rgba(0,0,0,.02);
+  font-family:inherit;transition:all .2s}
+.side-end:hover{background:rgba(0,0,0,.05)}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;
+  font-size:13px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s ease;
+  pointer-events:none;white-space:nowrap}
+
+@media(max-width:700px){.side-panel{display:none}.app{padding:10px;height:96vh}.msg{max-width:88%}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="app">
+
+  <!-- 对话区 -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <div class="npc-av">周</div>
+      <span class="npc-name">NPC-周</span>
+      <span class="npc-mood" id="moodLabel">在观望</span>
+    </div>
+
+    <div class="msg-list" id="msgList">
+      <div class="whisper" id="initialWhisper">
+        <span style="flex-shrink:0;margin-top:1px">💡</span>
+        <span>你在NPC-周面前说的第一句话——直接决定他把你归为哪类人。别急着给方案，先让他觉得你不一样。</span>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea class="chat-input" rows="2" placeholder="输入你的回应..." id="chatInput"></textarea>
+      <button class="send-btn" onclick="sendMsg()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 侧边栏 — 只保留健康度和NPC-周状态 -->
+  <div class="side-panel">
+    <div class="side-card">
+      <div class="side-label">NPC-周现在</div>
+      <div class="side-text" id="sideState">在观望。他见过太多空降领导——先看你是真有本事还是只会画饼。</div>
+    </div>
+    <div class="side-card">
+      <div class="side-label">对话健康度</div>
+      <div class="health-bar"><div class="health-fill" id="healthFill" style="width:30%;background:linear-gradient(90deg,#D97706,#F59E0B)"></div></div>
+      <div class="side-text" id="healthLabel" style="margin-top:4px;font-size:10px;color:#D97706">刚开始，NPC-周还在看你</div>
+    </div>
+    <button class="side-end" onclick="endConversation()">结束对话，查看反馈 →</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ========== 对话引擎（演示版——部署到低代码平台时替换为AI插件调用） ==========
+var round = 0;
+var healthScore = 30;
+var moodState = 'WATCH';
+
+function showToast(msg,d){d=d||2000;var t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(t._timer);t._timer=setTimeout(function(){t.style.opacity='0'},d);}
+function showWhisper(type,msg){var el=document.getElementById('msgList');var d=document.createElement('div');d.className=type==='warn'?'whisper warn':'whisper';d.innerHTML='<span style="flex-shrink:0;margin-top:1px">'+(type==='warn'?'⚠️':'💡')+'</span><span>'+msg+'</span>';el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function escHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+function updateSidebar(){
+  var moods={
+    WATCH:{label:'在观望',desc:'在观望。他见过太多空降领导——先看你是真有本事还是只会画饼。'},
+    TEST:{label:'在试探',desc:'在试探。你展示了一点东西——他拿客户来试你。'},
+    VERIFY:{label:'在验证',desc:'在验证。方向有了——他在等证据。'},
+    FOLLOW:{label:'开始跟从',desc:'开始跟从。他主动找你——这不是服从，是认可。'}
+  };
+  var m=moods[moodState];
+  document.getElementById('moodLabel').textContent=m.label;
+  document.getElementById('sideState').textContent=m.desc;
+
+  var h=Math.min(100,Math.max(5,healthScore));
+  document.getElementById('healthFill').style.width=h+'%';
+  var color,label;
+  if(h>=70){color='#16a34a';label='NPC-周愿意跟着你走了';}
+  else if(h>=45){color='#F59E0B';label='NPC-周开始认真对待你了';}
+  else{color='#D97706';label='NPC-周还在观察你';}
+  document.getElementById('healthFill').style.background='linear-gradient(90deg,'+color+','+(h>=70?'#22c55e':h>=45?'#fbbf24':'#f59e0b')+')';
+  document.getElementById('healthLabel').textContent=label;
+  document.getElementById('healthLabel').style.color=color;
+}
+
+function sendMsg(){
+  var input=document.getElementById('chatInput');var text=input.value.trim();if(!text)return;
+  input.value='';input.focus();round++;
+
+  var ml=document.getElementById('msgList');
+  var ud=document.createElement('div');ud.className='msg user';
+  ud.innerHTML='<div class="msg-bubble">'+escHtml(text)+'</div>';
+  ml.appendChild(ud);
+
+  // 简单上下文检测（演示版——部署到低代码平台后由AI插件生成回应）
+  var resp='';
+  if(/示范|客户.*情况|数据|怎么.*样/.test(text)&&round<=2){
+    healthScore+=8;moodState='TEST';
+    resp='"怎么样——"NPC-周抬头看你。"看完数据有什么想法？我在这五年了。这些户型什么客人会买，我心里有数。"他停了一下。不是炫耀——在等你问。';
+  }else if(/你.*帮|你.*觉得|怎么.*看|有.*想法/.test(text)&&round<=4){
+    healthScore+=12;moodState='VERIFY';
+    resp='"实话跟你说——"NPC-周放下保温杯，语气变了。"6个户型，我们自己都不知道主推哪个。我们不是不努力——是被太多选择耗死了。"';
+  }else if(/聚焦|砍掉|主力|两个|做.*减法/.test(text)&&round<=6){
+    healthScore+=15;moodState='FOLLOW';
+    resp='"砍到2个？"NPC-周沉默了几秒。"你说得对。我之前也想过，但没人拍这个板。"他抬头看你，眼神跟第一天不一样了。"行——那就试这两个。"';
+    showWhisper('info','💡 NPC-周从验证进入跟从。他在等你亲自做一单来证明——MTP7·11：榜样激励，示范是无声语言。');
+  }else if(/我来|亲自|我去|做.*一单|打样/.test(text)){
+    healthScore+=20;
+    resp='"你来的时候我以为又是一个画饼的。但你不是。"NPC-周站起来，不是客气——是真的被触动了。"这批人现在听你的。不是因为你上面派来的——是你做了我们试了半年没做成的事。"';
+  }else if(round<=3){
+    resp='"哦——"NPC-周应了一声。他继续翻着来访登记表，没有抬头。不是不礼貌——他在等你说出第一句让他觉得不一样的话。';
+  }else{
+    healthScore+=5;
+    resp='NPC-周看了你一眼。"接着说——"他没有拒绝，也没有接受。他在等你亮出下一张牌。';
+  }
+  healthScore=Math.min(100,healthScore);
+
+  setTimeout(function(){
+    var nd=document.createElement('div');nd.className='msg npc';
+    nd.innerHTML='<div class="msg-bubble">'+resp+'</div>';
+    ml.appendChild(nd);ml.scrollTop=ml.scrollHeight;
+    updateSidebar();
+    if(healthScore>=70){document.querySelector('.side-end').textContent='查看反馈报告 →';}
+  },600);
+}
+
+function endConversation(){
+  showToast('演示版——部署到低代码平台后跳转到反馈页');
+}
+
+(function(){
+  updateSidebar();
+  document.getElementById('chatInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+  });
+})();
+</script>
+</body>
+</html>

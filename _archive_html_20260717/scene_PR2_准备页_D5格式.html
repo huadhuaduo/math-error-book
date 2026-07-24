@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>准备 · 管理者B · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(160deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+  .wrapper{position:relative;z-index:10;max-width:720px;width:92vw;display:flex;flex-direction:column;gap:14px;padding:24px 0}
+
+  /* Title */
+  .title-row{text-align:center;margin-bottom:4px}
+  .title-row h1{font-size:22px;font-weight:700;color:#1C1917;line-height:1.3;letter-spacing:-.01em}
+  .title-row .meta{font-size:12px;color:#A8A29E;margin-top:4px}
+
+  /* D-dimension cards */
+  .d-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .d-card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:14px;padding:14px 16px;box-shadow:0 2px 12px rgba(0,0,0,.02)}
+  .d-label{font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .d-label .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .d-body{font-size:12px;color:#44403C;line-height:1.55}
+  .d-body strong{color:#1C1917}
+  .d-hint{font-size:10px;color:#A8A29E;margin-top:4px;font-style:italic}
+  .d-card.full{grid-column:1/-1}
+
+  /* Strategy card */
+  .strat-card{background:rgba(239,246,255,.4);border:1px solid rgba(147,197,253,.2);border-radius:14px;padding:12px 16px;font-size:12px;color:#3B82F6;line-height:1.55}
+  .strat-card strong{color:#1D4ED8}
+
+  /* Check card */
+  .check-card{background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.5);border-radius:14px;padding:14px 16px;font-size:11px;color:#44403C;line-height:1.6}
+  .check-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A8A29E;margin-bottom:6px}
+
+  /* Self-rate */
+  .self-rate{display:flex;gap:10px;flex-wrap:wrap}
+  .rate-item{flex:1;min-width:80px;text-align:center;background:rgba(255,255,255,.35);border-radius:10px;padding:8px 6px}
+  .rate-num{font-size:9px;color:#A8A29E;margin-bottom:2px}
+  .rate-input{width:36px;height:28px;border:1px solid rgba(0,0,0,.08);border-radius:8px;text-align:center;font-size:14px;font-weight:600;color:#1C1917;outline:none;background:rgba(255,255,255,.5)}
+  .rate-input:focus{border-color:#3B82F6}
+
+  /* Opening + Process */
+  .open-card{background:rgba(254,243,199,.25);border:1px solid rgba(251,191,36,.12);border-radius:14px;padding:12px 16px;font-size:12px;color:#44403C;line-height:1.55;text-align:center}
+  .process-row{display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;font-size:11px;color:#78716C;padding:4px 0}
+  .process-step{background:rgba(0,0,0,.025);padding:3px 8px;border-radius:6px;font-weight:600;color:#1C1917;white-space:nowrap}
+  .process-arrow{color:#A8A29E;font-size:12px}
+
+  .btn-start{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 28px;border:none;border-radius:14px;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.08);transition:all .25s ease;width:100%}
+  .btn-start:hover{background:#000;transform:translateY(-1px)}
+  .lv-row{display:flex;gap:4px;justify-content:center}
+  .lv-btn{padding:5px 12px;border-radius:100px;border:1px solid rgba(0,0,0,.06);background:transparent;cursor:pointer;font-size:11px;color:#A8A29E;font-family:inherit;transition:all .2s}
+  .lv-btn.active{background:#1C1917;color:#fff;border-color:#1C1917}
+
+  @media(max-width:600px){.d-grid{grid-template-columns:1fr}.self-rate{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="wrapper">
+
+  <!-- Title -->
+  <div class="title-row">
+    <h1>管理者B · 半年度绩效面谈</h1>
+    <p class="meta">下午3:00 · 小会议室 · 30分钟</p>
+  </div>
+
+  <!-- D₁-D₅ Grid -->
+  <div class="d-grid">
+    <div class="d-card">
+      <div class="d-label"><span class="dot" style="background:#DC2626"></span>D₁ 绩效水平：待改进</div>
+      <div class="d-body">交付14个方案·<strong>返工5次（36%，全组平均11%）</strong>·细节错误8处·补位3次。加班全组前3·互评满意度高。</div>
+      <div class="d-hint">她的努力是真的，差距也是真的。两件事不矛盾。</div>
+    </div>
+    <div class="d-card">
+      <div class="d-label"><span class="dot" style="background:#D97706"></span>D₂ 自我认知：高估</div>
+      <div class="d-body">同事都说她好→她以为自己是B。<strong>她对C级没有心理准备。</strong></div>
+      <div class="d-hint">不能顺着她说"不错"——需要数据锚定。</div>
+    </div>
+    <div class="d-card">
+      <div class="d-label"><span class="dot" style="background:#16A34A"></span>D₃ 关系基础：信任</div>
+      <div class="d-body">带了她两年·她觉得你公平。<strong>可以直接给事实。</strong></div>
+      <div class="d-hint">第一次考核——冲击会考验这份信任。</div>
+    </div>
+    <div class="d-card">
+      <div class="d-label"><span class="dot" style="background:#3B82F6"></span>D₄ 改进紧迫度：中</div>
+      <div class="d-body">半年度面谈·有缓冲·可分步推进。</div>
+      <div class="d-hint">不急于一次解决所有问题。</div>
+    </div>
+    <div class="d-card full">
+      <div class="d-label"><span class="dot" style="background:#8B5CF6"></span>D₅ 根因类型：能力</div>
+      <div class="d-body">不是不想做好——<strong>是不知道"什么算做好"。</strong>没人给过她具体标准·不知道该问谁。需要给具体方法，不是激励问题。</div>
+    </div>
+  </div>
+
+  <!-- Strategy -->
+  <div class="strat-card">
+    <strong>策略提示</strong>：D₂=高估→先让她自评，再用数据锚定。D₃=信任→可以直接给事实。D₅=能力→聚焦建立质量标准。
+  </div>
+
+  <!-- Self-check + Self-rate -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="check-card">
+      <div class="check-label">推门前自检</div>
+      这场面谈对她有用吗？她能带走什么？<br>如果今天不面谈——她的问题会自己解决吗？
+    </div>
+    <div class="check-card">
+      <div class="check-label">自评基线（1-10）</div>
+      <div class="self-rate">
+        <div class="rate-item"><div class="rate-num">①建立信任</div><input class="rate-input" value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><div class="rate-num">②说明目的</div><input class="rate-input" value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><div class="rate-num">③鼓励说话</div><input class="rate-input" value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><div class="rate-num">④认真倾听</div><input class="rate-input" value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><div class="rate-num">⑤积极结束</div><input class="rate-input" value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Opening -->
+  <div class="open-card">
+    ⚡ 她推门进来，脸上带着笑。没带笔记本。<strong>在等你先开口。</strong>
+  </div>
+
+  <!-- Process -->
+  <div class="process-row">
+    <span class="process-step">P₁安全氛围</span><span class="process-arrow">→</span>
+    <span class="process-step">P₂自评+事实</span><span class="process-arrow">→</span>
+    <span class="process-step">P₃探索原因</span><span class="process-arrow">→</span>
+    <span class="process-step">P₄共识目标</span><span class="process-arrow">→</span>
+    <span class="process-step">P₅行动计划</span><span class="process-arrow">→</span>
+    <span class="process-step">P₆跟进约定</span>
+  </div>
+  <div style="text-align:center;font-size:10px;color:#A8A29E">全程：积极倾听·共情沟通。不否定努力，不横向比较，不威胁暗示。</div>
+
+  <!-- Start -->
+  <button class="btn-start" onclick="start()">开始面谈</button>
+  <div class="lv-row" id="lvGroup">
+    <button class="lv-btn" data-lv="A" onclick="selLv('A')">新手</button>
+    <button class="lv-btn active" data-lv="B" onclick="selLv('B')">中等</button>
+    <button class="lv-btn" data-lv="C" onclick="selLv('C')">高手</button>
+  </div>
+</div>
+<script>let cl='B';function selLv(l){cl=l;document.querySelectorAll('#lvGroup .lv-btn').forEach(b=>b.classList.toggle('active',b.dataset.lv===l))}function start(){console.log('进入面谈：管理者B')}</script>
+</body>
+</html>

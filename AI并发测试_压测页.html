@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI插件并发测试</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    padding: 40px 20px;
+    max-width: 640px;
+    margin: 0 auto;
+    background: #fafafa;
+    color: #1d1d1f;
+  }
+  h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.02em; }
+  .sub { font-size: 14px; color: #86868b; margin-bottom: 24px; }
+
+  .config-section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .config-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #1d1d1f; }
+
+  .plugin-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f7;
+    font-size: 13px;
+  }
+  .plugin-row:last-child { border-bottom: none; }
+  .plugin-name { flex: 1; font-weight: 500; font-family: 'SF Mono', 'Menlo', 'Monaco', monospace; font-size: 12px; color: #1d1d1f; }
+  .plugin-qps {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .qps-high { background: #e8f5e9; color: #2e7d32; }
+  .qps-mid { background: #fff3e0; color: #e65100; }
+  .qps-low { background: #ffebee; color: #c62828; }
+  .qps-unknown { background: #f5f5f7; color: #86868b; }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  button {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: -0.01em;
+  }
+  button:active { transform: scale(0.97); }
+  .btn-primary { background: #5B9A8B; color: #fff; }
+  .btn-primary:hover { background: #4a8a7b; }
+  .btn-primary:disabled { background: #a8c8c0; cursor: not-allowed; }
+  .btn-outline { background: #fff; color: #5B9A8B; border: 1.5px solid #5B9A8B; }
+  .btn-outline:hover { background: #f0f9f6; }
+  .btn-outline:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
+
+  #output {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    max-height: 420px;
+    overflow-y: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    border-bottom: 1px solid #fafafa;
+  }
+  .result-n { color: #86868b; min-width: 32px; }
+  .result-ok { color: #2e7d32; }
+  .result-fail { color: #c62828; }
+  .result-ms { color: #86868b; margin-left: auto; }
+
+  .summary {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .summary-pass { background: #e8f5e9; color: #2e7d32; }
+  .summary-warn { background: #fff3e0; color: #e65100; }
+  .summary-fail { background: #ffebee; color: #c62828; }
+  .summary strong { font-size: 16px; }
+
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .status-bar {
+    font-size: 13px;
+    color: #86868b;
+    margin-bottom: 8px;
+    min-height: 20px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #86868b;
+  }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-dot.green { background: #4caf50; }
+  .legend-dot.red { background: #e53935; }
+  .legend-dot.yellow { background: #ff9800; }
+</style>
+</head>
+<body>
+
+<h2>🔬 AI 插件并发上限测试</h2>
+<p class="sub">测试低代码平台 AI 插件在高并发场景下的表现。通过标准：成功率 ≥ 90%，最慢响应 &lt; 10秒。</p>
+
+<div class="config-section">
+  <h3>📋 第一步：查管理后台（理论值）</h3>
+  <p style="font-size:13px;color:#86868b;margin-bottom:12px;">去低代码平台管理后台 → AI插件管理，查看这三个插件的配置：</p>
+  <div class="plugin-row">
+    <span class="plugin-name">scenario_card_smart_generate_v19_1</span>
+    <span class="plugin-qps qps-unknown" id="qps1">待查</span>
+  </div>
+  <div class="plugin-row">
+    <span class="plugin-name">mdp_coach_ai_conversation_reply_1</span>
+    <span class="plugin-qps qps-unknown" id="qps2">待查</span>
+  </div>
+  <div class="plugin-row">
+    <span class="plugin-name">ai_coach_analysis_report_1</span>
+    <span class="plugin-qps qps-unknown" id="qps3">待查</span>
+  </div>
+</div>
+
+<div class="config-section">
+  <h3>🧪 第二步：实际压测</h3>
+  <p style="font-size:13px;color:#86868b;margin-bottom:12px;">
+    连续发送请求，间隔 200ms，模拟多人同时使用。建议先用 5 次小测，再跑 20 次全量。
+  </p>
+  <div class="btn-row">
+    <button class="btn-outline" id="btn-small" onclick="runTest(5)">小测（5次）</button>
+    <button class="btn-primary" id="btn-full" onclick="runTest(20)">全量（20次）</button>
+    <button class="btn-outline" id="btn-stress" onclick="runTest(50)">压力（50次）</button>
+  </div>
+  <div class="status-bar" id="status"></div>
+  <div id="output"><span style="color:#86868b;font-size:13px;">点击按钮开始测试…</span></div>
+</div>
+
+<div class="config-section" style="font-size:12px;color:#86868b;line-height:1.8;">
+  <h3>📊 判断标准</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <tr style="border-bottom:1px solid #f5f5f7;">
+      <th style="text-align:left;padding:8px 0;">指标</th>
+      <th style="text-align:center;padding:8px 0;">✅ 正常</th>
+      <th style="text-align:center;padding:8px 0;">⚠️ 需优化</th>
+      <th style="text-align:center;padding:8px 0;">🔴 需B路线</th>
+    </tr>
+    <tr style="border-bottom:1px solid #fafafa;">
+      <td style="padding:6px 0;">成功率</td>
+      <td style="text-align:center;color:#2e7d32;">≥ 90%</td>
+      <td style="text-align:center;color:#e65100;">75-89%</td>
+      <td style="text-align:center;color:#c62828;">&lt; 75%</td>
+    </tr>
+    <tr style="border-bottom:1px solid #fafafa;">
+      <td style="padding:6px 0;">最慢响应</td>
+      <td style="text-align:center;color:#2e7d32;">&lt; 5秒</td>
+      <td style="text-align:center;color:#e65100;">5-10秒</td>
+      <td style="text-align:center;color:#c62828;">&gt; 10秒</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 0;">QPS 上限</td>
+      <td style="text-align:center;color:#2e7d32;">≥ 20</td>
+      <td style="text-align:center;color:#e65100;">10-19</td>
+      <td style="text-align:center;color:#c62828;">&lt; 10</td>
+    </tr>
+  </table>
+</div>
+
+<script>
+var TEST_COUNT = 20;
+var RUNNING = false;
+
+function updateStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+
+async function runTest(count) {
+  if (RUNNING) return;
+  RUNNING = true;
+  TEST_COUNT = count;
+
+  var btns = document.querySelectorAll('button');
+  btns.forEach(function(b) { b.disabled = true; });
+
+  var output = document.getElementById('output');
+  output.innerHTML = '';
+
+  var results = [];
+  var plugin;
+
+  // 尝试加载对话AI插件
+  try {
+    if (typeof window.capabilityClient !== 'undefined' && window.capabilityClient.load) {
+      plugin = window.capabilityClient.load('mdp_coach_ai_conversation_reply_1');
+    } else {
+      output.innerHTML = '<div class="summary summary-fail"><strong>⚠️ 低代码平台 SDK 未加载</strong><br>请在低代码平台平台内打开此页面，而不是直接浏览器打开。</div>';
+      RUNNING = false;
+      btns.forEach(function(b) { b.disabled = false; });
+      return;
+    }
+  } catch(e) {
+    output.innerHTML = '<div class="summary summary-fail"><strong>⚠️ 插件加载失败</strong><br>' + e.message + '</div>';
+    RUNNING = false;
+    btns.forEach(function(b) { b.disabled = false; });
+    return;
+  }
+
+  updateStatus('测试中… 0/' + count);
+
+  for (var i = 1; i <= count; i++) {
+    var start = Date.now();
+    try {
+      var result = await plugin.call('textGenerate', {
+        system_prompt: '你是NPC-周，一个地产项目骨干。简单回应即可，不超过50字。',
+        user_message_history: JSON.stringify([{role:'user', content:'你好，NPC-周。最近项目怎么样？'}])
+      });
+      var ms = Date.now() - start;
+      var cls = ms > 5000 ? 'result-ms' : 'result-ms';
+      results.push({n: i, ok: true, ms: ms});
+      output.innerHTML += '<div class="result-row"><span class="result-n">#' + i + '</span><span class="result-ok">✅ 成功</span><span class="' + cls + '">' + ms + 'ms</span></div>';
+    } catch(e) {
+      var ms = Date.now() - start;
+      results.push({n: i, ok: false, ms: ms, err: (e.message || String(e)).substring(0, 80)});
+      output.innerHTML += '<div class="result-row"><span class="result-n">#' + i + '</span><span class="result-fail">❌ 失败</span><span class="result-ms">' + ms + 'ms</span><span style="color:#c62828;font-size:11px;">' + (e.message || String(e)).substring(0, 60) + '</span></div>';
+    }
+
+    updateStatus('测试中… ' + i + '/' + count);
+
+    // 间隔 200ms（头 5 次无间隔，模拟突发并发）
+    if (i < count) {
+      var delay = i < 5 ? 50 : 200;
+      await new Promise(function(r) { setTimeout(r, delay); });
+    }
+  }
+
+  // 统计
+  var ok = results.filter(function(r) { return r.ok; });
+  var fails = results.filter(function(r) { return !r.ok; });
+  var avgMs = ok.length > 0 ? Math.round(ok.reduce(function(a,b) { return a + b.ms; }, 0) / ok.length) : 0;
+  var maxMs = results.length > 0 ? Math.max.apply(null, results.map(function(r) { return r.ms; })) : 0;
+  var minMs = ok.length > 0 ? Math.min.apply(null, ok.map(function(r) { return r.ms; })) : 0;
+  var okRate = Math.round(ok.length / count * 100);
+
+  var summaryCls = 'summary-pass';
+  var verdict = '✅ 通过。并发能力正常。';
+  var recs = [];
+
+  if (okRate < 75) {
+    summaryCls = 'summary-fail';
+    verdict = '🔴 不通过。需启动 B 路线——预生成 NPC 回应池。';
+    recs.push('成功率低于 75%，高并发下 AI 插件可能撑不住');
+  } else if (okRate < 90) {
+    summaryCls = 'summary-warn';
+    verdict = '⚠️ 勉强通过。建议加 NPC 等待提示，并监控线上表现。';
+    recs.push('成功率在 75-89%，建议增加重试机制');
+  }
+
+  if (maxMs > 10000) {
+    if (summaryCls === 'summary-pass') summaryCls = 'summary-warn';
+    recs.push('最慢响应超 10 秒（' + maxMs + 'ms），用户体验差。建议：1) NPC等待提示 2) 超时重试');
+  }
+
+  if (avgMs > 5000) {
+    recs.push('平均响应超 5 秒（' + avgMs + 'ms），需优化 prompt 长度或切换更快的模型');
+  }
+
+  var recsHtml = recs.length > 0 ? '<br><br><strong>建议：</strong><br>' + recs.map(function(r,i) { return (i+1) + '. ' + r; }).join('<br>') : '';
+
+  output.innerHTML += '<div class="summary ' + summaryCls + '">' +
+    '<strong>' + verdict + '</strong><br><br>' +
+    '📊 成功率：<strong>' + okRate + '%</strong>（' + ok.length + '/' + count + '）<br>' +
+    '⏱ 平均响应：<strong>' + avgMs + 'ms</strong> &nbsp;|&nbsp; 最快：' + minMs + 'ms &nbsp;|&nbsp; 最慢：' + maxMs + 'ms<br>' +
+    (fails.length > 0 ? '❌ 失败：<strong>' + fails.length + '次</strong><br>' : '') +
+    recsHtml +
+    '</div>';
+
+  updateStatus('测试完成 · ' + ok.length + '/' + count + ' 成功');
+  RUNNING = false;
+  btns.forEach(function(b) { b.disabled = false; });
+}
+</script>
+
+</body>
+</html>

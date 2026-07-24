@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Q2 课题经验教训汇总报告 · 中期复盘（样张）</title>
+<style>
+  /* ===== Apple HIG for web ===== */
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --separator: rgba(0,0,0,0.08);
+    --blue: #0071e3;
+    --green: #34c759;
+    --orange: #ff9500;
+    --red: #ff3b30;
+    --purple: #af52de;
+    --teal: #30b0c7;
+    --indigo: #5856d6;
+    --brown: #a2845e;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro SC", "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* 示意数据警示条 */
+  .demo-banner {
+    background: #fff8e6;
+    border: 1px solid rgba(255,149,0,0.35);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #8a5a00;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Header */
+  .report-header { margin-bottom: 40px; }
+  .report-eyebrow {
+    font-size: 14px; font-weight: 600; color: var(--blue);
+    letter-spacing: 0.5px; margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 40px; font-weight: 700; letter-spacing: -0.5px;
+    line-height: 1.15; margin-bottom: 12px;
+  }
+  .report-meta {
+    font-size: 15px; color: var(--text-secondary);
+    display: flex; flex-wrap: wrap; gap: 6px 20px;
+  }
+
+  /* 摘要卡 */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 48px;
+  }
+  .summary-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .summary-num { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; }
+  .summary-label { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Section */
+  .section { margin-bottom: 48px; }
+  .section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+  .section-count { font-size: 14px; color: var(--text-tertiary); }
+  .section-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  /* 条目卡 */
+  .lesson-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 24px; margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .lesson-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .tag {
+    font-size: 12px; font-weight: 600; padding: 4px 10px;
+    border-radius: 100px; letter-spacing: 0.2px;
+  }
+  .tag-exp   { background: rgba(52,199,89,0.12);  color: #1d8a3e; }
+  .tag-les   { background: rgba(255,59,48,0.10);  color: #c92a20; }
+  .tag-line  { background: rgba(0,113,227,0.10);  color: var(--blue); }
+  .tag-layer { background: rgba(88,86,214,0.10);  color: var(--indigo); }
+  .tag-status{ background: rgba(0,0,0,0.05);      color: var(--text-secondary); }
+
+  .lesson-quote {
+    font-size: 17px; line-height: 1.6;
+    padding: 14px 18px;
+    border-left: 3px solid var(--blue);
+    background: rgba(0,113,227,0.04);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 14px;
+  }
+  .quote-mark {
+    display: block; font-size: 11px; font-weight: 600;
+    color: var(--text-tertiary); margin-top: 8px; letter-spacing: 0.3px;
+  }
+
+  .lesson-source {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px 24px; font-size: 13px; color: var(--text-secondary);
+    padding-top: 12px; border-top: 1px solid var(--separator);
+  }
+  .lesson-source b { color: var(--text-primary); font-weight: 600; }
+
+  .expert-slot {
+    margin-top: 12px; padding: 12px 16px;
+    background: rgba(175,82,222,0.06);
+    border-radius: var(--radius-sm);
+    font-size: 13px; color: #7d3caf;
+  }
+  .expert-slot b { font-weight: 600; }
+
+  /* 分类说明 */
+  .taxonomy-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .taxonomy-table th, .taxonomy-table td { padding: 12px 16px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--separator); }
+  .taxonomy-table th { background: rgba(0,0,0,0.02); font-weight: 600; font-size: 13px; color: var(--text-secondary); }
+  .taxonomy-table tr:last-child td { border-bottom: none; }
+
+  /* 客观性说明 */
+  .integrity-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .integrity-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+  .integrity-card ol { padding-left: 20px; font-size: 14px; color: var(--text-secondary); }
+  .integrity-card li { margin-bottom: 8px; }
+  .integrity-card li b { color: var(--text-primary); }
+
+  footer {
+    margin-top: 56px; padding-top: 24px;
+    border-top: 1px solid var(--separator);
+    font-size: 12px; color: var(--text-tertiary);
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    h1 { font-size: 30px; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media print {
+    body { background: #fff; }
+    .demo-banner { display: none; }
+    .lesson-card, .summary-card, .integrity-card { box-shadow: none; border: 1px solid var(--separator); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="demo-banner">⚠️ 本页为<b>形态确认样张</b>——所有课题名称、经验内容、数字均为示意编造，仅用于与业务领导确认报告形态，确认后以真实数据替换。</div>
+
+  <header class="report-header">
+    <div class="report-eyebrow">2026 彩虹+计划 · 行动学习课题</div>
+    <h1>Q2 中期复盘 · 经验教训汇总报告</h1>
+    <div class="report-meta">
+      <span>报告期间：2026年4月—7月（第二次作业·中期复盘）</span>
+      <span>数据来源：学员中期复盘报告「💡 经验教训（可复制）」章节</span>
+      <span>生成日期：2026-07-16</span>
+    </div>
+  </header>
+
+  <!-- 摘要 -->
+  <div class="summary-grid">
+    <div class="summary-card"><div class="summary-num">12</div><div class="summary-label">覆盖课题（示意）</div></div>
+    <div class="summary-card"><div class="summary-num" style="color:#1d8a3e">23</div><div class="summary-label">经验条目（示意）</div></div>
+    <div class="summary-card"><div class="summary-num" style="color:#c92a20">9</div><div class="summary-label">教训条目（示意）</div></div>
+    <div class="summary-card"><div class="summary-num" style="color:var(--purple)">32</div><div class="summary-label">待专家评估复用性</div></div>
+  </div>
+
+  <!-- 分类体系 -->
+  <section class="section">
+    <div class="section-header"><h2>分类体系</h2></div>
+    <p class="section-desc">主维度按<b>房地产专业条线</b>分类（业务领导视角），辅维度按<b>成果层面</b>（沿用课题模板自身的机制/组织/流程/制度四层）。分类规则公开，每条分类均记录分类人与确认状态。</p>
+    <table class="taxonomy-table">
+      <tr><th>主维度 · 专业条线</th><th>涵盖方向（对应模板"研究方向"）</th></tr>
+      <tr><td>🏗️ 投资拓展</td><td>投资出价能力、拿地测算、土地研判</td></tr>
+      <tr><td>💰 成本管理</td><td>成本优化、成本适配、目标成本</td></tr>
+      <tr><td>🔗 招采与供应链</td><td>供应链管理、集采、供方资源</td></tr>
+      <tr><td>📐 设计管理</td><td>产品定位、设计优化、限额设计</td></tr>
+      <tr><td>🏢 工程管理</td><td>进度、质量、安全、交付标准</td></tr>
+      <tr><td>📣 营销与客研</td><td>去化、定价、客户研究</td></tr>
+      <tr><td>🤝 交付与客服</td><td>交付体验、客诉、满意度</td></tr>
+      <tr><td>⚙️ 运营与综合</td><td>计划运营、大运营、跨条线协同、组织人力</td></tr>
+    </table>
+  </section>
+
+  <!-- 经验条目：按专业条线分组 -->
+  <section class="section">
+    <div class="section-header"><h2>💰 成本管理</h2><span class="section-count">经验 2 · 教训 1（示意）</span></div>
+
+    <div class="lesson-card">
+      <div class="lesson-tags">
+        <span class="tag tag-exp">经验</span>
+        <span class="tag tag-line">成本管理</span>
+        <span class="tag tag-layer">流程层面</span>
+        <span class="tag tag-status">复用评估：待专家评审</span>
+      </div>
+      <div class="lesson-quote">
+        "在方案设计阶段即引入成本适配前置评审，将结构含钢量控制节点从施工图阶段提前至方案比选阶段，本项目地上结构成本较目标成本下降约 X%。"
+        <span class="quote-mark">▎学员原文，一字未改（示意内容）</span>
+      </div>
+      <div class="lesson-source">
+        <span>课题：<b>经营视角下成本适配能力提升</b></span>
+        <span>单位：XX 城市公司（示意）</span>
+        <span>提交人：学员 A（示意）</span>
+        <span>出处：中期复盘报告 · 经验教训 1 · 2026-07-10</span>
+      </div>
+      <div class="expert-slot"><b>专家复用评估：</b>（待填写——适用边界 / 复用条件 / 建议应用范围）</div>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-tags">
+        <span class="tag tag-les">教训</span>
+        <span class="tag tag-line">成本管理</span>
+        <span class="tag tag-layer">机制层面</span>
+        <span class="tag tag-status">复用评估：待专家评审</span>
+      </div>
+      <div class="lesson-quote">
+        "目标成本调整未与投资版测算联动，导致中期发现两版数据口径不一致，返工核对耗时两周。教训：口径变更必须同步触发双向校验。"
+        <span class="quote-mark">▎学员原文，一字未改（示意内容）</span>
+      </div>
+      <div class="lesson-source">
+        <span>课题：<b>成本优化专项</b>（示意）</span>
+        <span>单位：XX 项目群（示意）</span>
+        <span>提交人：学员 B（示意）</span>
+        <span>出处：中期复盘报告 · 经验教训 2 · 2026-07-10</span>
+      </div>
+      <div class="expert-slot"><b>专家复用评估：</b>（待填写）</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><h2>🏗️ 投资拓展</h2><span class="section-count">经验 1（示意）</span></div>
+    <div class="lesson-card">
+      <div class="lesson-tags">
+        <span class="tag tag-exp">经验</span>
+        <span class="tag tag-line">投资拓展</span>
+        <span class="tag tag-layer">组织层面</span>
+        <span class="tag tag-status">复用评估：待专家评审</span>
+      </div>
+      <div class="lesson-quote">
+        "组建'投资-成本-营销'三方联席出价小组后，出价测算周期由 X 天缩短至 X 天，且三次出价均进入前三轮。"
+        <span class="quote-mark">▎学员原文，一字未改（示意内容）</span>
+      </div>
+      <div class="lesson-source">
+        <span>课题：<b>投资出价能力提升</b>（示意）</span>
+        <span>单位：XX 片区（示意）</span>
+        <span>提交人：学员 C（示意）</span>
+        <span>出处：中期复盘报告 · 经验教训 1 · 2026-07-10</span>
+      </div>
+      <div class="expert-slot"><b>专家复用评估：</b>（待填写）</div>
+    </div>
+  </section>
+
+  <!-- 客观性说明 -->
+  <section class="section">
+    <div class="integrity-card">
+      <h3>客观性与可查性说明（随每期报告固定附带）</h3>
+      <ol>
+        <li><b>只摘不写</b>——所有条目均为学员报告原文引用，汇总过程不改写、不评价、不补充。</li>
+        <li><b>条条可溯</b>——每条注明来源课题、单位、提交人、报告章节与提交日期，可回查原始报告对应段落。</li>
+        <li><b>分类留痕</b>——分类依据上方公开的分类体系执行；每条记录分类人及专家确认状态，异议可复核改判并保留改判记录。</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>2026 彩虹+计划 · 课题经验资产库 · 数据仅存于本地，不经任何外部服务</footer>
+</div>
+</body>
+</html>

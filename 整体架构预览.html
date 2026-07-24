@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>架构预览 · AI 管理陪练</title>
+<style>
+  :root{--bg:#fff;--text:#1d1d1f;--t2:#6e6e73;--t3:#aeaeb2;--accent:#34c759;--border:rgba(0,0,0,.06);--r:16px;--r-lg:20px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 80px}
+
+  h1{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+  .sub{font-size:14px;color:var(--t2);margin-bottom:40px}
+
+  /* LAYER */
+  .layer{margin-bottom:44px}
+  .layer-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .layer-badge{font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;color:#fff;letter-spacing:.04em}
+  .layer-badge.user{background:var(--accent)}
+  .layer-badge.admin{background:#ff9500}
+  .layer-badge.internal{background:var(--t3)}
+  .layer-name{font-size:19px;font-weight:700;letter-spacing:-.01em}
+  .layer-desc{font-size:13px;color:var(--t2);margin-bottom:16px;padding-left:28px}
+
+  /* FLOW */
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:20px 0;margin-bottom:8px}
+  .flow-node{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:600;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px;transition:all .2s;white-space:nowrap}
+  .flow-node:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(52,199,89,.1)}
+  .flow-node .fn-icon{font-size:16px}
+  .flow-arrow{color:var(--t3);font-size:16px;font-weight:300}
+  .flow-node.end{background:rgba(52,199,89,.04);border-color:rgba(52,199,89,.15)}
+
+  /* CARD GRID */
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .p-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;text-decoration:none;color:inherit;display:block;transition:all .2s}
+  .p-card:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(52,199,89,.1)}
+  .p-card .pc-name{font-size:14px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+  .p-card .pc-file{font-size:11px;color:var(--t3);margin-bottom:4px;font-family:'SF Mono',Menlo,monospace}
+  .p-card .pc-desc{font-size:12px;color:var(--t2)}
+  .p-card .pc-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;margin-top:8px}
+  .pc-tag.ready{background:rgba(52,199,89,.1);color:#248a3d}
+  .pc-tag.new{background:rgba(0,113,227,.08);color:#0071e3}
+
+  /* NOTE */
+  .note{background:rgba(255,149,0,.05);border-left:3px solid #ff9500;padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:var(--t2);line-height:1.6;margin-top:12px}
+
+  hr{border:none;border-top:1px solid var(--border);margin:36px 0}
+
+  @media(max-width:640px){.page{padding:32px 14px 60px}.flow{flex-direction:column;align-items:stretch}.flow-arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>AI 管理陪练 · 架构预览</h1>
+<p class="sub">三层用户 · 不同入口 · 不同权限。点击卡片可直接打开对应页面。</p>
+
+<!-- ====== LAYER 1: 学员端 ====== -->
+<div class="layer">
+  <div class="layer-head">
+    <span class="layer-badge user">学员端</span>
+    <span class="layer-name">学员练习路径</span>
+  </div>
+  <p class="layer-desc">从首页进入 → 选场景 → 准备 → 对话 → 反馈 → 查看练习记录。这是学员的唯一路径。</p>
+
+  <div class="flow">
+    <a class="flow-node" href="陪练首页.html"><span class="fn-icon">🏠</span> 首页</a>
+    <span class="flow-arrow">→</span>
+    <a class="flow-node" href="scene_TG001_准备页.html"><span class="fn-icon">🎯</span> 准备页</a>
+    <span class="flow-arrow">→</span>
+    <a class="flow-node" href="scene_TG001_引擎页.html"><span class="fn-icon">💬</span> 对话页</a>
+    <span class="flow-arrow">→</span>
+    <a class="flow-node" href="scene_TG001_反馈页.html"><span class="fn-icon">📊</span> 反馈页</a>
+    <span class="flow-arrow">→</span>
+    <a class="flow-node end" href="练习记录.html"><span class="fn-icon">📋</span> 练习记录</a>
+  </div>
+
+  <p style="font-size:12px;color:var(--t2);margin-bottom:16px">* 同样路径适用于 PR-002 管理者B场景：准备页 → 对话页 → 反馈页 → 练习记录</p>
+
+  <div class="card-grid">
+    <a class="p-card" href="陪练首页.html">
+      <div class="pc-name">🏠 首页</div><div class="pc-file">陪练首页.html</div>
+      <div class="pc-desc">场景选择入口。4张场景卡片，可直接开始练习。</div>
+      <span class="pc-tag ready">学员可见</span>
+    </a>
+    <a class="p-card" href="scene_TG001_准备页.html">
+      <div class="pc-name">🎯 TG-001 准备页</div><div class="pc-file">scene_TG001_准备页.html</div>
+      <div class="pc-desc">NPC-周场景。阅读背景故事，完成自评基线。</div>
+      <span class="pc-tag ready">学员可见</span>
+    </a>
+    <a class="p-card" href="scene_TG001_引擎页.html">
+      <div class="pc-name">💬 TG-001 对话引擎</div><div class="pc-file">scene_TG001_引擎页.html</div>
+      <div class="pc-desc">AI NPC 对话 + 陷阱检测。新增语音输入 + 手机端适配。</div>
+      <span class="pc-tag new">新增语音</span>
+    </a>
+    <a class="p-card" href="scene_TG001_反馈页.html">
+      <div class="pc-name">📊 TG-001 反馈页</div><div class="pc-file">scene_TG001_反馈页.html</div>
+      <div class="pc-desc">雷达图 + 行为分析 + 行动承诺。底部可跳转练习记录。</div>
+      <span class="pc-tag new">新增入口</span>
+    </a>
+    <a class="p-card" href="练习记录.html">
+      <div class="pc-name">📋 练习记录</div><div class="pc-file">练习记录.html</div>
+      <div class="pc-desc">个人练习历史。得分、陷阱触发、行动承诺追踪。</div>
+      <span class="pc-tag ready">学员可见</span>
+    </a>
+    <a class="p-card" href="preview_MTP陪练专区.html">
+      <div class="pc-name">📚 全部场景</div><div class="pc-file">preview_MTP陪练专区.html</div>
+      <div class="pc-desc">12 个场景目录。按模块、难度、专业筛选。</div>
+      <span class="pc-tag ready">学员可见</span>
+    </a>
+  </div>
+</div>
+
+<hr>
+
+<!-- ====== LAYER 2: 管理端 ====== -->
+<div class="layer">
+  <div class="layer-head">
+    <span class="layer-badge admin">管理端</span>
+    <span class="layer-name">管理员 / 老师 / 业务 Leader</span>
+  </div>
+  <p class="layer-desc">管理端工具不挂在学员页面上。管理员通过独立链接进入。需要 50 人次以上练习数据才有分析价值。</p>
+
+  <div class="card-grid">
+    <a class="p-card" href="管理看板.html">
+      <div class="pc-name">📊 管理看板</div><div class="pc-file">管理看板.html</div>
+      <div class="pc-desc">团队练习频次、能力薄弱分布、成长排行。独立链接，不对外。</div>
+      <span class="pc-tag ready">管理专用</span>
+    </a>
+  </div>
+
+  <div class="note">管理看板不在学员端页面上出现。管理员通过单独链接进入。<br>当前处于就绪状态，部署到低代码平台后，数据从 coaching_sessions 表读取。</div>
+</div>
+
+<hr>
+
+<!-- ====== LAYER 3: 内部文档 ====== -->
+<div class="layer">
+  <div class="layer-head">
+    <span class="layer-badge internal">内部</span>
+    <span class="layer-name">开发文档 · 不对用户开放</span>
+  </div>
+  <p class="layer-desc">我们自己用的架构文档、对话记录、场景卡协议。</p>
+
+  <div class="card-grid">
+    <a class="p-card" href="架构总览.html">
+      <div class="pc-name">🏗️ 架构总览</div><div class="pc-file">架构总览.html</div>
+      <div class="pc-desc">三层页面体系。可点击浏览全部页面。</div>
+      <span class="pc-tag ready">内部参考</span>
+    </a>
+    <a class="p-card" href="三智能体_对话记录.md">
+      <div class="pc-name">📝 对话记录</div><div class="pc-file">三智能体_对话记录.md</div>
+      <div class="pc-desc">项目启动至今的完整会话记录。</div>
+      <span class="pc-tag ready">内部参考</span>
+    </a>
+    <a class="p-card" href="场景卡数据协议_三智能体合约.md">
+      <div class="pc-name">📋 场景卡协议</div><div class="pc-file">场景卡数据协议_三智能体合约.md</div>
+      <div class="pc-desc">五模块 JSON Schema。三智能体之间的数据合同。</div>
+      <span class="pc-tag ready">内部参考</span>
+    </a>
+  </div>
+</div>
+
+<hr>
+
+<!-- ====== SUMMARY TABLE ====== -->
+<h2 style="font-size:20px;font-weight:700;margin-bottom:16px">全部文件一览</h2>
+<table style="width:100%;border-collapse:collapse;font-size:13px">
+<tr style="border-bottom:2px solid var(--border)"><th style="text-align:left;padding:8px 12px;font-size:11px;color:var(--t3)">层级</th><th style="text-align:left;padding:8px 12px;font-size:11px;color:var(--t3)">文件</th><th style="text-align:left;padding:8px 12px;font-size:11px;color:var(--t3)">状态</th></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">陪练首页.html</td><td style="padding:8px 12px">🟡 用户自行调整</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">preview_MTP陪练专区.html</td><td style="padding:8px 12px">✅ 已加导航栏</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">scene_TG001_准备页.html</td><td style="padding:8px 12px">✅ 含手机端适配</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">scene_TG001_引擎页.html</td><td style="padding:8px 12px">✅ 新增语音输入 + 手机端适配</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">scene_TG001_反馈页.html</td><td style="padding:8px 12px">✅ 新增练习记录入口</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">scene_PR2_沉浸式准备页_v2.html</td><td style="padding:8px 12px">✅</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">scene_PR2_引擎驱动版_v7.html</td><td style="padding:8px 12px">✅ 新增语音输入 + 手机端适配</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">scene_PR2_反馈页_v22.html</td><td style="padding:8px 12px">✅ 新增练习记录入口</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(52,199,89,.1);color:#248a3d;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">学员</span></td><td style="padding:8px 12px">练习记录.html</td><td style="padding:8px 12px">✅ 含行动承诺追踪</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(255,149,0,.1);color:#c46e00;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">管理</span></td><td style="padding:8px 12px">管理看板.html</td><td style="padding:8px 12px">✅ 含自动总结文字</td></tr>
+<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 12px"><span style="background:rgba(142,142,147,.1);color:#8e8e93;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">内部</span></td><td style="padding:8px 12px">架构总览.html</td><td style="padding:8px 12px">✅</td></tr>
+<tr><td style="padding:8px 12px"><span style="background:rgba(142,142,147,.1);color:#8e8e93;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600">内部</span></td><td style="padding:8px 12px">三智能体_对话记录.md</td><td style="padding:8px 12px">✅</td></tr>
+</table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: 🦕
+  - heading "数学大冒险" [level=1] [ref=e4]
+  - paragraph [ref=e5]: 和小恐龙一起，发现数学的魔法世界吧！
+  - generic [ref=e6]:
+    - generic [ref=e7] [cursor=pointer]:
+      - generic [ref=e8]: 🦕
+      - generic [ref=e9]: 小恐龙
+    - generic [ref=e10] [cursor=pointer]:
+      - generic [ref=e11]: 🐰
+      - generic [ref=e12]: 小兔子
+    - generic [ref=e13] [cursor=pointer]:
+      - generic [ref=e14]: 🐼
+      - generic [ref=e15]: 小熊猫
+  - textbox "输入你的名字吧～" [ref=e17]
+  - button "✨ 开始冒险！" [ref=e18] [cursor=pointer]

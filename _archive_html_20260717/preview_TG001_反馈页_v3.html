@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG-001 · 反馈报告</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;
+  background:linear-gradient(165deg,#F8F6F2,#EDE8E0,#F5F2ED,#EAE4DC);
+  min-height:100vh;-webkit-font-smoothing:antialiased;padding:28px 16px 60px;
+}
+.amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.1}
+.amb-1{width:300px;height:300px;background:#FEE2E2;top:-60px;right:-40px}
+.amb-2{width:240px;height:240px;background:#FEF3C7;bottom:-40px;left:-20px}
+
+.layout{position:relative;z-index:10;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+.card{
+  background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:24px;box-shadow:0 3px 16px rgba(0,0,0,.03)
+}
+.card h2{font-size:16px;font-weight:700;color:#1C1917;margin-bottom:2px}
+.card .sub{font-size:11px;color:#A8A29E;margin-bottom:16px}
+
+/* 共用 */
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700}
+.tag-good{background:#DCFCE7;color:#166534}.tag-bad{background:#FEE2E2;color:#DC2626}
+.tag-neutral{background:#F3F4F6;color:#6B7280}
+
+.divider{height:1px;background:rgba(0,0,0,.05);margin:14px 0}
+
+/* ① 路径回放 */
+.path-step{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.03)}
+.path-step:last-child{border-bottom:none}
+.path-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.path-num.good{background:#DCFCE7;color:#166534}
+.path-num.bad{background:#FEE2E2;color:#DC2626}
+.path-num.skip{background:#F3F4F6;color:#9CA3AF}
+.path-body{flex:1;font-size:12px;line-height:1.65}
+.path-you{color:#DC2626}.path-best{color:#166534}
+
+/* ② 行为评分 */
+.behavior-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:12px;line-height:1.65}
+.beh-dot{width:6px;height:6px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.beh-dot.good{background:#16a34a}.beh-dot.bad{background:#DC2626}
+
+/* ③ 知识点薄弱 */
+.knowledge-gap{background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.08);border-radius:12px;padding:14px 16px;margin:10px 0}
+.kg-label{font-size:9px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.kg-item{font-size:12px;line-height:1.7;margin-bottom:8px}
+.kg-code{font-family:'SF Mono',monospace;font-size:10px;background:rgba(245,158,11,.1);padding:1px 6px;border-radius:4px;color:#92400E}
+
+/* ④ 心智模式 */
+.mental-model{background:rgba(124,58,237,.03);border:1px solid rgba(124,58,237,.08);border-radius:12px;padding:14px 16px;margin:10px 0}
+.mm-label{font-size:9px;font-weight:700;color:#7C3AED;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.mm-pattern{font-size:13px;font-weight:600;color:#7C3AED;margin-bottom:6px}
+.mm-evidence{font-size:11px;color:#6B7280;line-height:1.65}
+.mm-question{font-size:12px;color:#7C3AED;font-style:italic;margin-top:10px;padding:8px 12px;background:rgba(124,58,237,.04);border-radius:8px}
+
+/* ⑤ 绩优参照 */
+.best-practice{background:rgba(16,185,129,.03);border:1px solid rgba(16,185,129,.08);border-radius:12px;padding:14px 16px;margin:10px 0}
+.bp-label{font-size:9px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.bp-row{font-size:12px;line-height:1.7;margin-bottom:10px}
+.bp-row:last-child{margin-bottom:0}
+
+/* ⑥ 再来一练 */
+.next-practice{background:rgba(59,130,246,.03);border:1px solid rgba(59,130,246,.08);border-radius:12px;padding:14px 16px;margin:10px 0}
+.np-label{font-size:9px;font-weight:700;color:#3B82F6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:14px;
+  background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .2s}
+.btn:hover{background:#000;transform:translateY(-1px)}
+.btn-outline{background:transparent;color:#1C1917;border:1.5px solid rgba(0,0,0,.1);margin-top:8px}
+.btn-outline:hover{background:rgba(0,0,0,.03)}
+
+.score-bar{height:6px;border-radius:3px;background:rgba(0,0,0,.05);overflow:hidden;flex:1}
+.score-fill{height:100%;border-radius:3px}
+.radar-item{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px}
+.radar-name{min-width:80px;font-weight:600;color:#1C1917}
+.radar-score{min-width:30px;font-weight:700;text-align:right}
+.radar-comp{min-width:50px;text-align:right;font-size:10px}
+.radar-comp.up{color:#16a34a}.radar-comp.down{color:#DC2626}.radar-comp.same{color:#9CA3AF}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+
+<div class="layout">
+
+  <!-- 标题 -->
+  <div class="card" style="text-align:center">
+    <h2>TG-001 · 首开倒计时</h2>
+    <div class="sub">2026年7月15日 · 第1次练习 · <span class="tag tag-neutral">对下管理·激励</span></div>
+  </div>
+
+  <!-- ① 对话路径回放 -->
+  <div class="card">
+    <h2>对话路径回放</h2>
+    <div class="sub">你实际走的每一步 vs 绩优管理者在这个场景下的路径。每一步都决定了NPC-周下一轮的态度。</div>
+
+    <div class="path-step">
+      <span class="path-num good">1</span>
+      <div class="path-body">
+        <strong>你做了：</strong>自己翻完来访数据，爬楼看了户型采光。<br>
+        <span class="path-best">绩优做法一致。</span>NPC-周的反应：抬起头看了你一眼——"领导，B户型和D户型在12楼以上性价比最好。你们觉得呢？"
+      </div>
+    </div>
+
+    <div class="path-step">
+      <span class="path-num good">2</span>
+      <div class="path-body">
+        <strong>你做了：</strong>问NPC-周"你觉得这两个户型哪个值得主推"。<br>
+        <span class="path-best">绩优做法一致。</span>NPC-周的反应：放下保温杯，第一次说了实话——"6个户型我们自己都不知道主推哪个。不是不努力，是被耗死了。"
+      </div>
+    </div>
+
+    <div class="path-step">
+      <span class="path-num bad">3</span>
+      <div class="path-body">
+        <strong>你做了：</strong>给团队做了户型对比表，说"大家灵活推荐"。<br>
+        <span class="path-best">绩优做法：</span>从6个户型中直接砍到2个——"就推B和D，其他的先放一放"。<br>
+        <span style="font-size:10px;color:#6B7280">这一步的分叉是全场最关键的分水岭。</span>
+      </div>
+    </div>
+
+    <div class="path-step">
+      <span class="path-num skip">4</span>
+      <div class="path-body">
+        <strong>你跳过了：</strong>亲自打样——没有做。<br>
+        <span class="path-best">绩优做法：</span>蹲在沙盘区，亲自接待一组客户，当天促成认筹。NPC-周的反应：从"试试看"变成"跟着做"——"你来的时候我以为又是一个画饼的。但你不是。"
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 行为级评分 -->
+  <div class="card">
+    <h2>行为级评分</h2>
+    <div class="sub">不是给维度打分——是标注你在对话中的具体行为。每个行为都有后果。</div>
+
+    <div style="font-size:10px;color:#A8A29E;margin-bottom:10px">P₂ 建立信任 · 对话健康度贡献 +18</div>
+    <div class="behavior-row">
+      <span class="beh-dot good"></span>
+      <span><strong>做得好：</strong>你没有一上来就开会宣布策略。你先爬了楼、看了数据。NPC-周看到你懂业务——信任从0升到了1。<br><span style="color:#6B7280;font-size:10px">对应 MTP8-3：信任方程式——降低自我导向。你没说"听我的"，你做了"我去看"。</span></span>
+    </div>
+    <div class="behavior-row">
+      <span class="beh-dot good"></span>
+      <span><strong>做得好：</strong>你问NPC-周"你觉得呢"。他之前见过四任空降领导——没人问过他这句话。<br><span style="color:#6B7280;font-size:10px">对应 MTP3-2：对下角色定位——教练而非发令者。</span></span>
+    </div>
+
+    <div class="divider"></div>
+    <div style="font-size:10px;color:#A8A29E;margin-bottom:10px">P₅ 示范赋能 · 对话健康度贡献 -14</div>
+    <div class="behavior-row">
+      <span class="beh-dot bad"></span>
+      <span><strong>可以更好：</strong>你给了户型对比表和培训。NPC-周的反应——"你给我一个表，不如你给我一个决定"。<br><span style="color:#6B7280;font-size:10px">落入陷阱 T03-信息幻觉。对应 MTP4-4：目标聚焦——过劳团队需要减法，不是工具。</span></span>
+    </div>
+    <div class="behavior-row">
+      <span class="beh-dot bad"></span>
+      <span><strong>缺失：</strong>你没有亲自打样。NPC-周从"试试看"没有走到"跟着做"——少了最关键的一步。<br><span style="color:#6B7280;font-size:10px">缺失动作对应 MTP11-5：榜样激励——示范是无声语言。MTP7-1：OJT第一步——我示范你观察。</span></span>
+    </div>
+  </div>
+
+  <!-- ③ 知识点薄弱项 -->
+  <div class="card">
+    <h2>知识点薄弱项</h2>
+    <div class="sub">不是你学得不够——是这些知识点在实战中还没来得及转化为行为。原子级定位。</div>
+
+    <div class="knowledge-gap">
+      <div class="kg-label">🔴 需要强化</div>
+      <div class="kg-item">
+        <span class="kg-code">MTP4-4</span> <strong>目标聚焦——砍掉噪音比增加工具更有效</strong><br>
+        <span style="font-size:11px;color:#6B7280">你的倾向：给工具、给培训、给信息。过劳团队的认知资源已经耗尽——更多信息=更大负担。他们需要的是你替他们做减法。</span>
+      </div>
+      <div class="kg-item">
+        <span class="kg-code">MTP11-5</span> <strong>榜样激励——示范是无声语言</strong><br>
+        <span style="font-size:11px;color:#6B7280">你的倾向：讲道理、培训、动员。对于观望的资深团队——亲眼看到的证据，力量超过一百句"你们可以的"。</span>
+      </div>
+    </div>
+
+    <div class="knowledge-gap" style="margin-top:6px">
+      <div class="kg-label">🟡 已掌握，需巩固</div>
+      <div class="kg-item">
+        <span class="kg-code">MTP8-3</span> <strong>信任方程式——降低自我导向</strong><br>
+        <span style="font-size:11px;color:#6B7280">这次做得不错——先展示专业能力，再提方向。下一次可以在更多场景中刻意练习这个模式。</span>
+      </div>
+      <div class="kg-item">
+        <span class="kg-code">MTP3-2</span> <strong>对下角色定位——教练而非发令者</strong><br>
+        <span style="font-size:11px;color:#6B7280">你问了NPC-周看法——这一步对。保持这个习惯：在给方案之前先问"你觉得呢"。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 心智模式觉察 -->
+  <div class="card">
+    <h2>心智模式觉察</h2>
+    <div class="sub">不是"你做错了"——是让你看到你在压力下的默认反应。这不是能力问题，是惯性问题。</div>
+
+    <div class="mental-model">
+      <div class="mm-label">识别到的管理惯性</div>
+      <div class="mm-pattern">遇到团队"不信"时，你的默认策略是——给更多信息和工具</div>
+      <div class="mm-evidence">
+        <strong>证据链：</strong><br>
+        决策点2：面对"6个户型比选瘫痪"→ 你选择了"给对比表"（T03-信息幻觉）<br>
+        决策点3：面对"团队不信"→ 你选择了"培训话术"（T04-培训替代示范）<br><br>
+        两次选择指向同一个惯性：<strong>当团队说"我们做不到"时，你的第一反应是给他们"更多武器"——而不是替他们"减轻负担"。</strong><br><br>
+        <span style="color:#6B7280">这个惯性在"带新人"场景中可能是有效的（新人缺知识）。但在"带资深团队"场景中是反效果的——他们不缺知识，缺信心。信心不是靠培训获得的——是靠亲眼看到有人做成了。</span>
+      </div>
+      <div class="mm-question">
+        💬 想一想：在你的真实团队里，有没有一个你一直在给他"更多工具"但他始终没有改变的成员？也许他缺的不是工具。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 绩优参照 -->
+  <div class="card">
+    <h2>绩优参照</h2>
+    <div class="sub">这个场景下，表现最好的管理者是怎么做的。不是评判你——是让你看到另一种可能。</div>
+
+    <div class="best-practice">
+      <div class="bp-label">分叉点一：6个户型怎么推</div>
+      <div class="bp-row">
+        <span class="path-you">你：</span>做对比表，给每个人发一份——"大家灵活推荐"<br>
+        <span class="path-best">绩优：</span>直接砍到2个——"就推B和D，其他的先放一放"<br>
+        <span style="font-size:10px;color:#6B7280">绩优的思考：过劳团队缺的不是信息，是有人替他们做减法。砍户型=砍掉他们的认知负担。</span>
+      </div>
+    </div>
+
+    <div class="best-practice">
+      <div class="bp-label">分叉点二：团队不信怎么办</div>
+      <div class="bp-row">
+        <span class="path-you">你：</span>培训逼定话术——"掌握了方法你们就可以自己去试"<br>
+        <span class="path-best">绩优：</span>蹲在沙盘区，亲自接待一组客户，当天促成认筹<br>
+        <span style="font-size:10px;color:#6B7280">绩优的思考：NPC-周做了五年——需要你教吗？他要的是"亲眼看到有人用你的方法做成了"。打样=给他一个可以复制的成功案例。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 再来一练 -->
+  <div class="card">
+    <h2>再来一练</h2>
+    <div class="sub">基于你最需要强化的两个知识点（MTP4-4 目标聚焦 + MTP11-5 榜样激励）</div>
+
+    <div class="next-practice">
+      <div class="np-label">🎯 推荐：重练 TG-001，这次聚焦"做减法+亲自打样"</div>
+      <div style="font-size:12px;line-height:1.7">
+        这次特别关注第三步和第四步。<br>
+        当NPC-周说"方向对，但下面的人不信"——<strong>试着说："明天下午我蹲沙盘，带一组客户给你看。"</strong><br>
+        然后观察NPC-周的反应——跟这次有什么不同。
+      </div>
+    </div>
+
+    <div class="next-practice" style="margin-top:8px">
+      <div class="np-label">🔄 或者：TG-002 大户型攻坚——同一个能力维度，不同的场景</div>
+      <div style="font-size:12px;line-height:1.7">
+        老刘跟NPC-周一样——6年资深销售，隐性对抗。同样需要"做减法+打样"来破局。<br>
+        不同的角色、不同的处境，练的是同一种管理肌肉。
+      </div>
+    </div>
+
+    <button class="btn" style="margin-top:12px">再练一次 TG-001</button>
+    <button class="btn btn-outline">换 TG-002 大户型攻坚</button>
+  </div>
+
+</div>
+</body>
+</html>

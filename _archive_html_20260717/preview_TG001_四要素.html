@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG-001 陪练准备 · NPC-周</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  background:linear-gradient(165deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  -webkit-font-smoothing:antialiased;
+}
+.card{
+  max-width:480px;width:92vw;
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:20px;padding:32px 28px;
+  box-shadow:0 4px 24px rgba(0,0,0,.05);
+}
+/* 环境光 */
+.amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.12}
+.amb-1{width:300px;height:300px;background:#FEE2E2;top:-60px;right:-40px}
+.amb-2{width:240px;height:240px;background:#FEF3C7;bottom:-40px;left:-20px}
+
+/* ① 人物角色卡 */
+.char-card{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.avatar{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#F59E0B,#D97706);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:28px;font-weight:700;flex-shrink:0;
+  box-shadow:0 4px 16px rgba(245,158,11,.25);
+}
+.char-info{flex:1;min-width:0}
+.char-name{font-size:20px;font-weight:700;color:#1C1917;margin-bottom:2px}
+.char-role{font-size:13px;color:#78716C}
+.char-attitude{font-size:12px;color:#D97706;margin-top:4px;line-height:1.5}
+
+/* ② 情境叙事 */
+.story-block{
+  background:rgba(255,255,255,.7);
+  border:1px solid rgba(0,0,0,.04);
+  border-radius:14px;padding:18px 20px;margin-bottom:20px;
+}
+.story-label{font-size:10px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.story-text{font-size:14px;color:#44403C;line-height:1.8}
+.story-text strong{color:#1C1917}
+
+/* ③④ 并排卡片 */
+.task-row{display:flex;gap:12px;margin-bottom:20px}
+.task-card{
+  flex:1;border-radius:12px;padding:14px 16px;
+}
+.task-blue{background:rgba(239,246,255,.45);border:1px solid rgba(59,130,246,.1)}
+.task-green{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.1)}
+.task-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.task-blue .task-label{color:#3B82F6}
+.task-green .task-label{color:#059669}
+.task-text{font-size:12px;color:#1C1917;line-height:1.65}
+.task-meta{font-size:10px;color:#A8A29E;margin-top:6px}
+
+/* 按钮 */
+.btn-start{
+  display:block;width:100%;padding:14px;border:none;
+  border-radius:14px;background:linear-gradient(135deg,#F59E0B,#D97706);
+  color:#fff;font-size:15px;font-weight:600;cursor:pointer;
+  font-family:inherit;box-shadow:0 4px 16px rgba(245,158,11,.2);
+  transition:all .25s;
+}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(245,158,11,.3)}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div>
+<div class="amb amb-2"></div>
+
+<div class="card">
+  <!-- ① 人物角色卡 -->
+  <div class="char-card">
+    <div class="avatar">周</div>
+    <div class="char-info">
+      <div class="char-name">NPC-周</div>
+      <div class="char-role">最资深销售 · 司龄5年 · 团队都看他的态度</div>
+      <div class="char-attitude">"在观望——先看你是真有本事还是只会画饼"</div>
+    </div>
+  </div>
+
+  <!-- ② 情境叙事 -->
+  <div class="story-block">
+    <div class="story-label">情境</div>
+    <p class="story-text">
+      你是被紧急派往新项目支援的销售管理者。项目首开倒计时<strong>20天</strong>，127套房源6种户型，团队已连续高强度一个多月。到岗第一天晚上8点——明天早上9点是第一次早会。<strong>NPC-周在工位上等你出第一张牌。</strong>
+    </p>
+  </div>
+
+  <!-- ③ 陪练任务 + ④ 陪练目标 -->
+  <div class="task-row">
+    <div class="task-card task-blue">
+      <div class="task-label">陪练任务</div>
+      <div class="task-text">
+        1. 用行动而非语言建立第一笔信任<br>
+        2. 替团队做减法——聚焦主力户型<br>
+        3. 亲自打样——用战绩证明方法有效
+      </div>
+    </div>
+    <div class="task-card task-green">
+      <div class="task-label">陪练目标</div>
+      <div class="task-text">
+        让NPC-周从"观望"到"跟从"——<br>通过信任建立→方向减法→信心打样
+      </div>
+      <div class="task-meta">3个决策点 · 约15分钟</div>
+    </div>
+  </div>
+
+  <!-- 开始 -->
+  <button class="btn-start">开始对话</button>
+</div>
+
+</body>
+</html>

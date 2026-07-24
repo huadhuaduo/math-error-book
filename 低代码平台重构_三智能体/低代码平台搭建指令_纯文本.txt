@@ -1,0 +1,37 @@
+把以下 4 个文件的内容分别创建到项目中。每创建一个文件后等我确认。
+
+=== 文件 1：src/types/scenario-card.ts ===
+
+直接复制旁边的文件：01_类型定义.ts
+
+=== 文件 2：src/pages/ScenarioGenerate.tsx ===
+
+直接复制旁边的文件：04_场景生成智能体.tsx
+
+=== 文件 3：src/pages/ScenarioChat.tsx ===
+
+直接复制旁边的文件：05_对话智能体.tsx
+
+=== 文件 4：src/pages/ScenarioFeedback.tsx ===
+
+直接复制旁边的文件：06_反馈智能体.tsx
+
+=== 全部创建完成后 ===
+
+帮我做以下事情：
+
+1. 数据库迁移——在 coaching_scenes 表加字段：scenario_card JSONB, d_vector JSONB, p_sequence TEXT, progression_chain TEXT, status TEXT DEFAULT 'draft'。在 coaching_sessions 表加字段：decision_path JSONB, scenario_id TEXT, golden_path_match_rate REAL。只加字段不改已有结构。
+
+2. 路由配置——在已有 React Router v6 的 Routes 中新增：
+   /scenario/generate → ScenarioGenerate
+   /scenario/:sceneId/chat → ScenarioChat
+   /scenario/:sceneId/feedback → ScenarioFeedback
+
+3. 确认这 5 个 API 是否存在，不存在就创建：
+   POST /api/coaching-scenes（创建场景）
+   GET /api/coaching-scenes/:id（读取场景）
+   POST /api/coaching-sessions（创建会话）
+   PATCH /api/coaching-sessions/:id（更新会话决策路径）
+   GET /api/coaching-sessions/:id（读取会话）
+
+全部完成后告诉我，我来验证。

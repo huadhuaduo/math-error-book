@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>我的练习记录</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card-bg: rgba(255,255,255,0.72);
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --text-tertiary: #6e6e73;
+    --accent-blue: #0071e3;
+    --accent-green: #34c759;
+    --accent-orange: #ff9500;
+    --accent-red: #ff3b30;
+    --accent-purple: #af52de;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC',sans-serif;background:var(--bg);color:var(--text-primary);-webkit-font-smoothing:antialiased;min-height:100vh}
+  .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);padding:0 24px}
+  .nav-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;height:52px;gap:8px}
+  .nav-logo{font-size:16px;font-weight:700;color:var(--text-primary);text-decoration:none;margin-right:24px;display:flex;align-items:center;gap:8px}
+  .nav-logo::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent-green)}
+  .nav-links{display:flex;gap:4px}
+  .nav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;padding:6px 14px;border-radius:8px;transition:all .15s}
+  .nav-links a:hover{color:var(--text-primary);background:rgba(0,0,0,.03)}
+  .nav-links a.active{color:var(--accent-green);font-weight:600;background:rgba(52,199,89,.05)}
+  .nav-title{font-size:17px;font-weight:700;letter-spacing:-0.01em}
+  .container{max-width:960px;margin:0 auto;padding:28px 24px 60px}
+
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+  .stat-card{background:#fff;border-radius:var(--radius-md);padding:18px 16px;text-align:center;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm)}
+  .stat-value{font-size:28px;font-weight:700;letter-spacing:-0.02em}
+  .stat-label{font-size:12px;color:var(--text-secondary);margin-top:3px}
+
+  .section-title{font-size:18px;font-weight:700;letter-spacing:-0.01em;margin-bottom:14px}
+
+  .record-list{display:flex;flex-direction:column;gap:12px}
+  .record-card{background:#fff;border-radius:var(--radius-lg);padding:18px 20px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);cursor:pointer;transition:all 0.2s;text-decoration:none;color:inherit;display:block}
+  .record-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+  .record-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+  .record-scene{font-size:15px;font-weight:600}
+  .record-date{font-size:11px;color:var(--text-tertiary)}
+  .record-metrics{display:flex;gap:20px;flex-wrap:wrap}
+  .metric{display:flex;flex-direction:column;gap:2px}
+  .metric-label{font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.04em}
+  .metric-value{font-size:14px;font-weight:600}
+  .metric-value.green{color:var(--accent-green)}
+  .metric-value.orange{color:var(--accent-orange)}
+  .metric-value.red{color:var(--accent-red)}
+  .record-compare{font-size:11px;color:var(--text-secondary);margin-top:8px;padding:6px 10px;background:rgba(0,113,227,.04);border-radius:8px;display:inline-block}
+
+  .empty-state{text-align:center;padding:60px 20px}
+  .empty-state .empty-icon{font-size:48px;margin-bottom:12px}
+  .empty-state h3{font-size:18px;font-weight:600;margin-bottom:6px}
+  .empty-state p{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:16px}
+  .btn-primary{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;border-radius:100px;background:var(--accent-blue);color:#fff;font-size:14px;font-weight:600;text-decoration:none;border:none;cursor:pointer}
+
+  @media(max-width:480px){
+    .nav{padding:0 14px}
+    .container{padding:20px 14px 48px}
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .stat-value{font-size:22px}
+    .record-metrics{gap:12px}
+    .record-card{padding:14px 16px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="陪练首页.html" class="nav-logo">AI 管理陪练</a>
+    <div class="nav-links">
+      <a href="陪练首页.html">首页</a>
+      <a href="preview_MTP陪练专区.html">全部场景</a>
+      <a href="练习记录.html" class="active">记录</a>
+    </div>
+    <span class="nav-title" style="margin-left:auto">我的练习记录</span>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-blue)" id="totalCount">0</div>
+      <div class="stat-label">总练习次数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-green)" id="bestMatch">--</div>
+      <div class="stat-label">最佳匹配率</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-orange)" id="sceneCount">0</div>
+      <div class="stat-label">练习场景数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-purple)" id="lastScore">--</div>
+      <div class="stat-label">最近得分</div>
+    </div>
+  </div>
+
+  <!-- Action Commitments -->
+  <div class="section-title" style="margin-top:4px">📝 我的行动承诺</div>
+  <div id="commitmentsSection" style="margin-bottom:20px">
+    <div style="background:#fff;border-radius:var(--radius-md);padding:16px 18px;border:1px solid rgba(0,0,0,.06);font-size:13px;color:var(--text-secondary);text-align:center">
+      完成练习后，在反馈页设置行动承诺，这里会追踪你的完成情况。
+    </div>
+  </div>
+
+  <!-- Records -->
+  <h2 class="section-title">练习历史</h2>
+  <div class="record-list" id="recordList">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">📋</div>
+      <h3>还没有练习记录</h3>
+      <p>完成一次对话练习后，你的记录会出现在这里。<br>你可以看到每次练习的得分、陷阱触发情况，以及和上次的对比。</p>
+      <a href="陪练首页.html" class="btn-primary">去练习 →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Load Practice Records =====
+(function loadRecords() {
+  var records = [];
+
+  // Source 1: Try to load from 低代码平台 API
+  // (In production, this would call GET /api/coaching/sessions/user/my)
+  // For now, load from localStorage as fallback
+
+  // Source 2: localStorage
+  try {
+    // Load TG001 sessions
+    var tg001Sessions = [];
+    for (var i = 1; i <= 20; i++) {
+      var key = 'tg001_session_' + i;
+      var raw = localStorage.getItem(key);
+      if (raw) {
+        try { tg001Sessions.push(JSON.parse(raw)); } catch(e) {}
+      }
+    }
+    // Also check the last session key
+    var lastRaw = localStorage.getItem('tg001_last_session');
+    if (lastRaw) {
+      try {
+        var last = JSON.parse(lastRaw);
+        if (!tg001Sessions.find(function(s){ return s.timestamp === last.timestamp; })) {
+          tg001Sessions.push(last);
+        }
+      } catch(e) {}
+    }
+
+    // Load PR2 sessions
+    var pr2Sessions = [];
+    var pr2Raw = localStorage.getItem('pr2_last_session');
+    if (pr2Raw) {
+      try { pr2Sessions.push(JSON.parse(pr2Raw)); } catch(e) {}
+    }
+    var pr2Count = parseInt(localStorage.getItem('pr2_count') || '0');
+    for (var j = 1; j <= pr2Count; j++) {
+      var pk = 'pr2_session_' + j;
+      var praw = localStorage.getItem(pk);
+      if (praw) {
+        try { pr2Sessions.push(JSON.parse(praw)); } catch(e) {}
+      }
+    }
+
+    // Also check generic sessions
+    var allSessionsRaw = localStorage.getItem('mdp_sessions');
+    if (allSessionsRaw) {
+      try {
+        var allSessions = JSON.parse(allSessionsRaw);
+        records = records.concat(allSessions);
+      } catch(e) {}
+    }
+
+    // Merge TG001 sessions
+    tg001Sessions.forEach(function(s) {
+      records.push({
+        sceneId: 'TG-001',
+        sceneName: '首开倒计时——空降者的20天',
+        npcName: 'NPC-周',
+        timestamp: s.timestamp || new Date().toISOString(),
+        scores: s.scores || s.principles_scores || {},
+        traps: s.traps || s.anti_patterns || {},
+        goldenPathMatch: s.golden_path_match_rate !== undefined ? s.golden_path_match_rate : null,
+        decisionPath: s.decision_path || s.decisions || null
+      });
+    });
+
+    // Merge PR2 sessions
+    pr2Sessions.forEach(function(s) {
+      records.push({
+        sceneId: 'PR-002',
+        sceneName: '半年度绩效面谈',
+        npcName: '管理者B',
+        timestamp: s.timestamp || new Date().toISOString(),
+        scores: s.principles || s.scores || {},
+        traps: s.antiPatterns || s.traps || {},
+        goldenPathMatch: null,
+        decisionPath: null
+      });
+    });
+  } catch(e) {
+    console.log('LocalStorage read error:', e);
+  }
+
+  // Deduplicate by timestamp
+  var seen = {};
+  records = records.filter(function(r) {
+    var key = r.timestamp + '_' + r.sceneId;
+    if (seen[key]) return false;
+    seen[key] = true;
+    return true;
+  });
+
+  // Sort by timestamp descending
+  records.sort(function(a, b) {
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+  // Render stats
+  if (records.length > 0) {
+    document.getElementById('totalCount').textContent = records.length;
+    document.getElementById('sceneCount').textContent = new Set(records.map(function(r){ return r.sceneId; })).size;
+
+    // Best match rate
+    var matchRates = records.filter(function(r){ return r.goldenPathMatch !== null; }).map(function(r){ return r.goldenPathMatch; });
+    if (matchRates.length > 0) {
+      var best = Math.max.apply(null, matchRates);
+      document.getElementById('bestMatch').textContent = Math.round(best * 100) + '%';
+    }
+
+    // Last score
+    var last = records[0];
+    var scores = last.scores;
+    if (scores) {
+      var vals = Object.values(scores).filter(function(v){ return typeof v === 'number'; });
+      if (vals.length > 0) {
+        var avg = Math.round(vals.reduce(function(a,b){ return a+b; }, 0) / vals.length);
+        document.getElementById('lastScore').textContent = avg + '分';
+      }
+    }
+
+    // Render record list
+    document.getElementById('emptyState').style.display = 'none';
+    var listHtml = '';
+    records.forEach(function(r, idx) {
+      var date = new Date(r.timestamp);
+      var dateStr = date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' +
+                    String(date.getHours()).padStart(2,'0') + ':' + String(date.getMinutes()).padStart(2,'0');
+
+      // Score display
+      var scores = r.scores || {};
+      var scoreHtml = '';
+      var scoreLabels = { p2_trust: '建立信任', p1_diagnose: '诊断问题', p5_empower: '示范赋能', p3_reframe: '重构目标',
+                          trust: '信任', purpose: '目的', encourage: '鼓励', listen: '倾听', end: '结束' };
+      Object.keys(scores).forEach(function(k) {
+        var v = scores[k];
+        if (typeof v === 'number') {
+          var cls = v >= 70 ? 'green' : (v >= 40 ? 'orange' : 'red');
+          var label = scoreLabels[k] || k;
+          scoreHtml += '<div class="metric"><span class="metric-label">' + label + '</span><span class="metric-value ' + cls + '">' + Math.round(v) + '</span></div>';
+        }
+      });
+
+      // Trap count
+      var traps = r.traps || {};
+      var trapCount = Object.values(traps).filter(function(v){ return v > 0; }).length || 0;
+
+      // Compare with previous
+      var compareHtml = '';
+      if (idx < records.length - 1) {
+        var prev = records[idx + 1];
+        if (prev && prev.sceneId === r.sceneId && prev.scores) {
+          var prevVals = Object.values(prev.scores).filter(function(v){ return typeof v === 'number'; });
+          var currVals = Object.values(scores).filter(function(v){ return typeof v === 'number'; });
+          if (prevVals.length > 0 && currVals.length > 0) {
+            var prevAvg = Math.round(prevVals.reduce(function(a,b){ return a+b; }, 0) / prevVals.length);
+            var currAvg = Math.round(currVals.reduce(function(a,b){ return a+b; }, 0) / currVals.length);
+            var diff = currAvg - prevAvg;
+            var arrow = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
+            var diffClass = diff > 0 ? 'green' : (diff < 0 ? 'red' : '');
+            compareHtml = '<span class="record-compare">与上次对比：' + prevAvg + ' → ' + currAvg + ' <strong style="color:var(--accent-' + diffClass + ')">' + arrow + Math.abs(diff) + '</strong></span>';
+          }
+        }
+      }
+
+      var matchHtml = '';
+      if (r.goldenPathMatch !== null) {
+        matchHtml = '<div class="metric"><span class="metric-label">路径匹配</span><span class="metric-value green">' + Math.round(r.goldenPathMatch * 100) + '%</span></div>';
+      }
+
+      listHtml += '<div class="record-card" onclick="viewDetail(\'' + r.sceneId + '\', ' + idx + ')">' +
+        '<div class="record-top">' +
+          '<span class="record-scene">' + r.sceneName + ' <span style="font-size:12px;color:var(--text-tertiary);font-weight:400">· ' + r.npcName + '</span></span>' +
+          '<span class="record-date">' + dateStr + '</span>' +
+        '</div>' +
+        '<div class="record-metrics">' + scoreHtml + matchHtml +
+          '<div class="metric"><span class="metric-label">陷阱触发</span><span class="metric-value ' + (trapCount > 0 ? 'orange' : 'green') + '">' + trapCount + '个</span></div>' +
+        '</div>' +
+        compareHtml +
+      '</div>';
+    });
+    document.getElementById('recordList').innerHTML = listHtml;
+  }
+})();
+
+function viewDetail(sceneId, idx) {
+  // In production, navigate to feedback page with session data
+  // For now, show toast
+  var t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;z-index:200;white-space:nowrap';
+  t.textContent = '详细反馈请在低代码平台环境中查看';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2000);
+}
+
+// ===== Load Action Commitments =====
+(function loadCommitments() {
+  var commitments = [];
+  // Load from localStorage (same pattern as feedback page saves)
+  try {
+    var raw = localStorage.getItem('tg001_commitment');
+    if (raw) commitments.push({ scene: 'TG-001 NPC-周', text: raw, date: localStorage.getItem('tg001_commitment_date') });
+    raw = localStorage.getItem('pr2_commitment');
+    if (raw) commitments.push({ scene: 'PR-002 管理者B', text: raw, date: localStorage.getItem('pr2_commitment_date') });
+    // Generic commitment store
+    raw = localStorage.getItem('mdp_commitments');
+    if (raw) {
+      try {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) commitments = commitments.concat(parsed);
+      } catch(e) {}
+    }
+  } catch(e) {}
+
+  if (commitments.length === 0) return;
+
+  var html = '';
+  commitments.forEach(function(c) {
+    var text = typeof c === 'string' ? c : (c.text || '');
+    var scene = c.scene || '';
+    var date = c.date || '';
+    if (!text && !scene) return;
+    html += '<div style="background:#fff;border-radius:12px;padding:14px 16px;border:1px solid rgba(0,0,0,.06);margin-bottom:8px;display:flex;align-items:flex-start;gap:10px">' +
+      '<span style="font-size:18px;flex-shrink:0">🎯</span>' +
+      '<div style="flex:1">' +
+        (scene ? '<div style="font-size:12px;font-weight:600;margin-bottom:3px">' + scene + '</div>' : '') +
+        '<div style="font-size:13px;color:#1d1d1f;line-height:1.5">' + text + '</div>' +
+        (date ? '<div style="font-size:10px;color:#86868b;margin-top:4px">' + date + '</div>' : '') +
+      '</div>' +
+      '<span style="font-size:11px;color:#86868b;white-space:nowrap;flex-shrink:0">待验证</span>' +
+    '</div>';
+  });
+  if (html) {
+    document.getElementById('commitmentsSection').innerHTML = html;
+  }
+})();
+</script>
+
+</body>
+</html>

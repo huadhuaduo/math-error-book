@@ -1,0 +1,83 @@
+- generic [ref=e5]:
+  - generic [ref=e6]:
+    - banner [ref=e8]:
+      - generic [ref=e9]:
+        - link [ref=e10] [cursor=pointer]:
+          - /url: /ui/index
+          - img "启悟" [ref=e11]
+          - img "启悟" [ref=e12]
+        - navigation [ref=e13]:
+          - link "首页" [ref=e14] [cursor=pointer]:
+            - /url: /ui/index
+          - link "资讯" [ref=e15] [cursor=pointer]:
+            - /url: /ui/news
+          - link "微课程" [ref=e16] [cursor=pointer]:
+            - /url: /ui/courses
+          - link "创空间" [ref=e17] [cursor=pointer]:
+            - /url: /ui/innovation-space
+          - link "任务墙" [ref=e18] [cursor=pointer]:
+            - /url: /ui/task
+        - button "登录" [ref=e20] [cursor=pointer]
+    - generic [ref=e21]: 启悟学习社区，英文名Open Insight。启悟，取义启迪、领悟，体现社区定位，即启迪智慧、领悟知识的众创社区。Open Insight分别有“启”和“悟”之意，Open可让人联想至开源（Open Source），Insight在信息技术领域常让人联想至代码编辑器（Source Insight）。将Source藏起来，作为社区的灵魂，也是需要各位“悟”出的道理。希望各位“开源启智，码上开悟”，在人工智能开源生态中增长才干、分享智慧、贡献力量。
+  - generic [ref=e24]:
+    - generic "新闻轮播" [ref=e26]:
+      - generic [ref=e27]:
+        - paragraph [ref=e29]: 网罗最新人工智能行业资讯，关注各地各校AI建设动态、活动，洞察发展最新航向
+        - button "查看更多" [ref=e30] [cursor=pointer]
+      - generic "轮播" [ref=e32]:
+        - button "上一条" [ref=e33] [cursor=pointer]
+        - article [ref=e36]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: 报名通知 | 基于摩尔线程国产GPU平台的AI技术师资培训
+            - paragraph [ref=e41]: 国产 GPU 算力作为自主可控 AI 基础设施，是新工科课程建设的有力抓手。为推动国产 GPU 技术进校园、进课堂，上海交通大学学生创新中心联合摩尔线程举办 MUSA 全栈开发实战师资培训。本次培训采用三天沉浸式线下实战教学，赋能高校教师把 MUSA 与 AI 实操内容融入课程，打造国产算力特色教学模块。
+            - generic [ref=e42]:
+              - generic [ref=e43]: 摩尔线程
+              - generic [ref=e44]: 2026-07-07
+            - generic [ref=e45] [cursor=pointer]: 查看详情
+        - button "下一条" [ref=e46] [cursor=pointer]
+    - region "课程板块" [ref=e47]:
+      - generic [ref=e49]:
+        - generic [ref=e51]: 汇聚优质人工智能开源课程，聚焦理论、工具、实践多环节，构建完整学习体系
+        - generic [ref=e52] [cursor=pointer]: 查看更多
+    - region "创空间" [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e60]: 聚焦国产人工智能生态建设，汇集多元算力、数据和模型资源，激发无限创新潜能
+          - button "体验创空间" [ref=e61] [cursor=pointer]
+        - list [ref=e62]:
+          - listitem [ref=e63] [cursor=pointer]
+          - listitem [ref=e66] [cursor=pointer]
+          - listitem [ref=e69] [cursor=pointer]
+          - listitem [ref=e72] [cursor=pointer]
+  - region "任务墙" [ref=e75]:
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e81]: 发布人工智能挑战任务，鼓励高校师生揭榜挂帅、协同攻关，赋能千行百业升级
+        - generic [ref=e86] [cursor=pointer]: 查看更多
+      - list [ref=e89]:
+        - listitem [ref=e90] [cursor=pointer]
+        - listitem [ref=e91] [cursor=pointer]
+        - listitem [ref=e92] [cursor=pointer]
+        - listitem [ref=e93] [cursor=pointer]
+        - listitem [ref=e94] [cursor=pointer]
+        - listitem [ref=e95] [cursor=pointer]
+    - generic [ref=e96]: 排名不分先后
+  - contentinfo [ref=e97]:
+    - generic [ref=e98]:
+      - img "启悟" [ref=e100]
+      - generic [ref=e101]:
+        - generic [ref=e102]:
+          - generic [ref=e103]: 指导单位：
+          - generic [ref=e104]: 人工智能开放联盟
+        - generic [ref=e105]:
+          - generic [ref=e106]: 主办单位：
+          - generic [ref=e107]: 上海交通大学
+        - generic [ref=e108]:
+          - generic [ref=e109]: 联系方式：
+          - generic [ref=e110]: contact@qiwoo.edu.cn
+      - generic [ref=e111]:
+        - generic [ref=e112]: 网站声明
+        - link "沪ICP备05052060号-14" [ref=e116] [cursor=pointer]:
+          - /url: https://beian.miit.gov.cn/
+        - link "沪公网安备31012102000183号" [ref=e119] [cursor=pointer]:
+          - /url: https://beian.mps.gov.cn/#/query/webSearch?code=31012102000183

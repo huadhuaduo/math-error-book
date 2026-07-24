@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · 管理者B · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+  .layout{position:relative;z-index:10;max-width:1000px;margin:0 auto;padding:28px 16px 60px;display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+  .main-col{display:flex;flex-direction:column;gap:20px}
+  .side-col{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px}
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:24px 22px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .section-num{font-size:11px;font-weight:700;color:#A8A29E;letter-spacing:.08em;margin-bottom:4px}
+  .section-title{font-size:17px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:6px;letter-spacing:-.01em}
+  .section-sub{font-size:12px;color:#78716C;line-height:1.5;margin-bottom:18px}
+  .section-header{padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid rgba(0,0,0,.05)}
+
+  /* Overview */
+  .ov-narrative{font-size:14px;color:#44403C;line-height:1.75;margin-bottom:20px}
+  .radar-area{display:flex;align-items:center;gap:28px;justify-content:center;padding:12px 0;flex-wrap:wrap}
+  .radar-labels{display:flex;flex-direction:column;gap:10px;min-width:180px}
+  .radar-row{display:flex;align-items:center;gap:6px}
+  .radar-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .radar-name{color:#1C1917;font-weight:600;font-size:12px;min-width:64px}
+  .radar-score{font-weight:700;color:#1C1917;font-size:14px;min-width:24px;text-align:right}
+  .radar-desc{font-size:10px;color:#78716C;line-height:1.35;padding-left:14px;margin-top:1px}
+
+  /* Compare */
+  .compare-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+  .compare-cell{text-align:center;padding:10px 6px;border-radius:10px;background:rgba(0,0,0,.015);border:1px solid rgba(0,0,0,.03)}
+  .compare-label{font-size:9px;color:#A8A29E;margin-bottom:3px}
+  .compare-self{font-size:13px;font-weight:600;color:#78716C}
+  .compare-actual{font-size:14px;font-weight:700;color:#1C1917}
+  .compare-gap{font-size:10px;color:#DC2626;margin-top:2px}
+  .compare-gap.ok{color:#16A34A}
+
+  /* Principle deep cards */
+  .principle-deep{background:rgba(255,255,255,.4);border:1px solid rgba(0,0,0,.04);border-radius:12px;padding:14px 16px;margin:8px 0}
+  .principle-deep .p-name{font-weight:700;font-size:13px;color:#1C1917;margin-bottom:4px}
+  .principle-deep .p-score{font-size:11px;color:#78716C;margin-bottom:6px}
+  .principle-deep .p-detail{font-size:12px;color:#44403C;line-height:1.65}
+  .principle-deep .p-evidence{font-size:11px;color:#3B82F6;line-height:1.5;padding:6px 10px;background:rgba(239,246,255,.3);border-radius:8px;margin-top:6px}
+  .principle-deep .p-gap{font-size:11px;color:#DC2626;line-height:1.5;padding:6px 10px;background:rgba(254,226,226,.15);border-radius:8px;margin-top:4px}
+
+  /* Success criteria */
+  .success-grid{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+  .success-row{display:flex;align-items:center;gap:10px;font-size:12px;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,.015)}
+  .success-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
+  .success-text{color:#44403C;line-height:1.5;flex:1}
+
+  /* Anti-pattern card */
+  .antipat-card{background:rgba(254,243,199,.08);border:1px solid rgba(251,191,36,.1);border-radius:12px;padding:12px 14px;margin:6px 0;font-size:12px;color:#92400E;line-height:1.6}
+  .antipat-card .ap-tag{display:inline-block;padding:1px 7px;border-radius:100px;font-size:9px;font-weight:700;margin-right:4px}
+
+  /* Method box */
+  .method-box{background:rgba(239,246,255,.4);border:1px solid rgba(147,197,253,.2);border-radius:12px;padding:14px 16px;margin:8px 0;font-size:12px;color:#3B82F6;line-height:1.6}
+  .method-box strong{color:#1D4ED8}
+
+  /* Findings */
+  .finding{margin-bottom:16px}.finding+.finding{padding-top:14px;border-top:1px solid rgba(0,0,0,.04)}
+  .fd-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+  .fd-badge{display:inline-flex;align-items:center;gap:2px;padding:2px 9px;border-radius:100px;font-size:10px;font-weight:700}
+  .fd-principle{font-size:9px;color:#A8A29E;background:rgba(0,0,0,.025);padding:1px 7px;border-radius:100px}
+  .fd-round{font-size:10px;color:#A8A29E}
+  .fd-quote{font-size:13px;color:#44403C;line-height:1.55;padding:8px 12px;background:rgba(0,0,0,.02);border-radius:8px;margin:6px 0;font-style:italic}
+  .fd-note{font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:4px}
+  .fd-alt{font-size:12px;color:#065F46;line-height:1.5;padding:8px 12px;background:rgba(209,250,229,.2);border-radius:8px;margin-top:4px}
+  .reflect{font-size:12px;color:#3B82F6;line-height:1.5;padding:8px 12px;background:rgba(239,246,255,.25);border-radius:8px;margin-top:8px;font-style:italic}
+  .fork-box{background:rgba(254,243,199,.12);border:1px solid rgba(251,191,36,.06);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:12px}
+  .fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:4px}
+  .fork-path{padding:6px 10px;border-radius:6px;font-size:11px;line-height:1.5;margin:3px 0}
+  .fork-actual{background:rgba(254,226,226,.2);border:1px solid rgba(239,68,68,.02)}
+  .fork-alt{background:rgba(209,250,229,.2);border:1px solid rgba(16,185,129,.02)}
+  .pat-box{background:rgba(243,232,255,.15);border:1px solid rgba(167,139,250,.06);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:12px;color:#7C3AED;line-height:1.65}
+
+  /* Action commitment — merged section */
+  .commit-section{background:rgba(16,185,129,.03);border:1.5px solid rgba(16,185,129,.15);border-radius:14px;padding:18px 16px}
+  .commit-flow{display:flex;align-items:center;gap:8px;font-size:10px;color:#78716C;margin:12px 0;flex-wrap:wrap}
+  .commit-step{background:rgba(16,185,129,.08);color:#065F46;padding:4px 10px;border-radius:100px;font-weight:600;white-space:nowrap}
+  .commit-arrow{color:#A8A29E}
+  .action-form{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .action-row{display:flex;gap:8px}
+  .action-input{flex:1;border:none;border-bottom:1.5px solid rgba(0,0,0,.08);padding:6px 0;font-size:12px;font-family:inherit;outline:none;background:transparent;color:#1C1917}
+  .action-input:focus{border-bottom-color:#10B981}.action-input::placeholder{color:#D6D3D1;font-size:11px}
+
+  /* Weakness + courses */
+  .weakness-card{background:rgba(254,243,199,.15);border:1px solid rgba(251,191,36,.08);border-radius:12px;padding:14px 16px;margin:6px 0;font-size:12px;color:#92400E;line-height:1.6}
+  .weakness-card strong{color:#78350F}
+  .course-link{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.5);border:1px solid rgba(0,0,0,.06);border-radius:10px;margin:4px 0;font-size:12px;color:#1C1917;cursor:pointer;transition:all .2s;text-decoration:none}
+  .course-link:hover{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.2)}
+  .course-arrow{color:#3B82F6;font-weight:700;margin-left:auto}
+
+  /* Side */
+  .key-card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:18px 16px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .key-title{font-size:12px;font-weight:700;color:#1C1917;margin-bottom:10px}
+  .key-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:11px;color:#44403C;line-height:1.45}
+  .key-item+.key-item{border-top:1px solid rgba(0,0,0,.03)}
+  .btn-save{width:100%;padding:10px;border-radius:12px;border:none;background:#1C1917;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}.btn-save:hover{background:#000}
+  .btn-row{display:flex;gap:8px;margin-top:10px}
+  .btn{display:inline-flex;align-items:center;gap:5px;padding:11px 18px;border-radius:12px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;justify-content:center}
+  .btn-dark{background:#1C1917;color:#fff;flex:1}.btn-dark:hover{background:#000}
+  .btn-light{background:rgba(0,0,0,.03);color:#44403C;flex:1}.btn-light:hover{background:rgba(0,0,0,.06)}
+  .footer-text{text-align:center;font-size:11px;color:#D6D3D1;margin-top:8px}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s ease;pointer-events:none;white-space:nowrap}
+  @media(max-width:780px){.layout{grid-template-columns:1fr}.side-col{position:static}.compare-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="layout">
+  <div class="main-col">
+
+    <!-- ====== ① 整体评估 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">① 整体评估</div>
+        <div class="section-title">你的面谈画像</div>
+        <div class="section-sub">基于五原则——评估的是你的面谈行为，不是她的业务方案。</div>
+      </div>
+
+      <!-- Five principles radar -->
+      <div class="radar-area">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <polygon points="100,22 172,72 145,162 55,162 28,72" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="1.2"/>
+          <polygon points="100,50 154,78 134,137 66,137 46,78" fill="none" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+          <line x1="100" y1="100" x2="100" y2="16" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="178" y2="68" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="148" y2="166" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="52" y2="166" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="22" y2="68" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <polygon id="radarPoly" points="100,46 100,46 100,46 100,46 100,46" fill="rgba(59,130,246,.1)" stroke="#3B82F6" stroke-width="1.8" stroke-linejoin="round"/>
+          <circle id="rd0" cx="100" cy="46" r="4" fill="#3B82F6"/>
+          <circle id="rd1" cx="100" cy="46" r="4" fill="#10B981"/>
+          <circle id="rd2" cx="100" cy="46" r="4" fill="#F59E0B"/>
+          <circle id="rd3" cx="100" cy="46" r="4" fill="#EF4444"/>
+          <circle id="rd4" cx="100" cy="46" r="4" fill="#8B5CF6"/>
+        </svg>
+        <div class="radar-labels">
+          <div><div class="radar-row"><span class="radar-dot" style="background:#3B82F6"></span><span class="radar-name">①建立信任</span><span class="radar-score" id="rvTrust">55</span></div><div class="radar-desc" id="rdTrust"></div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#10B981"></span><span class="radar-name">②说明目的</span><span class="radar-score" id="rvPurpose">50</span></div><div class="radar-desc" id="rdPurpose"></div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#F59E0B"></span><span class="radar-name">③鼓励说话</span><span class="radar-score" id="rvEncourage">50</span></div><div class="radar-desc" id="rdEncourage"></div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#EF4444"></span><span class="radar-name">④认真倾听</span><span class="radar-score" id="rvListen">50</span></div><div class="radar-desc" id="rdListen"></div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#8B5CF6"></span><span class="radar-name">⑤积极结束</span><span class="radar-score" id="rvEnd">45</span></div><div class="radar-desc" id="rdEnd"></div></div>
+        </div>
+      </div>
+
+      <!-- Self-assessment comparison -->
+      <div class="method-box" style="margin-top:14px" id="compareBox">
+        <strong>📖 你以为 vs 实际</strong>
+        <div class="compare-grid">
+          <div class="compare-cell"><div class="compare-label">①建立信任</div><div class="compare-self" id="selfTrust">—</div><div class="compare-actual" id="actTrust">55</div><div class="compare-gap" id="gapTrust">—</div></div>
+          <div class="compare-cell"><div class="compare-label">②说明目的</div><div class="compare-self" id="selfPurpose">—</div><div class="compare-actual" id="actPurpose">50</div><div class="compare-gap" id="gapPurpose">—</div></div>
+          <div class="compare-cell"><div class="compare-label">③鼓励说话</div><div class="compare-self" id="selfEncourage">—</div><div class="compare-actual" id="actEncourage">50</div><div class="compare-gap" id="gapEncourage">—</div></div>
+          <div class="compare-cell"><div class="compare-label">④认真倾听</div><div class="compare-self" id="selfListen">—</div><div class="compare-actual" id="actListen">50</div><div class="compare-gap" id="gapListen">—</div></div>
+          <div class="compare-cell"><div class="compare-label">⑤积极结束</div><div class="compare-self" id="selfEnd">—</div><div class="compare-actual" id="actEnd">45</div><div class="compare-gap" id="gapEnd">—</div></div>
+        </div>
+        <span style="font-size:10px;color:#78716C">差距越大的维度——你对这项能力的自我感知和实际表现之间的盲区越大。这是行为改变的起点。</span>
+      </div>
+
+      <!-- Verdict -->
+      <p class="ov-verdict" id="verdictLine" style="font-size:14px;color:#1C1917;line-height:1.7;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.04)"></p>
+
+      <!-- Structure adherence -->
+      <div class="method-box"><strong>📖 面谈结构：</strong><span id="structureDetail">四个阶段各占时间比例。</span><br><span style="font-size:10px;color:#78716C">一场好的绩效面谈需要把足够时间留给"怎么改"——而不是只讨论"哪里错了"。</span></div>
+    </div>
+
+    <!-- ====== ①续 · 五原则深度解读 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">① 续</div>
+        <div class="section-title">五原则 · 逐条解读</div>
+        <div class="section-sub">每一条不只一个分数——下面是你做到了什么、还差什么。</div>
+      </div>
+
+      <div class="principle-deep" id="pdTrust">
+        <div class="p-name">① 建立和维护彼此之间的信任</div>
+        <div class="p-score">得分：—</div>
+        <div class="p-detail">
+          信任是绩效面谈的第一块多米诺骨牌。这条原则不是看"你有没有说好话"——是看<strong>她走出会议室时，是否还相信你站在她这边</strong>。你在面谈中建立信任的方式包括：不否定她的努力（努力是真的，即使结果不好）、不拿别人跟她比、不暗示威胁后果。破坏信任最快的方式：否定努力、横向比较、威胁暗示。
+        </div>
+        <div class="p-evidence" id="evTrust"></div>
+        <div class="p-gap" id="gapTrustDetail"></div>
+      </div>
+
+      <div class="principle-deep" id="pdPurpose">
+        <div class="p-name">② 清楚的说明面谈的目的</div>
+        <div class="p-score">得分：—</div>
+        <div class="p-detail">
+          这条原则的核心不是"告诉她等级"——是<strong>让她理解今天这场对话是干什么的、为什么这个等级、以及接下来怎么办</strong>。好的说明目的包括：开场告知面谈结构、用具体事实解释等级（不是形容词）、等级不给得太晚。常见偏差：拖延给等级、空洞安慰替代解释、给了等级但不给原因。
+        </div>
+        <div class="p-evidence" id="evPurpose"></div>
+        <div class="p-gap" id="gapPurposeDetail"></div>
+      </div>
+
+      <div class="principle-deep" id="pdEncourage">
+        <div class="p-name">③ 鼓励下属说话</div>
+        <div class="p-score">得分：—</div>
+        <div class="p-detail">
+          这场面谈中，她的说话比例应该超过你。好的鼓励说话不是"问几个问题"——是<strong>让她从回答你变成她自己提出问题</strong>。关键行为：先让她自评再给等级、问完之后真的等她说（不打断）、她的沉默可能不是"没话说"而是"不确定安不安全"。
+        </div>
+        <div class="p-evidence" id="evEncourage"></div>
+        <div class="p-gap" id="gapEncourageDetail"></div>
+      </div>
+
+      <div class="principle-deep" id="pdListen">
+        <div class="p-name">④ 认真倾听</div>
+        <div class="p-score">得分：—</div>
+        <div class="p-detail">
+          倾听不是点头——是<strong>让她觉得"你说的话我听到了，不是耳旁风"</strong>。关键行为：区分"努力"和"有效努力"（肯定她的付出同时帮她看到方向）、听懂潜台词（"没人跟我说过"不是推卸责任——是信息缺失）、在讲道理之前先说"我听到了"。最常见的问题：跳过情绪直接讲道理——"我理解你很难过，但是……"——"但是"前面的共情等于没说。
+        </div>
+        <div class="p-evidence" id="evListen"></div>
+        <div class="p-gap" id="gapListenDetail"></div>
+      </div>
+
+      <div class="principle-deep" id="pdEnd">
+        <div class="p-name">⑤ 以积极的方式结束对话</div>
+        <div class="p-score">得分：—</div>
+        <div class="p-detail">
+          绩效面谈最怕的不是谈得不好——是<strong>谈完之后什么都没变</strong>。好的结束是让她走出会议室时，脑子里有一个清晰的动作、一个具体的时间、和一个"我能做到"的感觉。核心行为：具体跟进时间+方式（不是"随时找我"）、表达信心（不是空洞的"相信你"，是具体的能力锚点）、让她自己提出改进想法。<strong>这条原则直接决定两个成功标准：制定绩效提升计划、写下未来目标与绩效标准。</strong>
+        </div>
+        <div class="p-evidence" id="evEnd"></div>
+        <div class="p-gap" id="gapEndDetail"></div>
+      </div>
+    </div>
+
+    <!-- ====== ①续 · 成功标准对照 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">① 续</div>
+        <div class="section-title">绩效面谈成功标准 · 对照检查</div>
+        <div class="section-sub">一场好的绩效面谈，结束时应该做到这五件事。你的面谈做到了几条？</div>
+      </div>
+      <div class="success-grid" id="successGrid"></div>
+    </div>
+
+    <!-- ====== ② 觉察·模式 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">② 觉察</div>
+        <div class="section-title">你可能没注意到的模式</div>
+        <div class="section-sub">不是评判——是帮你看到自己看不见的东西。这是行为改变的第一步。</div>
+      </div>
+      <p class="ov-narrative" style="font-size:14px" id="patternNarrative"></p>
+      <div class="method-box" id="patternBox"></div>
+      <div class="reflect" id="patternReflect"></div>
+      <div class="pat-box" style="margin-top:14px" id="patternGeneralize"></div>
+    </div>
+
+    <!-- ====== ③ 行为复盘 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">③ 行为复盘</div>
+        <div class="section-title">关键行为分析</div>
+        <div class="section-sub">每一条都告诉你——这个行为影响了哪条原则、哪个成功标准。</div>
+      </div>
+      <div id="findingsContainer"></div>
+    </div>
+
+    <!-- ====== ④ 行动承诺（合并：行动实验 + 承诺 + 闭环） ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">④ 行动承诺</div>
+        <div class="section-title">你的行动承诺</div>
+        <div class="section-sub">不只是"下次注意"——是一个有场景、有行为、有时间的承诺，带闭环。</div>
+      </div>
+
+      <div class="commit-section">
+        <p style="font-size:13px;color:#44403C;line-height:1.6;margin-bottom:8px">
+          <strong>🧪 系统建议：</strong>基于你最需要加强的原则——<strong id="weakestLabel">⑤积极结束</strong>，在下次练习中专门试这一个动作。
+        </p>
+        <div class="method-box"><strong>📖 为什么这个行为管用：</strong><span id="whyItWorks">绩效面谈中最高杠杆的行为就是收尾约定。走的时候有一个具体的时间，对方回去之后的72小时就不再是"我要努力"——是"我要在周三下午3点前改出来"。压力从道德层面（"我应该努力"）转移到了行动层面（"我得交付一个东西"）。这叫把模糊承诺变成具体交付。</span></div>
+
+        <p style="font-size:12px;font-weight:700;color:#1C1917;margin:12px 0 6px">✏️ 我的行动承诺</p>
+        <div class="action-form">
+          <div class="action-row">
+            <input class="action-input" placeholder="场景：下次在什么时候、跟谁" id="expScene">
+            <input class="action-input" placeholder="具体行为：我会做什么" id="expBehavior" value="">
+          </div>
+          <input class="action-input" placeholder="判断标准：看到什么信号就算做对了" id="expSignal">
+        </div>
+
+        <!-- Closed loop -->
+        <div class="commit-flow">
+          <span class="commit-step">📝 承诺</span><span class="commit-arrow">→</span>
+          <span class="commit-step">🔁 下次练习验证</span><span class="commit-arrow">→</span>
+          <span class="commit-step">📊 对比上次</span><span class="commit-arrow">→</span>
+          <span class="commit-step">✅ 带回真实团队</span>
+        </div>
+        <p style="font-size:10px;color:#A8A29E;margin-top:6px">下次回到平台时，系统会调出你这次的承诺——问你：试了吗？发生了什么事？跟上次有什么不一样？这就是闭环。</p>
+      </div>
+
+      <!-- Practice history -->
+      <div id="practiceHistory" style="display:none;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:14px 16px;margin-top:12px;font-size:12px;color:#065F46;line-height:1.6">
+        <strong>📈 练习记录</strong>
+        <div id="phContent"></div>
+      </div>
+    </div>
+
+    <!-- ====== ⑤ 学习推荐 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">⑤ 学习推荐</div>
+        <div class="section-title">薄弱点 + 推荐课程</div>
+        <div class="section-sub">基于你五条原则中得分最低的1-2条——这不是短板，是你接下来的发力点。</div>
+      </div>
+      <div id="weaknessContainer"></div>
+      <p style="font-size:11px;color:#A8A29E;margin-top:12px;text-align:center">建议在下次练习前花15分钟过一遍课程。带着新的理解再练——对比会很明显。</p>
+    </div>
+
+  </div>
+
+  <!-- ============ RIGHT COLUMN ============ -->
+  <div class="side-col">
+    <div class="key-card">
+      <div class="key-title">📌 关键发现</div>
+      <div id="sideFindings"></div>
+    </div>
+
+    <div class="key-card" style="border:1.5px solid rgba(220,38,38,.15)">
+      <div class="key-title" style="color:#DC2626">⚠️ 需要警惕的模式</div>
+      <div id="sideAntiPatterns" style="font-size:11px;color:#44403C;line-height:1.5"></div>
+    </div>
+
+    <div class="key-card">
+      <div class="key-title">💾 保存我的承诺</div>
+      <button class="btn-save" onclick="save()">确认承诺 → 带回下次练习</button>
+      <p style="font-size:10px;color:#A8A29E;text-align:center;margin-top:6px">下次加载此承诺作为对比锚点</p>
+    </div>
+
+    <div class="btn-row"><button class="btn btn-dark" onclick="window.location.href='scene_PR2_引擎驱动版_v6.html'">再练一次</button><button class="btn btn-light" onclick="window.location.href='scene_PR2_准备页_叙事版.html'">换场景</button></div>
+    <p class="footer-text">建议 3-7 天内回来 · 带着这次的承诺</p>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ===== LOAD SESSION DATA =====
+var session=null;
+try{var raw=localStorage.getItem('pr2_last_session');if(raw){session=JSON.parse(raw);}}catch(e){}
+
+var p=session&&session.principles
+  ? session.principles
+  : {trust:68,purpose:72,encourage:55,listen:48,end:35};
+
+var ap=session&&session.antiPatterns
+  ? session.antiPatterns
+  : {goingThroughMotions:0,onlyCriticism:0,feelingsNoFacts:0,emptyPlatitudes:0,onlyPastNoFuture:0};
+
+var revealed=session&&session.revealed
+  ? session.revealed
+  : {ratingGiven:true,factsGiven:true,supportOffered:false,followupSet:false,effortRecognized:true};
+
+var history=session?session.history:[];
+
+// Self-assessment baseline
+var self=null;
+try{var rawSelf=localStorage.getItem('pr2_self_baseline');if(rawSelf){self=JSON.parse(rawSelf);}}catch(e){}
+
+// ===== RADAR =====
+function calcRadar(scores){
+  var cx=100,cy=100,r=78;
+  var angles=[-90,18,126,234,306];
+  var points=[];
+  for(var i=0;i<5;i++){
+    var ratio=scores[i]/100;
+    var rad=angles[i]*Math.PI/180;
+    points.push({x:cx+r*ratio*Math.cos(rad),y:cy+r*ratio*Math.sin(rad)});
+  }
+  return points;
+}
+
+function renderRadar(){
+  var scores=[p.trust,p.purpose,p.encourage,p.listen,p.end];
+  var pts=calcRadar(scores);
+  var poly=document.getElementById('radarPoly');
+  poly.setAttribute('points',pts.map(function(pt){return pt.x.toFixed(1)+','+pt.y.toFixed(1);}).join(' '));
+  ['rd0','rd1','rd2','rd3','rd4'].forEach(function(id,i){
+    document.getElementById(id).setAttribute('cx',pts[i].x.toFixed(1));
+    document.getElementById(id).setAttribute('cy',pts[i].y.toFixed(1));
+  });
+
+  // Score labels
+  document.getElementById('rvTrust').textContent=p.trust;
+  document.getElementById('rvPurpose').textContent=p.purpose;
+  document.getElementById('rvEncourage').textContent=p.encourage;
+  document.getElementById('rvListen').textContent=p.listen;
+  document.getElementById('rvEnd').textContent=p.end;
+
+  // Radar descriptions
+  var descs=[
+    p.trust>=70?'她走出门时还信你':'中间有信任波动的时刻',
+    p.purpose>=70?'面谈目的清楚·她知道为什么是C':'目的不够清晰·她可能不服这个等级',
+    p.encourage>=70?'她说了不少·你在听':'给她更多说的空间',
+    p.listen>=70?'接住了情绪·也给了方向':'先听完她的感受再讲道理',
+    p.end>=70?'有具体的跟进约定':'差一个她抓得住的东西'
+  ];
+  document.getElementById('rdTrust').textContent=descs[0];
+  document.getElementById('rdPurpose').textContent=descs[1];
+  document.getElementById('rdEncourage').textContent=descs[2];
+  document.getElementById('rdListen').textContent=descs[3];
+  document.getElementById('rdEnd').textContent=descs[4];
+
+  // Verdict
+  var avg=(p.trust+p.purpose+p.encourage+p.listen+p.end)/5;
+  var v=document.getElementById('verdictLine');
+  if(avg>=80)v.innerHTML='<strong>一场扎实的面谈。</strong>五条原则大部分做到了——她知道了为什么是C，也带走了一个能抓住的东西。';
+  else if(avg>=60)v.innerHTML='<strong>几个关键行为到位了，一两个还差一点。</strong>她理解了自己的差距，但走出会议室时手里握的东西还不够具体。看下面的逐条分析——差的那些分在哪里，怎么补。';
+  else if(avg>=40)v.innerHTML='<strong>这场面谈给她传递了信息，但没有给她方向。</strong>几个关键原则的分数偏低，特别是收尾部分——她知道了C，但不知道接下来该怎么办。下面每条都写了具体的问题和替代做法。';
+  else v.innerHTML='<strong>这场面谈的冲击大于帮助。</strong>几条关键原则的分数都偏低。看下面的逐条分析——每一条都是一个可以单独练习的行为。';
+
+  // Structure detail
+  if(session&&session.rounds){
+    var total=session.rounds;
+    var phaseCounts={ATMOSPHERE:0,SELF_ASSESS:0,RATING_GIVEN:0,DIAGNOSIS:0,GOAL_SETTING:0};
+    history.forEach(function(h){
+      if(h.phase&&phaseCounts[h.phase]!==undefined)phaseCounts[h.phase]++;
+    });
+    var diagRounds=(phaseCounts.RATING_GIVEN||0)+(phaseCounts.DIAGNOSIS||0);
+    var goalRounds=phaseCounts.GOAL_SETTING||0;
+    document.getElementById('structureDetail').innerHTML=
+      '你的面谈了'+total+'轮。诊断阶段（讨论"为什么是C"）占大头——发展部分（讨论"接下来怎么改"）时间偏少。'+
+      '<strong>绩效面谈的终点不是结论，是行动。</strong>';
+  }
+
+  // ===== DEEP PRINCIPLE DESCRIPTIONS =====
+  // Evidence & gaps for each principle
+  var trustEv=[],trustGap=[];
+  if(revealed.effortRecognized)trustEv.push('✅ 你区分了她的努力和结果——她感觉付出被看见了');
+  else trustEv.push('✅ 没有明确否定她的努力');
+  if(ap.onlyCriticism>=1)trustGap.push('⚠️ 面谈中缺少对她努力的正面认可——她可能觉得"我只有问题没有优点"');
+  if(ap.goingThroughMotions>=1)trustGap.push('⚠️ 面谈节奏偏快——信任需要在足够的时间里建立');
+
+  var purpEv=[],purpGap=[];
+  if(revealed.ratingGiven)purpEv.push('✅ 你明确给出了绩效等级');
+  if(revealed.factsGiven)purpEv.push('✅ 你用具体数据解释了等级——不是形容词，她可以自己算差距');
+  if(!revealed.factsGiven)purpGap.push('⚠️ 给了等级但没有跟上具体数据——她可能不服这个C');
+  if(ap.feelingsNoFacts>=1)purpGap.push('⚠️ 共情足够但事实不够——她需要数字而不只是感受');
+
+  var encEv=[],encGap=[];
+  if(revealed.selfAssessmentAsked)encEv.push('✅ 你让她先自评了——她有机会表达自己的看法');
+  else encGap.push('⚠️ 没有先问她的自评——直接给了等级，她失去了表达空间');
+
+  var listEv=[],listGap=[];
+  if(revealed.effortRecognized)listEv.push('✅ 你区分了努力和有效努力——说明你在听，不是在背台词');
+  else listGap.push('⚠️ 没有明确区分她的努力和结果——她可能觉得"我的付出没有被看到"');
+
+  var endEv=[],endGap=[];
+  if(revealed.supportOffered)endEv.push('✅ 你提供了具体的支持方式');
+  if(revealed.followupSet)endEv.push('✅ 你定了一个有时间的跟进约定——她知道回去之后第一步做什么');
+  if(!revealed.supportOffered&&!revealed.followupSet){
+    endGap.push('⚠️ 收尾缺少一个她抓得住的东西——没有具体的跟进时间和方式');
+    endGap.push('⚠️ "随时找我"等于没约定——她不会来。绩效面谈的失败大多发生在结束之后');
+  }
+
+  var pdData=[
+    {ev:trustEv,gap:trustGap,id:'Trust'},
+    {ev:purpEv,gap:purpGap,id:'Purpose'},
+    {ev:encEv,gap:encGap,id:'Encourage'},
+    {ev:listEv,gap:listGap,id:'Listen'},
+    {ev:endEv,gap:endGap,id:'End'}
+  ];
+  pdData.forEach(function(d){
+    var evEl=document.getElementById('ev'+d.id);
+    var gapEl=document.getElementById('gap'+d.id+'Detail');
+    if(evEl)evEl.textContent=(d.ev.length>0?d.ev.join('  ') : '对话数据不足，无法提取具体证据。');
+    if(gapEl)gapEl.textContent=(d.gap.length>0?d.gap.join('  ') : '这条原则没有明显的问题——继续保持。');
+  });
+
+  // ===== SUCCESS CRITERIA =====
+  var successChecks=[
+    {label:'对绩效表现达成一致的看法',icon:revealed.factsGiven?'✅':'⚠️',
+     text:revealed.factsGiven
+       ? '你用具体数据（返工率36%、全组平均11%）锚定了评估——她不是"被说服"的，是自己算出差距的。'
+       : '她知道了C，但不一定真的接受。达成一致需要数据——不是"我觉得"，是"数字显示"。'},
+    {label:'指出员工有待改进的方面',icon:revealed.factsGiven?'✅':'⚠️',
+     text:revealed.factsGiven
+       ? '你指出的不是"整体不够好"——是具体的：返工率、细节错误、需要别人补位。她听完能重复出来自己哪里需要改。'
+       : '有待改进的方面需要配具体事例。"你的质量不够好"不如"5个方案需要别人帮改才能过"。'},
+    {label:'制定绩效提升计划',icon:revealed.supportOffered?'✅':'❌',
+     text:revealed.supportOffered
+       ? '你给了她具体的支持方式——比如每周对框架。这不是笼统的"下次努力"，是有节奏的改进路径。'
+       : '她走出会议室时，没有一个她能执行的提升计划。她知道自己是C，但不知道接下来该做什么。这是绩效面谈最常见也最致命的失败。'},
+    {label:'使员工认识到自己的成就和优势',icon:revealed.effortRecognized?'✅':'⚠️',
+     text:revealed.effortRecognized
+       ? '你认可了她的努力——加班全组前三是真的。这不影响C的结论，但让她知道"不是我一无是处"。'
+       : 'C级员工也有做得好的地方。指出这一点不是说好话——是让她知道哪些地方要继续做。'},
+    {label:'写下未来的目标与绩效标准',icon:revealed.followupSet?'✅':'❌',
+     text:revealed.followupSet
+       ? '你和她约定了具体的跟进时间。她回去之后有一个明确的交付节点——不是"我会努力"，是"下周三下午3点前"。'
+       : '绩效面谈最重要的产出不是"这次谈得怎么样"——是"面谈之后会发生什么"。你少了这个闭环。'}
+  ];
+  var sg=document.getElementById('successGrid');
+  successChecks.forEach(function(sc){
+    var row=document.createElement('div');row.className='success-row';
+    row.innerHTML='<span class="success-icon">'+sc.icon+'</span><span class="success-text"><strong>'+sc.label+'：</strong>'+sc.text+'</span>';
+    sg.appendChild(row);
+  });
+
+  // ===== PATTERN RECOGNITION =====
+  var patternNarr=document.getElementById('patternNarrative');
+  var patternBox=document.getElementById('patternBox');
+  var patternReflect=document.getElementById('patternReflect');
+  var patternGen=document.getElementById('patternGeneralize');
+
+  if(!revealed.supportOffered&&!revealed.followupSet){
+    patternNarr.textContent='管理者B是第一次听到C。她来面谈之前，接收到的所有信号都是"你做得不错"。当你说出C的时候，她的世界塌了一个角——但这也是她第一次有机会看到真实的数据。你在帮她看到差距这件事上做得不错。但在她说"我理解了"之后——你停在了她最需要你多走一步的地方。';
+    patternBox.innerHTML='<strong>📖 你的模式：</strong>当对方表示理解并接受反馈后，你倾向于认为面谈的主要工作已经完成了。这个假设在绩效面谈中是错的——<strong>理解的下一分钟，是她最需要方向的时候。</strong>她刚刚接受了一个让她难受的事实，这时候你说"你觉得从哪开始"——她脑子是空的。她需要一个具体的质量标准，不是又一个开放问题。这叫<strong>"先给尺子，再让量"</strong>。';
+    patternReflect.innerHTML='💬 想一想：在你的团队里，有没有其他人你在给完反馈后就"放手让他们自己调整"了？他们后来调整得怎么样？';
+    patternGen.innerHTML='<strong>这个模式不只在管理者B这里出现：</strong>对努力但输出质量不达标的同事，你容易在指出问题后把主动权交还——"你自己觉得该怎么改？"这个提问的意图是赋能，但前提是对方有判断标准。管理者B没有。她过去半年接收的信息全是"做得不错"——她需要你先给她一把尺子，再让她自己量。';
+  }else{
+    patternNarr.textContent='管理者B推门时脸上带着笑。她不知道今天会听到C。你在面谈中做了几件关键的事——给了等级、用了数据、接住了她的情绪。更重要的是，你没有停在"告诉她哪里不好"——你走到了"接下来怎么做"。这是很多管理者做不到的。';
+    patternBox.innerHTML='<strong>📖 值得注意：</strong>你在诊断→目标的过渡中，把方向和标准给了她。这对管理者B这类"不知道什么算做好"的员工来说，比你想象的更重要。她过去半年缺的不是努力——是标准。你给了她标准。';
+    patternReflect.innerHTML='💬 守住这个模式：当对方说"我理解了"——别停。接一句"好，那你觉得从什么时间开始？"。把理解变成行动。';
+    patternGen.innerHTML='<strong>这个模式值得复制：</strong>对能力型下属（D₅=能力），绩效面谈的核心产出不是"让他知道差距"——是<strong>"让他知道标准"</strong>。你这次做到了。下次面对类似的人，记住：给尺子比给鸡汤管用。';
+  }
+
+  // ===== FINDINGS =====
+  var fc=document.getElementById('findingsContainer');
+  var findingsHTML='';
+
+  // Good findings
+  if(revealed.selfAssessmentAsked){
+    findingsHTML+='<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">保留</span><span class="fd-principle">影响 ①②③</span><span class="fd-round">开场阶段</span></div><div class="fd-quote">——你先让她说了自己的看法，再给等级。</div><div class="fd-note">这让她觉得"我不是被审判"。先自评再给等级——她的大脑从防御模式切换到对话模式。</div><div class="method-box"><strong>📖 为什么重要：</strong>绩效面谈的成败往往在开场3分钟决定。先问她"你觉得上半年怎么样"——这三个动作同时发生：①建立信任（你在乎她的视角）②说明目的（这不是通知，是对话）③鼓励说话（她先开口）。一举三得。</div></div>';
+  }
+  if(revealed.factsGiven){
+    findingsHTML+='<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">保留</span><span class="fd-principle">影响 ②④</span><span class="fd-round">诊断阶段</span></div><div class="fd-quote">——你给了她具体数据：返工率36%，全组平均11%。不是"质量不太好"——是具体数字。</div><div class="fd-note">她用这些数据自己算出了差距。数据比形容词有用——她不需要你解释"你不够好"，数字自己会说话。</div><div class="method-box"><strong>📖 为什么重要：</strong>②说明目的的核心是<strong>用事实锚定评估</strong>。当你用形容词（"不够好"），她可以反驳——"我觉得挺好的"。当你用数字（"返工率36%，全组11%"），她反驳不了。不是因为你更有权力——是因为数字是客观的。她不需要服你，她需要面对数据。</div></div>';
+  }
+  if(revealed.effortRecognized){
+    findingsHTML+='<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">保留</span><span class="fd-principle">影响 ①④</span><span class="fd-round">诊断阶段</span></div><div class="fd-quote">——你区分了"努力"和"有效努力"。你没说"你不够努力"——你说的是"你的努力方向需要调整"。</div><div class="fd-note">这对管理者B至关重要。她的加班是真的、付出是真的——否定这些等于否定她这个人。你保住了她的自我价值感，同时指出了差距。</div><div class="method-box"><strong>📖 为什么重要：</strong>这是④认真倾听的最高境界——<strong>你听到了她没说出口的话："我不希望你觉得我在偷懒"。</strong>区分努力和有效努力，让她能在"我是个好员工"的前提下接受"我的工作方法需要改"。这是建立信任和认真倾听共同作用的结果。</div></div>';
+  }
+
+  // Need improvement
+  if(!revealed.supportOffered&&!revealed.followupSet){
+    findingsHTML+='<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#FEE2E2;color:#DC2626">待加强</span><span class="fd-principle">影响 ⑤</span><span class="fd-round">过渡→收尾</span></div><div class="fd-quote">——在她说"我理解了"之后，你没有给她一个具体的工具或标准。</div><div class="fd-note">她知道了差距——但不知道什么叫"做好了"。这个空档会让她回去之后继续猜。</div><div class="fd-alt"><strong>试试这样：</strong>"以后方案交之前，自己先查三样东西：数据有没有错、格式对不对、结论有没有依据。查完再交。每周三下午3点，你带着自查结果来找我——15分钟，我帮你看方向。"——这叫先给尺子，再定节奏。</div><div class="method-box"><strong>📖 为什么关键：</strong>⑤积极结束不只是"定个时间"——是<strong>确保她走出会议室后有清晰的下一步</strong>。她应该能回答三个问题：我现在是什么等级？为什么？接下来我要做的第一件事是什么？你的面谈让她能回答前两个——第三个需要你多走一步。这一步直接关联两个成功标准：制定绩效提升计划 + 写下未来目标与绩效标准。</div></div>';
+  }
+
+  // Fork point
+  if(!revealed.supportOffered&&revealed.ratingGiven){
+    findingsHTML+='<div class="fork-box"><div class="fork-label">诊断→目标的过渡是一个岔路口</div><div class="fork-path fork-actual"><strong>你走了：</strong>让她自己说改进方向 → 她说得模糊 → 因为没有人给过她标准。</div><div class="fork-path fork-alt"><strong>可以走：</strong>先给标准（"方案自查三件事"）→ 再让她说（"你觉得能坚持吗？从哪个先开始？"）→ 她有了尺子，回答就有了质量 → 然后定时间闭环。</div></div>';
+  }
+
+  fc.innerHTML=findingsHTML||'<p style="font-size:13px;color:#78716C;text-align:center;padding:20px">对话数据不足，无法生成行为复盘。完成一次完整的对话后，这里会显示你的关键行为分析。</p>';
+
+  // ===== SELF-ASSESSMENT COMPARISON =====
+  var keys=['trust','purpose','encourage','listen','end'];
+  var labels=['Trust','Purpose','Encourage','Listen','End'];
+  var hasSelf=false;
+  keys.forEach(function(k,i){
+    var label=labels[i];
+    document.getElementById('act'+label).textContent=p[k];
+    if(self&&self[k]!==undefined&&self[k]!=='__'&&self[k]!==''){
+      hasSelf=true;
+      document.getElementById('self'+label).textContent=self[k];
+      var gap=self[k]-p[k];
+      var gapEl=document.getElementById('gap'+label);
+      gapEl.textContent=(gap>=0?'+':'')+gap;
+      gapEl.className='compare-gap'+(Math.abs(gap)<=5?' ok':'');
+    }
+  });
+
+  // ===== WEAKNESS + COURSES =====
+  var sorted=keys.map(function(k,i){
+    return {key:k,label:['建立信任','说明目的','鼓励说话','认真倾听','积极结束'][i],score:p[k]};
+  });
+  sorted.sort(function(a,b){return a.score-b.score;});
+  var weakest=sorted[0];
+  var second=sorted[1];
+
+  document.getElementById('weakestLabel').textContent=weakest.label;
+
+  var wc=document.getElementById('weaknessContainer');
+  var courses={
+    trust:{title:'建立信任：从"我是你经理"到"我是你这边的人"',desc:'信任不是一次面谈能建起来的——但在一次面谈中可以迅速被破坏。这门课教你：哪些行为在消耗信任账户、哪些行为在往里存钱。特别是如何在不否定努力的前提下指出差距。'},
+    purpose:{title:'说明目的：为什么"你是C"后面必须跟具体数据',desc:'绩效面谈不是一个通知——是一次对齐。这门课教你：如何用事实锚定评估、如何在开场3分钟内建立对话结构、如何避免"太晚给等级"这个最常见的错误。'},
+    encourage:{title:'鼓励说话：让她从回答你的问题变成她自己提出问题',desc:'好的绩效面谈，下属说话的时间应该超过你。这门课教你：什么时候该问、什么时候该听、怎么让她从防御模式切到对话模式。'},
+    listen:{title:'认真倾听：为什么"说一句我听到了"比讲道理管用',desc:'倾听不是点头。是让她觉得——你说的话我听见了，不是耳旁风。这门课教你：如何区分"努力"和"有效努力"、如何听懂潜台词、如何在讲道理之前先说"我听到了"。'},
+    end:{title:'积极结束：从"随时找我"到"下周三下午3点见"',desc:'绩效面谈最怕的不是谈得不好——是谈完之后什么都没变。这门课教你：如何定一个具体的有时间的跟进约定、如何让承诺变成交付、如何确保面谈的效果不只停留在会议室里。'}
+  };
+
+  var wHTML='';
+  wHTML+='<div class="weakness-card"><strong>🔴 最薄弱：'+weakest.label+'（得分'+weakest.score+'）</strong><br>'+courses[weakest.key].desc+'</div>';
+  wHTML+='<a class="course-link" href="#"><span>📚</span><strong>'+courses[weakest.key].title+'</strong><span class="course-arrow">→</span></a>';
+
+  if(second.score<60){
+    wHTML+='<div class="weakness-card" style="margin-top:10px"><strong>🟡 次薄弱：'+second.label+'（得分'+second.score+'）</strong><br>'+courses[second.key].desc+'</div>';
+    wHTML+='<a class="course-link" href="#"><span>📚</span><strong>'+courses[second.key].title+'</strong><span class="course-arrow">→</span></a>';
+  }
+  wc.innerHTML=wHTML;
+
+  // ===== SIDE PANEL =====
+  var sideF=[];
+  if(revealed.selfAssessmentAsked)sideF.push('<span style="color:#16A34A">✅</span> 开场让她先自评');
+  if(revealed.factsGiven)sideF.push('<span style="color:#16A34A">✅</span> 用具体数据解释等级');
+  if(revealed.effortRecognized)sideF.push('<span style="color:#16A34A">✅</span> 区分了努力和有效努力');
+  if(!revealed.supportOffered&&!revealed.followupSet)sideF.push('<span style="color:#DC2626">⚠️</span> 收尾缺少具体约定');
+  if(ap.onlyCriticism>=1)sideF.push('<span style="color:#DC2626">⚠️</span> 缺乏对努力的正面认可');
+  if(ap.emptyPlatitudes>=2)sideF.push('<span style="color:#DC2626">⚠️</span> 空洞安慰替代了具体方向');
+  sideF.push('<span style="color:#7C3AED">🔄</span> 关注：理解→行动的过渡');
+
+  var sfEl=document.getElementById('sideFindings');
+  sideF.forEach(function(f){
+    var d=document.createElement('div');d.className='key-item';d.innerHTML=f;sfEl.appendChild(d);
+  });
+
+  // Anti-pattern side
+  var apEl=document.getElementById('sideAntiPatterns');
+  var apText=[];
+  if(ap.goingThroughMotions>=1)apText.push('🔸 面谈节奏偏快——部分阶段可能被跳过或不够充分');
+  if(ap.onlyCriticism>=1)apText.push('🔸 面谈中缺少对她努力的正面认可');
+  if(ap.feelingsNoFacts>=1)apText.push('🔸 共情足够但具体数据不够——她需要数字');
+  if(ap.emptyPlatitudes>=2)apText.push('🔸 出现较多空洞安慰——"加油"替代了方向');
+  if(ap.onlyPastNoFuture>=1)apText.push('🔸 花了太多时间讨论"为什么是C"，留给"怎么改"的时间不够');
+  if(apText.length===0)apText.push('✅ 这次面谈没有触发明显的反模式');
+  apEl.innerHTML=apText.join('<br>');
+
+  // Practice history
+  if(session&&session.practiceCount>1){
+    var ph=document.getElementById('practiceHistory');
+    ph.style.display='block';
+    document.getElementById('phContent').innerHTML='这是你第 <strong>'+session.practiceCount+'</strong> 次练习管理者B场景。每次练习的五原则分数和学习曲线将在下一次更新中展示。';
+  }
+
+  // Set default experiment input
+  document.getElementById('expBehavior').value='';
+
+  // Why it works detail
+  document.getElementById('whyItWorks').textContent=
+    '绩效面谈中最高杠杆的行为就是收尾约定。对管理者B这样的员工（D₅=能力），她缺的不是知道"我哪里不好"——是知道"什么叫好"。给她一个自查清单，比说十句"相信你"管用。把模糊承诺变成具体交付——这是从"知道"到"做到"的那一步。';
+}
+
+// ===== SAVE COMMITMENT =====
+function save(){
+  var expScene=document.getElementById('expScene').value.trim();
+  var expBehavior=document.getElementById('expBehavior').value.trim();
+  var expSignal=document.getElementById('expSignal').value.trim();
+  if(!expScene&&!expBehavior){
+    showToast('至少填一个你打算在什么场景下试什么行为。',3000);return;
+  }
+  try{
+    localStorage.setItem('pr2_commitment',JSON.stringify({
+      scene:expScene,behavior:expBehavior,signal:expSignal,timestamp:Date.now()
+    }));
+  }catch(e){}
+  showToast('承诺已保存。下次练习时系统会调出这个承诺——你这次说了什么，下次说了什么，对比一下。这就是闭环。',3000);
+}
+
+function showToast(m,d){
+  var t=document.getElementById('toast');t.textContent=m;t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0'},d||2500);
+}
+
+renderRadar();
+</script>
+</body>
+</html>

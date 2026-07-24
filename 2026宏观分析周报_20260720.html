@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026宏观分析周报 · 7月第三周</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card-bg: #ffffff;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --green: #34c759;
+    --red: #ff3b30;
+    --orange: #ff9500;
+    --yellow: #ffcc00;
+    --border: #d2d2d7;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+    --radius-sm: 10px;
+    --radius: 16px;
+    --radius-lg: 20px;
+    --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-stack);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .header {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 0 32px;
+    margin-bottom: 32px;
+  }
+  .header .container { text-align: center; }
+  .header .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    font-size: 17px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+  .header .meta {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+  .header .meta span { margin: 0 8px; }
+  .header .meta span:first-child { margin-left: 0; }
+
+  /* Section */
+  .section { margin-bottom: 32px; }
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon { font-size: 28px; }
+  .section-subtitle {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 24px 0 12px;
+    color: var(--text);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .card-header {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+  }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  /* Metric Card */
+  .metric-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .metric-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .metric-value {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .metric-value.up { color: var(--red); }
+  .metric-value.down { color: var(--green); }
+  .metric-value.neutral { color: var(--text); }
+  .metric-context {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .metric-delta {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .metric-delta.positive { color: var(--green); }
+  .metric-delta.negative { color: var(--red); }
+
+  /* Alert Banner */
+  .alert {
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-left: 4px solid;
+  }
+  .alert-danger {
+    background: #fff2f0;
+    border-color: var(--red);
+    color: #8b1a12;
+  }
+  .alert-warning {
+    background: #fff8e5;
+    border-color: var(--orange);
+    color: #7c5e00;
+  }
+  .alert-info {
+    background: #e8f4fd;
+    border-color: var(--accent);
+    color: #004a8f;
+  }
+  .alert-success {
+    background: #e8f8ed;
+    border-color: var(--green);
+    color: #1a5c2a;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f2;
+    vertical-align: top;
+  }
+  tbody tr:hover { background: #fafafa; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.03em;
+  }
+  .tag-green { background: #e8f8ed; color: #1a5c2a; }
+  .tag-red { background: #fff2f0; color: #8b1a12; }
+  .tag-orange { background: #fff8e5; color: #7c5e00; }
+  .tag-blue { background: #e8f4fd; color: #004a8f; }
+  .tag-purple { background: #f0e8fd; color: #4a1a8b; }
+
+  /* KPI row */
+  .kpi-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+  .kpi-item {
+    flex: 1;
+    min-width: 140px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .kpi-item .kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .kpi-item .kpi-value {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .kpi-item .kpi-delta {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* Chart placeholder */
+  .chart-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+  }
+  .chart-bar .bar-label {
+    width: 100px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .chart-bar .bar-track {
+    flex: 1;
+    height: 8px;
+    background: #f0f0f2;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .chart-bar .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .chart-bar .bar-value {
+    width: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+  .fill-blue { background: var(--accent); }
+  .fill-green { background: var(--green); }
+  .fill-red { background: var(--red); }
+  .fill-orange { background: var(--orange); }
+  .fill-purple { background: #af52de; }
+  .fill-teal { background: #5ac8fa; }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  /* Quote */
+  .insight-box {
+    background: #fafafa;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+  }
+  .insight-box .insight-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .insight-box p { font-size: 14px; color: var(--text); line-height: 1.6; }
+
+  /* Allocation Pie (text-based) */
+  .allocation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .alloc-item {
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .alloc-item .alloc-pct {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .alloc-item .alloc-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .alloc-item .alloc-note {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+  }
+  .footer p { margin: 4px 0; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .kpi-row { flex-wrap: wrap; }
+    .kpi-item { min-width: 120px; }
+    .header h1 { font-size: 26px; }
+    .section-title { font-size: 20px; }
+  }
+
+  /* Print */
+  @media print {
+    body { background: #fff; }
+    .card, .metric-card, .kpi-item { box-shadow: none; break-inside: avoid; }
+    .header { border-bottom: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HEADER ====== -->
+<div class="header">
+  <div class="container">
+    <div class="badge">Weekly Macro Report</div>
+    <h1>2026宏观分析周报</h1>
+    <p class="subtitle">7月第三周 · 数据驱动 · 客观研判 · 投资洞察</p>
+    <p class="meta">
+      <span>📅 2026年7月20日 周日</span>
+      <span>·</span>
+      <span>📊 数据截止：7月19日</span>
+      <span>·</span>
+      <span>🔖 第29周</span>
+    </p>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== 核心发现 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🔍</span> 本周核心发现</div>
+
+  <div class="alert alert-warning">
+    <strong>⚠️ 内冷外热格局加剧：</strong>出口同比+27%创近5年新高，贸易顺差1,256亿美元为历史次高；但内需三驾马车全面疲软——社零仅+1.0%、固投-5.7%、房地产-18%。外需单引擎驱动的增长结构不可持续。
+  </div>
+
+  <div class="alert alert-danger">
+    <strong>🚨 美伊冲突骤然升级：</strong>7月中旬伊朗关闭霍尔木兹海峡，布伦特原油单周暴涨+15.9%至88美元/桶。油价冲击可能重新推升全球通胀，打乱美联储降息节奏，对中国构成输入性通胀压力。
+  </div>
+
+  <div class="alert alert-info">
+    <strong>💡 AI产业链结构性亮点突出：</strong>WAIC 2026（7.17-20）见证国产算力集群集体突破、智能体商业化元年开启、光模块业绩集体爆发。AI是当前宏观迷雾中最确定的结构性机会。
+  </div>
+
+  <div class="alert alert-success">
+    <strong>✅ 外资持续看多中国：</strong>H1北向资金净买入5,360亿元创纪录，外资机构密集调研A股硬科技。高盛、大摩、瑞银同步上调A股盈利预测和指数目标。
+  </div>
+</div>
+
+<!-- ====== 关键指标仪表盘 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">📊</span> 关键指标一览</div>
+  <div class="kpi-row">
+    <div class="kpi-item">
+      <div class="kpi-label">Q2 GDP 同比</div>
+      <div class="kpi-value">4.3%</div>
+      <div class="kpi-delta" style="color:var(--orange)">Q1: 5.0% ↓</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">6月 CPI 同比</div>
+      <div class="kpi-value">1.0%</div>
+      <div class="kpi-delta" style="color:var(--green)">预期1.2% ↓</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">6月 PPI 同比</div>
+      <div class="kpi-value">4.1%</div>
+      <div class="kpi-delta" style="color:var(--orange)">5月: 3.9% ↑ 或年内高点</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">6月 出口同比</div>
+      <div class="kpi-value" style="color:var(--red)">+27.0%</div>
+      <div class="kpi-delta" style="color:var(--red)">预期+18.5% ↑↑</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">6月 进口同比</div>
+      <div class="kpi-value" style="color:var(--red)">+36.0%</div>
+      <div class="kpi-delta" style="color:var(--red)">5年最大增幅</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">制造业 PMI</div>
+      <div class="kpi-value">50.3</div>
+      <div class="kpi-delta" style="color:var(--green)">重返扩张区间</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">6月 社零同比</div>
+      <div class="kpi-value">+1.0%</div>
+      <div class="kpi-delta" style="color:var(--green)">5月: -0.6% ↑</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">固投累计</div>
+      <div class="kpi-value" style="color:var(--red)">-5.7%</div>
+      <div class="kpi-delta" style="color:var(--red)">三大板块全面走弱</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 一、GDP ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">📈</span> 一、经济增长：Q2放缓但走出通缩</div>
+
+  <div class="card">
+    <div class="card-header">2026年Q2 GDP 核心数据</div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>实际值</th><th>预期/前值</th><th>方向</th></tr></thead>
+      <tbody>
+        <tr><td>Q2 GDP 同比</td><td><strong>4.3%</strong></td><td>Q1: 5.0%，预期~4.5%</td><td><span class="tag tag-orange">低于Q1</span></td></tr>
+        <tr><td>Q2 GDP 环比</td><td><strong>0.9%</strong></td><td>Q1: 1.2%（修订后）</td><td><span class="tag tag-orange">放缓</span></td></tr>
+        <tr><td>H1 累计同比</td><td><strong>4.7%</strong></td><td>全年目标 4.5%-5.0%</td><td><span class="tag tag-green">目标区间内</span></td></tr>
+        <tr><td>H1 名义GDP</td><td><strong>695,704亿元</strong></td><td>名义同比 +5.9%</td><td><span class="tag tag-green">走出通缩</span></td></tr>
+        <tr><td>GDP平减指数</td><td><strong>+1.53%</strong></td><td>此前连续12季度负值</td><td><span class="tag tag-green">13季度来首次转正</span></td></tr>
+        <tr><td>高技术制造业</td><td><strong>+13.3%</strong></td><td>—</td><td><span class="tag tag-green">新旧动能转换加速</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">📌 关键判断</div>
+    <p>二季度GDP平减指数转正（+1.53%）标志着中国经济走出了连续12个季度的通缩阴影。但4.3%的实际增速偏弱，主因内需拖累。经济学家普遍预计全年呈"V型"走势——Q2触底、Q3回升至4.6%左右。下半年需关注7月底政治局会议的政策定调。</p>
+  </div>
+
+  <div class="chart-bar">
+    <span class="bar-label">Q1 2025</span>
+    <div class="bar-track"><div class="bar-fill fill-blue" style="width:54%"></div></div>
+    <span class="bar-value">5.4%</span>
+  </div>
+  <div class="chart-bar">
+    <span class="bar-label">Q2 2025</span>
+    <div class="bar-track"><div class="bar-fill fill-blue" style="width:47%"></div></div>
+    <span class="bar-value">4.7%</span>
+  </div>
+  <div class="chart-bar">
+    <span class="bar-label">Q3 2025</span>
+    <div class="bar-track"><div class="bar-fill fill-blue" style="width:46%"></div></div>
+    <span class="bar-value">4.6%</span>
+  </div>
+  <div class="chart-bar">
+    <span class="bar-label">Q4 2025</span>
+    <div class="bar-track"><div class="bar-fill fill-blue" style="width:54%"></div></div>
+    <span class="bar-value">5.4%</span>
+  </div>
+  <div class="chart-bar">
+    <span class="bar-label">Q1 2026</span>
+    <div class="bar-track"><div class="bar-fill fill-blue" style="width:50%"></div></div>
+    <span class="bar-value">5.0%</span>
+  </div>
+  <div class="chart-bar">
+    <span class="bar-label">Q2 2026</span>
+    <div class="bar-track"><div class="bar-fill fill-orange" style="width:43%"></div></div>
+    <span class="bar-value">4.3%</span>
+  </div>
+  <p style="font-size:11px;color:var(--text-tertiary);margin-top:6px;">季度GDP同比增速趋势（横轴归一化至10%）</p>
+</div>
+
+<!-- ====== 二、通胀 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🎈</span> 二、通胀：CPI温和低于预期，PPI或已见顶</div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">CPI 消费者价格</div>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>指标</th><th>6月</th><th>5月</th><th>预期</th></tr></thead>
+        <tbody>
+          <tr><td>CPI 同比</td><td><strong>+1.0%</strong></td><td>+1.2%</td><td>+1.2%</td></tr>
+          <tr><td>CPI 环比</td><td><strong>-0.3%</strong></td><td>—</td><td>—</td></tr>
+          <tr><td>核心CPI 同比</td><td><strong>+1.0%</strong></td><td>+1.1%</td><td>—</td></tr>
+          <tr><td>食品价格</td><td><strong>-1.6%</strong></td><td>—</td><td>猪肉-15.9%</td></tr>
+          <tr><td>消费品</td><td><strong>+0.5%</strong></td><td>—</td><td>服务+1.4%</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);margin-top:8px;">CPI低于预期主因：国际油价下跌（汽油-4.9%）、黄金饰品-8.7%。核心CPI 1.0%显示内需仍弱。</p>
+    </div>
+    <div class="card">
+      <div class="card-header">PPI 工业生产者价格</div>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>指标</th><th>6月</th><th>5月</th><th>趋势</th></tr></thead>
+        <tbody>
+          <tr><td>PPI 同比</td><td><strong>+4.1%</strong></td><td>+3.9%</td><td>↑</td></tr>
+          <tr><td>PPI 环比</td><td><strong>-0.3%</strong></td><td>+0.5%</td><td><span class="tag tag-red">转负</span></td></tr>
+          <tr><td>生产资料</td><td><strong>+5.3%</strong></td><td>—</td><td>—</td></tr>
+          <tr><td>生活资料</td><td><strong>-0.9%</strong></td><td>—</td><td>—</td></tr>
+          <tr><td>AI相关：VR制造</td><td><strong>+8.4%</strong></td><td>—</td><td>新支撑</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);margin-top:8px;">PPI连续4个月攀升至2022年8月来最高，但环比转负。多家机构判断6月PPI为年内高点。AI相关产业价格上行成新支撑。</p>
+    </div>
+  </div>
+
+  <div class="alert alert-warning">
+    <strong>⚠️ 关注美伊冲突对通胀的传导：</strong>原油单周暴涨16%，若持续至8月，将推升国内汽油、化工、物流价格，PPI可能在高位横盘而非回落。输入性通胀是下半年最大变数。
+  </div>
+</div>
+
+<!-- ====== 三、PMI ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🏭</span> 三、PMI：制造业重返扩张，K型分化延续</div>
+
+  <div class="grid-3">
+    <div class="metric-card">
+      <div class="metric-label">官方制造业PMI</div>
+      <div class="metric-value neutral">50.3</div>
+      <div class="metric-delta positive">5月: 50.0 ↑ 重返扩张</div>
+      <div class="metric-context">新订单51.2 · 出口订单50.1</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">高技术制造业PMI</div>
+      <div class="metric-value neutral">53.5</div>
+      <div class="metric-delta positive">连续17个月线上</div>
+      <div class="metric-context">高耗能仅47.1 — K型分化</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">财新制造业PMI</div>
+      <div class="metric-value neutral">51.7</div>
+      <div class="metric-delta positive">连续第7月扩张</div>
+      <div class="metric-context">5月: 51.8 小幅回落</div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:16px;">
+    <div class="metric-card">
+      <div class="metric-label">非制造业PMI</div>
+      <div class="metric-value neutral">50.2</div>
+      <div class="metric-context">服务业50.4 · 建筑业49.0</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">大型企业</div>
+      <div class="metric-value neutral">50.7</div>
+      <div class="metric-context">中型50.5 · 小型<span style="color:var(--red)">48.2</span></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">综合PMI</div>
+      <div class="metric-value neutral">50.6</div>
+      <div class="metric-context">5月: 50.5 · +0.1</div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">📌 关键判断</div>
+    <p>6月PMI回升主要驱动力：美伊阶段性缓和释放外需预期 + 国内基建提速 + "以旧换新"政策刺激。但小型企业PMI（48.2）连续多月收缩、建筑业（49.0）仍在荣枯线下方，说明复苏不均衡。财新出口订单连续第二个月下滑——需警惕外需动能减弱。</p>
+  </div>
+</div>
+
+<!-- ====== 四、进出口 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🚢</span> 四、进出口：出口大超预期，顺差历史次高</div>
+
+  <div class="card">
+    <div class="card-header">6月贸易数据（美元计价）</div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>6月实际值</th><th>同比</th><th>市场预期</th><th>5月值</th></tr></thead>
+      <tbody>
+        <tr><td><strong>出口</strong></td><td><strong>4,123.9亿美元</strong></td><td><span class="tag tag-red">+27.0%</span></td><td>+18.5~19%</td><td>+19.4%</td></tr>
+        <tr><td><strong>进口</strong></td><td><strong>2,867.6亿美元</strong></td><td><span class="tag tag-red">+36.0%</span></td><td>+24~26%</td><td>+22.8%</td></tr>
+        <tr><td><strong>贸易顺差</strong></td><td><strong>1,256.2亿美元</strong></td><td>+10.4%</td><td>~1,200亿</td><td>1,054.3亿</td></tr>
+        <tr><td>H1 出口累计</td><td>2.13万亿美元</td><td>+17.6%</td><td>—</td><td>—</td></tr>
+        <tr><td>H1 进口累计</td><td>1.55万亿美元</td><td>+26.6%</td><td>—</td><td>—</td></tr>
+        <tr><td>H1 累计顺差</td><td>5,759.8亿美元</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="insight-box">
+      <div class="insight-title">📌 出口超预期三大驱动力</div>
+      <p>① 全球AI投资热潮拉动电子产品出口（芯片、光模块、服务器）<br>② 电动汽车出口同比+68.7%，新能源产业链全球竞争力持续增强<br>③ 部分进口商担忧美关税加征而提前补库，形成"抢出口"效应</p>
+    </div>
+    <div class="insight-box">
+      <div class="insight-title">⚠️ 风险提示</div>
+      <p>① "抢出口"效应可能透支下半年需求——若关税落地，Q3出口增速或回落<br>② 进口大增36%部分反映企业恐慌性囤货（芯片、设备），可持续性存疑<br>③ 人民币升值（央行中间价6.77）将逐步侵蚀出口企业利润</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 五、消费 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🛒</span> 五、消费：社零由负转正，但内需复苏基础薄弱</div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">社会消费品零售总额</div>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>指标</th><th>6月</th><th>5月</th><th>变化</th></tr></thead>
+        <tbody>
+          <tr><td>社零总额</td><td><strong>42,691亿 · +1.0%</strong></td><td>-0.6%</td><td><span class="tag tag-green">+1.6ppt</span></td></tr>
+          <tr><td>除汽车外</td><td><strong>+3.0%</strong></td><td>—</td><td>—</td></tr>
+          <tr><td>商品零售</td><td><strong>+0.9%</strong></td><td>-0.7%</td><td><span class="tag tag-green">+1.6ppt</span></td></tr>
+          <tr><td>餐饮收入</td><td><strong>+1.2%</strong></td><td>+0.6%</td><td><span class="tag tag-green">+0.6ppt</span></td></tr>
+          <tr><td>服务零售额(H1)</td><td><strong>+5.3%</strong></td><td>—</td><td>优于商品</td></tr>
+          <tr><td>H1 累计</td><td><strong>248,722亿 · +1.3%</strong></td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">消费结构特征</div>
+      <p style="font-size:14px;margin-bottom:12px;">6月社零由负转正，得益于618大促 + 低基数 + 促消费政策。但结构分化明显：</p>
+      <div class="chart-bar">
+        <span class="bar-label">服务零售</span>
+        <div class="bar-track"><div class="bar-fill fill-green" style="width:53%"></div></div>
+        <span class="bar-value">+5.3%</span>
+      </div>
+      <div class="chart-bar">
+        <span class="bar-label">餐饮收入</span>
+        <div class="bar-track"><div class="bar-fill fill-blue" style="width:12%"></div></div>
+        <span class="bar-value">+1.2%</span>
+      </div>
+      <div class="chart-bar">
+        <span class="bar-label">商品零售</span>
+        <div class="bar-track"><div class="bar-fill fill-orange" style="width:9%"></div></div>
+        <span class="bar-value">+0.9%</span>
+      </div>
+      <div class="chart-bar">
+        <span class="bar-label">限额以上</span>
+        <div class="bar-track"><div class="bar-fill fill-red" style="width:22%"></div></div>
+        <span class="bar-value">-2.2%</span>
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);margin-top:8px;">限额以上企业商品零售额仍为负——大型零售企业面临更大压力</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 六、投资与房地产 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🏗️</span> 六、投资与房地产：投资全面走弱，地产仍在寻底</div>
+
+  <div class="alert alert-danger">
+    <strong>🚨 6月单月固投降幅达-11.2%</strong>——为上半年最大单月拖累。三大板块（基建、制造业、房地产）全面走弱。民间投资-8.5%，信心修复仍需时间。
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">固定资产投资（1-6月累计）</div>
+      <div class="chart-bar">
+        <span class="bar-label">总投资</span>
+        <div class="bar-track"><div class="bar-fill fill-red" style="width:57%"></div></div>
+        <span class="bar-value">-5.7%</span>
+      </div>
+      <div class="chart-bar">
+        <span class="bar-label">基建投资</span>
+        <div class="bar-track"><div class="bar-fill fill-orange" style="width:24%"></div></div>
+        <span class="bar-value">-2.4%</span>
+      </div>
+      <div class="chart-bar">
+        <span class="bar-label">制造业投资</span>
+        <div class="bar-track"><div class="bar-fill fill-orange" style="width:12%"></div></div>
+        <span class="bar-value">-1.2%</span>
+      </div>
+      <div class="chart-bar">
+        <span class="bar-label">高技术产业</span>
+        <div class="bar-track"><div class="bar-fill fill-green" style="width:46%"></div></div>
+        <span class="bar-value">+4.6%</span>
+      </div>
+      <div class="chart-bar">
+        <span class="bar-label">民间投资</span>
+        <div class="bar-track"><div class="bar-fill fill-red" style="width:85%"></div></div>
+        <span class="bar-value">-8.5%</span>
+      </div>
+      <p style="font-size:11px;color:var(--text-tertiary);margin-top:6px;">注：负值柱状图仅示意相对幅度。高技术产业为唯一正增长板块。</p>
+    </div>
+    <div class="card">
+      <div class="card-header">房地产市场（1-6月）</div>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>指标</th><th>数据</th><th>趋势</th></tr></thead>
+        <tbody>
+          <tr><td>开发投资</td><td>38,074亿 · <strong>-18.0%</strong></td><td><span class="tag tag-red">降幅扩大2.2ppt</span></td></tr>
+          <tr><td>销售面积</td><td>40,140万㎡ · <strong>-11.6%</strong></td><td><span class="tag tag-red">持续下滑</span></td></tr>
+          <tr><td>销售额</td><td>37,945亿 · <strong>-13.6%</strong></td><td><span class="tag tag-red">持续下滑</span></td></tr>
+          <tr><td>新开工</td><td>23,239万㎡ · <strong>-23.4%</strong></td><td><span class="tag tag-red">深度收缩</span></td></tr>
+          <tr><td>到位资金</td><td>40,233亿 · <strong>-20.2%</strong></td><td><span class="tag tag-red">资金链压力</span></td></tr>
+          <tr><td>待售面积</td><td>— · <strong>-0.9%</strong></td><td><span class="tag tag-green">库存微降</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">📌 房地产底部判断</div>
+    <p>新开工-23.4%、到位资金-20.2%表明开发商仍在主动收缩。积极信号是待售面积同比-0.9%，库存去化初见成效。机构普遍认为房地产投资接近底部区间，但"L型"磨底可能延续至2027年。下半年重点关注：存量房收储政策落地进度、一线城市限购进一步松绑。</p>
+  </div>
+</div>
+
+<!-- ====== 七、信贷货币 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">💰</span> 七、信贷与货币：降速提质，M2-M1剪刀差扩大</div>
+
+  <div class="grid-3">
+    <div class="metric-card">
+      <div class="metric-label">新增社融（6月）</div>
+      <div class="metric-value neutral">3.36<span style="font-size:16px">万亿</span></div>
+      <div class="metric-delta negative">同比少增0.86万亿</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">M2 同比</div>
+      <div class="metric-value neutral">8.0<span style="font-size:16px">%</span></div>
+      <div class="metric-delta negative">降0.6ppt</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">M1 同比</div>
+      <div class="metric-value neutral">4.0<span style="font-size:16px">%</span></div>
+      <div class="metric-delta negative">降1.5ppt</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header">信贷结构特征</div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>6月值</th><th>方向</th><th>解读</th></tr></thead>
+      <tbody>
+        <tr><td>新增人民币贷款</td><td>1.61万亿</td><td><span class="tag tag-orange">少增0.63万亿</span></td><td>信贷增速放缓但结构优化</td></tr>
+        <tr><td>M2-M1剪刀差</td><td><strong>4.0ppt</strong></td><td><span class="tag tag-red">扩大 · 年初来新高</span></td><td>资金活化度下降，企业投资意愿弱</td></tr>
+        <tr><td>企业贷款加权平均利率</td><td>~3.0%</td><td><span class="tag tag-green">低20bp</span></td><td>融资成本持续下行</td></tr>
+        <tr><td>个人住房贷款利率</td><td>~3.1%</td><td>基本持平</td><td>购房需求仍低迷</td></tr>
+        <tr><td>居民短贷</td><td>—</td><td><span class="tag tag-red">少增1,560亿</span></td><td>消费信贷意愿弱</td></tr>
+        <tr><td>居民中长贷</td><td>—</td><td><span class="tag tag-red">少增1,769亿</span></td><td>购房意愿低迷</td></tr>
+        <tr><td>票据融资</td><td>—</td><td><span class="tag tag-orange">多增~5,300亿</span></td><td>银行以票充贷</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-title">📌 关键判断</div>
+    <p>金融数据呈现"政策积极、实体观望"格局。M2-M1剪刀差扩至4.0ppt为年初来新高，说明企业将活期存款转为定期——"有钱但不想花"。票据冲量（多增5,300亿）和居民信贷全面少增，反映实体融资需求不足。下半年降息降准仍有空间，但单纯货币宽松效果有限——关键在财政发力+信心修复。</p>
+  </div>
+</div>
+
+<!-- ====== 八、AI产业动态 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🤖</span> 八、AI产业动态：WAIC 2026见证国产AI集群突破</div>
+
+  <div class="section-subtitle">8.1 算力与GPU：超节点成竞争主战场</div>
+  <div class="card">
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>企业</th><th>产品/进展</th><th>关键指标</th><th>意义</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>华为</strong></td>
+          <td>昇腾950超节点（WAIC首秀）</td>
+          <td>1024卡 · 1 EFLOPS · 256TB统一内存</td>
+          <td><span class="tag tag-green">SAIL最高奖</span></td>
+        </tr>
+        <tr>
+          <td><strong>NVIDIA</strong></td>
+          <td>H200有限进入中国 · RTX 50 SUPER搁置</td>
+          <td>~10家中企获批 · GDDR7显存成本过高</td>
+          <td><span class="tag tag-orange">消费级受阻</span></td>
+        </tr>
+        <tr>
+          <td><strong>寒武纪</strong></td>
+          <td>思元690量产 · 万亿市值后主动降温</td>
+          <td>产能已排满 · 优先保障字节</td>
+          <td><span class="tag tag-orange">产能瓶颈</span></td>
+        </tr>
+        <tr>
+          <td><strong>摩尔线程</strong></td>
+          <td>夸娥万卡集群 · MTT C256</td>
+          <td>完整训练MoE-236B模型</td>
+          <td><span class="tag tag-green">国芯训国模</span></td>
+        </tr>
+        <tr>
+          <td><strong>天数智芯</strong></td>
+          <td>天垓300 旗舰GPU（7.20发布）</td>
+          <td>自研SIMT架构 · 64K Attention效能超Hopper 10%</td>
+          <td><span class="tag tag-purple">里程碑</span></td>
+        </tr>
+        <tr>
+          <td><strong>中科曙光</strong></td>
+          <td>曙光8000 全国产十万卡超集群</td>
+          <td>已落地郑州</td>
+          <td><span class="tag tag-green">最大国产集群</span></td>
+        </tr>
+        <tr>
+          <td><strong>砺算</strong></td>
+          <td>LX 7G100 消费级独立显卡</td>
+          <td>6nm · 12GB · 2,688元</td>
+          <td><span class="tag tag-purple">首款国产独显</span></td>
+        </tr>
+        <tr>
+          <td><strong>曦智科技</strong></td>
+          <td>光跃 LightSphereX 光互连超节点</td>
+          <td>2000卡商业化落地</td>
+          <td><span class="tag tag-purple">国内首个光互连</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="section-subtitle">8.2 存储芯片（HBM）：三巨头7月重挫，国产加速追赶</div>
+  <div class="grid-2">
+    <div class="insight-box">
+      <div class="insight-title">全球格局</div>
+      <p>• SK海力士12层HBM4全球首发量产，交付英伟达Vera Rubin平台<br>
+      • 三星Q3 DRAM提价20% · HBM4良率仅25%（HBM3E约35%）<br>
+      • 三巨头7月股价重挫20-30%（获利了结+长鑫IPO抽血+消费疲软担忧）<br>
+      • HBM混合键合技术被推迟至HBM5E世代<br>
+      • 全球存储月销售额创纪录746亿美元，瑞银看多至2028年</p>
+    </div>
+    <div class="insight-box">
+      <div class="insight-title">国产替代</div>
+      <p>• 长鑫科技7月16日科创板申购，募资666亿（A股年内最大IPO）<br>
+      • 全球DRAM市占7.67%→全球第四 · H1净利500-570亿（+1688%）<br>
+      • HBM2量产 · 12层HBM3样品 · 良率60-70% vs 海外>90%<br>
+      • 华为HiBL 1.0搭载昇腾950PR Q1量产<br>
+      • 关键差距：规模不到SK海力士5%，但进步速度创纪录</p>
+    </div>
+  </div>
+
+  <div class="section-subtitle">8.3 光模块：业绩集体爆发，股价与基本面背离</div>
+  <div class="card">
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>公司</th><th>H1业绩/动态</th><th>关键进展</th><th>股价（7月）</th></tr></thead>
+      <tbody>
+        <tr><td><strong>中际旭创</strong></td><td>全年净利~332亿（大摩预测）</td><td>H股聆讯通过（~70亿美元）· 800G需求超预期 · 1.6T全球第一</td><td><span class="tag tag-red">7月回调</span></td></tr>
+        <tr><td><strong>新易盛</strong></td><td>H1净利70-80亿 · +77.6~102.9%</td><td>800G硅光主流 · Q2环比+51.8~87.8%</td><td><span class="tag tag-red">7月跌超20%</span></td></tr>
+        <tr><td><strong>天孚通信</strong></td><td>H1净利11.24-13.04亿 · +25~45%</td><td>200G EML芯片紧张制约放量 · 近三年半最低增速</td><td><span class="tag tag-red">6月来跌35%</span></td></tr>
+        <tr><td><strong>剑桥科技</strong></td><td>H1净利3.10-3.59亿 · +156.7~197.2%</td><td>800G光模块批量出货</td><td>—</td></tr>
+        <tr><td><strong>长飞光纤</strong></td><td>H1净利24-30亿 · +711~914%</td><td>光纤光缆+光模块双驱动</td><td>—</td></tr>
+        <tr><td><strong>兆驰股份</strong></td><td>南昌基地7月1日开工</td><td>达产月产140万只高速光模块</td><td>—</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-top:12px;"><strong>产业共识：</strong>本轮光模块股价回调是情绪性修正而非基本面逆转。800G需求较预期"明显增加"，1.6T结构性缺货30%。大摩7月18日将中际旭创2027年净利预测一次性上调180%至~700亿元。光模块市场2027年预计较2025年翻三倍（Jefferies 7.15）。</p>
+  </div>
+
+  <div class="section-subtitle">8.4 大模型商业化：价格战退潮，智能体元年开启</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">价格战进入尾声</div>
+      <p style="font-size:14px;">• DeepSeek V4引入"峰谷定价"——高峰时段API价格翻倍，标志价格战退潮<br>
+      • 涨价阵营：智谱AI（年内三次）、腾讯混元（部分+460%）、MiniMax、豆包<br>
+      • 低价阵营：小米MiMo（降99%）、腾讯Hy3<br>
+      • 竞争重心从"谁更便宜"转向成本效率和商业化能力</p>
+    </div>
+    <div class="card">
+      <div class="card-header">企业级落地加速</div>
+      <p style="font-size:14px;">• 企业微信AI Agent"大圆"深植工作流<br>
+      • 蚂蚁Agentar 2.0：预置近200个岗位数字专家，落地300+金融智能体<br>
+      • 阿里云一汽行业大模型入驻百炼平台<br>
+      • 特赞科技：落地"1:2:7"判断——模型10%·产业数据20%·组织适配70%</p>
+    </div>
+  </div>
+
+  <div class="section-subtitle">8.5 AI政策与半导体管制：中美博弈全面升级</div>
+  <div class="grid-2">
+    <div class="insight-box">
+      <div class="insight-title">中国：规则+执法+反制三管齐下</div>
+      <p>• 《AI拟人化互动服务管理暂行办法》7.15正式施行——禁止诱导情感依赖、超2h弹窗、须未成年人模式<br>
+      • "清朗"行动累计处置违规AI产品1.4万余款、清理违法信息600余万条<br>
+      • 7.3对美反制——禁两用物项对美军事用户出口，严控镓/锗/锑/石墨<br>
+      • 中国AI芯片自给率已升至41%（2021年仅10%）</p>
+    </div>
+    <div class="insight-box">
+      <div class="insight-title">美国：开小口+筑高墙并行</div>
+      <p>• H200少量放行（~10家中企），同时推进全球三级AI芯片管制框架<br>
+      • 亚洲"白名单"客户砍半——防堵经第三地转运<br>
+      • 拟限制封闭式AI模型权重出口<br>
+      • 黄仁勋：对中国市场营收"不要抱任何期待"<br>
+      • 但NVIDIA分别向Lumentum和Coherent各投20亿美元绑定光芯片上游</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 九、全球宏观与大类资产 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🌍</span> 九、全球宏观与大类资产：美伊冲突成最大变数</div>
+
+  <div class="alert alert-danger">
+    <strong>🚨 本周最大黑天鹅——美伊冲突骤然升级：</strong>伊朗关闭霍尔木兹海峡（全球1/3海运石油经此），布伦特原油单周暴涨+15.9%至88美元/桶。若冲突持续，油价可能突破100美元，将重新推升全球通胀、打乱美联储政策节奏。
+  </div>
+
+  <div class="card">
+    <div class="card-header">全球大类资产表现（7月14-20日）</div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>资产</th><th>最新水平</th><th>周变化</th><th>关键驱动</th></tr></thead>
+      <tbody>
+        <tr><td><strong>布伦特原油</strong></td><td>88.10 美元/桶</td><td><span class="tag tag-red">+15.9% 🚨</span></td><td>伊朗关闭霍尔木兹海峡</td></tr>
+        <tr><td><strong>美国6月CPI</strong></td><td>同比+3.5% · 环比-0.4%</td><td><span class="tag tag-green">2020.5来首跌</span></td><td>大幅低于预期+3.8%</td></tr>
+        <tr><td><strong>美国核心CPI</strong></td><td>同比+2.6% · 环比持平</td><td><span class="tag tag-green">全面降温</span></td><td>住房成本缓解</td></tr>
+        <tr><td><strong>10年期美债</strong></td><td>~4.48%</td><td>高位震荡</td><td>CPI后急跌→油价暴涨反弹</td></tr>
+        <tr><td><strong>2年期美债</strong></td><td>~4.14%</td><td><span class="tag tag-green">CPI日-14bp</span></td><td>加息预期大幅降温</td></tr>
+        <tr><td><strong>美元指数</strong></td><td>~100.8-101</td><td>强势震荡</td><td>加息退潮后承压</td></tr>
+        <tr><td><strong>国际金价</strong></td><td>~4,008 美元/盎司</td><td><span class="tag tag-orange">周跌~2.5%</span></td><td>4000关口反复 · 避险vs美元</td></tr>
+        <tr><td><strong>人民币（市场汇率）</strong></td><td>~7.27</td><td><span class="tag tag-green">升值</span></td><td>央行中间价6.77 · 美元走弱</td></tr>
+        <tr><td><strong>美联储利率</strong></td><td>3.50-3.75%</td><td>7月加息基本排除</td><td>但沃什鹰派"零容忍"</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="insight-box">
+      <div class="insight-title">📌 美联储：CPI降温但油价添乱</div>
+      <p>6月CPI超预期回落令7月加息预期大幅退潮，但油价暴涨可能在8-9月重新推升CPI——市场陷入"通胀降温+新冲击"的两难。新任主席沃什维持鹰派基调，强调"零容忍"。市场定价年内不再加息，但降息预期也被油价压制。关注7月30日FOMC会议。</p>
+    </div>
+    <div class="insight-box">
+      <div class="insight-title">📌 黄金：4000美元关口的多空博弈</div>
+      <p>金价在4000美元/盎司关口反复试探。利多因素：美伊冲突地缘避险+全球央行购金+美元走弱预期。利空因素：美债实际收益率仍高+油价推升通胀预期→美联储不敢转鸽。国内金价（AU9999 ~873元/克）跟跌，金饰1235-1255元/克。建议逢回调分批建仓，不追高。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 十、权威机构研判 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🏦</span> 十、权威机构下半年展望：一致看多中国资产</div>
+
+  <div class="card">
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>机构</th><th>2026 GDP预测</th><th>A股/港股目标</th><th>核心观点</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>IMF</strong></td>
+          <td>4.6%（7月↑0.2ppt）</td>
+          <td>—</td>
+          <td>逆势上调中国预期，下调全球至3.0%；看好基建与高科技出口</td>
+        </tr>
+        <tr>
+          <td><strong>高盛</strong></td>
+          <td>—</td>
+          <td>沪深300 → <strong>5,300</strong></td>
+          <td>超配A股；A股盈利增长预期升至23%；全球资金再配置中国</td>
+        </tr>
+        <tr>
+          <td><strong>摩根士丹利</strong></td>
+          <td>上调2026/2027</td>
+          <td>沪深300 → <strong>5,400</strong> · 恒指 → <strong>28,400</strong></td>
+          <td>看好上游资产+半导体；中国AI投资周期刚开始</td>
+        </tr>
+        <tr>
+          <td><strong>瑞银</strong></td>
+          <td>—</td>
+          <td>—</td>
+          <td>全年A股盈利增速从3.9%大幅提升至11%</td>
+        </tr>
+        <tr>
+          <td><strong>中金公司</strong></td>
+          <td>—</td>
+          <td>—</td>
+          <td>出口韧性与技术进步支撑经济；出口企业利润率企稳回升</td>
+        </tr>
+        <tr>
+          <td><strong>东方金诚</strong></td>
+          <td>~4.7%</td>
+          <td>—</td>
+          <td>全年"V型"走势，Q3回升至4.6%；降息降准仍有空间</td>
+        </tr>
+        <tr>
+          <td><strong>世界银行</strong></td>
+          <td>4.4%（维持）</td>
+          <td>—</td>
+          <td>经济保持韧性，建议推进结构性改革解决内需不足</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="alert alert-success">
+    <strong>💰 资金面验证：</strong>2026年H1北向资金净买入A股累计<strong>5,360亿元</strong>（Q1 3,274亿 + Q2 2,086亿，均创单季纪录），北向持仓首破3万亿元。570余家外资机构调研A股近3,900次，<strong>硬科技为绝对主线</strong>。外资用真金白银验证了看多中国的判断。
+  </div>
+</div>
+
+<!-- ====== 十一、投资洞察与资产配置建议 ====== -->
+<div class="section">
+  <div class="section-title"><span class="icon">🎯</span> 十一、投资洞察与资产配置建议</div>
+
+  <div class="section-subtitle">11.1 宏观情境判断</div>
+  <div class="card">
+    <p style="font-size:15px;line-height:1.7;">当前宏观环境处于<strong>"内冷外热 + 结构性分化 + 地缘高波动"</strong>的组合。中国经济整体增速不低（H1 4.7%），但增长极极度分化——AI/新能源/高端制造热火朝天，消费/地产/民间投资寒气未消。外需（出口+27%）是当前最强劲的增长引擎，但依赖外需的增长结构在关税风险和地缘冲突面前脆弱。</p>
+    <p style="font-size:15px;line-height:1.7;margin-top:8px;"><strong>基准情景（概率50%）：</strong>美伊冲突可控（油价80-90美元区间）+ 国内政策温和加码 + 出口动能维持 → A股震荡上行<br>
+    <strong>乐观情景（概率20%）：</strong>美伊缓和 + 7月底政治局会议超预期刺激 + 外资持续流入 → A股突破前高<br>
+    <strong>悲观情景（概率30%）：</strong>美伊冲突升级（油价破100）+ 关税加征 + 地产二次探底 → A股深度回调</p>
+  </div>
+
+  <div class="section-subtitle">11.2 大类资产配置建议</div>
+  <div class="allocation-grid">
+    <div class="alloc-item">
+      <div class="alloc-pct" style="color:var(--accent)">35%</div>
+      <div class="alloc-label">A股 · AI/半导体/高端制造</div>
+      <div class="alloc-note">光模块、算力、存储国产替代、机器人</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-pct" style="color:var(--green)">20%</div>
+      <div class="alloc-label">A股 · 红利/防御</div>
+      <div class="alloc-note">公用事业、央企红利、消费龙头</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-pct" style="color:var(--orange)">15%</div>
+      <div class="alloc-label">港股 · 科技/互联网</div>
+      <div class="alloc-note">恒生科技ETF、AI应用、中概互联</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-pct" style="color:#af52de">10%</div>
+      <div class="alloc-label">黄金</div>
+      <div class="alloc-note">逢回调分批建仓 · 地缘对冲</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-pct" style="color:var(--text-secondary)">10%</div>
+      <div class="alloc-label">债券/货基</div>
+      <div class="alloc-note">短久期利率债+高等级信用债</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-pct" style="color:var(--text-secondary)">5%</div>
+      <div class="alloc-label">原油/商品</div>
+      <div class="alloc-note">美伊冲突博弈 · 短期交易</div>
+    </div>
+    <div class="alloc-item">
+      <div class="alloc-pct" style="color:var(--text-tertiary)">5%</div>
+      <div class="alloc-label">现金</div>
+      <div class="alloc-note">等待恐慌性回调时抄底</div>
+    </div>
+  </div>
+
+  <div class="section-subtitle">11.3 核心投资洞察</div>
+
+  <div class="grid-2">
+    <div class="insight-box">
+      <div class="insight-title">✅ 超配方向</div>
+      <p><strong>1. 光模块产业链（最强确定性）</strong><br>
+      中际旭创/新易盛/天孚——H1业绩集体爆发，大摩上调2027年预测180%。800G需求超预期、1.6T缺货30%、订单能见度至2027年。7月回调是情绪性的——产业基本面未变。PE虽高但增长确定性强。</p>
+      <p style="margin-top:8px;"><strong>2. 国产算力/半导体（政策+需求双驱动）</strong><br>
+      寒武纪/华为昇腾链/长鑫科技——中国AI芯片自给率41%且仍在加速。美国出口管制越紧，国产替代逻辑越强。长鑫666亿IPO标志DRAM国产化突破。</p>
+      <p style="margin-top:8px;"><strong>3. 存储芯片（周期+AI双驱动）</strong><br>
+      全球存储月销创纪录746亿美元。三巨头7月回调20-30%是布局窗口——HBM4量产刚启动，涨价周期至少至2028年。A股关注存储模组（江波龙H1预增743倍）和设备国产化。</p>
+    </div>
+    <div class="insight-box">
+      <div class="insight-title">⚠️ 谨慎/回避方向</div>
+      <p><strong>1. 房地产链</strong><br>
+      开发投资-18%且降幅扩大。新开工-23.4%预示未来2-3年供给继续收缩。虽接近底部但"L型"磨底漫长——不是价值投资的好时机。</p>
+      <p style="margin-top:8px;"><strong>2. 纯内需消费</strong><br>
+      社零+1.3%但限额以上-2.2%——大型零售商业绩压力未释放。居民信贷全面少增，消费信心修复需要时间。等社零连续3个月稳定在3%以上再考虑。</p>
+      <p style="margin-top:8px;"><strong>3. 原油多头（短期除外）</strong><br>
+      油价单周+16%是地缘冲击，非基本面驱动。若美伊冲突缓和，油价可能快速回落。85美元以上不建议追多。</p>
+    </div>
+  </div>
+
+  <div class="section-subtitle">11.4 关键时间节点与关注事项</div>
+  <div class="card">
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>时间</th><th>事件</th><th>影响</th></tr></thead>
+      <tbody>
+        <tr><td>7月底</td><td><strong>中共中央政治局会议</strong></td><td>下半年经济政策定调——是否加码财政刺激、地产政策是否进一步松绑</td></tr>
+        <tr><td>7月30日</td><td><strong>美联储FOMC会议</strong></td><td>利率决议+点阵图——关注对油价冲击的评估</td></tr>
+        <tr><td>8月初</td><td>美国7月CPI（8月12日前后）</td><td>检验油价上涨是否已传导至核心通胀</td></tr>
+        <tr><td>8月中旬</td><td>A股中报密集披露</td><td>AI产业链业绩验证——光模块/算力/存储是否兑现高预期</td></tr>
+        <tr><td>持续关注</td><td><strong>霍尔木兹海峡局势</strong></td><td>若封锁持续→油价破100→全球通胀回升→风险资产承压</td></tr>
+        <tr><td>持续关注</td><td>中美关税谈判进展</td><td>若新一轮关税加征→出口链受损→GDP增速承压</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 免责声明 ====== -->
+<div class="section">
+  <div class="card" style="background:#fafafa;text-align:center;">
+    <p style="font-size:12px;color:var(--text-tertiary);line-height:1.6;">
+      <strong>免责声明</strong><br>
+      本报告基于公开数据和权威机构研报整理，仅供研究参考，不构成投资建议。<br>
+      数据来源：国家统计局、中国人民银行、海关总署、IMF、高盛、摩根士丹利、瑞银、中金公司、东方金诚、广发证券等。<br>
+      投资有风险，入市须谨慎。过往业绩不预示未来表现。
+    </p>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<div class="footer">
+  <p>2026宏观分析周报 · 7月第三周 · 2026年7月20日</p>
+  <p>Data-driven · Objective · Actionable Insights</p>
+  <p style="margin-top:8px;">Made with ❤️ by Claude · Apple HIG Design Standard</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+- generic [ref=f4e2]:
+  - banner [ref=f4e3]:
+    - generic [ref=f4e4]: 2026 彩虹+计划 · 行动学习课题
+    - heading "课题经验资产库" [level=1] [ref=f4e5]
+    - generic [ref=f4e6]: 经验教训 + 业务成果 双轨录入 · 分类 · 一键生成领导汇总报告（支持上传 PPTX/DOCX/TXT）
+    - generic [ref=f4e7]: 🔒 所有数据仅存于本机浏览器（localStorage），无任何网络请求
+  - navigation [ref=f4e8]:
+    - button "经验录入" [ref=f4e9] [cursor=pointer]
+    - button "成果录入" [ref=f4e10] [cursor=pointer]
+    - button "条目库 (经验1+成果1)" [active] [ref=f4e110] [cursor=pointer]
+    - button "生成报告" [ref=f4e12] [cursor=pointer]
+    - button "备份" [ref=f4e13] [cursor=pointer]
+  - generic [ref=f4e112]:
+    - generic [ref=f4e114]:
+      - button "全部" [ref=f4e115] [cursor=pointer]
+      - button "经验" [ref=f4e116] [cursor=pointer]
+      - button "成果" [ref=f4e117] [cursor=pointer]
+    - generic [ref=f4e118]:
+      - combobox [ref=f4e119]:
+        - option "全部条线" [selected]
+        - option "投资拓展"
+        - option "成本管理"
+        - option "招采与供应链"
+        - option "设计管理"
+        - option "工程管理"
+        - option "营销与客研"
+        - option "交付与客服"
+        - option "运营与综合"
+      - combobox [ref=f4e120]:
+        - option "全部类型" [selected]
+        - option "经验"
+        - option "教训"
+      - combobox [ref=f4e121]:
+        - option "全部阶段" [selected]
+        - option "中期复盘"
+        - option "结题"
+      - textbox "搜索原文 / 课题 / 提交人…" [ref=f4e122]
+    - generic [ref=f4e123]:
+      - generic [ref=f4e124]:
+        - generic [ref=f4e125]:
+          - generic [ref=f4e126]: 经验
+          - generic [ref=f4e127]: 经验
+          - generic [ref=f4e128]: 机制层面
+          - generic [ref=f4e129]: 投资拓展
+          - generic [ref=f4e130]: 有量化数据
+          - generic [ref=f4e131]: 中期复盘
+        - generic [ref=f4e132]:
+          - text: 在成本适配环节，我们发现提前3个月介入方案设计，通过优化结构方案和材料选型，单项目平均节省成本约120万元，同时缩短工期15天。
+          - generic [ref=f4e133]: ▎学员原文，一字未改
+        - generic [ref=f4e134]:
+          - generic [ref=f4e135]: （未填课题名称）
+          - generic [ref=f4e136]: 出处：2026-07-20
+        - generic [ref=f4e137]:
+          - button "编辑" [ref=f4e138] [cursor=pointer]
+          - button "删除" [ref=f4e139] [cursor=pointer]
+      - generic [ref=f4e140]:
+        - generic [ref=f4e141]:
+          - generic [ref=f4e142]: 成果
+          - generic [ref=f4e143]: 业务突破
+          - generic [ref=f4e144]: 成本管理
+          - generic [ref=f4e145]: 有量化数据
+          - generic [ref=f4e146]: 中期复盘
+        - generic [ref=f4e147]:
+          - text: 通过建立设计阶段的成本联审机制，2026年上半年3个新项目在设计阶段即实现成本压降，累计节省建造成本360万元，设计变更率从12%降至4%。
+          - generic [ref=f4e148]: ▎学员原文，一字未改
+        - generic [ref=f4e149]:
+          - generic [ref=f4e150]: 课题：经营视角下成本适配能力提升
+          - generic [ref=f4e151]: 出处：2026-07-20
+        - generic [ref=f4e152]:
+          - button "编辑" [ref=f4e153] [cursor=pointer]
+          - button "删除" [ref=f4e154] [cursor=pointer]

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTP课程陪练专区</title>
+<style>
+:root {
+  --bg: #F8F6F2; --card-bg: rgba(255,255,255,.65); --text: #1C1917;
+  --muted: #A8A29E; --border: rgba(0,0,0,.06); --accent: #1C1917;
+  --radius: 16px; --shadow: 0 2px 16px rgba(0,0,0,.04);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* Global Nav (shared across all pages) */
+.global-nav{position:sticky;top:0;z-index:100;background:rgba(248,246,242,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,.06)}
+.global-nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;height:48px;padding:0 20px;gap:4px}
+.global-nav .logo{font-size:14px;font-weight:700;letter-spacing:-.01em;margin-right:16px;display:flex;align-items:center;gap:7px;text-decoration:none;color:#1C1917}
+.global-nav .logo .dot{width:7px;height:7px;border-radius:50%;background:#34c759}
+.global-nav a.nav-link{font-size:12px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:100px;transition:all .2s;font-weight:450;white-space:nowrap}
+.global-nav a.nav-link:hover{background:rgba(0,0,0,.04);color:#1C1917}
+.global-nav a.nav-link.active{color:#34c759;font-weight:600;background:rgba(52,199,89,.06)}
+.global-nav .nav-right{margin-left:auto}
+.global-nav .back-link{font-size:12px;color:#0071e3;text-decoration:none;font-weight:500}
+@media(max-width:768px){.global-nav-inner{padding:0 10px;gap:2px}.global-nav .logo{font-size:13px;margin-right:6px}.global-nav a.nav-link{font-size:10px;padding:5px 8px}}
+
+/* ── 环境光 ── */
+body::before, body::after {
+  content: ''; position: fixed; border-radius: 50%; filter: blur(130px); pointer-events: none; z-index: 0; opacity: .12;
+}
+body::before { width: 380px; height: 380px; background: #FEE2E2; top: -80px; right: -60px; }
+body::after  { width: 280px; height: 280px; background: #FEF3C7; bottom: -40px; left: -30px; }
+
+/* ── 主容器 ── */
+.container { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; position: relative; z-index: 1; }
+
+/* ── 专区标题 ── */
+.section-header { margin-bottom: 10px; }
+.section-header .tag { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 3px 10px; border-radius: 10px; margin-bottom: 8px; }
+.tag.mtp { background: rgba(212,165,116,.12); color: #B8854A; }
+.tag.perf { background: rgba(147,197,253,.15); color: #3B82F6; }
+.section-header h2 { font-size: 22px; font-weight: 700; letter-spacing: -.3px; }
+.section-header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+/* ── 筛选栏 ── */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start;
+  padding: 18px 20px; margin: 20px 0;
+  background: var(--card-bg); backdrop-filter: blur(20px);
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+.filter-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.filter-group .label { font-size: 11px; font-weight: 600; color: var(--muted); margin-right: 4px; white-space: nowrap; }
+.filter-pill {
+  font-size: 11px; padding: 5px 13px; border-radius: 14px; cursor: pointer;
+  border: 1px solid rgba(0,0,0,.08); background: #fff; color: #57534E;
+  transition: all .15s; white-space: nowrap; font-family: inherit;
+}
+.filter-pill:hover { border-color: #B8854A; color: #B8854A; }
+.filter-pill.active { background: rgba(212,165,116,.1); border-color: #B8854A; color: #B8854A; font-weight: 600; }
+
+/* ── 卡片网格 ── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.card {
+  background: var(--card-bg); backdrop-filter: blur(14px);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; cursor: pointer;
+  box-shadow: var(--shadow); transition: all .2s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.07); }
+.card-cover {
+  height: 130px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.card-cover.sales    { background: linear-gradient(135deg, #FEE2E2, #FEF3C7); }
+.card-cover.outdoor  { background: linear-gradient(135deg, #DBEAFE, #BAE6FD); }
+.card-cover.office   { background: linear-gradient(135deg, #E0E7FF, #DDD6FE); }
+.card-cover.default  { background: linear-gradient(135deg, #F3F4F6, #E5E7EB); }
+.card-cover .difficulty-badge {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 10px; padding: 2px 8px; border-radius: 8px; font-weight: 600;
+}
+.difficulty-badge.easy   { background: rgba(16,185,129,.12); color: #059669; }
+.difficulty-badge.medium { background: rgba(245,158,11,.12); color: #D97706; }
+.difficulty-badge.hard   { background: rgba(220,38,38,.1); color: #DC2626; }
+.card-body { padding: 14px 16px 16px; }
+.card-body .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.card-body .tags span {
+  font-size: 9px; padding: 2px 7px; border-radius: 6px;
+  background: rgba(0,0,0,.03); color: var(--muted);
+}
+.card-body h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; line-height: 1.35; }
+.card-body .desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+.card-body .meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); }
+.card-body .meta .dur { display: flex; align-items: center; gap: 3px; }
+.card-body .meta .cta { font-size: 11px; font-weight: 600; color: #B8854A; }
+
+/* ── 空状态 ── */
+.empty { grid-column: 1/-1; text-align: center; padding: 50px 20px; color: var(--muted); font-size: 14px; }
+
+/* ── 未来专区占位 ── */
+.future-section { margin-top: 40px; opacity: .55; pointer-events: none; }
+.future-section .card { cursor: default; }
+.future-section .card:hover { transform: none; box-shadow: var(--shadow); }
+.coming-soon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.4); font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .03em; }
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <div class="global-nav-inner">
+    <a href="陪练首页.html" class="logo"><span class="dot"></span>AI 管理陪练</a>
+    <a href="陪练首页.html" class="nav-link">首页</a>
+    <a href="preview_MTP陪练专区.html" class="nav-link active">全部场景</a>
+    <a href="练习记录.html" class="nav-link">记录</a>
+    <span class="nav-right"><a href="陪练首页.html" class="back-link">← 返回首页</a></span>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ═══════ MTP 课程陪练专区 ═══════ -->
+  <div class="section-header">
+    <span class="tag mtp">MTP 课程</span>
+    <h2>管理技能陪练专区</h2>
+    <p>基于 D-P-F 决策模型，覆盖 5 大管理模块 · 3 个难度等级 · 多职能场景</p>
+  </div>
+
+  <!-- 筛选栏 -->
+  <div class="filter-bar" id="filterBar">
+    <!-- 专业 -->
+    <div class="filter-group" data-group="profession">
+      <span class="label">专业</span>
+      <button class="filter-pill active" data-value="all">全部</button>
+      <button class="filter-pill" data-value="营销">营销</button>
+      <button class="filter-pill" data-value="工程">工程</button>
+      <button class="filter-pill" data-value="设计">设计</button>
+      <button class="filter-pill" data-value="运营">运营</button>
+      <button class="filter-pill" data-value="综合">综合</button>
+    </div>
+    <!-- 难度 -->
+    <div class="filter-group" data-group="difficulty">
+      <span class="label">难度</span>
+      <button class="filter-pill active" data-value="all">全部</button>
+      <button class="filter-pill" data-value="入门">入门</button>
+      <button class="filter-pill" data-value="进阶">进阶</button>
+      <button class="filter-pill" data-value="挑战">挑战</button>
+    </div>
+    <!-- MTP 模块 -->
+    <div class="filter-group" data-group="module">
+      <span class="label">MTP模块</span>
+      <button class="filter-pill active" data-value="all">全部</button>
+      <button class="filter-pill" data-value="对下管理">对下管理</button>
+      <button class="filter-pill" data-value="跨部门协作">跨部门协作</button>
+      <button class="filter-pill" data-value="拿结果">拿结果</button>
+      <button class="filter-pill" data-value="建氛围">建氛围</button>
+      <button class="filter-pill" data-value="向上管理">向上管理</button>
+    </div>
+  </div>
+
+  <!-- 卡片网格 -->
+  <div class="card-grid" id="cardGrid"></div>
+
+  <!-- ═══════ 绩效辅导陪练专区（未来） ═══════ -->
+  <div class="section-header future-section" style="margin-top:48px;">
+    <span class="tag perf">绩效辅导</span>
+    <h2>绩效辅导陪练专区</h2>
+    <p>绩效面谈 · 发展反馈 · 目标对齐 · 高潜人才保留</p>
+  </div>
+  <div class="card-grid future-section" id="futureGrid"></div>
+
+</div>
+
+<script>
+/* ========== 场景数据 ========== */
+var SCENES = [
+  { id:'TG-001', title:'首开倒计时——空降者的20天', module:'对下管理', profession:'营销', difficulty:'进阶', durationMin:15, desc:'空降新项目，127套房源6种户型，团队过劳士气低迷。NPC-周在等你开口。', cover:'sales', npc:'NPC-周' },
+  { id:'TG-002', title:'大户型攻坚——能力在，意愿呢？', module:'对下管理', profession:'营销', difficulty:'进阶', durationMin:15, desc:'老销售不愿意跑大户型，隐性对抗。你需要让他们觉得"这件事值得做"。', cover:'sales', npc:'老刘' },
+  { id:'TG-003', title:'线索断了——数渠团队的重建', module:'跨部门协作', profession:'营销', difficulty:'挑战', durationMin:18, desc:'老人吃老本新人消极怠工。半年前改革失败留下PTSD，三个月内必须拉起转化率。', cover:'office', npc:'NPC-张' },
+  { id:'TG-004', title:'尾盘清仓——谁在害怕被抛弃？', module:'对下管理', profession:'营销', difficulty:'进阶', durationMin:15, desc:'项目尾盘32套，人心散了。每个人都在偷偷打听新项目消息，没人有心思卖尾盘。', cover:'default', npc:'小赵' },
+  { id:'scene_gt_P4', title:'三线城市新媒体营销团队激活', module:'对下管理', profession:'营销', difficulty:'进阶', durationMin:12, desc:'传统渠道失灵，团队抵触新媒体。需要帮老销售跨过"面子关"和"能力关"。', cover:'default', npc:'小陈' },
+  { id:'scene_gt_F4', title:'跨部门资源争夺·平衡品质与成本', module:'跨部门协作', profession:'工程', difficulty:'挑战', durationMin:12, desc:'设计坚持效果，成本要求节约，工程需要明确标准。三方僵持。', cover:'office', npc:'陈工' },
+  { id:'scene_P2', title:'跨部门协作冲突协调', module:'跨部门协作', profession:'工程', difficulty:'挑战', durationMin:12, desc:'营销催交付，工程强调质量，双方激烈冲突。五年前事故的心理阴影。', cover:'outdoor', npc:'周工' },
+  { id:'scene_R1', title:'季度目标对齐·拆解沟通', module:'拿结果', profession:'营销', difficulty:'挑战', durationMin:12, desc:'上级要求6500万目标，张磊认为过高。表面服从内心不认同——需要达成真正共识。', cover:'office', npc:'张磊' },
+  { id:'scene_adv_upward_01', title:'向上汇报·项目延期问责', module:'向上管理', profession:'工程', difficulty:'挑战', durationMin:12, desc:'项目延期一周，赵总在周会上当众质问。你需要既承认责任又争取支持。', cover:'office', npc:'赵总' },
+  { id:'scene_conflict_001', title:'团队内部冲突调解', module:'对下管理', profession:'综合', difficulty:'进阶', durationMin:10, desc:'两名核心成员因工作方式分歧产生冲突，已冷战一周，团队被波及。', cover:'office', npc:'管理者B' },
+  { id:'scene_adv_gen_01', title:'跨代际员工管理', module:'对下管理', profession:'综合', difficulty:'进阶', durationMin:10, desc:'95后员工能力强但不认可传统管理方式。尊重逻辑不尊重权威。', cover:'office', npc:'小周' },
+  { id:'scene_R2', title:'销售人员目标拆解指导', module:'拿结果', profession:'营销', difficulty:'入门', durationMin:8, desc:'新人管理者B入职第2个月，200万目标无从下手——不知道怎么把大目标变成每天的动作。', cover:'default', npc:'管理者B' },
+];
+
+/* ========== 筛选状态 ========== */
+var filters = { profession:'all', difficulty:'all', module:'all' };
+
+/* ========== 渲染 ========== */
+function render() {
+  var grid = document.getElementById('cardGrid');
+  var filtered = SCENES.filter(function(s) {
+    if (filters.profession !== 'all' && s.profession !== filters.profession) return false;
+    if (filters.difficulty !== 'all' && s.difficulty !== filters.difficulty) return false;
+    if (filters.module !== 'all' && s.module !== filters.module) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty">没有匹配的场景——试试调整筛选条件</div>';
+    return;
+  }
+
+  var diffClass = { '入门':'easy', '进阶':'medium', '挑战':'hard' };
+  grid.innerHTML = filtered.map(function(s) {
+    return '<div class="card" onclick="location.href=\'/scenario/' + s.id + '/chat\'">'
+      + '<div class="card-cover ' + s.cover + '">'
+      + '<span class="difficulty-badge ' + (diffClass[s.difficulty]||'medium') + '">' + s.difficulty + '</span>'
+      + (s.cover === 'sales' ? '🏗️' : s.cover === 'outdoor' ? '🚧' : s.cover === 'office' ? '🏢' : '📋')
+      + '</div>'
+      + '<div class="card-body">'
+      + '<div class="tags"><span>' + s.module + '</span><span>' + s.profession + '</span></div>'
+      + '<h3>' + s.title + '</h3>'
+      + '<div class="desc">' + s.desc + '</div>'
+      + '<div class="meta"><span class="dur">⏱ ' + s.durationMin + '分钟</span><span class="cta">开始练习 →</span></div>'
+      + '</div></div>';
+  }).join('');
+}
+
+/* ========== 筛选事件 ========== */
+document.getElementById('filterBar').addEventListener('click', function(e) {
+  var pill = e.target.closest('.filter-pill');
+  if (!pill) return;
+  var group = pill.parentElement.dataset.group;
+  var value = pill.dataset.value;
+  // 切换 active
+  pill.parentElement.querySelectorAll('.filter-pill').forEach(function(p) { p.classList.remove('active'); });
+  pill.classList.add('active');
+  // 更新筛选
+  filters[group] = value;
+  render();
+});
+
+/* ========== 未来专区 ========== */
+document.getElementById('futureGrid').innerHTML = [
+  { title:'绩效面谈—高绩效者职业迷茫', diff:'进阶', dur:'12分钟', desc:'A级员工陈睿绩效优秀但看不到发展方向，外面有公司在接触。' },
+  { title:'绩效面谈—自评与绩效落差大', diff:'挑战', dur:'12分钟', desc:'她以为自己是B，数据说的是C。需要接住情绪但不软化结论。' },
+  { title:'季度目标对齐·拆解沟通', diff:'进阶', dur:'12分钟', desc:'上级将目标提升30%，张磊认为过高，倾向于先接受再打折执行。' },
+].map(function(s, i) {
+  return '<div class="card" style="position:relative">'
+    + '<div class="card-cover" style="background:linear-gradient(135deg,#DBEAFE,#E0E7FF);font-size:28px;">📊</div>'
+    + '<div class="card-body"><div class="tags"><span>绩效辅导</span></div><h3>' + s.title + '</h3>'
+    + '<div class="desc">' + s.desc + '</div>'
+    + '<div class="meta"><span>' + s.dur + '</span></div></div>'
+    + '<div class="coming-soon">即将上线</div></div>';
+}).join('');
+
+/* ========== 初始渲染 ========== */
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>准备页 · 管理者B · 绩效面谈</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;
+    background:linear-gradient(175deg, #F8F6F2 0%, #EDE8E0 30%, #F5F2ED 60%, #EAE4DC 100%);
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  /* Warm, slightly tense atmosphere - like late afternoon light in a small meeting room */
+  .amb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.25}
+  .amb-1{width:450px;height:450px;background:#FEE2E2;top:-130px;left:-80px}
+  .amb-2{width:350px;height:350px;background:#FEF3C7;bottom:-100px;right:-60px}
+  .amb-3{width:280px;height:280px;background:#DBEAFE;top:50%;left:55%}
+
+  /* Narrative container */
+  .narrative{position:relative;z-index:10;max-width:620px;margin:0 auto;padding:40px 24px 60px}
+
+  /* Atmosphere bar */
+  .atmo{
+    display:flex;align-items:center;gap:16px;padding:12px 0;
+    font-size:13px;color:#78716C;border-bottom:1px solid rgba(0,0,0,.06);
+    margin-bottom:32px;
+  }
+  .atmo-item{display:flex;align-items:center;gap:5px}
+
+  /* Hero area */
+  .hero{margin-bottom:36px}
+  .hero-tag{
+    display:inline-flex;align-items:center;gap:4px;padding:5px 14px;
+    border-radius:100px;font-size:12px;font-weight:600;letter-spacing:.02em;
+    background:rgba(239,68,68,.08);color:#DC2626;border:1px solid rgba(239,68,68,.15);
+    margin-bottom:14px;
+  }
+  .hero-title{font-size:28px;font-weight:700;color:#1C1917;line-height:1.25;margin-bottom:8px;letter-spacing:-.01em}
+  .hero-sub{font-size:15px;color:#78716C;line-height:1.6;max-width:520px}
+
+  /* NPC card */
+  .npc-card{
+    background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.6);border-radius:20px;padding:24px;
+    margin-bottom:28px;box-shadow:0 4px 24px rgba(0,0,0,.04);
+  }
+  .npc-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .npc-avatar{
+    width:52px;height:52px;border-radius:50%;
+    background:linear-gradient(135deg,#F472B6,#EC4899);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:20px;font-weight:700;flex-shrink:0;
+  }
+  .npc-name{font-size:18px;font-weight:700;color:#1C1917}
+  .npc-role{font-size:13px;color:#78716C}
+  .npc-story{font-size:14px;color:#44403C;line-height:1.75}
+
+  /* Trust + Stakes cards - side by side */
+  .signal-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+  .signal-card{
+    background:rgba(255,255,255,.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:18px;
+  }
+  .signal-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .signal-value{font-size:26px;font-weight:300;color:#1C1917;letter-spacing:-.02em}
+  .signal-sub{font-size:12px;color:#78716C;margin-top:4px;line-height:1.5}
+
+  /* Opening scene */
+  .opening{
+    background:linear-gradient(135deg,rgba(254,243,199,.4),rgba(252,211,77,.15));
+    border:1px solid rgba(251,191,36,.2);border-radius:20px;padding:28px 24px;
+    margin-bottom:28px;position:relative;
+  }
+  .opening-label{
+    font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+    color:#92400E;margin-bottom:10px;
+  }
+  .opening-scene{font-size:14px;color:#44403C;line-height:1.7;margin-bottom:14px}
+  .opening-quote{
+    font-size:16px;color:#1C1917;line-height:1.6;font-weight:500;
+    padding:12px 0;position:relative;
+  }
+
+  /* Path section */
+  .path-section{margin-bottom:28px}
+  .path-title{font-size:16px;font-weight:700;color:#1C1917;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+  /* Good vs Bad comparison */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .compare-col{
+    border-radius:16px;padding:16px;font-size:13px;line-height:1.6;
+  }
+  .compare-bad{background:rgba(254,226,226,.4);border:1px solid rgba(239,68,68,.1)}
+  .compare-good{background:rgba(209,250,229,.4);border:1px solid rgba(16,185,129,.1)}
+  .compare-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+
+  /* Goals */
+  .goals{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+  .goal-item{
+    display:flex;align-items:flex-start;gap:12px;padding:14px 16px;
+    background:rgba(255,255,255,.45);border-radius:14px;
+    border:1px solid rgba(0,0,0,.04);font-size:13px;color:#44403C;line-height:1.6;
+  }
+  .goal-num{
+    width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px;
+  }
+
+  /* Ready section */
+  .ready-section{text-align:center;margin-top:40px}
+  .ready-text{font-size:14px;color:#78716C;margin-bottom:8px}
+  .ready-btn{
+    display:inline-flex;align-items:center;gap:8px;padding:16px 48px;
+    background:#1C1917;color:#fff;font-size:16px;font-weight:600;
+    border:none;border-radius:100px;cursor:pointer;
+    box-shadow:0 4px 24px rgba(0,0,0,.12);
+    transition:all .25s ease;font-family:inherit;
+  }
+  .ready-btn:hover{background:#000;transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,0,0,.18)}
+  .ready-btn:active{transform:scale(.97)}
+
+  /* Role selector (compact) */
+  .role-row{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
+  .role-btn{
+    padding:6px 16px;border-radius:100px;border:1px solid rgba(0,0,0,.08);
+    background:transparent;cursor:pointer;font-size:12px;font-weight:500;
+    color:#78716C;transition:all .2s;font-family:inherit;
+  }
+  .role-btn.active{background:#1C1917;color:#fff;border-color:#1C1917}
+
+  @media(max-width:540px){
+    .signal-row{grid-template-columns:1fr}
+    .compare{grid-template-columns:1fr}
+    .hero-title{font-size:24px}
+  }
+</style>
+</head>
+<body>
+
+<div class="amb amb-1"></div><div class="amb amb-2"></div><div class="amb amb-3"></div>
+
+<div class="narrative">
+
+  <!-- Atmosphere -->
+  <div class="atmo">
+    <span class="atmo-item"><i data-lucide="clock" class="w-3.5 h-3.5"></i> 下午 3:00</span>
+    <span class="atmo-item"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> 小会议室</span>
+    <span class="atmo-item"><i data-lucide="sun" class="w-3.5 h-3.5"></i> 窗外有光，不刺眼</span>
+    <span class="atmo-item text-xs opacity-60">半年度绩效面谈 · 30分钟</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag"><i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> 绩效面谈 · 挑战级</div>
+    <h1 class="hero-title">她以为自己是B。<br>数据说的是C。</h1>
+    <p class="hero-sub">接下来的30分钟里，你需要把这个差距放在她面前——用一种她听得进去的方式。</p>
+  </div>
+
+  <!-- NPC Card -->
+  <div class="npc-card">
+    <div class="npc-header">
+      <div class="npc-avatar">林</div>
+      <div>
+        <div class="npc-name">管理者B</div>
+        <div class="npc-role">25岁 · 2022届管培生 · 这是她的第一份工作</div>
+      </div>
+    </div>
+    <p class="npc-story">
+      她这半年真的很努力——加班到九点是常态。同事都挺喜欢她的，张姐说她"进步很大"，李哥帮她改过方案说"没事下次注意"。这些日常的善意让她相信自己做得不错。她不知道的是：<strong>她的返工率是全组最高的，方案细节错误让其他同事多次补位，而这些——同事们碍于情面不会当面告诉她。</strong>她推门进来时，心情是好的。她以为这是一场确认，不是一场挑战。
+    </p>
+  </div>
+
+  <!-- Signal cards: Trust + Stakes -->
+  <div class="signal-row">
+    <div class="signal-card">
+      <div class="signal-label" style="color:#3B82F6;">信任水位</div>
+      <div class="signal-value">55<span style="font-size:16px;color:#78716C">/100</span></div>
+      <div class="signal-sub">她对你有基本信任——但没被考核过。<br>给出C级时：<span style="color:#DC2626">信任-5</span>（诚实但冲击）<br>紧跟事实依据时：<span style="color:#16A34A">信任+12</span>（有依据=可信）<br><span style="color:#DC2626;font-weight:600;">如果否定她的努力：信任-25 不可逆</span></div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-label" style="color:#D97706;">情绪预警</div>
+      <div class="signal-value">第<span style="color:#DC2626">2-3</span>轮</div>
+      <div class="signal-sub">这是她听到C级后的情绪高峰窗口。<br>在这个窗口里，她会委屈、眼眶会红、会反复说"我不理解"。<br><strong>如果你在这个窗口里用事实接住她</strong>——她会从"你为什么否定我"变为"原来是这样"。<br><strong>如果你在这个窗口里只安慰不解释</strong>——她会觉得你在敷衍，情绪转为关闭。</div>
+    </div>
+  </div>
+
+  <!-- Opening scene -->
+  <div class="opening">
+    <div class="opening-label">⚡ 她推门进来了</div>
+    <p class="opening-scene">走廊里传来脚步声，然后是门把手转动的声音。她脸上带着笑——同事都说她做得好，她心情不错。坐下后，她没等你开口。</p>
+    <div class="opening-quote">
+      "经理好！那个...我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"
+    </div>
+    <p style="font-size:12px;color:#92400E;opacity:.7">她没有带笔记本。她以为这是一场确认，不是一场挑战。</p>
+  </div>
+
+  <!-- 30-second comparison -->
+  <div class="path-section">
+    <div class="path-title"><i data-lucide="git-compare" class="w-4 h-4 text-amber-500"></i> 推门进来后的30秒</div>
+    <div class="compare">
+      <div class="compare-col compare-bad">
+        <div class="compare-label" style="color:#DC2626;">✗ 会让她关闭的30秒</div>
+        <p>"管理者B你好，请坐。今天我们来做半年度绩效面谈。首先我想说，你这半年的努力我是看得到的，整体来说你是一个很积极的同事..."<br><br>
+        <span style="color:#DC2626;font-size:12px;">→ 铺垫了30秒还没给她结果。她在猜。每多猜一秒，情绪负荷加一分。等你终于说出C的时候，她已经消耗了一半的心理准备——不是在消化结果，是在消化等待。</span></p>
+      </div>
+      <div class="compare-col compare-good">
+        <div class="compare-label" style="color:#16A34A;">✓ 会让她听进去的30秒</div>
+        <p>"管理者B，我先给你结果——这半年的绩效评估是C。我知道这个结果可能跟你自己的预期有差距。我先说为什么——你听完之后跟我说说你的想法。第一，上半年你有五次返工记录，是全组最高的..."<br><br>
+        <span style="color:#16A34A;font-size:12px;">→ 第10秒给出C。第15秒开始说为什么。她没有时间在"猜"中消耗情绪——她直接被带进了"理解"的轨道。冲击是一样的，但冲击之后立刻有解释，信任开始蓄水而不是漏水。</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goals -->
+  <div class="path-section">
+    <div class="path-title"><i data-lucide="target" class="w-4 h-4 text-emerald-600"></i> 这次面谈，你需要做到</div>
+    <div class="goals">
+      <div class="goal-item">
+        <div class="goal-num bg-emerald-100 text-emerald-700">1</div>
+        <div><strong>前30秒给出C级，不让她猜。</strong>猜的每一秒都在消耗她对你的信任。结论先行不是冷漠——是不让她在不确定中消耗自己。</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num bg-blue-100 text-blue-700">2</div>
+        <div><strong>用3个具体事例支撑C级，不是笼统评价。</strong>"返工5次全组最高""方案细节错误频出""李哥帮你改了3次"——这些都是她无法否认的数据。不是"你质量不行"，是"这5次返工记录在这里"。</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num bg-amber-100 text-amber-700">3</div>
+        <div><strong>接住她的情绪，但不动摇结论。</strong>"我知道这个结果让你很难接受"——这句话接住情绪。"同时，返工率的数据是客观的"——这句话坚持结论。两句话必须同时存在。</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num bg-violet-100 text-violet-700">4</div>
+        <div><strong>帮她区分"努力"和"有效努力"。</strong>她的努力是真的——不否定。但帮她看到：加班到九点改方案≠交付质量好。"与其改四版方案，不如写之前用五分钟跟我对一下框架。习惯变了，返工率能降一半。"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role / Level selection -->
+  <div style="text-align:center;margin-bottom:12px;">
+    <p style="font-size:12px;color:#78716C;margin-bottom:8px;">选择经验水平</p>
+    <div class="role-row" id="levelGroup">
+      <button class="role-btn" data-lv="A" onclick="selLv('A')">新手 · 没做过绩效面谈</button>
+      <button class="role-btn active" data-lv="B" onclick="selLv('B')">中等 · 做过但不太有把握</button>
+      <button class="role-btn" data-lv="C" onclick="selLv('C')">高手 · 想提升深度</button>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="ready-section">
+    <button class="ready-btn" onclick="start()">
+      <i data-lucide="play" class="w-5 h-5"></i> 开始面谈
+    </button>
+    <p style="font-size:12px;color:#A8A29E;margin-top:10px;">按 <kbd style="padding:2px 6px;border-radius:4px;background:rgba(0,0,0,.06);font-family:monospace;font-size:11px;">Space</kbd> 快速开始</p>
+  </div>
+
+</div>
+
+<script>
+lucide.createIcons();let cl='B';
+function selLv(l){cl=l;document.querySelectorAll('#levelGroup .role-btn').forEach(b=>{b.classList.toggle('active',b.dataset.lv===l)})}
+function start(){const ls={A:'新手',B:'中等',C:'高手'};console.log('进入面谈：管理者B · '+ls[cl])}
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target===document.body){e.preventDefault();start()}})
+</script>
+</body>
+</html>

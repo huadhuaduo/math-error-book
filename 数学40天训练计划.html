@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数学 40 天训练计划 · 2026 暑假</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --text: #2c2c2c;
+    --text-light: #5c5c5c;
+    --text-lighter: #888;
+    --white: #fefefe;
+    --card-bg: #fdfaf8;
+    --border: #e8e0d8;
+    --phase1: #6b8f71;
+    --phase1-bg: #f2f7f3;
+    --phase2: #4a7c96;
+    --phase2-bg: #f2f6f9;
+    --phase3: #b85c3a;
+    --phase3-bg: #fdf5f2;
+    --accent: #b85c3a;
+    --check: #6b8f71;
+    --cave: #3c2415;
+    --sand-light: #f5ede0;
+    --stone: #8b7355;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Noto Serif SC", "STSong", serif;
+    background: var(--sand-light);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  /* Header */
+  header { text-align: center; padding: 48px 0 36px; }
+  header .sub { font-size: 13px; font-weight: 500; letter-spacing: 0.3em; color: var(--stone); margin-bottom: 12px; }
+  header h1 { font-size: 32px; font-weight: 400; color: var(--cave); letter-spacing: 0.04em; }
+  header .divider { width: 40px; height: 2px; background: var(--accent); margin: 20px auto 0; border-radius: 1px; }
+
+  /* Intro card */
+  .intro { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 28px 28px 20px; margin-bottom: 32px; }
+  .intro p { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 8px; }
+  .intro p strong { color: var(--cave); }
+  .rule-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .rule-item { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+  .rule-item .rule-icon { font-size: 20px; margin-bottom: 4px; }
+  .rule-item .rule-title { font-size: 13px; font-weight: 600; color: var(--cave); }
+  .rule-item .rule-desc { font-size: 11px; color: var(--text-lighter); margin-top: 2px; }
+
+  /* Phase header */
+  .phase-header { display: flex; align-items: center; gap: 14px; margin: 40px 0 20px; }
+  .phase-num { font-size: 13px; font-weight: 600; letter-spacing: 0.15em; padding: 4px 10px; border-radius: 6px; }
+  .phase1 & .phase-num { color: var(--phase1); background: var(--phase1-bg); }
+  .phase2 & .phase-num { color: var(--phase2); background: var(--phase2-bg); }
+  .phase3 & .phase-num { color: var(--phase3); background: var(--phase3-bg); }
+  .phase-title { font-size: 20px; font-weight: 500; color: var(--cave); }
+  .phase-sub { font-size: 13px; color: var(--text-lighter); margin-left: auto; }
+
+  /* Day card */
+  .day-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; margin-bottom: 12px; transition: box-shadow 0.15s; }
+  .day-card:hover { box-shadow: 0 1px 8px rgba(60,36,21,0.05); }
+  .day-card.rest { background: #fefefe; border-style: dashed; opacity: 0.8; }
+  .day-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .day-label { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; min-width: 48px; }
+  .day-tasks { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .task { background: var(--card-bg); border-radius: 8px; padding: 12px 14px; font-size: 13px; }
+  .task .task-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .task .task-tag.spatial { color: var(--phase1); }
+  .task .task-tag.calc { color: var(--phase2); }
+  .task .task-tag.strategy { color: var(--phase3); }
+  .task .task-content { color: var(--text); line-height: 1.5; font-size: 13px; }
+
+  /* Special problem box */
+  .prob-box { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-top: 8px; font-size: 13px; line-height: 1.7; }
+  .prob-box .prob-num { font-weight: 600; color: var(--stone); margin-right: 6px; }
+
+  /* Check-in */
+  .checkin { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-top: 32px; }
+  .checkin h3 { font-size: 16px; font-weight: 500; color: var(--cave); margin-bottom: 6px; }
+  .checkin p { font-size: 13px; color: var(--text-light); line-height: 1.7; }
+
+  /* Footer */
+  footer { text-align: center; padding: 48px 0 0; font-size: 13px; color: var(--stone); }
+  footer .divider { width: 24px; height: 1px; background: var(--border); margin: 0 auto 14px; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .day-tasks { grid-template-columns: 1fr; }
+    .rule-box { grid-template-columns: 1fr; }
+    .phase-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="sub">Math Training Plan · Summer 2026</div>
+  <h1>数学 40 天训练计划</h1>
+  <div class="divider"></div>
+</header>
+
+<!-- Intro -->
+<div class="intro">
+  <p>这个计划不是刷题。是针对你<strong>空间想象、多步计算、策略选择</strong>三个薄弱点做的精确训练。</p>
+  <p>每天 <strong>25–30 分钟</strong>，分成三小块。做完就结束，不拖堂。</p>
+  <p>你需要准备：一套<strong>小正方体积木</strong>（边长 2cm 左右，30 块以上）、一本草稿本、一支铅笔。</p>
+  <div class="rule-box">
+    <div class="rule-item">
+      <div class="rule-icon">🧩</div>
+      <div class="rule-title">空间训练</div>
+      <div class="rule-desc">每天 10–15 分钟</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-icon">✏️</div>
+      <div class="rule-title">计算训练</div>
+      <div class="rule-desc">每天 10 分钟</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-icon">🔍</div>
+      <div class="rule-title">策略训练</div>
+      <div class="rule-desc">每天 5–8 分钟</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 1 ==================== -->
+<div class="phase-header">
+  <span class="phase-num">阶段一</span>
+  <span class="phase-title">Day 1–14 · 修复地基</span>
+  <span class="phase-sub">7月22日 – 8月4日</span>
+</div>
+
+<!-- Day 1 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 1</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">用积木搭一个 2×2×2 的立方体。从正面、右侧面、上面分别看，在草稿本上画出你看到的样子。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>2 − 1/2 + 1/2<br>（写下每一步，不跳步）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 5 题（长方体展开图求体积表面积）——这道题在考什么？<br>只说不算。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 2 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 2</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 3×2×1 的长方体。数一数：一共有多少个小正方体？如果从前面看，能看到多少个面？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>0.375 + 1/8<br>（先写 0.375 = 几分之几，再算）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 7 题（体积比 27/64 求棱长比）——这道题在考什么？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 3 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 3</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 3×3 的平面正方形（一层）。然后往上加一层变成 3×3×2。每加一层，增加了多少个小方块？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>7/10 − (3/5 − 3/10)<br>（去括号是第一行，合并是第二行。一步一步来）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 10 题（72dm 竹条制长方体）——关键词"竹条"在暗示什么公式？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 4 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 4</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 2×2×2 立方体。把它拆开，看看一共有多少块？其中 3 个面露在外面的有几块？2 个面的？1 个面的？0 个面的？用手数出来。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>16/27 − (8/27 + 0.25) + 1/4<br>（注意：去括号时符号怎么变）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 14 题（顶点挖小正方体，表面积变不变）——用你的积木实际挖一下看。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 5 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 5</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 3×3×3 立方体。把表面全部"涂色"（假装）。拆开。数：三面涂色的几块？二面的？一面的？没涂到的？和期末第 12 题对一下。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>5/8 − 0.25 + 3/10<br>（先统一成分数，一步一步来）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 4 题（真分数、假分数、奇数、偶数的集合图关系）——这道题在考"集合"的什么？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 6 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 6</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">用积木搭一个"楼梯"：第一级 1 块，第二级 2 块，第三级 3 块。搭 4 级。从侧面看，是什么形状？画下来。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>1又3/4 − 0.5 + 2/3<br>（写清楚每一步：化小数→通分→加减）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 30 题（三种可回收物求和）——读题：题目让你求几个数？别漏了哪一个？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 7 -->
+<div class="day-card rest">
+  <div class="day-top"><span class="day-label">Day 7 · 休息</span></div>
+  <div class="day-tasks">
+    <div class="task" style="grid-column: 1/-1; text-align: center; color: var(--text-lighter);">
+      不训练。今天只做一件事：翻翻积木，搭一个你喜欢的造型。拍照留念。
+    </div>
+  </div>
+</div>
+
+<!-- Day 8 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 8</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">用积木搭一个 3×2×2 的长方体。现在"切一刀"——沿着中间分开。表面积增加了多少？不用算，用眼看，用手摸。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>2/3 + 0.25 − 1/6<br>（统一成分数，再通分。一步一步）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 33 题（27L 纸箱最小表面积）——体积固定，什么形状表面积最小？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 9 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 9</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">不用积木。闭上眼睛。在脑子里想象一个 2×2×2 的立方体。从右上角顶点挖掉一个 1×1×1 的小方块。剩下的图形，表面积和原来一样大吗？为什么？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>3/4 − (1/2 − 1/8)<br>（去括号——里面是减法，去掉括号变什么？）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 32 题（气球彩旗分小组）——这道题在考最大公因数。找因数的短除法你做对了一半，再试一次？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 10 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 10</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个长方体，长 4、宽 2、高 3。在草稿纸上画出它的三视图（正面、侧面、上面）。标出每一面的长和宽。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>5/6 − 1/3 + 0.5<br>（注意运算顺序：同级运算从左到右）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 18 题（长方体 6×6×9 切 2cm 正方体）——高 9÷2=4.5，那 0.5 是什么意思？能切吗？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 11 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 11</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">用 8 块积木搭一个 2×2×2 的立方体。用 27 块搭一个 3×3×3 的立方体。站在同一个距离看它们——哪个看起来"大很多"？为什么块数差这么多？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>1/2 + 1/3 + 1/6<br>（先通分再算，或先合并 1/2+1/3 再+1/6）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 27 题（1/2 < 7/□ < 4/5）——这种"□里填几"的题，第一步做什么？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 12 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 12</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">妈妈给你一个"展开图"的画（画一个十字形的展开图）。你来搭——这个展开图折起来是什么形状？搭出来验证。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>0.6 + 2/5 − 1/4<br>（小数化分数，一步一步）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 13 题（全音符 2 秒，求几分音符多少秒）——这道题其实在考：分数的倍数关系。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 13 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 13</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">用积木搭一个"凹"字形（从上面看像凹）。数一数它的表面积——凹进去的部分算不算表面积？为什么？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步·慢写：</strong><br>3/8 + 0.125 − 1/2<br>（3/8=0.375，0.125=1/8——你选哪种方式？写出来）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 31 题（楼梯锯木头）——这个题有两个知识点：锯木头增加的面+楼梯的几何结构。先拆哪一个？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 14 -->
+<div class="day-card rest">
+  <div class="day-top"><span class="day-label">Day 14 · 休息</span></div>
+  <div class="day-tasks">
+    <div class="task" style="grid-column: 1/-1; text-align: center; color: var(--text-lighter);">
+      不训练。回顾一下这 13 天：哪个环节你觉得最轻松？哪个最累？告诉妈妈。
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 2 ==================== -->
+<div class="phase-header">
+  <span class="phase-num">阶段二</span>
+  <span class="phase-title">Day 15–28 · 搭建能力</span>
+  <span class="phase-sub">8月5日 – 8月18日</span>
+</div>
+
+<!-- Day 15 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 15</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 4×2×3 的长方体。不用数，用公式算：体积多少？表面积多少？算完再用积木验证——看看公式算出来的和实际的块数一样吗？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>2又1/2 − 0.75 + 1又1/4<br>（化带分数→统一形式→一步一步）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>新题——"一个正方体棱长扩大 2 倍，表面积扩大几倍？体积扩大几倍？"<br>先说考点，再验证。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 16 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 16</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 3×3×3 立方体。从顶面正中间挖掉一个贯穿到地面的 1×1 的柱子（像一口井）。剩下的体积多少？剩下的表面积和原来比变大了还是变小了？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>7/9 − (1/3 + 1/6)<br>（括号里先算，再减。不要跳）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>新题——"一根铁丝长 96cm，做一个正方体框架，棱长多少？"关键词是"铁丝"和"框架"——在考什么？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 17 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 17</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">不用积木。画一个 4×3 的长方形，在四个角各切掉一个 1×1 的小正方形。把剩下的图形折起来——这是一个无盖的长方体盒子。它的长宽高分别是多少？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>11.7 − 3.85 + 2.15<br>（小数加减对齐小数点。一行一行写）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 34 题（游泳池容积——两个拼成一个大长方体）——这种题有个技巧：把不规则的变成规则的。你看到了吗？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 18 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 18</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">用积木验证 Day 17 的无盖盒子。搭出那个盒子，数一数：它的容积多少？做这个盒子需要多少纸板（表面积）？注意——无盖！</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>3/5 + 0.4 − 5/8<br>（3/5=0.6，0.4=2/5……你选哪种路径？全走完）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>新题——"一根绳子剪去 1/3，再剪去剩下的 1/2，还剩原来的几分之几？"这道题的关键陷阱是什么？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 19 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 19</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">拿出一张长方形纸。沿对角线折一下，展开。换个方向再沿对角线折一下。交点在哪里？这个点有什么特征？——不用积木，用纸。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>解方程：2x − 0.5 = 1.5<br>（写清楚：第一步做什么，第二步做什么）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 17 题（最简分数 5/11，约分前分子分母和 48）——"约分前"三个字是什么意思？从 5/11 怎么回到约分前？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 20 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 20</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 5×2×2 的长方体。沿着长边的中间切一刀（把 5 分成 2.5 和 2.5——哦不对，积木不能切半块）。沿着 2 的方向切一刀。切了几刀？表面积增加了多少？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>1.25 + 3/4 − 0.5<br>（1.25=5/4……或者都用小数？你选，但写清楚）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 15 题（数轴 3m 对应 0.6，求 9m 对应什么分数）——数轴题在考"比例关系"。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 21 -->
+<div class="day-card rest">
+  <div class="day-top"><span class="day-label">Day 21 · 休息</span></div>
+  <div class="day-tasks">
+    <div class="task" style="grid-column: 1/-1; text-align: center; color: var(--text-lighter);">
+      不训练。用积木搭一个你喜欢的东西——可以是一座城堡，一只动物，随便什么。搭完告诉妈妈你搭的时候脑子里在想什么。
+    </div>
+  </div>
+</div>
+
+<!-- Day 22 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 22</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">搭一个 2×3×4 的长方体。现在把它切成棱长 1 的小正方体——能切多少块？用体积公式算，别数。算完用积木验证。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>7.5 − (2又1/4 + 1.25)<br>（括号里先算。化统一。不跳步）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>新题——"一个长方体水箱，长 8dm 宽 6dm，水深 4dm。放进一块石头后水深变成 5dm。石头的体积是多少？"谁变大了？变大了多少？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 23 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 23</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">画一个长方体的展开图（6 个面，像十字形）。标出每个面的长和宽。剪下来，折起来——看能不能折成一个完整的长方体。如果不能，哪里不对？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>5/12 + 0.25 − 1/3<br>（0.25=1/4。通分时分母找 12）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 6 题（"7"和"2"哪个能直接加减）——这道题在考：什么条件下两个数可以直接加减？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 24 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 24</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">用积木搭两个一模一样的 2×2×2 立方体。把它们拼在一起（面贴面）。拼好后的长方体，表面积是两个正方体表面积之和吗？少了多少？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>解方程：x + 1又2/3 = 5<br>（带分数先化假分数，再移项。一步一行）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>新题——"3/4 的分子加上 6，要使分数大小不变，分母应加上几？"——分数的基本性质是什么？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 25 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 25</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">把 Day 24 反过来做：一个 4×2×2 的长方体，沿着中间切一刀变成两个 2×2×2 的立方体。表面积多了多少？多的部分是什么形状？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>2/3 × 6 − 1/2<br>（2/3×6=？先约分再乘。再减。不要跳）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>新题——"两个质数的和是 20，积是 91，这两个质数是多少？"——"质数"的定义是什么？从哪入手？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 26 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 26</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">考考你：一个长方体长 6、宽 4、高 2。沿着长边的中点横切一刀，沿着宽边的中点竖切一刀。变成了几块？每块的体积多少？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>0.875 − 3/8 + 1/4<br>（0.875=7/8。统一后一步一步）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>期末卷第 19 题（细胞分裂 128 个）——这道题实际上在考 2 的几次方，也就是"翻倍"和"乘方"的关系。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 27 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 27</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">综合挑战：用 12 块积木，能搭出几种不同的长方体？把每一种的长宽高记下来。每一种的体积一样吗？表面积一样吗？哪一个表面积最大？哪一个最小？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>一行一步：</strong><br>解方程：3x + 0.5 = 2.3<br>（先移常数项，再除以 3。一步一行）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>看题说考点：</strong><br>回顾：期末卷里你最吃力的 3 道题是哪 3 道？现在再看，能说出每道题的考点了吗？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 28 -->
+<div class="day-card rest">
+  <div class="day-top"><span class="day-label">Day 28 · 休息</span></div>
+  <div class="day-tasks">
+    <div class="task" style="grid-column: 1/-1; text-align: center; color: var(--text-lighter);">
+      不训练。翻翻《秋蛙物语》，看看那只树蛙走到哪里了。
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PHASE 3 ==================== -->
+<div class="phase-header">
+  <span class="phase-num">阶段三</span>
+  <span class="phase-title">Day 29–40 · 整合提速</span>
+  <span class="phase-sub">8月19日 – 8月30日</span>
+</div>
+
+<!-- Day 29 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 29</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">不看积木，在脑子里想象：一个长方体，长宽高分别是 5、3、4。它的对角线——从一个顶点到对面最远的那个顶点——穿过几个小正方体？先猜，再搭出来看。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>综合计算：</strong><br>3/4 + 0.125 − (1/2 − 1/8)<br>约 4–5 步。计时。不求快，求每一步都写。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>六年级预习·策略识别：</strong><br>"一个圆的半径扩大 3 倍，周长扩大几倍？面积扩大几倍？"和正方体棱长的规律一样吗？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 30 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 30</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">一道真题（改编自期末第 11 题）：一个立方体，A 的对面是 F，B 的对面是 E，C 的对面是 D。给了两个角度的视图——你推一推，C 的对面是谁？用积木摆出来验证。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>综合计算：</strong><br>5.2 − 1又3/5 + 7/10<br>带分数化小数或分数，你选。一步一步。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>六年级预习·策略识别：</strong><br>"打八折后价格是 96 元，原价多少？"这道题在考：知道"打折后"求"原价"，用乘法还是除法？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 31 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 31</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">不用积木，用脑子想：一个正方体容器，棱长 10cm，装了一半的水。放进一块石头，水面上升到 7cm。石头的体积怎么算？——先画图，再列式。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>综合计算：</strong><br>解方程：2/5 x − 0.4 = 1.2<br>（0.4=2/5。一步一步移项求解）</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>六年级预习·策略识别：</strong><br>"甲数是乙数的 2/3，乙数是丙数的 3/4，甲数是丙数的几分之几？"——这种"连比"题怎么串起来？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 32 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 32</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">设计挑战：给你 36 块积木。设计一个长方体纸箱把它全部装进去。要求纸箱的表面积尽可能小。长宽高各多少？表面积多少？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>综合计算（计时 5 分钟）：</strong><br>1/3 + 0.25 − 1/6 + 1/2<br>约 4 步。计时不是为了快——是为了看：你在哪一步停下来了？</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>综合策略：</strong><br>拿一张白纸。画出"面积、体积、表面积"三个概念的思维导图。每个概念下面写：公式是什么、单位是什么、什么时候用。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 33 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 33</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">综合题：一个长方体长 8、宽 6、高 4。先在顶点挖一个 1×1×1 的洞，再从顶面正中央挖一个 2×2×2 的洞（不穿透）。剩下的表面积是多少？先画图再算。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>综合计算（计时 4 分钟）：</strong><br>3又1/2 − 0.75 + 2/3 − 0.25<br>4–5 步。计时。看时间和正确率。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>综合策略：</strong><br>期末卷第 20 题（图形规律填空）——这种"找规律"题，你发现了什么规律？试着用你自己的话描述出来。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 34 -->
+<div class="day-card rest">
+  <div class="day-top"><span class="day-label">Day 34 · 休息</span></div>
+  <div class="day-tasks">
+    <div class="task" style="grid-column: 1/-1; text-align: center; color: var(--text-lighter);">
+      不训练。看一本你喜欢的书。或者画一幅画。今天数学休息。
+    </div>
+  </div>
+</div>
+
+<!-- Day 35 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 35</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">复习：不看积木，把前 33 天搭过的所有形状在脑子里过一遍。哪一个形状你印象最深？为什么？画下来。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>综合计算：</strong><br>从你的期末卷里任选一道计算错题，把正确的一行一步重新写一遍。写在新的纸上。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>六年级预习·策略识别：</strong><br>"一个圆柱的底面半径是 3cm，高是 5cm，求侧面积。"——六年级会学。试着猜一下：侧面积可能和什么有关？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 36 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 36</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">把期末卷第 5 题（长方体展开图）拿出来。现在再看这道题——你能在脑子里把那个展开图折起来了吗？长宽高分别是多少？不用笔，用眼睛。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>限时挑战（6 分钟，3 道计算）：</strong><br>① 7/8 − 0.375 + 1/4<br>② 2.5 + 1/3 − 1又1/6<br>③ 解：4x − 0.8 = 1.2</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>综合策略：</strong><br>把期末卷所有应用题的考点说出来（只看题，不算）。每道题 5 秒钟说考点。说不出的，标记下来。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 37 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 37</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">不看积木，在脑子里回答：一个 4×4×4 的立方体表面涂色后切成 64 块。三面涂色几块？二面涂色几块？一面涂色几块？没涂色几块？——先把 3×3×3 的规律写出来，再推 4×4×4。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>限时挑战（6 分钟，3 道计算）：</strong><br>① 3/10 + 0.15 − 1/5<br>② 1.75 − 2/3 + 1/4<br>③ 解：x − 1/2 = 3/4 − 0.25</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>六年级预习·策略识别：</strong><br>"比的前项是 3，后项是 5，比值是 0.6。如果前项变成 9，后项应该是多少才能保持比值不变？"——这是什么性质？</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 38 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 38</span></div>
+  <div class="day-tasks">
+    <div class="task">
+      <div class="task-tag spatial">空间</div>
+      <div class="task-content">终极空间挑战：一个长方体容器，长 6 宽 4 高 3，里面装了 2 深的水。现在把容器倾斜——水还能全部在里面吗？不用积木。画图。推理。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag calc">计算</div>
+      <div class="task-content"><strong>自测：</strong><br>从你的期末卷里找出计算题⑤和⑥。不看原答案。重新做。一行一步。计时。</div>
+    </div>
+    <div class="task">
+      <div class="task-tag strategy">策略</div>
+      <div class="task-content"><strong>综合策略：</strong><br>拿一张白纸。列出你这 38 天学会的"最容易忘记的知识点 Top 5"。不用写答案——写"提醒自己注意什么"。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 39 -->
+<div class="day-card">
+  <div class="day-top"><span class="day-label">Day 39</span></div>
+  <div class="day-tasks">
+    <div class="task" style="grid-column: 1/-1;">
+      <div class="task-tag strategy">综合测验（30 分钟）</div>
+      <div class="task-content" style="margin-top: 8px;">
+        <p>从期末卷中选 8 道错题——4 道选择题 + 2 道计算题 + 2 道应用题。不看原答案。重新做一遍。一行一步。计时。</p>
+        <p style="margin-top: 6px;">做完后和正确答案对一下。不是看"对了几道"——是看：<strong>哪一道你现在觉得"其实不难"？</strong>把那一道路圈出来。那个圈，是你的进步。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 40 -->
+<div class="day-card rest">
+  <div class="day-top"><span class="day-label">Day 40 · 收官</span></div>
+  <div class="day-tasks">
+    <div class="task" style="grid-column: 1/-1; text-align: center; color: var(--text-light);">
+      <p>40 天结束了。</p>
+      <p style="margin-top: 6px;">不训练。回头翻一翻你的草稿本——看看第 1 天写的计算步骤和第 39 天写的有什么不一样。</p>
+      <p style="margin-top: 6px;">那个差别，不叫"数学变好了"。叫<strong>"我以前不知道，现在知道了"。</strong></p>
+      <p style="margin-top: 10px; color: var(--accent);">开学愉快。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Check-in -->
+<div class="checkin">
+  <h3>给妈妈的使用说明</h3>
+  <p><strong>每天陪 5 分钟就够了。</strong>空间训练那一段——她从积木旁边抬起头说"我知道了"的时候，你只需要认真地看着她，点一下头。不需要点评"对"或"错"。</p>
+  <p style="margin-top: 8px;"><strong>"一行一步"写完后，不要看她算对了没有。</strong>看她的步骤是不是一行一行写的。如果是，不管对错，先说"写得很清楚"。如果她又跳步了，指一下那行说"这里可以再写一行"——不说"你又跳了"。</p>
+  <p style="margin-top: 8px;"><strong>策略训练不要说答案。</strong>她说不出来的时候，等 5 秒。再等 5 秒。她可能在想——打断那个"想"是最可惜的事。如果 20 秒还说不出来，你说："你觉得可能跟什么有关？"——不直接给答案，给她一个路标。</p>
+</div>
+
+<footer>
+  <div class="divider"></div>
+  不是让她爱上数学。是让她知道——数学不是她对付不了的东西。
+</footer>
+
+</div>
+</body>
+</html>

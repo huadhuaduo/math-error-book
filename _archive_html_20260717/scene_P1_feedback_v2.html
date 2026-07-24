@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈诊断 · NPC-张反馈对话 · V2教练语气</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#FAF9F6 0%,#F4F1EC 30%,#F9F7F4 60%,#F1EEE9 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .glass{background:rgba(255,255,255,.5);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);border:1px solid rgba(255,255,255,.55);border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,.03)}
+  .bar-track{height:8px;border-radius:4px;background:#E5E7EB;overflow:hidden}
+  .bar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.25,.1,.25,1)}
+  .coach-quote{border-left:3px solid #3B82F6;padding-left:16px;margin:12px 0}
+  hr{border:none;height:1px;background:linear-gradient(to right,transparent,#E5E0D8 20%,#E5E0D8 80%,transparent);margin:24px 0}
+</style>
+</head>
+<body class="p-4 sm:p-6">
+<div class="max-w-3xl mx-auto space-y-5">
+
+  <div class="flex items-center justify-between flex-wrap gap-2">
+    <h1 class="text-xl font-bold text-[#1E1E1E]">对话反馈</h1>
+    <span class="text-xs text-[#6B7280]">场景：骨干员工状态下滑 · NPC-张 · 12轮</span>
+  </div>
+
+  <!-- ====== SUMMARY CARD (教练语气) ====== -->
+  <div class="glass p-5 sm:p-6">
+    <div class="flex items-center gap-2 mb-3"><i data-lucide="message-circle" class="w-4 h-4 text-blue-600"></i><span class="text-sm font-bold text-[#1E1E1E]">核心洞察</span></div>
+
+    <p class="text-sm text-[#1E1E1E] leading-relaxed mb-4">
+      这场对话里有一个好的开始——NPC-张从一开始的<strong>"我以为你放弃了"</strong>，到愿意跟你说<strong>"你说说看怎么换"</strong>。但中间出现了一个转折：你有一套很熟练的提问方式，它们在前几轮帮助了你，但在第4轮之后开始重复。NPC-张在进入对话之前已经对"标准流程"有了警觉——他需要看到的不是你问得对不对，是<strong>你做不做</strong>。而你的提问方式恰好唤醒了他上次被辜负的记忆。
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+      <div><div class="flex justify-between text-xs mb-1"><span class="font-semibold">差距明确化</span><span>50分 ↑15</span></div><div class="bar-track"><div class="bar-fill" style="width:50%;background:linear-gradient(90deg,#F59E0B,#FBBF24)"></div></div></div>
+      <div><div class="flex justify-between text-xs mb-1"><span class="font-semibold">心理安全营造</span><span>62分 ↑22</span></div><div class="bar-track"><div class="bar-fill" style="width:62%;background:linear-gradient(90deg,#3B82F6,#60A5FA)"></div></div></div>
+      <div><div class="flex justify-between text-xs mb-1"><span class="font-semibold">赋能发展</span><span>38分 ↓7</span></div><div class="bar-track"><div class="bar-fill" style="width:38%;background:linear-gradient(90deg,#EF4444,#F87171)"></div></div></div>
+      <div><div class="flex justify-between text-xs mb-1"><span class="font-semibold">闭环跟进</span><span>42分 ↑2</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:linear-gradient(90deg,#F59E0B,#FBBF24)"></div></div></div>
+    </div>
+
+    <div class="bg-blue-50/40 rounded-xl px-4 py-3 border border-blue-100">
+      <p class="text-xs font-semibold text-blue-800 mb-1">如果只练一件事</p>
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        下次对话，当NPC-张给你一个具体入口的时候——比如"你先回我上周四的邮件"——<strong>停下来，先做那个动作，再提问。</strong>这不是技巧问题。是顺序问题：先行动，后提问。NPC-张需要的不是在更多的提问中找到答案——他需要在你的行动中看到这次和上次不一样。
+      </p>
+    </div>
+  </div>
+
+  <!-- ====== STATE PATH (教练语气) ====== -->
+  <div class="glass p-5 sm:p-6">
+    <div class="flex items-center gap-2 mb-3"><i data-lucide="git-branch" class="w-4 h-4 text-purple-600"></i><span class="text-sm font-bold text-[#1E1E1E]">对话中发生了什么</span></div>
+
+    <div class="coach-quote">
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        对话刚开始的时候，你做了一个正确的选择——不急于进入"我们来解决问题"的模式。你让他先说。<strong>NPC-张的反应是跟你讲了三周来的真实感受。</strong>这是信任的第一步。
+      </p>
+    </div>
+
+    <div class="coach-quote" style="border-left-color:#F59E0B;">
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        <strong>转折发生在第4轮。</strong>在这之前，NPC-张已经给了你两个很具体的信号——他说"你先回我上周四的邮件"，他说"就回对或者不对"。他在告诉你：我需要的不是更多的问题，<strong>是一个动作。</strong>但你选择了继续提问。
+      </p>
+    </div>
+
+    <div class="coach-quote" style="border-left-color:#EF4444;">
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        这不是说提问不好——提问在前几轮帮助了你。问题是：NPC-张的信任有一个特征——<strong>它需要被具体的行动喂养，而不是被更多的提问喂养。</strong>第4轮之后，他的士气从38一路降到0。不是因为你说错了什么——是因为他没有看到任何和上次不同的东西。
+      </p>
+    </div>
+
+    <div class="mt-4 bg-red-50/40 rounded-xl px-4 py-3 border border-red-100">
+      <p class="text-xs font-semibold text-red-700 mb-1">一个你想再看一遍的时刻</p>
+      <p class="text-xs text-[#1E1E1E] leading-relaxed">
+        第3轮时NPC-张说："真要支持，就告诉我——这次你说的'支持'，和上次的'没问题'，到底有什么不一样？"<br>
+        <strong>这不是在质疑你。这是在给你开一扇门。</strong>他在说：你告诉我区别，我就信你。但你第4轮的回应是"你觉得第一步可以是什么"——和他上次听到的一模一样。那扇门从这一刻开始慢慢关上了。
+      </p>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ====== BEHAVIORAL EVIDENCE (教练语气) ====== -->
+  <div class="glass p-5 sm:p-6">
+    <div class="flex items-center gap-2 mb-3"><i data-lucide="search" class="w-4 h-4 text-emerald-600"></i><span class="text-sm font-bold text-[#1E1E1E]">我注意到的几个时刻</span></div>
+
+    <!-- Evidence 1: good -->
+    <div class="bg-emerald-50/30 rounded-xl p-4 border border-emerald-100 mb-4">
+      <p class="text-xs font-semibold text-emerald-800 mb-2">做得好的</p>
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        <strong>开场第一句话的方向是对的。</strong>"先听听你怎么看"——这句话给了NPC-张一个信号：这次可能不是审判。他后面的反应也验证了这一点——他跟你说了真实的感受，包括那句"我以为你放弃了"。<strong>一个人只有在觉得对方愿意听的时候，才会说"我以为你放弃了"。</strong>
+      </p>
+    </div>
+
+    <!-- Evidence 2: missing -->
+    <div class="bg-red-50/30 rounded-xl p-4 border border-red-100 mb-4">
+      <p class="text-xs font-semibold text-red-700 mb-2">有一个关键行为没有出现</p>
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        在整个对话中，你没有一次说：<strong>"上次我说会跟进，但我三周没找你——这是我的问题。"</strong>
+      </p>
+      <p class="text-sm text-[#6B7280] leading-relaxed mt-2">
+        我理解为什么这很难——当你面对一个已经失望的下属时，承认自己的错误会让你觉得自己在示弱。但在NPC-张的世界里，上次对话的结尾就是"好，那就这样"然后三周没回音。这是他对你信任崩塌的起点。<strong>如果你不碰这个起点——你做的所有跟进承诺，在他听来，都可能和上次一样。</strong>
+      </p>
+    </div>
+
+    <!-- Evidence 3: pattern -->
+    <div class="bg-amber-50/30 rounded-xl p-4 border border-amber-100 mb-4">
+      <p class="text-xs font-semibold text-amber-800 mb-2">一个在重复的模式</p>
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        到第3轮的时候，NPC-张刚说完一段话。他说"真要支持，就告诉我这次你说的'支持'和上次的'没问题'到底有什么不一样"。<strong>他在问你一个很真实的问题——不是在拒绝支持，是在让你定义"支持"是什么。</strong>然后你问他"那你现在最需要我提供什么支持"。
+      </p>
+      <p class="text-sm text-[#6B7280] leading-relaxed mt-2">
+        你注意到吗——他刚定义完，你又让他再定义一次。这个模式在第4-8轮重复出现了。
+      </p>
+    </div>
+
+    <!-- Evidence 4: unresponded -->
+    <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+      <p class="text-xs font-semibold text-[#1E1E1E] mb-2">NPC-张给了你入口，你没进去</p>
+      <p class="text-sm text-[#1E1E1E] leading-relaxed">
+        第4轮NPC-张说："你先把我上周四发的方案修改建议回了，就回两个字：'对'或者'不对'。"
+      </p>
+      <p class="text-sm text-[#6B7280] leading-relaxed mt-2">
+        <strong>他把修复信任的方法放在你面前了。</strong>回邮件、设日历——这些是你当场就可以做的动作。不需要任何准备，不需要想"怎么回应更好"。但你一直在用提问回应他的请求——没有做任何一个具体动作。如果你在第4轮停下来回那封邮件，后面的8轮对话会完全不同。
+      </p>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ====== LEARNING BRIDGE (教练语气) ====== -->
+  <div class="glass p-5 sm:p-6">
+    <div class="flex items-center gap-2 mb-3"><i data-lucide="book-open" class="w-4 h-4 text-violet-600"></i><span class="text-sm font-bold text-[#1E1E1E]">最值得花时间练的能力</span></div>
+
+    <div class="space-y-4">
+      <div class="bg-white/60 rounded-xl p-4 border border-gray-100">
+        <p class="text-sm font-semibold text-[#1E1E1E] mb-2">让跟进承诺变得"可见"</p>
+        <p class="text-sm text-[#1E1E1E] leading-relaxed">
+          在这个对话里，你说了5次"下周三碰一下"。每次说出来的时候，我相信你是认真的。但NPC-张听到的是——又一句"没问题"。
+        </p>
+        <p class="text-sm text-[#1E1E1E] leading-relaxed mt-2">
+          这不是意愿的问题——你是真的想跟进。问题出在一个细节上：<strong>跟进承诺要落地，必须有一个对方看得见的动作。</strong>设日历、写备忘、回邮件——这些动作的作用不是提醒你自己，是让NPC-张看到："这次他真的在做了"。
+        </p>
+        <div class="bg-blue-50/40 rounded-lg px-4 py-3 mt-3">
+          <p class="text-xs font-semibold text-blue-800 mb-1">一个可以立刻试的小练习</p>
+          <p class="text-xs text-[#1E1E1E] leading-relaxed">
+            下次对话中，当你说"我会跟进"的时候——<strong>停下来，拿出手机，设一个闹钟。</strong>让对方看到你在做这件事。这个动作很小，但它传递的信息是：这次和上次不一样。
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-white/60 rounded-xl p-4 border border-gray-100">
+        <p class="text-sm font-semibold text-[#1E1E1E] mb-2">打破话术循环的直觉</p>
+        <p class="text-sm text-[#1E1E1E] leading-relaxed">
+          当NPC-张说"你又问这个"的时候——这是一个信号灯。它不意味着"你问得不好"，它意味着<strong>"你需要换一种方式回应了"</strong>。
+        </p>
+        <p class="text-sm text-[#6B7280] leading-relaxed mt-2">
+          下次当你听到类似的信号时——不管是NPC-张说出来还是你感觉到对方的反应变冷——试着不换提问方式，而是<strong>换一个动作</strong>。回复一封邮件、确认一个时间、写下一个约定。这不是放弃提问——是给提问创造一个可信的前提。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ====== NEXT ACTIONS (教练语气) ====== -->
+  <div class="glass p-5 sm:p-6">
+    <div class="flex items-center gap-2 mb-3"><i data-lucide="arrow-right-circle" class="w-4 h-4 text-emerald-600"></i><span class="text-sm font-bold text-[#1E1E1E]">下一步</span></div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div class="p-4 rounded-xl bg-emerald-50/40 border border-emerald-100">
+        <p class="text-sm font-semibold text-emerald-800 mb-2">现在可以做的一件事</p>
+        <p class="text-xs text-[#1E1E1E] leading-relaxed">
+          回到对话记录，找到<strong>第4轮</strong>。看一遍NPC-张说"你先回我上周四的邮件"和你下一句话之间的那个空隙。在那个空隙里，你有没有一瞬间想过去回那封邮件？如果有——下次相信那个直觉。
+        </p>
+      </div>
+      <div class="p-4 rounded-xl bg-blue-50/40 border border-blue-100">
+        <p class="text-sm font-semibold text-blue-800 mb-2">下次练习时试着做的</p>
+        <p class="text-xs text-[#1E1E1E] leading-relaxed">
+          1. 开场第一句话<strong>先承认上次的缺失</strong><br>
+          2. 在对话中<strong>至少做一次让对方看到的具体动作</strong><br>
+          3. 如果发现自己在循环话术——<strong>停下来，先做一个动作，再说话</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-white/60 border border-gray-100 space-y-3">
+      <p class="text-xs font-semibold text-[#1E1E1E]">花一分钟想一想</p>
+      <div class="space-y-2">
+        <label class="block text-xs text-[#6B7280]">下次遇到类似场景，你准备做的一件不同的事：</label>
+        <textarea class="w-full border border-gray-200 rounded-lg p-3 text-sm resize-none h-14 focus:border-blue-400 focus:outline-none" placeholder="你的回答..."></textarea>
+      </div>
+      <div class="space-y-2">
+        <label class="block text-xs text-[#6B7280]">你怎么知道你做对了？（可观察的指标）</label>
+        <textarea class="w-full border border-gray-200 rounded-lg p-3 text-sm resize-none h-14 focus:border-blue-400 focus:outline-none" placeholder="比如：如果NPC-张不再说'你又问这个'..."></textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 flex items-center justify-between flex-wrap gap-3">
+      <div class="flex gap-2">
+        <button class="px-5 py-2.5 bg-[#1E1E1E] text-white text-sm font-semibold rounded-xl hover:bg-black transition-all">再练一次（同场景）</button>
+        <button class="px-5 py-2.5 bg-white border border-gray-200 text-[#1E1E1E] text-sm font-medium rounded-xl hover:bg-gray-50 transition-all">学习推荐技能</button>
+      </div>
+      <span class="text-[11px] text-[#6B7280]">建议在 3-7 天内再练习。这个窗口期内，你的大脑还在处理今天的体验。</span>
+    </div>
+  </div>
+</div>
+<script>lucide.createIcons()</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(open \"/Users/xzzsw127/Claude code/scene_P1_preparation_v2.html\")",
+      "Bash(open \"/Users/xzzsw127/Claude code/scene_P1_preparation_v3.html\")",
+      "Bash(cat >> *)",
+      "Bash(node -e \"try { require\\('fs'\\).readFileSync\\('math-adventure.html','utf8'\\); console.log\\('File readable'\\); } catch\\(e\\) { console.log\\('Error:', e.message\\); }\")",
+      "mcp__playwright__browser_navigate",
+      "Bash(python3 -m http.server 8765)",
+      "Bash(echo \"Server started on port 8765, PID: $!\")",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const fs=require\\('fs'\\);const c=fs.readFileSync\\('/Users/xzzsw127/Claude code/math-adventure.html','utf8'\\);const m=c.match\\(/<script>\\([\\\\s\\\\S]*?\\)<\\\\/script>/\\);new Function\\(m[1]\\);console.log\\('✅ JS syntax OK'\\)\")",
+      "Bash(echo \"exit: $?\")",
+      "WebSearch",
+      "Bash(find \"/Users/xzzsw127\" -maxdepth 3 -type f -name \"*.jsonl\" 2>/dev/null | head -20)",
+      "Read(//Users/xzzsw127/**)",
+      "Bash(open \"/Users/xzzsw127/Claude code/项目工坊_控制台.html\")",
+      "mcp__playwright__browser_find",
+      "Bash(python3 -m http.server 8899)",
+      "mcp__playwright__browser_handle_dialog",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_file_upload",
+      "mcp__playwright__browser_evaluate",
+      "Bash(open \"/Users/xzzsw127/Claude code/陪练首页.html\")",
+      "Bash(open \"/Users/xzzsw127/Claude code/练习记录.html\")",
+      "Bash(open \"/Users/xzzsw127/Claude code/管理看板.html\")",
+      "Bash(open \"/Users/xzzsw127/Claude code/场景分类预览.html\")",
+      "Bash(open \"/Users/xzzsw127/Claude code/行动清单_20260721.md\")",
+      "Bash(open \"/Users/xzzsw127/Claude code/低代码平台部署_20260721/\")",
+      "Bash(python3)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP状态: %{http_code}\\\\n\" \"https://huadhuaduo.github.io/math-error-book/\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP状态: %{http_code}\\\\n\" \"https://huadhuaduo.github.io/math-error-book/index.html\")",
+      "Bash(curl -s \"https://huadhuaduo.github.io/math-error-book/\")",
+      "Bash(cp math-error-book.html index.html)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(open \"/Users/xzzsw127/Claude code/训战陪练定制_演示案例.html\")",
+      "Bash(sed '1d;$d')",
+      "Bash(node --check /tmp/demo_check.js)",
+      "Bash(node --check /tmp/th2.js)",
+      "mcp__playwright__browser_tabs",
+      "Bash(python3 -c ' *)"
+    ],
+    "additionalDirectories": [
+      "/private/tmp"
+    ]
+  }
+}

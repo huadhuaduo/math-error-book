@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试2 · 双节点串联传JSON</title>
+<style>
+:root { --bg:#f8f9fb; --card:#fff; --border:#e5e7eb; --text:#2a2a2a; --muted:#6b7280; --success:#2d8a56; --danger:#c44; --warning:#d97706; --radius:8px; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background:var(--bg); color:var(--text); padding:40px; max-width:800px; margin:0 auto; line-height:1.6; }
+h2 { font-size:20px; margin-bottom:8px; }
+.subtitle { color:var(--muted); font-size:13px; margin-bottom:24px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-bottom:16px; }
+.card h3 { font-size:15px; margin-bottom:12px; }
+.card h4 { font-size:13px; color:var(--muted); margin:12px 0 6px; text-transform:uppercase; letter-spacing:.5px; }
+textarea { width:100%; height:100px; font-family:'SF Mono','Menlo',monospace; font-size:12px; padding:10px; border:1px solid var(--border); border-radius:6px; resize:vertical; }
+.result-box { margin-top:12px; padding:12px 16px; border-radius:6px; font-size:13px; }
+.result-box.pass { background:#edf7f0; color:#1a5c36; border:1px solid #a3d9b1; }
+.result-box.fail { background:#fef2f2; color:#7f1d1d; border:1px solid #f5c6c6; }
+.result-box pre { margin-top:8px; font-size:11px; white-space:pre-wrap; word-break:break-all; background:rgba(0,0,0,.03); padding:8px; border-radius:4px; }
+.btn { padding:8px 20px; border:none; border-radius:6px; font-size:14px; cursor:pointer; font-family:inherit; font-weight:500; background:#1a2a3a; color:#fff; margin:4px 4px 4px 0; }
+.btn:hover { background:#2c3e5a; }
+.btn-outline { background:#fff; color:#1a2a3a; border:1.5px solid #1a2a3a; }
+.flow-arrow { text-align:center; font-size:20px; color:var(--muted); margin:8px 0; }
+.note { font-size:12px; color:var(--muted); margin-top:8px; padding:8px 12px; background:#fefce8; border-radius:6px; border-left:3px solid var(--warning); }
+.row { display:flex; gap:16px; }
+.row > div { flex:1; }
+</style>
+</head>
+<body>
+
+<h2>测试 2：两个 AI 节点能否串联传 JSON</h2>
+<div class="subtitle">验证节点 A 的输出 → 能否无缝传给节点 B 作为输入</div>
+
+<div class="card">
+  <h3>📋 两个 AI 节点的 System Prompt</h3>
+
+  <h4>节点 A（数据生成器）</h4>
+  <textarea id="promptA" readonly>你是一个数据生成器。用户给你一个数字 N，你输出一个 JSON 数组，包含 N 个 1-200 之间的随机整数。
+
+你必须只输出 JSON。格式：
+{ "numbers": [数字列表], "sum": 总和, "count": N }</textarea>
+
+  <h4>节点 B（数据分析器）</h4>
+  <textarea id="promptB" readonly>你是一个数据分析器。你会收到一个 JSON 对象，格式为 { "numbers": [数字列表], "sum": 总和, "count": 数量 }。
+你需要输出一个新的 JSON：
+
+{
+  "original": [原数字列表],
+  "sum": 总和,
+  "count": 数量,
+  "average": 平均值(保留2位小数),
+  "max": 最大值,
+  "min": 最小值,
+  "range": 最大值减最小值
+}
+
+你必须只输出 JSON。</textarea>
+</div>
+
+<div class="card">
+  <h3>🔗 低代码平台串联方式</h3>
+  <div class="note" style="margin-bottom:10px;">
+    ⚠️ 请在低代码平台中确认使用哪种串联方式。不确定的话——三种都试一遍。
+  </div>
+
+  <div class="row">
+    <div style="background:#fafbfc;padding:12px;border-radius:6px;">
+      <strong>方式 A：工作流串联</strong>
+      <p style="font-size:13px;color:var(--muted);">如果低代码平台有"工作流"或"流程编排"：</p>
+      <p style="font-size:13px;">节点 A 输出 → 配置为节点 B 的输入。AI 节点之间有连线。</p>
+    </div>
+    <div style="background:#fafbfc;padding:12px;border-radius:6px;">
+      <strong>方式 B：前端 JS 桥接</strong>
+      <p style="font-size:13px;color:var(--muted);">如果低代码平台允许嵌入自定义 HTML/JS：</p>
+      <p style="font-size:13px;">JS 调用节点 A API → 拿到 JSON → 传给节点 B API。</p>
+    </div>
+    <div style="background:#fafbfc;padding:12px;border-radius:6px;">
+      <strong>方式 C：手动串联</strong>
+      <p style="font-size:13px;color:var(--muted);">如果以上都不行：</p>
+      <p style="font-size:13px;">手动复制节点 A 的输出 → 粘贴到节点 B 的输入。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🧪 测试步骤</h3>
+  <ol style="font-size:14px;padding-left:20px;line-height:2;">
+    <li>在低代码平台中配置节点 A 和节点 B 的 System Prompt（上方）</li>
+    <li>用户输入 <strong>8</strong> 到节点 A</li>
+    <li>观察节点 A 输出 JSON → 传给节点 B</li>
+    <li>检查节点 B 输出的 average/max/min 是否基于节点 A 的数据正确计算</li>
+  </ol>
+</div>
+
+<div class="card">
+  <h3>🔍 模拟验证工具</h3>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">在本地先跑一遍，感受正确流程。部署到低代码平台后对比。</p>
+  <button class="btn" id="btnSimulateA">模拟节点 A（N=8）</button>
+  <div id="outputA"></div>
+  <div class="flow-arrow">⬇️ 传给节点 B ⬇️</div>
+  <button class="btn btn-outline" id="btnSimulateB">模拟节点 B</button>
+  <div id="outputB"></div>
+  <div id="validation"></div>
+</div>
+
+<script>
+var dataFromA = null;
+
+document.getElementById('btnSimulateA').addEventListener('click', function() {
+  var n = 8;
+  var numbers = [];
+  var sum = 0;
+  for (var i = 0; i < n; i++) {
+    var num = Math.floor(Math.random() * 200) + 1;
+    numbers.push(num);
+    sum += num;
+  }
+  dataFromA = { numbers: numbers, sum: sum, count: n };
+  document.getElementById('outputA').innerHTML = '<div class="result-box pass"><pre>'+JSON.stringify(dataFromA, null, 2)+'</pre></div>';
+  document.getElementById('outputB').innerHTML = '';
+  document.getElementById('validation').innerHTML = '';
+});
+
+document.getElementById('btnSimulateB').addEventListener('click', function() {
+  if (!dataFromA) {
+    document.getElementById('outputB').innerHTML = '<div class="result-box fail">❌ 请先运行节点A</div>';
+    return;
+  }
+  var nums = dataFromA.numbers;
+  var sum = dataFromA.sum;
+  var count = dataFromA.count;
+  var avg = sum / count;
+  var max = Math.max.apply(null, nums);
+  var min = Math.min.apply(null, nums);
+  var range = max - min;
+
+  var result = {
+    original: nums,
+    sum: sum,
+    count: count,
+    average: parseFloat(avg.toFixed(2)),
+    max: max,
+    min: min,
+    range: range
+  };
+  document.getElementById('outputB').innerHTML = '<div class="result-box pass"><pre>'+JSON.stringify(result, null, 2)+'</pre></div>';
+
+  // Validate
+  var checks = [
+    { label: 'sum 传递正确', pass: result.sum === sum },
+    { label: 'average = sum/count', pass: Math.abs(result.average - avg) < 0.01 },
+    { label: 'max 正确', pass: result.max === max },
+    { label: 'min 正确', pass: result.min === min },
+    { label: 'range = max-min', pass: result.range === range }
+  ];
+  var allPass = true;
+  var html = '<div class="result-box '+(allPass?'pass':'fail')+'" style="margin-top:8px;">';
+  for (var i = 0; i < checks.length; i++) {
+    if (!checks[i].pass) allPass = false;
+    html += (checks[i].pass ? '✅' : '❌') + ' ' + checks[i].label + '<br>';
+  }
+  html += '<br><strong>'+(allPass?'全部通过——节点串联逻辑正确':'有失败——检查数据传递')+'</strong></div>';
+  document.getElementById('validation').innerHTML = html;
+});
+</script>
+
+</body>
+</html>

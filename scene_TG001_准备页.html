@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>准备 · NPC-周 · 到岗支援——首开倒计时20天</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(160deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+  .card{position:relative;z-index:10;max-width:620px;width:92vw;background:rgba(255,255,255,.5);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.5);border-radius:20px;padding:36px 32px;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+  .meta{font-size:11px;color:#A8A29E;text-align:center;margin-bottom:6px}
+  h1{font-size:20px;font-weight:700;color:#1C1917;line-height:1.3;text-align:center;letter-spacing:-.01em;margin-bottom:18px}
+  .story{font-size:14px;color:#44403C;line-height:1.8;margin-bottom:20px}
+  .story strong{color:#1C1917}
+  .story em{color:#78716C;font-style:normal}
+  .divider{height:1px;background:linear-gradient(to right,transparent,rgba(0,0,0,.08),transparent);margin:18px 0}
+  .check-block{font-size:13px;color:#44403C;line-height:1.7;margin-bottom:12px}
+  .check-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#A8A29E;margin-bottom:6px}
+  .self-rate{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .rate-item{flex:1;min-width:56px;text-align:center}
+  .rate-item span{font-size:9px;color:#A8A29E;display:block;margin-bottom:2px}
+  .rate-item input{width:100%;padding:6px;border:1px solid rgba(0,0,0,.08);border-radius:8px;text-align:center;font-size:14px;font-weight:600;color:#1C1917;outline:none;background:rgba(255,255,255,.5)}
+  .rate-item input:focus{border-color:#3B82F6}
+  .opening-box{background:rgba(254,243,199,.2);border:1px solid rgba(251,191,36,.1);border-radius:12px;padding:12px 16px;text-align:center;font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:14px}
+  .process-line{text-align:center;font-size:11px;color:#78716C;margin-bottom:14px;line-height:1.6}
+  .btn-start{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 28px;border:none;border-radius:14px;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.08);transition:all .25s ease;width:100%}
+  .btn-start:hover{background:#000;transform:translateY(-1px)}
+  .lv-row{display:flex;gap:4px;justify-content:center;margin-top:10px}
+  .lv-btn{padding:5px 12px;border-radius:100px;border:1px solid rgba(0,0,0,.06);background:transparent;cursor:pointer;font-size:11px;color:#A8A29E;font-family:inherit;transition:all .2s}
+  .lv-btn.active{background:#1C1917;color:#fff;border-color:#1C1917}
+  @media(max-width:480px){
+    body{padding:20px 0;align-items:flex-start}
+    .card{width:94vw;padding:24px 18px;border-radius:var(--radius-md,16px)}
+    h1{font-size:17px}
+    .story{font-size:13px;line-height:1.7}
+    .btn-start{font-size:16px;padding:14px 20px;min-height:48px}
+    .rate-item input{font-size:16px;padding:8px 4px}
+    .self-rate{gap:4px}
+    .opening-box{font-size:12px}
+  }
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="card">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;justify-content:center">
+    <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;flex-shrink:0;box-shadow:0 4px 16px rgba(245,158,11,.2)">周</div>
+    <div style="text-align:left">
+      <p style="font-size:15px;font-weight:700;color:#1C1917;margin-bottom:1px">NPC-周</p>
+      <p style="font-size:11px;color:#A8A29E">最资深的销售 · 司龄5年 · 团队都看他的态度</p>
+    </div>
+  </div>
+  <p class="meta">到岗支援——首开倒计时20天 · 到岗第一天 · 晚上8点 · 临时工位</p>
+  <h1 style="font-size:18px">你到岗第一天晚上8点。<br>明天早上9点是第一次早会。</h1>
+<p class="story">
+    你是一名新到岗的销售管理者，被派往支援一个新项目。项目示范区已开放一周，来访量很高，但认筹转化远未达预期。首开定在<strong>20天后</strong>，127套房源涉及6种户型——多户型面积相近、总价重合，客户对比周期长。销售团队已连续高强度作战一个多月。
+  </p>
+  <p class="story">
+    你不是来"管理"的——你是来<strong>支援</strong>的。项目销售负责人还在岗，你的任务是协助接待、引导成交、帮团队找回信心。团队8个人，连续高强度作战一个多月，早会上没人主动说话。你进办公室时有人迅速关掉招聘网站——"又来一个。反正干完这个月就走了。"
+  </p>
+  <p class="story">
+    最资深的NPC-周，司龄5年，这个项目他比谁都熟。他在看你——是那种不动声色的看。你说什么他都听着，但那双眼睛在问：<strong>你是真有本事，还是只会画饼？</strong>其他销售看他的态度。他不点头，没人动。
+  </p>
+  <p class="story">
+    到岗第一天晚上8点，你坐在临时工位上翻完了过去一个月的来访登记。6种户型的数据在纸上混成一团。你知道问题在哪——产品聚焦不够，销售被太多选择消耗了判断力。但你不能一上来就说"听我的"——你连户型都还没爬完。
+  </p>
+  <p class="story">
+    明天早上9点是第一次早会。你最应该带去的不是方案——是具体的行动。不是"我们要聚焦"——是"我已经帮你们筛出了两个最好卖的户型"。让团队看到：你不是来下指令的——你是来帮他们解决问题的。
+  </p>
+
+  
+  
+  
+  
+  
+
+  <div class="divider"></div>
+
+  <!-- Strategy Card — plain language, no D-codes -->
+  <div style="background:rgba(239,246,255,.3);border:1px solid rgba(147,197,253,.15);border-radius:14px;padding:14px 16px;margin-bottom:16px">
+    <div style="font-size:10px;font-weight:700;color:#3B82F6;letter-spacing:.06em;margin-bottom:6px">🎯 到岗前，想清楚这三件事</div>
+    <p style="font-size:12px;color:#1C1917;line-height:1.75;margin:0">
+      <strong>1. NPC-周不反对你——他需要看到你值得跟。</strong>5年销售，这个项目他比谁都熟。别上来就说"新策略"。先让他看到你爬了楼、看了户型、比对了数据。用行动建立第一笔信任，而不是开会。<br>
+      <strong>2. 团队不是不努力——是被太多选项消耗了判断力。</strong>6种户型面积相近、总价重合。他们需要有人替他们做减法——砍掉噪音，聚焦关键。你今天给他们一个明确的方向，比给他们一百句"加油"管用。<br>
+      <strong>3. 当NPC-周主动拿客户来问你的时候——抓住这个时刻。</strong>他不是来找你帮忙的，是来考你的。你接住了这个客户，他就从"试试看"变成"跟着做"。
+    </p>
+    <p style="font-size:11px;color:#92400E;line-height:1.5;margin:10px 0 0">
+      <strong>⚠️ NPC-周可能会说：</strong>"这个户型我卖了五年，什么客户没见过""这边的客户不看数据，看感觉"。<strong>别怼回去。</strong>他的经验是真的。让他说完——然后说："你说得对。但这两个户型的景观性价比确实更高——你帮我看看这个客户？"。
+    </p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+    <div>
+      <div class="check-label">自评基线 · 1-10 分（行动前先问问自己）</div>
+  <div class="self-rate">
+    <div class="rate-item"><span>到现场去</span><input type="number" min="1" max="10" value="5" id="rate1"></div>
+    <div class="rate-item"><span>聚焦做减法</span><input type="number" min="1" max="10" value="5" id="rate2"></div>
+    <div class="rate-item"><span>亲自示范</span><input type="number" min="1" max="10" value="5" id="rate3"></div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Previous practice data -->
+  <div id="prevPracticeBar" style="display:none;text-align:center;font-size:10px;color:#78716C;padding:6px 10px;background:rgba(0,0,0,.015);border-radius:10px;margin-bottom:12px"></div>
+
+  <div class="opening-box">到岗第一天晚上8点，临时工位。桌上堆着过去一个月的来访登记表和成交数据。窗外售楼处已经关了灯。<br><strong>明天早上9点第一次早会——你准备带什么去？</strong></div>
+
+  <div class="process-line">
+    <span style="font-weight:600;color:#1C1917">到现场去</span> → <span style="font-weight:600;color:#1C1917">建立信任</span> → <span style="font-weight:600;color:#1C1917">聚焦减法</span> → <span style="font-weight:600;color:#1C1917">亲自示范</span><br>
+    <span style="font-size:10px;color:#A8A29E">全程：全程：多听NPC-周说，别上来就发令，别在没展示能力之前做深度沟通。</span>
+  </div>
+
+  <button class="btn-start" onclick="start()">开始行动</button>
+  <div class="lv-row" id="lvGroup">
+    <button class="lv-btn" data-lv="A" onclick="selLv('A')">新手</button>
+    <button class="lv-btn active" data-lv="B" onclick="selLv('B')">中等</button>
+    <button class="lv-btn" data-lv="C" onclick="selLv('C')">高手</button>
+  </div>
+</div>
+
+<!-- Bridge overlay -->
+<div id="bridgeOverlay" style="display:none;position:fixed;inset:0;background:rgba(28,25,23,.7);z-index:100;align-items:center;justify-content:center">
+  <div style="background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-radius:20px;padding:32px 28px;max-width:420px;width:90vw;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)">
+    <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#F59E0B,#D97706);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;margin:0 auto 12px">周</div>
+    <p style="font-size:14px;color:#1C1917;line-height:1.6;margin-bottom:6px" id="bridgeMsg"></p>
+    <p style="font-size:11px;color:#78716C;line-height:1.5;margin-bottom:16px" id="bridgeHint"></p>
+    <button onclick="document.getElementById('bridgeOverlay').style.display='none';goToDialogue();" style="padding:12px 32px;border-radius:14px;border:none;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">准备好了，开始</button>
+    <p style="font-size:10px;color:#A8A29E;margin-top:8px;cursor:pointer" onclick="document.getElementById('bridgeOverlay').style.display='none';goToDialogue();">跳过，直接开始</p>
+  </div>
+</div>
+
+<script>
+let cl='B';
+function selLv(l){cl=l;document.querySelectorAll('#lvGroup .lv-btn').forEach(b=>b.classList.toggle('active',b.dataset.lv===l))}
+
+// Check for previous practice data
+(function(){
+  var count=parseInt(localStorage.getItem('pr2_count')||'0');
+  var prevSession=null;
+  try{var raw=localStorage.getItem('pr2_last_session');if(raw)prevSession=JSON.parse(raw);}catch(e){}
+  if(count>0&&prevSession&&prevSession.principles){
+    var bar=document.getElementById('prevPracticeBar');
+    bar.style.display='block';
+    var p=prevSession.principles;
+    var avg=Math.round((p.trust+p.purpose+p.encourage+p.listen+p.end)/5);
+    bar.innerHTML='📊 上次练习（第'+count+'次）· 均分<strong>'+avg+'</strong> · 最弱：<strong id="prevWeakest"></strong> · 今天重点关注这条';
+    var keys=['trust','purpose','encourage','listen','end'];
+    var labels=['①到现场去','②聚焦做减法','③亲自示范'];
+    var minK=keys[0],minV=p[keys[0]];
+    keys.forEach(function(k){if(p[k]<minV){minV=p[k];minK=k;}});
+    document.getElementById('prevWeakest').textContent=labels[keys.indexOf(minK)]+'（'+minV+'分）';
+  }
+})();
+
+function start(){
+  // Save self-assessment
+  var inputs=document.querySelectorAll('.rate-item input');
+  var baseline={};
+  var keys=['trust','purpose','encourage','listen','end'];
+  inputs.forEach(function(inp,i){
+    var v=inp.value.trim();
+    if(v&&v!=='__'&&!isNaN(parseInt(v)))baseline[keys[i]]=parseInt(v);
+  });
+  try{localStorage.setItem('tg001_self_baseline',JSON.stringify(baseline));}catch(e){}
+  var diffMap={A:'easy',B:'normal',C:'hard'};
+  try{localStorage.setItem('pr2_difficulty',diffMap[cl]||'normal');}catch(e){}
+
+  // Build bridge message from self-assessment
+  var focusPrinciple='';
+  var focusScore=0;
+  if(Object.keys(baseline).length>0){
+    var lowScore=10;var lowKey='';
+    keys.forEach(function(k){if(baseline[k]!==undefined&&baseline[k]<lowScore){lowScore=baseline[k];lowKey=k;}});
+    if(lowKey){
+      var labelMap={trust:'到现场去',purpose:'聚焦做减法',encourage:'亲自示范'};
+      focusPrinciple=labelMap[lowKey];
+      focusScore=lowScore;
+    }
+  }
+
+  if(focusPrinciple){
+    document.getElementById('bridgeMsg').innerHTML='你给自己的<strong>'+focusPrinciple+'</strong>打了 <strong>'+focusScore+'</strong> 分（1-10）。<br>今天练习中，重点关注这一条。';
+    document.getElementById('bridgeHint').textContent='在对话中，每当你想跳过这一条的时候——轻声提醒会出现。那是你的教练在说话。';
+  }else{
+    document.getElementById('bridgeMsg').innerHTML='<strong>明天早上9点是第一次早会。</strong><br>NPC-周在工位上等你出第一张牌。';
+    document.getElementById('bridgeHint').textContent='先做一件让NPC-周抬头看你的事。这场对话不是汇报。';
+  }
+
+  // Show bridge overlay
+  document.getElementById('bridgeOverlay').style.display='flex';
+}
+
+function goToDialogue(){
+  window.location.href='scene_PR2_引擎驱动版_v7.html';
+}
+</script>
+</body>
+</html>

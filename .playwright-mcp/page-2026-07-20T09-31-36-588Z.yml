@@ -1,0 +1,74 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - banner [ref=f4e3]:
+      - generic [ref=f4e4]: 2026 彩虹+计划 · 行动学习课题
+      - heading "课题经验资产库" [level=1] [ref=f4e5]
+      - generic [ref=f4e6]: 经验教训 + 业务成果 双轨录入 · 分类 · 一键生成领导汇总报告（支持上传 PPTX/DOCX/TXT）
+      - generic [ref=f4e7]: 🔒 所有数据仅存于本机浏览器（localStorage），无任何网络请求
+    - navigation [ref=f4e8]:
+      - button "经验录入" [ref=f4e9] [cursor=pointer]
+      - button "成果录入" [ref=f4e10] [cursor=pointer]
+      - button "条目库 (经验1+成果1)" [ref=f4e110] [cursor=pointer]
+      - button "生成报告" [ref=f4e12] [cursor=pointer]
+      - button "备份" [ref=f4e13] [cursor=pointer]
+    - generic [ref=f4e66]:
+      - heading "录入成果条目" [level=2] [ref=f4e67]
+      - paragraph [ref=f4e68]: 从学员报告"📊 业务成果"章节原文摘录，一字不改（只摘不写）。分类确认人 = 人工核对分类是否准确的人。
+      - generic [ref=f4e69]:
+        - generic [ref=f4e70]:
+          - generic [ref=f4e71]:
+            - text: 成果原文引用 *（粘贴文字，或上传文件自动提取）
+            - button "📎 上传 PPTX / DOCX / TXT" [ref=f4e72] [cursor=pointer]
+          - textbox "粘贴学员报告中的业务成果原文，或点击" [ref=f4e73]
+        - generic [ref=f4e74]:
+          - generic [ref=f4e75]: 成果类别 *
+          - combobox [ref=f4e76]:
+            - option "业务突破" [selected]
+            - option "降本增效"
+            - option "流程优化"
+            - option "创新试点"
+            - option "团队建设"
+            - option "其他"
+        - generic [ref=f4e77]:
+          - generic [ref=f4e78]: 专业条线 *
+          - combobox [ref=f4e79]:
+            - option "投资拓展" [selected]
+            - option "成本管理"
+            - option "招采与供应链"
+            - option "设计管理"
+            - option "工程管理"
+            - option "营销与客研"
+            - option "交付与客服"
+            - option "运营与综合"
+        - generic [ref=f4e80]:
+          - generic [ref=f4e81]: 量化指标
+          - combobox [ref=f4e82]:
+            - option "有量化数据" [selected]
+            - option "仅定性描述"
+        - generic [ref=f4e83]:
+          - generic [ref=f4e84]: 所属阶段 *
+          - combobox [ref=f4e85]:
+            - option "中期复盘" [selected]
+            - option "结题"
+        - generic [ref=f4e86]:
+          - generic [ref=f4e87]: 提交日期
+          - textbox [ref=f4e88]: 2026-07-20
+        - generic [ref=f4e89]:
+          - generic [ref=f4e90]: 课题名称
+          - textbox "如：经营视角下成本适配能力提升" [ref=f4e91]
+        - generic [ref=f4e92]:
+          - generic [ref=f4e93]: 单位
+          - textbox "如：XX城市公司 / 项目群 / 片区" [ref=f4e94]
+        - generic [ref=f4e95]:
+          - generic [ref=f4e96]: 提交人
+          - textbox "学员姓名" [ref=f4e97]
+        - generic [ref=f4e98]:
+          - generic [ref=f4e99]: 报告出处（章节）
+          - textbox "如：中期复盘报告 · 业务成果" [ref=f4e100]
+        - generic [ref=f4e101]:
+          - generic [ref=f4e102]: 分类确认人
+          - textbox "人工确认分类的人" [ref=f4e103]
+      - generic [ref=f4e104]:
+        - button "保存条目" [active] [ref=f4e105] [cursor=pointer]
+        - button "清空表单" [ref=f4e106] [cursor=pointer]
+  - generic [ref=f4e63]: 成果条目已保存（共 2 条）

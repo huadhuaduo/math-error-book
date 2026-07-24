@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>敦煌五日 · 2026 夏</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sand: #e8d5b0;
+    --sand-light: #f5ede0;
+    --sand-dark: #c4a87c;
+    --stone: #8b7355;
+    --cave: #3c2415;
+    --text: #2c2c2c;
+    --text-light: #5c5c5c;
+    --mural-blue: #4a7c96;
+    --mural-green: #6b8f71;
+    --accent: #b85c3a;
+    --white: #fefefe;
+    --card-bg: #fdfaf6;
+    --border: #e8ddd0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Noto Serif SC", "STSong", "Songti SC", serif;
+    background: var(--sand-light);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 64px 0 48px;
+  }
+  header .sub {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--cave);
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+  header .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin: 24px auto 0;
+    border-radius: 1px;
+  }
+
+  /* Day cards */
+  .day {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
+    position: relative;
+    transition: box-shadow 0.2s ease;
+  }
+  .day:hover {
+    box-shadow: 0 2px 16px rgba(60, 36, 21, 0.06);
+  }
+  .day-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .day-num {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+  .day-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--cave);
+    letter-spacing: 0.03em;
+  }
+  .day-essence {
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--stone);
+    background: var(--sand-light);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  .day-content {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.9;
+  }
+  .day-content p {
+    margin-bottom: 12px;
+  }
+  .day-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Timeline list */
+  .timeline {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+  }
+  .timeline li {
+    padding: 8px 0 8px 28px;
+    position: relative;
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 16px;
+    width: 6px;
+    height: 6px;
+    background: var(--sand-dark);
+    border-radius: 50%;
+  }
+  .timeline li strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .timeline .time-label {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--stone);
+    letter-spacing: 0.06em;
+    margin-right: 8px;
+  }
+
+  /* Highlight box */
+  .highlight {
+    background: linear-gradient(135deg, rgba(74,124,150,0.06), rgba(107,143,113,0.06));
+    border-left: 3px solid var(--mural-blue);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--text-light);
+  }
+  .highlight strong {
+    color: var(--cave);
+  }
+
+  /* Special note for Day 3 (mural copying) */
+  .day.special {
+    border-color: var(--sand-dark);
+    background: linear-gradient(180deg, #fdfaf6 0%, #faf5ed 100%);
+  }
+  .day.special .day-num {
+    color: var(--accent);
+  }
+
+  /* Day 4 — her choice */
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .choice-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 14px;
+  }
+  .choice-card .choice-icon {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+  .choice-card .choice-name {
+    font-weight: 500;
+    color: var(--cave);
+    margin-bottom: 4px;
+  }
+  .choice-card .choice-desc {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  /* Practical section */
+  .practical {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 40px;
+  }
+  .practical h2 {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--cave);
+    margin-bottom: 20px;
+  }
+  .checklist {
+    list-style: none;
+    padding: 0;
+  }
+  .checklist li {
+    padding: 8px 0 8px 28px;
+    position: relative;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .checklist li::before {
+    content: '☐';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    font-size: 14px;
+    color: var(--stone);
+  }
+
+  /* Qinghai note */
+  .note-box {
+    background: var(--sand-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-top: 32px;
+  }
+  .note-box h2 {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--cave);
+    margin-bottom: 14px;
+  }
+  .note-box p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+  .note-box p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Packing list */
+  .pack-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .pack-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+  .pack-item .pack-icon {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .pack-item .pack-name {
+    font-weight: 500;
+    color: var(--cave);
+  }
+  .pack-item .pack-why {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 48px 0 0;
+    font-size: 13px;
+    color: var(--stone);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+  }
+  footer .divider {
+    width: 24px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 auto 16px;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px 48px; }
+    header { padding: 40px 0 32px; }
+    header h1 { font-size: 28px; }
+    .day { padding: 24px 20px; }
+    .choices { grid-template-columns: 1fr; }
+    .pack-list { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="sub">Dunhuang · Summer 2026</div>
+  <h1>敦煌五日</h1>
+  <div class="divider"></div>
+</header>
+
+<!-- Day 1 -->
+<div class="day">
+  <div class="day-header">
+    <span class="day-num">DAY 1</span>
+    <span class="day-title">莫高窟全天</span>
+  </div>
+  <div class="day-essence">第一次沉浸 · 建立全貌</div>
+  <div class="day-content">
+    <ul class="timeline">
+      <li><span class="time-label">07:30</span> 出发去数字展示中心</li>
+      <li><span class="time-label">09:00</span> 两部电影——《千年莫高》+《梦幻佛宫》球幕（坐中间靠后）</li>
+      <li><span class="time-label">10:00</span> 摆渡车到窟区，跟讲解员看 <strong>8 个普窟</strong></li>
+      <li><span class="time-label">11:30</span> 加购<strong>特窟</strong>（推荐 45 窟盛唐彩塑、57 窟美人菩萨）</li>
+      <li><span class="time-label">13:00</span> <strong>文物保护陈列中心</strong>——1:1 复制窟，光线好，可以慢慢看、慢慢画</li>
+      <li><span class="time-label">16:00</span> 白杨林荫道，坐下。画画，发呆</li>
+    </ul>
+    <div class="highlight">
+      <strong>今天不催。</strong> 陈列中心的复制窟可以正面、侧面、近距离反复看——比在真窟里被人流推着走更有价值。她站在哪里，你就在旁边等。
+    </div>
+  </div>
+</div>
+
+<!-- Day 2 -->
+<div class="day">
+  <div class="day-header">
+    <span class="day-num">DAY 2</span>
+    <span class="day-title">榆林窟全天</span>
+  </div>
+  <div class="day-essence">深藏的隐士 · 安静地看最好的东西</div>
+  <div class="day-content">
+    <ul class="timeline">
+      <li><span class="time-label">07:30</span> 包车出发（约 2–2.5 小时）</li>
+      <li><span class="time-label">10:00</span> 到达榆林窟，普窟 <strong>40 元 / 4–5 个</strong>，讲解细致</li>
+      <li><span class="time-label"></span> <strong>特窟必加：</strong></li>
+      <li style="padding-left:36px">→ <strong>25 窟</strong>（200 元）：唐代壁画巅峰，张大千说"最完美的作品"</li>
+      <li style="padding-left:36px">→ <strong>2 窟</strong>：水月观音，人少安静</li>
+      <li style="padding-left:36px">→ <strong>3 窟</strong>：文殊变普贤变，西夏水墨与佛教艺术的融合</li>
+      <li><span class="time-label">午 后</span> 锁阳城遗址（就在附近，唐代古城）</li>
+      <li><span class="time-label">傍 晚</span> 返程敦煌市区</li>
+    </ul>
+    <div class="highlight">
+      <strong>为什么来榆林窟：</strong> 莫高窟是"博学的教授"——庞大、权威、人多。榆林窟是"深藏的隐士"——人少、安静、可以站很久。去年你见了教授，今年让你见隐士。
+    </div>
+  </div>
+</div>
+
+<!-- Day 3 — Special -->
+<div class="day special">
+  <div class="day-header">
+    <span class="day-num">DAY 3</span>
+    <span class="day-title">亲手做一幅壁画</span>
+  </div>
+  <div class="day-essence">从看到做 · 和一千年前的画师握手</div>
+  <div class="day-content">
+    <p><strong>上午：莫高里工匠村</strong></p>
+    <p>敦煌彩塑非遗传承人杜永卫创办的匠人工作室。工作台上是矿物颜料——青金石磨的蓝、孔雀石磨的绿、朱砂磨的红。不是颜料管里的化学颜色。</p>
+    <p>你会拿到一块特制的泥板——和洞窟壁画的基底一样。拓稿、上色、描金。3 个小时。和一千年前的画师用一样的材料、一样的工序。</p>
+    <p>这是你在家描了一年的那件事——从纸上，到了泥板上。</p>
+    <div class="highlight">
+      <strong>带回家的不是一张纸，是一块泥板上的壁画。</strong> 放在你的书桌上。那是你和一千年前画师之间的一次握手。
+    </div>
+
+    <p style="margin-top: 24px;"><strong>下午：鸣沙山月牙泉</strong></p>
+    <p>四五点出发——不早去，太热。骑骆驼进沙山。爬沙丘。等日落。</p>
+    <p>你的文章里写过水、冰、雪花、树、阳光、书页翻动的声音。你还没写过沙漠。赤脚踩在沙子上，听见沙鸣声，看到落日把整个大漠染成金红色——把这些装进你的素材库里。</p>
+  </div>
+</div>
+
+<!-- Day 4 -->
+<div class="day">
+  <div class="day-header">
+    <span class="day-num">DAY 4</span>
+    <span class="day-title">你决定</span>
+  </div>
+  <div class="day-essence">主动权在你手里</div>
+  <div class="day-content">
+    <p>早上起来，妈妈问你：<strong>"今天你想去哪里？"</strong></p>
+    <div class="choices">
+      <div class="choice-card">
+        <div class="choice-icon">🏛️</div>
+        <div class="choice-name">再回莫高窟</div>
+        <div class="choice-desc">补一个上次没看到的特窟，或者再去看一眼你最喜欢的那个洞窟</div>
+      </div>
+      <div class="choice-card">
+        <div class="choice-icon">📜</div>
+        <div class="choice-name">敦煌博物馆</div>
+        <div class="choice-desc">有 45 窟复制窟，免费，人少。还有丝绸之路文物</div>
+      </div>
+      <div class="choice-card">
+        <div class="choice-icon">🏜️</div>
+        <div class="choice-name">西千佛洞</div>
+        <div class="choice-desc">比莫高窟更早的北朝石窟，安静，党河峡谷就在旁边</div>
+      </div>
+      <div class="choice-card">
+        <div class="choice-icon">📖</div>
+        <div class="choice-name">哪都不去</div>
+        <div class="choice-desc">在酒店房间里画画、写东西、翻翻书。一整天。</div>
+      </div>
+    </div>
+    <div class="highlight">
+      <strong>妈妈只负责跟着走。</strong> 你选哪一个，她就陪你去哪一个。你选"哪都不去"，她就陪你哪都不去。
+    </div>
+  </div>
+</div>
+
+<!-- Day 5 -->
+<div class="day">
+  <div class="day-header">
+    <span class="day-num">DAY 5</span>
+    <span class="day-title">收尾 · 不填满</span>
+  </div>
+  <div class="day-essence">轻的结尾</div>
+  <div class="day-content">
+    <p><strong>如果还有精神：</strong> 去敦煌博物馆，安静地看一圈。一个小时够了。剩下的时间在市区逛逛——敦煌主题的明信片、一本画册、一块石头。你自己选。</p>
+    <p><strong>如果前四天已经很满了：</strong> 睡到自然醒。去书店或文创店转转。不用特意安排，走到哪算哪。然后去机场。</p>
+    <div class="highlight">
+      <strong>这次旅行的质量标准不是"看了多少个洞窟"，是你回去以后，有多少东西从你的手上流了出来。</strong>
+    </div>
+  </div>
+</div>
+
+<!-- Practical Info -->
+<div class="practical">
+  <h2>出发前要做的</h2>
+  <ul class="checklist">
+    <li><strong>抢莫高窟 A 类票</strong>——小程序"莫高窟参观预约网"，提前 30 天，早上 7:00。暑假限 6000 张，几分钟抢完。选上午 9:00 前场次。</li>
+    <li><strong>预约榆林窟特窟</strong>——25 号、2 号、3 号，提前 3–5 天，同一个小程序。</li>
+    <li><strong>预约莫高里工匠村</strong>——搜索"莫高里工匠村"联系方式，旺季需提前 7–10 天。</li>
+    <li><strong>订住宿</strong>——暑期敦煌房价翻倍，提前订。住市区即可。</li>
+    <li><strong>包车</strong>——榆林窟那天需要（约 500–600 元/天），当地找即可。</li>
+  </ul>
+
+  <h2 style="margin-top: 32px;">行李特别清单</h2>
+  <div class="pack-list">
+    <div class="pack-item">
+      <div class="pack-icon">📓</div>
+      <div class="pack-name">手掌大的速写本</div>
+      <div class="pack-why">出洞窟之后画。窟里不能拍照也不能画画。</div>
+    </div>
+    <div class="pack-item">
+      <div class="pack-icon">🖊️</div>
+      <div class="pack-name">一支细线笔</div>
+      <div class="pack-why">你平时画敦煌用的那支就行。</div>
+    </div>
+    <div class="pack-item">
+      <div class="pack-icon">📝</div>
+      <div class="pack-name">小本子或备忘录</div>
+      <div class="pack-why">有些东西你会想写下来，不是画。</div>
+    </div>
+    <div class="pack-item">
+      <div class="pack-icon">🧥</div>
+      <div class="pack-name">薄外套 + 防晒全套</div>
+      <div class="pack-why">洞窟里比外面凉。外面紫外线极强。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Qinghai Question -->
+<div class="note-box">
+  <h2>关于青海段：这次不走</h2>
+  <p>你们去年走过了整个河西走廊。今年她主动要求再回敦煌——她是回来找那些壁画的，不是回来路过的。</p>
+  <p>青海湖、茶卡盐湖、翡翠湖——那是另一条线，另一种风景。很美。但如果把青海段加进来，敦煌就从"她等了一年的目的地"变成了"路上的其中一站"。这次旅行的意义是深，不是广。</p>
+  <p><strong>青甘大环线，留给下一次。</strong> 下一次的理由可以是"我们去看不一样的西北"——青海的湖泊和草原。那趟旅程有自己的逻辑和节奏，不和敦煌的洞窟挤在一起。</p>
+  <p>这次只有敦煌。五天，一个地方。让她沉下去，不让她浮在路面上。</p>
+</div>
+
+<footer>
+  <div class="divider"></div>
+  2026 年夏天 · 和妈妈一起
+</footer>
+
+</div>
+</body>
+</html>

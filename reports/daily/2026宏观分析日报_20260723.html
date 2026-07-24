@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026宏观分析日报 · 7月23日</title>
+<style>
+/* ===== _macro_base.css ===== */
+:root {
+  --bg: #f5f5f7;
+  --card-bg: #ffffff;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --green: #34c759;
+  --red: #ff3b30;
+  --orange: #ff9500;
+  --yellow: #ffcc00;
+  --border: #d2d2d7;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 20px;
+  --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
+  --page-max-width: 800px;
+  --header-padding: 20px 0 16px;
+  --h1-size: 22px;
+  --section-title-size: 17px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-stack);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container { max-width: var(--page-max-width); margin: 0 auto; padding: 0 24px; }
+
+.header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: var(--header-padding);
+  margin-bottom: 24px;
+}
+.header .container { text-align: center; }
+.header .badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.header h1 {
+  font-size: var(--h1-size);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.header .subtitle { font-size: 14px; color: var(--text-secondary); font-weight: 400; }
+.header .meta { margin-top: 8px; font-size: 11px; color: var(--text-tertiary); }
+.header .meta span { margin: 0 8px; }
+.header .meta span:first-child { margin-left: 0; }
+
+.section { margin-bottom: 24px; }
+.section-title {
+  font-size: var(--section-title-size);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.card-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.alert {
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-left: 4px solid;
+}
+.alert-danger  { background: #fff2f0; border-color: var(--red); color: #8b1a12; }
+.alert-warning { background: #fff8e5; border-color: var(--orange); color: #7c5e00; }
+.alert-info    { background: #e8f4fd; border-color: var(--accent); color: #004a8f; }
+
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+}
+.tag-red    { background: #fff2f0; color: #8b1a12; }
+.tag-orange { background: #fff8e5; color: #7c5e00; }
+.tag-green  { background: #e8f8ed; color: #1a5c2a; }
+.tag-blue   { background: #e8f4fd; color: #004a8f; }
+.tag-purple { background: #f0e8fd; color: #4a1a8b; }
+
+/* ===== _macro_daily.css ===== */
+
+.alert-level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--border);
+  margin-bottom: 20px;
+}
+.alert-level .signal {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0;
+}
+.alert-level .signal.green  { background: #e8f8ed; box-shadow: 0 0 20px rgba(52,199,89,0.3); }
+.alert-level .signal.yellow { background: #fff8e5; box-shadow: 0 0 20px rgba(255,149,0,0.3); }
+.alert-level .signal.red    { background: #fff2f0; box-shadow: 0 0 20px rgba(255,59,48,0.3); }
+.alert-level .level-text { text-align: left; }
+.alert-level .level-label { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.alert-level .level-desc { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.alert-level .level-action { font-size: 13px; font-weight: 600; color: var(--accent); margin-top: 4px; }
+
+.anomaly-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.anomaly-card .anomaly-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.anomaly-card .anomaly-body { flex: 1; }
+.anomaly-card .anomaly-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.anomaly-card .anomaly-detail { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+.anomaly-card.severe { border-left: 3px solid var(--red); background: #fffafa; }
+.anomaly-card.watch  { border-left: 3px solid var(--orange); background: #fffefa; }
+
+.pulse-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.pulse-item {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pulse-item .pulse-left { display: flex; flex-direction: column; }
+.pulse-item .pulse-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.pulse-item .pulse-sub  { font-size: 10px; color: var(--text-tertiary); }
+.pulse-item .pulse-right { text-align: right; }
+.pulse-item .pulse-value { font-size: 14px; font-weight: 700; font-family: var(--font-mono); }
+.pulse-item .pulse-change { font-size: 12px; font-weight: 600; font-family: var(--font-mono); }
+.pulse-item .pulse-change.up   { color: var(--red); }
+.pulse-item .pulse-change.down { color: var(--green); }
+.pulse-item .pulse-change.flat { color: var(--text-secondary); }
+
+/* 今日判断 */
+.daily-insight {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  border: 1px solid #dce3f8;
+  margin-bottom: 16px;
+}
+.daily-insight p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.daily-insight p:last-child { margin-bottom: 0; }
+
+/* 走势推演 */
+.forecast-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.forecast-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+.forecast-card .fc-direction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.forecast-card .fc-arrow {
+  font-size: 24px;
+  font-weight: 700;
+}
+.forecast-card .fc-arrow.up    { color: var(--red); }
+.forecast-card .fc-arrow.down  { color: var(--green); }
+.forecast-card .fc-arrow.side  { color: var(--orange); }
+.forecast-card .fc-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+.forecast-card .fc-confidence {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.forecast-card .fc-reason {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.flash-list { list-style: none; padding: 0; }
+.flash-list li {
+  padding: 7px 0; border-bottom: 1px solid #f0f0f2;
+  font-size: 13px; line-height: 1.5; display: flex; gap: 8px;
+}
+.flash-list li:last-child { border-bottom: none; }
+.flash-list .flash-tag { flex-shrink: 0; margin-top: 1px; }
+
+.quote-strip {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  padding: 10px 16px;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  font-size: 12px; font-family: var(--font-mono);
+}
+.quote-strip .quote-item { display: flex; gap: 4px; align-items: baseline; }
+.quote-strip .quote-symbol { font-weight: 600; color: var(--text-secondary); }
+.quote-strip .quote-price { font-weight: 600; }
+.quote-strip .quote-change.up   { color: var(--red); }
+.quote-strip .quote-change.down { color: var(--green); }
+.quote-strip .quote-change.flat { color: var(--text-tertiary); }
+
+.footer {
+  text-align: center; padding: 32px 24px;
+  color: var(--text-tertiary); font-size: 11px;
+  border-top: 1px solid var(--border); margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .pulse-row, .forecast-grid { grid-template-columns: 1fr; }
+  .alert-level { flex-direction: column; text-align: center; gap: 12px; }
+  .alert-level .level-text { text-align: center; }
+  .quote-strip { font-size: 11px; gap: 8px; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+thead th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f2;
+  vertical-align: top;
+}
+</style>
+</head>
+<body>
+
+<!-- ====== HEADER ====== -->
+<div class="header">
+  <div class="container">
+    <div class="badge">Daily Macro Radar</div>
+    <h1>2026宏观分析日报</h1>
+    <p class="subtitle">7月23日 周四 · 晚间收盘版 · 异常雷达 + 走势推演</p>
+    <p class="meta">
+      <span>📅 2026年7月23日 周四</span>
+      <span>·</span>
+      <span>⏰ A股收盘 15:00 · 美股盘中 23:00</span>
+    </p>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== 一、预警等级 ====== -->
+<div class="section">
+  <div class="alert-level">
+    <div class="signal red">🔴</div>
+    <div class="level-text">
+      <div class="level-label">警戒级别：红色</div>
+      <div class="level-desc">布油盘中突破$100 + 美股深夜暴跌（纳指-2.5%）+ 特斯拉-13.7% + 美债收益率创年内新高 + 美联储加息概率急升</div>
+      <div class="level-action">⚠️ 建议：减仓高贝塔科技仓位，增配能源/公用事业/黄金对冲。A股明天大概率低开，关注电力/煤炭/石油防御板块能否继续扛旗。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 二、市场脉搏 ====== -->
+<div class="section">
+  <div class="section-title">📊 市场脉搏</div>
+
+  <div class="card">
+    <div class="card-header">A股 · 7月23日收盘</div>
+    <div class="pulse-row">
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">上证指数</span><span class="pulse-sub">3,876.78</span></div>
+        <div class="pulse-right"><div class="pulse-change up">+0.25%</div></div>
+      </div>
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">沪深300</span><span class="pulse-sub">4,728.00</span></div>
+        <div class="pulse-right"><div class="pulse-change up">+0.23%</div></div>
+      </div>
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">科创50</span><span class="pulse-sub">1,789.69</span></div>
+        <div class="pulse-right"><div class="pulse-change down">-3.78%</div></div>
+      </div>
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">成交额</span><span class="pulse-sub">2.2万亿 · 缩量</span></div>
+        <div class="pulse-right"><div class="pulse-change flat">-4,590亿</div></div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">
+      <strong>结构分化剧烈：</strong>超4,200只个股上涨、逾百股涨停，但科创50暴跌3.78%。资金从高位半导体向低位周期切换——<span style="color:var(--red);">电网设备+6.65%</span>、<span style="color:var(--red);">油气开采+4.35%</span>、<span style="color:var(--red);">电力+1.96%</span>、<span style="color:var(--red);">煤炭+0.99%</span>领涨；半导体、电子领跌。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">美股 · 7月23日 盘中（未收盘）</div>
+    <div class="pulse-row">
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">纳斯达克</span><span class="pulse-sub">盘中暴跌</span></div>
+        <div class="pulse-right"><div class="pulse-change down">-2.54%</div></div>
+      </div>
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">标普500</span><span class="pulse-sub">盘中</span></div>
+        <div class="pulse-right"><div class="pulse-change down">-1.36%</div></div>
+      </div>
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">特斯拉</span><span class="pulse-sub">Q2不及预期</span></div>
+        <div class="pulse-right"><div class="pulse-change down">-13.7%</div></div>
+      </div>
+      <div class="pulse-item">
+        <div class="pulse-left"><span class="pulse-name">谷歌</span><span class="pulse-sub">FCF转负</span></div>
+        <div class="pulse-right"><div class="pulse-change down">-7.0%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 三、异常标记 ====== -->
+<div class="section">
+  <div class="section-title">🚨 异常标记</div>
+
+  <div class="anomaly-card severe">
+    <div class="anomaly-icon">🛢️</div>
+    <div class="anomaly-body">
+      <div class="anomaly-title">布伦特原油盘中突破$100，为两个月来首次 <span class="tag tag-red">严重</span></div>
+      <div class="anomaly-detail">美伊冲突第12天+胡塞袭击沙特油轮→中东"双通道封锁"加剧。布油盘中触及$100.56，WTI涨至$91.95。三个月期价差扩至9.26美元/桶（5月来最大），现货极度紧张。国内INE原油7月累计涨超20%。</div>
+    </div>
+  </div>
+
+  <div class="anomaly-card severe">
+    <div class="anomaly-icon">📉</div>
+    <div class="anomaly-body">
+      <div class="anomaly-title">美股深夜全线暴跌：纳指跌超600点 <span class="tag tag-red">严重</span></div>
+      <div class="anomaly-detail">三重暴击：①油价破$100推升通胀恐慌 ②美债收益率创年内新高 ③特斯拉(-13.7%)、谷歌(-7%)财报暴雷。美联储下周加息概率急升。科技七巨头齐跌，市场从"软着陆"叙事急速切换为"滞胀危机"模式。</div>
+    </div>
+  </div>
+
+  <div class="anomaly-card severe">
+    <div class="anomaly-icon">💻</div>
+    <div class="anomaly-body">
+      <div class="anomaly-title">科创50暴跌3.78%，半导体板块遭血洗 <span class="tag tag-red">严重</span></div>
+      <div class="anomaly-detail">华虹宏力跌超10%，中芯国际/乐鑫科技/长川科技跌超5%。A股半导体H1业绩集体爆发但股价反跌——"利好出尽"叠加美股科技暴跌传导。中信证券称技术调整，基本面未变。</div>
+    </div>
+  </div>
+
+  <div class="anomaly-card watch">
+    <div class="anomaly-icon">⚡</div>
+    <div class="anomaly-body">
+      <div class="anomaly-title">电力/煤炭/石油逆势大涨——能源防御板块成避风港 <span class="tag tag-orange">关注</span></div>
+      <div class="anomaly-detail">电网设备+6.65%（30+股涨停）、油气开采+4.35%、电力+1.96%、煤炭+0.99%。立新能源6连板、中曼石油4天3板。逻辑：夏季用电高峰+油价暴涨+资金高低切换。能源替代科技成为新主线。</div>
+    </div>
+  </div>
+
+  <div class="anomaly-card watch">
+    <div class="anomaly-icon">🥇</div>
+    <div class="anomaly-body">
+      <div class="anomaly-title">黄金意外下跌——美元走强压制避险逻辑 <span class="tag tag-orange">关注</span></div>
+      <div class="anomaly-detail">现货金跌至$4,056（-1.8%）——油价暴涨推升美联储加息预期→美元走强→黄金承压。但白银跌3.4%更惨。黄金与油价的"危机同涨"模式今日被打破，短期内金价可能继续承压。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 四、今日判断 ====== -->
+<div class="section">
+  <div class="section-title">📌 今日判断</div>
+
+  <div class="daily-insight">
+    <p><strong>市场正在经历"能源危机→滞胀恐慌→成长股屠杀"的传导链。</strong>油价破$100不再是远虑而是近忧。美联储面临两难：不加息则通胀失控，加息则刺破科技泡沫。今晚美股的选择是——用脚投票，先跑为敬。A股今天表面上温和收涨（+0.25%），但内部结构已经剧变：科创50-3.78% vs 电力+6.65%，这是资金在用真金白银投票"能源通胀"叙事。</p>
+    <p><strong>短期看三个信号：</strong>① 布油能否守住$100——若持续3天以上，全球风险资产将进入危机定价模式；② 美股今夜收盘跌幅——若纳指收跌超3%，明天A股大概率跟跌，幅度看国家队护盘力度；③ 7月底政治局会议——市场将极度关注"能源保供"和"稳增长"的措辞力度，这决定了能源板块的持续性。</p>
+    <p style="color: var(--accent);"><strong>操作上：</strong>A股能源/电力/煤炭短期仍是避风港，但追高需谨慎（立新能源已6连板）。半导体板块急跌后可关注错杀机会（H1业绩集体爆发是事实，估值回调后性价比回升）。黄金短期承压但中线逻辑未破，$4,000以下可分批建仓。</p>
+  </div>
+</div>
+
+<!-- ====== 五、走势推演 ====== -->
+<div class="section">
+  <div class="section-title">🔮 走势推演（次日+短期方向）</div>
+
+  <div class="forecast-grid">
+    <div class="forecast-card">
+      <div class="fc-direction">
+        <span class="fc-arrow side">→</span>
+        <span class="fc-label">A股大盘</span>
+      </div>
+      <div class="fc-confidence">方向：偏弱震荡 · 信心：中</div>
+      <div class="fc-reason">美股暴跌传导+半导体持续承压，明天大概率低开。但国家队（国新/诚通）近期密集入场形成托底，电力/能源板块强势提供支撑。低开后盘中回升概率较大，收跌幅度预计控制在0.5%以内。</div>
+    </div>
+    <div class="forecast-card">
+      <div class="fc-direction">
+        <span class="fc-arrow up">↑</span>
+        <span class="fc-label">能源板块（电力/煤炭/石油）</span>
+      </div>
+      <div class="fc-confidence">方向：继续强势 · 信心：高</div>
+      <div class="fc-reason">三重逻辑共振：①油价破$100直接利好油气开采 ②夏季用电峰值持续刷新（15.51亿千瓦）③资金从科技向周期切换刚开始。电网设备（特高压+新型电力系统）政策预期强，立新能源6连板打开空间。</div>
+    </div>
+    <div class="forecast-card">
+      <div class="fc-direction">
+        <span class="fc-arrow down">↓</span>
+        <span class="fc-label">半导体/AI算力</span>
+      </div>
+      <div class="fc-confidence">方向：继续承压 · 信心：高</div>
+      <div class="fc-reason">科创50单日-3.78%且放量，短期未见企稳信号。美股科技暴跌（特斯拉-13.7%）形成情绪压制。但H1业绩集体爆发是硬支撑，预计再跌5-8%后将出现技术性反弹。关注中际旭创/海光信息等业绩确定性标的的买入时机。</div>
+    </div>
+    <div class="forecast-card">
+      <div class="fc-direction">
+        <span class="fc-arrow side">↗</span>
+        <span class="fc-label">黄金</span>
+      </div>
+      <div class="fc-confidence">方向：短期承压，中线看多 · 信心：中</div>
+      <div class="fc-reason">今夜金价跌至$4,056——美元走强+加息预期压制。但地缘风险（美伊冲突持续升级）和央行购金趋势未变。$4,000-4,050区间是中线建仓良机，不建议追空。</div>
+    </div>
+  </div>
+
+  <div class="card" style="background:#fafafa;">
+    <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+      <strong>⚡ 关键推演情景：</strong>若今夜布油收在$100上方+纳指收跌>3% → 明天A股大概率跳空低开1-1.5%。但能源板块反而可能高开（油价利好）。最危险的是科技+消费（油价→通胀→消费降级+科技估值压缩）。反之，若油价回落至$95以下+美股收窄跌幅，则A股有望平开震荡。
+    </p>
+  </div>
+</div>
+
+<!-- ====== 六、AI每日简报 ====== -->
+<div class="section">
+  <div class="section-title">🤖 AI每日简报</div>
+
+  <div class="card">
+    <ul class="flash-list">
+      <li>
+        <span class="flash-tag tag-green">IPO</span>
+        <span><strong>长鑫科技CXMT 7月23日科创板申购，募资666亿。</strong>全球DRAM第四，合肥政府36.8%股权价值2,130亿元。H1净利500-570亿（+1,688%）。分析师预计上市后股价将数倍飙升，是年内最重要半导体IPO。</span>
+      </li>
+      <li>
+        <span class="flash-tag tag-blue">算力</span>
+        <span><strong>台积电上调2026资本开支至600-640亿美元。</strong>聚焦2nm/3nm+CoWoS封装，AI需求持续超预期。Intel/AMD与中国客户签署长期CPU供货协议，服务器CPU价格年内涨超40%。</span>
+      </li>
+      <li>
+        <span class="flash-tag tag-green">业绩</span>
+        <span><strong>国产AI芯片出货份额突破40%。</strong>华为昇腾/寒武纪/海光/摩尔线程产品矩阵成熟。半导体H1业绩爆发：朗科科技利润增74,400%、佰维存储增3,200%、兆易创新增1,099%。</span>
+      </li>
+      <li>
+        <span class="flash-tag tag-purple">突破</span>
+        <span><strong>中科院"折纸术"突破光芯片制造瓶颈。</strong>宽束离子"雨"同步折叠数万2D纳米结构为3D光子结构，速度提升>100倍、均匀性>97%、兼容CMOS产线。可能移除3D光子芯片量产的最大障碍。</span>
+      </li>
+      <li>
+        <span class="flash-tag tag-orange">市场</span>
+        <span><strong>半导体板块暴跌但基本面强劲。</strong>科创50-3.78%，华虹宏力-10%。但中国H1集成电路出口额+88.7%（量仅+7%，价涨驱动），半导体产量2,798亿颗（+23.1%）。J.P. Morgan：AI存储需求紧张至2028年。</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ====== 七、商品与外汇 ====== -->
+<div class="section">
+  <div class="section-title">💱 商品与外汇（23:00实时）</div>
+  <div class="quote-strip">
+    <div class="quote-item"><span class="quote-symbol">Brent</span><span class="quote-price">100.56</span><span class="quote-change up">+6.9%</span></div>
+    <div class="quote-item"><span class="quote-symbol">WTI</span><span class="quote-price">91.95</span><span class="quote-change up">+5.9%</span></div>
+    <div class="quote-item"><span class="quote-symbol">XAU</span><span class="quote-price">4,056</span><span class="quote-change down">-1.8%</span></div>
+    <div class="quote-item"><span class="quote-symbol">DXY</span><span class="quote-price">101.5</span><span class="quote-change up">走强</span></div>
+    <div class="quote-item"><span class="quote-symbol">USD/CNY</span><span class="quote-price">6.79</span><span class="quote-change flat">—</span></div>
+    <div class="quote-item"><span class="quote-symbol">INE原油</span><span class="quote-price">568.9</span><span class="quote-change up">+3.4%</span></div>
+    <div class="quote-item"><span class="quote-symbol">10Y美债</span><span class="quote-price">4.65%</span><span class="quote-change up">年内新高</span></div>
+  </div>
+</div>
+
+<!-- ====== 八、宏观数据状态 ====== -->
+<div class="section">
+  <div class="section-title">📋 当前宏观数据状态</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>指标</th><th>最新值</th><th>趋势</th><th>下次发布</th></tr></thead>
+      <tbody>
+        <tr><td>Q2 GDP 同比</td><td>4.3%</td><td><span class="tag tag-orange">放缓</span></td><td>10月中旬（Q3）</td></tr>
+        <tr><td>6月 CPI 同比</td><td>1.0%</td><td><span class="tag tag-green">温和</span></td><td>8月9日前后（7月）</td></tr>
+        <tr><td>6月 PPI 同比</td><td>4.1%</td><td><span class="tag tag-orange">或已见顶</span></td><td>8月9日前后（7月）</td></tr>
+        <tr><td>制造业 PMI</td><td>50.3</td><td><span class="tag tag-green">扩张</span></td><td>7月31日（7月）</td></tr>
+        <tr><td>6月 出口同比</td><td>+27.0%</td><td><span class="tag tag-red">超预期</span></td><td>8月7日前后（7月）</td></tr>
+        <tr><td>6月 社零同比</td><td>+1.0%</td><td><span class="tag tag-orange">弱复苏</span></td><td>8月15日前后（7月）</td></tr>
+        <tr><td>固投累计</td><td>-5.7%</td><td><span class="tag tag-red">走弱</span></td><td>8月15日前后（7月）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ====== 免责声明 ====== -->
+<div class="section">
+  <div class="card" style="background:#fafafa;text-align:center;">
+    <p style="font-size:11px;color:var(--text-tertiary);line-height:1.6;">
+      <strong>免责声明</strong><br>
+      本报告基于公开数据和实时资讯整理，仅供研究参考，不构成投资建议。走势推演为基于当前信息的概率判断，不代表未来实际走势。<br>
+      数据来源：国家统计局、中国人民银行、华尔街见闻、东方财富、路透等。<br>
+      投资有风险，入市须谨慎。
+    </p>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<div class="footer">
+  <p>2026宏观分析日报 · 7月23日 周四 · 晚间收盘版</p>
+  <p>Data-driven · Anomaly Radar + Forecast · 3-Minute Scan</p>
+</div>
+
+</body>
+</html>

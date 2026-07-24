@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对话页 · NPC-张反馈对话</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;
+    background:#F5F3F0;min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+
+  /* Layout */
+  .app{display:flex;height:100vh}
+  .chat-area{flex:1;display:flex;flex-direction:column;max-width:760px;margin:0 auto;width:100%}
+
+  /* Header */
+  .chat-header{
+    padding:14px 20px;background:rgba(255,255,255,.7);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(0,0,0,.06);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+
+  /* Morale indicator */
+  .morale-bar{
+    display:flex;align-items:center;gap:6px;
+    padding:6px 12px;border-radius:100px;
+    background:rgba(0,0,0,.04);font-size:11px;font-weight:600;
+  }
+  .morale-fill{
+    height:6px;border-radius:3px;transition:all .5s ease;
+  }
+
+  /* State badge */
+  .state-badge{
+    padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;
+    letter-spacing:.02em;
+  }
+
+  /* Messages */
+  .msg-list{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .msg{max-width:82%;animation:fadeIn .3s ease}
+  .msg.npc{align-self:flex-start}
+  .msg.user{align-self:flex-end}
+  .msg-bubble{
+    padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6;
+    position:relative;
+  }
+  .msg.npc .msg-bubble{
+    background:#fff;border:1px solid rgba(0,0,0,.06);
+    border-bottom-left-radius:6px;
+  }
+  .msg.user .msg-bubble{
+    background:#1E1E1E;color:#fff;
+    border-bottom-right-radius:6px;
+  }
+  .msg-meta{font-size:10px;color:#9CA3AF;margin-top:3px;padding:0 4px}
+
+  /* System note */
+  .sys-note{
+    align-self:center;font-size:11px;color:#9CA3AF;
+    background:rgba(0,0,0,.03);padding:6px 14px;border-radius:100px;
+    font-style:italic;
+  }
+
+  /* Awareness prompt */
+  .awareness{
+    align-self:stretch;margin:8px 0;
+    background:linear-gradient(135deg,#EFF6FF,#F0F9FF);
+    border:1px solid #BFDBFE;border-radius:14px;padding:14px 16px;
+    font-size:12px;line-height:1.6;
+  }
+  .awareness strong{color:#2563EB}
+
+  /* Input */
+  .chat-input-area{
+    padding:14px 20px;background:rgba(255,255,255,.7);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-top:1px solid rgba(0,0,0,.06);
+    display:flex;gap:10px;align-items:flex-end;
+  }
+  .chat-input{
+    flex:1;border:1px solid rgba(0,0,0,.1);border-radius:14px;
+    padding:12px 16px;font-size:14px;font-family:inherit;
+    resize:none;outline:none;background:rgba(255,255,255,.6);
+    line-height:1.5;
+  }
+  .chat-input:focus{border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+  .send-btn{
+    width:42px;height:42px;border-radius:50%;border:none;
+    background:#1E1E1E;color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:all .2s;
+  }
+  .send-btn:hover{background:#3B82F6;transform:scale(1.05)}
+
+  /* Side panel */
+  .side-panel{
+    width:260px;background:rgba(255,255,255,.5);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-left:1px solid rgba(0,0,0,.06);padding:16px;
+    display:flex;flex-direction:column;gap:14px;
+    overflow-y:auto;
+  }
+  .panel-card{
+    background:rgba(255,255,255,.6);border-radius:12px;
+    border:1px solid rgba(0,0,0,.04);padding:12px;
+  }
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(max-width:768px){.side-panel{display:none}.msg{max-width:90%}}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- CHAT AREA -->
+<div class="chat-area">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center"><span class="text-sm font-bold text-white">张</span></div>
+      <div>
+        <p class="text-sm font-semibold text-[#1E1E1E]">张建国（NPC-张）</p>
+        <p class="text-[10px] text-[#6B7280]">42岁 · 入职8年 · 近半年绩效下滑</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="state-badge bg-amber-100 text-amber-800" id="stateBadge">防御</span>
+      <div class="morale-bar">
+        <span class="text-[#6B7280]">士气</span>
+        <div style="width:80px;height:6px;background:#E5E7EB;border-radius:3px;">
+          <div class="morale-fill" id="moraleFill" style="width:65%;background:#F59E0B;"></div>
+        </div>
+        <span id="moraleNum" style="font-variant-numeric:tabular-nums">65</span>
+      </div>
+      <span class="text-[10px] text-[#9CA3AF]" id="roundCounter">第 1/12 轮</span>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="msg-list" id="msgList">
+
+    <!-- System: scene start -->
+    <div class="sys-note">📍 下午4:00 · 3号会议室 · 窗外小雨</div>
+
+    <!-- NPC opening -->
+    <div class="msg npc">
+      <div class="msg-bubble">
+        NPC-张推门进来。他没带业绩报告——上次带了。坐下后看了你一眼，表情不是愤怒，是一种平静的失望。<br><br>
+        "经理，这次又谈什么？上次该说的都说了。你让我改，我也试了——前两周的数据你看到了吧？第三周掉回去，不是我不努力，是实在不知道方向对不对。你说'好，那就这样'，然后三周没找过我。<strong>我以为你已经放弃我了。</strong>"
+      </div>
+    </div>
+
+    <!-- User: sample good response -->
+    <div class="msg user">
+      <div class="msg-bubble">
+        NPC-张，你说得对。上次我没做好——不是你没做好，是我没做好。你说"那就这样"之后，我三周没找你，这是我的问题。今天我想换一种方式聊。
+      </div>
+    </div>
+
+    <!-- NPC response (authentic) -->
+    <div class="msg npc">
+      <div class="msg-bubble">
+        NPC-张抬头看了你一眼，沉默了几秒。<br><br>
+        "换一种方式？上次你也说'我们好好谈谈'。经理，我不是不信你——我是不知道这次和上次能有什么不一样。你说说看，怎么换？"
+      </div>
+      <div class="msg-meta">状态：防御→松动 | NPC-张开始试探</div>
+    </div>
+
+    <!-- Awareness prompt -->
+    <div class="awareness">
+      <strong>【觉察提示】</strong> 你直接承认了上次的缺失，没有回避。NPC-张的反应从"我以为你放弃了"变成了"你说说看怎么换"——他从失望转向了试探。<br>
+      <strong>下一步关键：</strong>接下来你说的话，必须是他<em>看得见</em>的东西。如果又回到"我们一起努力"的空话，他会立刻关闭。
+    </div>
+
+    <!-- User: concrete action -->
+    <div class="msg user">
+      <div class="msg-bubble">
+        （拿出手机）下周三下午3点，我们把时间先锁上。不是"回头再说"——现在就把日历定了。主题就写"NPC-张进度对焦会"，每周三下午3点到3点20，先定到季度末。你看行不行？
+      </div>
+    </div>
+
+    <!-- NPC response -->
+    <div class="msg npc">
+      <div class="msg-bubble">
+        NPC-张愣了一下，然后嘴角动了一下——三周来第一次。<br><br>
+        "你认真的？上次你也在日历上画了个圈，那天你在总部开会。"<br><br>
+        他顿了顿。<br><br>
+        "行。但这个会，我想带点东西来。上次你说我经验丰富能找到办法——其实我试了三个方向，都不知道对不对。周三我想跟你一个一个过，你告诉我对还是不对。行吗？"
+      </div>
+      <div class="msg-meta">状态：松动→参与 | NPC-张开始提具体需求</div>
+    </div>
+
+    <!-- System note -->
+    <div class="sys-note">💡 <strong>对话提示：</strong>NPC-张需要的不是"加油"或"我相信你"。他需要有人告诉他——"这个方向对不对"。</div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <textarea class="chat-input" rows="2" placeholder="输入你的回应..." id="chatInput"></textarea>
+    <button class="send-btn" onclick="sendMsg()"><i data-lucide="send" class="w-4 h-4"></i></button>
+  </div>
+</div>
+
+<!-- SIDE PANEL -->
+<div class="side-panel">
+  <div class="panel-card">
+    <p class="text-xs font-semibold text-[#1E1E1E] mb-2">📋 对话目标</p>
+    <div class="space-y-1.5 text-[11px] text-[#6B7280] leading-relaxed">
+      <p>1. 行动修复信任（不靠语言）</p>
+      <p>2. 找到第三周退回的根因</p>
+      <p>3. 形成双向承诺</p>
+    </div>
+  </div>
+
+  <div class="panel-card">
+    <p class="text-xs font-semibold text-[#1E1E1E] mb-2">⚠️ NPC-张的状态</p>
+    <div class="space-y-1.5 text-[11px] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+        <span class="text-[#6B7280]">S1 防御：不信任、试探</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+        <span class="text-[#6B7280]">S2 松动：愿意聊但要证据</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+        <span class="text-[#6B7280]">S3 参与：主动提方案</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <span class="text-[#6B7280]">S4 承诺：愿意定计划</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-card">
+    <p class="text-xs font-semibold text-[#1E1E1E] mb-2">🚫 对话红线</p>
+    <div class="space-y-1 text-[11px] text-[#6B7280] leading-relaxed">
+      <p>· 不暗示辞退或威胁</p>
+      <p>· 不横向比较（"你看XX"）</p>
+      <p>· 不空洞鼓励（"加油""相信你"）</p>
+      <p>· 不循环话术（NPC-张会识破）</p>
+    </div>
+  </div>
+
+  <div class="panel-card">
+    <p class="text-xs font-semibold text-[#1E1E1E] mb-2">🕐 时间</p>
+    <p class="text-[11px] text-[#6B7280]">还剩约 4 轮。需从诊断转向方案。</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+lucide.createIcons();
+function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const msg=input.value.trim();
+  if(!msg)return;
+  const list=document.getElementById('msgList');
+  const el=document.createElement('div');
+  el.className='msg user';
+  el.innerHTML=`<div class="msg-bubble">${msg}</div>`;
+  list.appendChild(el);
+  input.value='';
+  list.scrollTop=list.scrollHeight;
+  // Simulate NPC response delay
+  setTimeout(()=>{
+    const reply=document.createElement('div');
+    reply.className='msg npc';
+    reply.innerHTML='<div class="msg-bubble">NPC-张看着你，等你说下去。</div>';
+    list.appendChild(reply);
+    list.scrollTop=list.scrollHeight;
+  },1500);
+}
+document.getElementById('chatInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+});
+</script>
+</body>
+</html>

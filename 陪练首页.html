@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AI 管理陪练</title>
+<style>
+  :root {
+    --accent: #34c759;
+    --text: #3c3c3c;
+    --text2: #6e6e73;
+    --white: #fff;
+    --r-card: 32px;
+    --r-btn: 999px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;background:var(--white);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;line-height:1.5}
+
+  /* NAV — transparent on white, subtle */
+  .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .nav-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;height:56px;padding:0 28px;gap:8px}
+  .nav-logo{font-size:18px;font-weight:700;color:var(--text);text-decoration:none;margin-right:28px;display:flex;align-items:center;gap:8px}
+  .nav-logo::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .nav-links{display:flex;gap:4px}
+  .nav-links a{font-size:14px;color:var(--text2);text-decoration:none;padding:6px 14px;border-radius:8px;transition:all .15s}
+  .nav-links a:hover{color:var(--text);background:rgba(0,0,0,.03)}
+  .nav-links a.active{color:var(--accent);font-weight:600;background:rgba(52,199,89,.05)}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text2)}
+  .nav-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#34c759,#2d8a4e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+
+  /* PAGE */
+  .page{max-width:1160px;margin:0 auto;padding:0 28px 80px}
+
+  /* HERO BANNER — matches Qiwoo carousel card style */
+  .hero{background:linear-gradient(160deg,#2d8a4e,#34c759);border-radius:var(--r-card);padding:70px 66px;margin-top:28px;display:flex;align-items:center;gap:60px;overflow:hidden;position:relative;color:#fff}
+  .hero-text{flex:1;position:relative;z-index:2}
+  .hero-text h1{font-size:36px;font-weight:700;letter-spacing:-.02em;margin-bottom:12px;line-height:1.15;color:#fff}
+  .hero-text p{font-size:15px;opacity:.85;line-height:1.7;max-width:460px}
+  .hero-cta{display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:14px 28px;border-radius:var(--r-btn);background:rgba(255,255,255,.18);color:#fff;font-size:15px;font-weight:600;text-decoration:none;transition:all .2s}
+  .hero-cta:hover{background:rgba(255,255,255,.28)}
+  .hero-visual{flex-shrink:0;position:relative;z-index:2;display:flex;gap:-12px}
+  .hero-visual .npc{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,.3)}
+  .hero-visual .npc:first-child{background:rgba(255,255,255,.15)}
+  .hero-visual .npc:last-child{background:rgba(255,255,255,.1);margin-left:-16px}
+  .hero-bg{position:absolute;right:-60px;top:-60px;width:240px;height:240px;opacity:.06;background:radial-gradient(circle,#fff 1px,transparent 1px);background-size:20px 20px;z-index:1}
+
+  /* SECTION */
+  .sec{margin-top:64px}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px}
+  .sec-head h2{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+  .sec-head .more{font-size:15px;color:var(--accent);text-decoration:none;font-weight:500}
+  .sec-head .more:hover{opacity:.8}
+
+  /* CARDS — Qiwoo style: white, no border, large radius, no shadow */
+  .card-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .card{background:var(--white);border-radius:var(--r-card);overflow:hidden;cursor:pointer;text-decoration:none;color:inherit;display:block;transition:all .25s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 0 32px rgba(0,0,0,.08)}
+  .card .c-media{height:130px;display:flex;align-items:center;justify-content:center;position:relative}
+  .card .c-media.m1{background:linear-gradient(135deg,#0f3460,#1a1a2e)}
+  .card .c-media.m2{background:linear-gradient(135deg,#1e3a5f,#1b2838)}
+  .card .c-media.m3{background:linear-gradient(135deg,#3d3d3d,#2d2d2d)}
+  .card .c-media.m4{background:linear-gradient(135deg,#3d2a5e,#1a1a2e)}
+  .card .npc-circle{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff}
+  .card .npc-circle.c1{background:linear-gradient(135deg,#f59e0b,#d97706)}
+  .card .npc-circle.c2{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+  .card .npc-circle.c3{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+  .card .npc-circle.c4{background:linear-gradient(135deg,#10b981,#059669)}
+  .card .c-rec{position:absolute;top:14px;left:14px;font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--r-btn);background:#34c759;color:#fff}
+  .card .c-badge{position:absolute;top:14px;right:14px;font-size:11px;color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);padding:4px 10px;border-radius:var(--r-btn)}
+  .card .c-body{padding:22px 24px 26px}
+  .card .c-body .c-title{font-size:16px;font-weight:600;margin-bottom:4px;letter-spacing:-.01em}
+  .card .c-body .c-npc{font-size:12px;color:var(--text2);margin-bottom:10px}
+  .card .c-body .c-desc{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .c-body .c-action{font-size:13px;font-weight:600;color:var(--accent)}
+  .card .c-body .c-action.pv{color:#aeaeb2}
+
+  /* SERVICE CARDS */
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .svc{background:var(--white);border-radius:24px;padding:26px 28px;cursor:pointer;text-decoration:none;color:inherit;display:flex;align-items:flex-start;gap:16px;transition:all .25s}
+  .svc:hover{transform:translateY(-3px);box-shadow:0 0 32px rgba(0,0,0,.08)}
+  .svc .svc-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .svc .svc-icon.i1{background:rgba(52,199,89,.06)}.svc .svc-icon.i2{background:rgba(52,199,89,.06)}.svc .svc-icon.i3{background:rgba(175,82,222,.06)}.svc .svc-icon.i4{background:rgba(255,149,0,.06)}.svc .svc-icon.i5{background:rgba(52,199,89,.04)}.svc .svc-icon.i6{background:rgba(255,59,48,.04)}
+  .svc h3{font-size:16px;font-weight:600;margin-bottom:4px}
+  .svc p{font-size:13px;color:var(--text2);line-height:1.5}
+
+  .footer{margin-top:72px;padding-top:24px;border-top:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;font-size:13px;color:var(--text2)}
+  .footer a{color:var(--accent);text-decoration:none}
+
+  /* MODAL */
+  .mo{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+  .mo-box{background:#fff;border-radius:24px;padding:32px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.15);max-height:80vh;overflow-y:auto}
+  .mo-box h2{font-size:20px;font-weight:700;margin-bottom:6px}
+  .mo-box .mo-npc{font-size:13px;color:var(--text2);margin-bottom:16px}
+  .mo-box .mo-story{font-size:14px;line-height:1.8;margin-bottom:16px}
+  .mo-box .mo-goal{background:rgba(255,149,0,.05);border-left:3px solid #ff9500;padding:12px 14px;font-size:13px;line-height:1.7;margin-bottom:16px;border-radius:0 8px 8px 0}
+  .mo-box .mo-close{display:block;width:100%;padding:14px;border:none;border-radius:var(--r-btn);background:var(--accent);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
+
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.9);color:#fff;padding:10px 20px;border-radius:var(--r-btn);font-size:13px;z-index:400;opacity:0;transition:opacity .3s;pointer-events:none}
+  #toast.show{opacity:1}
+
+  @media(max-width:1000px){.card-grid{grid-template-columns:repeat(2,1fr)}.svc-grid{grid-template-columns:repeat(2,1fr)}.hero{flex-direction:column;padding:48px 32px;text-align:center}.hero-text p{margin:0 auto}}
+  @media(max-width:640px){.nav-inner{padding:0 12px}.nav-logo{font-size:15px;margin-right:8px}.nav-links a{font-size:12px;padding:5px 8px}.card-grid{grid-template-columns:1fr}.svc-grid{grid-template-columns:1fr}.hero{padding:36px 20px}.hero-text h1{font-size:26px}.sec{margin-top:48px}.sec-head h2{font-size:22px}.page{padding:0 16px 64px}}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a href="#" class="nav-logo">AI 管理陪练</a>
+  <div class="nav-links">
+    <a href="陪练首页.html" class="active">首页</a>
+    <a href="preview_MTP陪练专区.html">全部场景</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-icon gen" href="#" style="font-size:12px;color:var(--accent);text-decoration:none;padding:6px 12px;border-radius:8px;font-weight:500">🤖 智能生成</a>
+    <a class="nav-icon" href="练习记录.html" style="font-size:12px;color:var(--text2);text-decoration:none;padding:6px 12px;border-radius:8px">📋 我的记录</a>
+    <span id="userName" style="font-size:13px;color:var(--text2)">管理者</span>
+    <span class="nav-av" id="userAvatar">管</span>
+  </div>
+</div></nav>
+
+<div class="page">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text">
+    <h1>和真实的管理情境对话</h1>
+    <p>每个场景 15-20 分钟。面对的不是考题——是一个和你一样复杂的真人。在对话中暴露你的管理惯性，看到你没看到的自己。</p>
+    <a href="#scenarios" class="hero-cta">开始练习</a>
+  </div>
+  <div class="hero-visual">
+    <span class="npc">周</span>
+    <span class="npc">林</span>
+  </div>
+  <div class="hero-bg"></div>
+</div>
+
+<!-- SCENARIOS -->
+<div class="sec" id="scenarios">
+  <div class="sec-head">
+    <h2>场景练习</h2>
+    <a href="preview_MTP陪练专区.html" class="more">全部 12 个场景</a>
+  </div>
+  <div class="card-grid">
+    <a class="card" href="scene_TG001_准备页.html">
+      <div class="c-media m1"><span class="c-rec">推荐</span><span class="npc-circle c1">周</span><span class="c-badge">15分钟</span></div>
+      <div class="c-body"><div class="c-title">首开倒计时——空降者的20天</div><div class="c-npc">NPC-周 · 最资深的销售，司龄5年</div><div class="c-desc">被紧急派往新项目支援。早会上没人说话。NPC-周在不动声色地看你。</div><span class="c-action">开始练习</span></div>
+    </a>
+    <a class="card" href="scene_PR2_沉浸式准备页_v2.html">
+      <div class="c-media m2"><span class="npc-circle c2">林</span><span class="c-badge">20分钟</span></div>
+      <div class="c-body"><div class="c-title">半年度绩效面谈——她不知道今天是C</div><div class="c-npc">管理者B · 入职2年，努力但方向偏差</div><div class="c-desc">她笑着推开会议室的门。昨天刚交了一份提前完成的报告。</div><span class="c-action">开始练习</span></div>
+    </a>
+    <div class="card" onclick="openPreview('TG-002')">
+      <div class="c-media m3"><span class="npc-circle c3">张</span><span class="c-badge">20分钟</span></div>
+      <div class="c-body"><div class="c-title">大户型攻坚——能力在，意愿呢？</div><div class="c-npc">NPC-张 · 三个盘的销冠，但这次不一样</div><div class="c-desc">他第一次说"这个户型我也没把握"。不是能力问题。</div><span class="c-action pv">预览场景</span></div>
+    </div>
+    <div class="card" onclick="openPreview('TG-003')">
+      <div class="c-media m4"><span class="npc-circle c4">李</span><span class="c-badge">25分钟</span></div>
+      <div class="c-body"><div class="c-title">线索断了——数渠团队的重建</div><div class="c-npc">李经理 · 数渠负责人，8→4人</div><div class="c-desc">线上获客成本翻倍。留下来的人在等一个信号。</div><span class="c-action pv">预览场景</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<div class="sec">
+  <div class="sec-head"><h2>更多服务</h2></div>
+  <div class="svc-grid">
+    <a class="svc" href="练习记录.html"><span class="svc-icon i1">📋</span><div><h3>我的练习记录</h3><p>查看每次练习的得分、陷阱触发和进步对比</p></div></a>
+    <div class="svc" onclick="showToast('智能生成将在低代码平台 /scenario/generate 上线')"><span class="svc-icon i3">🤖</span><div><h3>智能生成场景</h3><p>选择 D 向量参数，AI 自动生成专属场景卡</p></div></div>
+    <div class="svc" onclick="showToast('课程中心将连接至学习平台')"><span class="svc-icon i5">🎓</span><div><h3>MTP 课程中心</h3><p>练习中发现薄弱知识点，自动推荐对应课程</p></div></div>
+  </div>
+</div>
+
+<div class="footer"><span>AI 管理陪练</span></div>
+</div>
+
+<div id="toast"></div>
+<div id="modalContainer"></div>
+
+<script>
+(function(){
+  var n='管理者',id='';
+  var p=new URLSearchParams(window.location.search);
+  if(p.get('userName')) n=decodeURIComponent(p.get('userName'));
+  if(p.get('userId')) id=p.get('userId');
+  if(!id){try{var s=localStorage.getItem('mdp_current_user');if(s){var u=JSON.parse(s);n=u.name||n;id=u.id||'';}}catch(e){}}
+  if(!id&&window.__MIAODA_USER__){n=window.__MIAODA_USER__.name||n;id=window.__MIAODA_USER__.id||'';}
+  document.getElementById('userAvatar').textContent=(n||'管').charAt(0);
+  document.getElementById('userName').textContent=n||'管理者';
+  if(id){try{localStorage.setItem('mdp_current_user',JSON.stringify({id:id,name:n}));}catch(e){}}
+})();
+
+function openPreview(id){
+  var d={
+    'TG-002':{title:'大户型攻坚——能力在，意愿呢？',npc:'NPC · NPC-张 · 42岁 · 三个盘的销冠',story:'大户型去化陷入停滞。NPC-张的能力没人怀疑——他对户型的理解、对客户心理的把握，团队里谁都比不上。但这次不一样。这是他第一次说"这个户型我也没把握"。不是能力不够——是他努力了三次，每一次都没有回响。',goal:'你需要在一对一面谈中：既承认他过去的贡献，又让他看到这次有不一样的支撑。'},
+    'TG-003':{title:'线索断了——数渠团队的重建',npc:'NPC · 李经理 · 数字渠道负责人',story:'线上获客成本从120元/组飙升到280元/组。线索转化率从3.2%跌到1.1%。总部下死命令：两个月内拉回2.5%，否则团队并入销售部。留下的人每天都在刷招聘网站。',goal:'你需要和跨部门的李经理协作——但他不是你下属。你们共享线索但考核指标不同。'}
+  };
+  var p=d[id];if(!p)return;
+  document.getElementById('modalContainer').innerHTML='<div class="mo" onclick="if(event.target===this)closeModal()"><div class="mo-box"><h2>'+p.title+'</h2><p class="mo-npc">'+p.npc+'</p><div class="mo-story">'+p.story+'</div><div class="mo-goal"><strong>🎯 练习目标</strong><br>'+p.goal+'</div><p style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:10px">对话练习即将上线</p><button class="mo-close" onclick="closeModal()">关闭</button></div></div>';
+}
+function closeModal(){document.getElementById('modalContainer').innerHTML='';}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+</script>
+
+</body>
+</html>

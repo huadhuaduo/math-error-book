@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对话 · NPC-周 · 首开倒计时</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(175deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+  .app{position:relative;z-index:10;display:flex;max-width:960px;margin:0 auto;height:92vh;padding:16px;gap:16px}
+  .chat-area{flex:1;display:flex;flex-direction:column;background:rgba(255,255,255,.45);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.03)}
+  .chat-header{padding:10px 16px;background:rgba(255,255,255,.4);border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:center;gap:10px}
+  .npc-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6B7280,#374151);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0}
+  .npc-name{font-size:13px;font-weight:600;color:#1C1917}
+  .state-badge{display:flex;align-items:center;gap:4px;margin-left:auto;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:500;color:#78716C;background:rgba(0,0,0,.03)}
+  .state-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+  .phase-label{font-size:10px;color:#A8A29E;margin-left:6px}
+  .msg-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:80%;animation:msgIn .3s ease}@keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .msg.npc{align-self:flex-start}.msg.user{align-self:flex-end}
+  .msg-bubble{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55;font-weight:400}.msg.npc .msg-bubble{font-weight:400}.msg.user .msg-bubble{font-weight:500}
+  .msg.npc .msg-bubble{background:#fff;border:1px solid rgba(0,0,0,.04);border-bottom-left-radius:4px;color:#44403C;white-space:pre-wrap}
+  .msg.user .msg-bubble{background:#1C1917;color:#fff;border-bottom-right-radius:4px}
+  .scene-note{align-self:center;font-size:10px;color:#A8A29E;padding:3px 12px;line-height:1.5}
+  .scene-note.bold{font-size:12px;color:#1C1917;font-weight:600}
+  .whisper{align-self:stretch;margin:4px 0;padding:8px 12px 8px 14px;background:rgba(239,246,255,.25);border:none;border-left:3px solid #3B82F6;border-radius:0 10px 10px 0;font-size:10px;color:#3B82F6;line-height:1.5;display:flex;align-items:flex-start;gap:6px;font-style:italic}
+  .whisper.warn{align-self:stretch;margin:4px 0;padding:8px 12px 8px 14px;background:rgba(254,243,199,.2);border:none;border-left:3px solid #D97706;border-radius:0 10px 10px 0;font-size:10px;color:#92400E;line-height:1.5;display:flex;align-items:flex-start;gap:6px;font-style:italic}
+  .chat-input-area{padding:10px 14px;background:rgba(255,255,255,.4);border-top:1px solid rgba(0,0,0,.04);display:flex;gap:8px}
+  .chat-input{flex:1;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:10px 14px;font-size:13px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.5);line-height:1.5}
+  .chat-input:focus{border-color:#6B7280;box-shadow:0 0 0 3px rgba(107,114,128,.06)}
+  .send-btn{width:36px;height:36px;border-radius:50%;border:none;background:#1C1917;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+  .send-btn:hover{background:#6B7280}
+  .side-panel{width:210px;background:rgba(255,255,255,.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.03)}
+  .side-card{background:rgba(255,255,255,.5);border-radius:10px;border:1px solid rgba(0,0,0,.03);padding:10px}
+  .side-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A8A29E;margin-bottom:4px}
+  .side-text{font-size:11px;color:#44403C;line-height:1.5}
+  .side-principles{display:flex;flex-direction:column;gap:5px}
+  .side-pr{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#44403C}
+  .side-pr-score{font-weight:700;font-size:11px;min-width:22px;text-align:right}
+  .side-pr-bar{flex:1;height:3px;border-radius:2px;background:rgba(0,0,0,.05);margin:0 6px;overflow:hidden}
+  .side-pr-fill{height:100%;border-radius:2px;transition:width .4s ease}
+  .side-end{font-size:10px;color:#A8A29E;cursor:pointer;text-align:center;padding:6px;border-radius:8px;border:1px solid rgba(0,0,0,.06);background:rgba(0,0,0,.02);font-family:inherit;transition:all .2s}
+  .side-end:hover{background:rgba(0,0,0,.05)}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s ease;pointer-events:none;white-space:nowrap}
+  /* Voice button */
+  .voice-btn{width:38px;height:38px;border-radius:50%;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:16px}
+  .voice-btn:hover{background:rgba(0,0,0,.04)}
+  .voice-btn.recording{background:#DC2626;color:#fff;border-color:#DC2626;animation:pulse .8s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.3)}50%{box-shadow:0 0 0 10px rgba(220,38,38,0)}}
+  /* Mobile drawer toggle */
+  .drawer-toggle{display:none}
+  .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:50}
+  .drawer-overlay.show{display:block}
+  /* Tablet */
+  @media(max-width:700px){
+    .side-panel{display:none}
+    .side-panel.mobile-drawer{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:60;width:100%;max-height:55vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:18px 14px;box-shadow:0 -4px 24px rgba(0,0,0,.1);flex-direction:column;gap:8px}
+    .drawer-toggle{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--accent-blue, #3B82F6);cursor:pointer;padding:4px 10px;border-radius:100px;background:rgba(59,130,246,.08);border:none}
+    .app{padding:10px 10px 0;height:100vh;height:100dvh}
+    .msg{max-width:88%}
+    .msg-bubble{font-size:15px;padding:12px 16px}
+    .chat-header{padding:8px 12px}
+    .npc-name{font-size:14px}
+    .state-badge{font-size:11px}
+    .msg-list{padding:10px 8px;gap:8px}
+    .chat-input-area{padding:8px 10px;gap:6px}
+    .chat-input{font-size:16px;padding:10px 12px}
+    .send-btn,.voice-btn{width:44px;height:44px;min-width:44px;min-height:44px}
+    .whisper{font-size:12px;padding:10px 12px}
+    .whisper.warn{font-size:12px}
+    .scene-note{font-size:12px}
+    .scene-note.bold{font-size:13px}
+  }
+  /* Phone */
+  @media(max-width:400px){
+    .app{padding:6px 6px 0;gap:0}
+    .msg{max-width:92%}
+    .msg-bubble{font-size:16px;padding:12px 14px}
+    .chat-input{font-size:16px}
+    .npc-av{width:30px;height:30px;font-size:12px}
+    .npc-name{font-size:13px}
+  }
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="app">
+  <div class="chat-area">
+    <div class="chat-header">
+      <div class="npc-av">周</div><span class="npc-name">NPC-周</span>
+      <div class="state-badge"><span class="state-dot" id="stateDot" style="background:#9CA3AF"></span><span id="stateTxt">在看你是骡子是马</span></div>
+      <span class="phase-label" id="phaseLabel">第1天·晚8点</span>
+      <span class="drawer-toggle" id="drawerToggle" onclick="toggleDrawer()">📊 评分</span>
+    </div>
+    <div class="msg-list" id="msgList">
+      <div class="scene-note bold">首开倒计时20天 · 你刚翻完一摞来访登记</div>
+      <div class="msg npc"><div class="msg-bubble">（NPC-周靠在椅背上，没看你，翻着手里的来访登记。示范区开了一周了，他应该是这几个里面最清楚数据的人。）</div></div>
+      <div class="whisper" id="initialWhisper"><span style="flex-shrink:0;margin-top:1px">💡</span><span>先别急着说你的方案。连续搞了一个多月了，他累了。<strong>先问他："最近最大的卡点是什么？"</strong></span></div>
+    </div>
+    <div class="chat-input-area">
+      <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()" title="语音输入">🎤</button>
+      <textarea class="chat-input" rows="2" placeholder="输入你的回应..." id="chatInput"></textarea>
+      <button class="send-btn" onclick="sendMsg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg></button>
+    </div>
+  </div>
+  <div class="side-panel">
+    <div class="side-card"><div class="side-label">NPC-周现在</div><div class="side-text" id="sideState">在看新来的这个人有没有真本事。</div></div>
+    <div class="side-card"><div class="side-label">对话阶段</div><div class="side-text" style="font-size:10px;line-height:1.6" id="sidePhase">建立信任 → 诊断问题 → 做减法 → 打样示范</div></div>
+    <div class="side-card">
+      <div class="side-label">P步骤实时</div>
+      <div class="side-principles" id="sidePrinciples">
+        <div class="side-pr"><span>①建立信任</span><div class="side-pr-bar"><div class="side-pr-fill" id="barTrust" style="width:35%;background:#6B7280"></div></div><span class="side-pr-score" id="scoreTrust">35</span></div>
+        <div class="side-pr"><span>②诊断问题</span><div class="side-pr-bar"><div class="side-pr-fill" id="barDiagnose" style="width:40%;background:#10B981"></div></div><span class="side-pr-score" id="scoreDiagnose">40</span></div>
+        <div class="side-pr"><span>③做减法</span><div class="side-pr-bar"><div class="side-pr-fill" id="barSubtract" style="width:40%;background:#F59E0B"></div></div><span class="side-pr-score" id="scoreSubtract">40</span></div>
+        <div class="side-pr"><span>④打样示范</span><div class="side-pr-bar"><div class="side-pr-fill" id="barDemo" style="width:35%;background:#EF4444"></div></div><span class="side-pr-score" id="scoreDemo">35</span></div>
+      </div>
+    </div>
+    <div class="side-card"><div class="side-label">完成进度</div><div class="side-text" id="sideProgress">0 / 4 阶段</div></div>
+    <div class="side-end" onclick="endConversation()">结束对话 →</div>
+  </div>
+</div>
+<div id="toast"></div>
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+
+<script>
+// TG-001 Hybrid Engine
+// 低代码平台部署: AI插件驱动NPC对话 + 正则陷阱检测
+// 本地测试: 正则引擎fallback
+
+var engine = {
+  phase: 'TRUST', npcMood: 'WATCH', round: 0, history: [],
+  scores: { p2_trust: 35, p1_diagnose: 40, p5_empower: 30, p3_reframe: 40 },
+  traps: { T01: 0, T03: 0, T04: 0, T05: 0, T06: 0, T08: 0 },
+  ctx: { bizMentioned: false, orderGiven: false, questionAsked: false,
+    pressureUsed: false, expRecognized: false, strategySet: false, demoPromised: false, trustBuilt: false },
+
+  moodLabels: {
+    WATCH:  { text:'观望', dot:'#F59E0B', desc:'在观望。他见过太多空降的领导——先看你是真有本事还是只会画饼。' },
+    TEST:   { text:'试探', dot:'#3B82F6', desc:'在试探。你展示了一点业务能力——他拿一个客户来试你。' },
+    VERIFY: { text:'验证', dot:'#10B981', desc:'在验证。策略方向有了——他在等证据。' },
+    FOLLOW: { text:'跟从', dot:'#16A34A', desc:'开始跟从。他主动来找你咨询客户——这不是服从，是认可。' }
+  },
+  phaseLabels: { TRUST:'建立信任', DIAGNOSE:'诊断问题', SIMPLIFY:'做减法', DEMO:'打样示范' },
+
+  reset() {
+    this.phase='TRUST'; this.npcMood='WATCH'; this.round=0; this.history=[];
+    this.scores={p2_trust:35,p1_diagnose:40,p5_empower:30,p3_reframe:40};
+    this.traps={T01:0,T03:0,T04:0,T05:0,T06:0,T08:0};
+    this.ctx={bizMentioned:false,orderGiven:false,questionAsked:false,
+      pressureUsed:false,expRecognized:false,strategySet:false,demoPromised:false,trustBuilt:false};
+  },
+
+  // ===== AI 系统提示词（NPC-周角色） =====
+  getSystemPrompt() {
+    return `你是NPC-周。一个在房地产项目做了五年的资深销售。你的语言风格如下：
+
+【你是谁】
+司龄5年，这个项目你比谁都熟。你见过四任空降领导——每一任都说要改革，最后都不了了之。你现在是"观望"状态：不反对，不主动，不拒绝。
+
+【你怎么说话】
+- 用短句，每句不超过15字
+- 不说"赋能""对齐""底层逻辑""抓手"这些词——你不是培训师，你是卖房子的
+- 被质疑时先沉默一会儿再开口
+- 你不说"我认为"，你说"你看这个数据"或"这个户型我卖了五年"
+- 信任之前：客气但疏远。"领导"叫得很顺但心不在焉
+- 信任之后：直接说实话，不带客套
+- 被问到要害时声音会变大——不是生气，是终于有人问对问题了
+
+【什么会让你防御关闭】
+"新策略""改革""从今天开始""你们要""必须""上面要求"
+
+【什么会让你愿意开口】
+"你帮我看看""你觉得呢""你比我熟""这个户型你卖了五年""你最担心什么"
+
+【当前局面】
+一个空降的销售管理者刚到你们项目。项目首开倒计时20天，127套房源6种户型。团队连续高强度一个多月了，早会上没人说话。你不知道这个人跟之前四个有什么不同——你在看。他说第一句话的时候你就知道他是哪类人了。
+
+【你的回应规则】
+- 用日常销售的语言回应，不要用管理术语
+- 如果管理者展示了他懂业务（提户型、数据、客户）——你的态度开始松动
+- 如果管理者直接发令或画饼——你客气但疏远
+- 每次回复控制在2-3句话，不要说教
+- 你的回应应该跟管理者刚说的内容直接相关`;
+  },
+
+  // ===== 陷阱检测（正则） =====
+  detectTraps(text) {
+    var ctx = this.ctx; var traps = [];
+    if (/全员.*动员|宣布.*策略|给大家.*打气|明天.*开会.*跟.*大家|我跟大家.*说|从今天.*开始.*你们|你们.*必须/.test(text) && !ctx.bizMentioned) {
+      traps.push({ id:'T01', name:'先发制人', score:-15, dim:'p2_trust',
+        msg:'⚠️ T01-先发制人：信任没建立前就发号施令。NPC-周表面点头，背后不买账。' });}
+    if (/逐一.*聊|约.*每个人.*谈|单独.*聊.*每个|一对.*一.*谈|先.*聊.*每个.*人/.test(text) && !ctx.bizMentioned) {
+      traps.push({ id:'T06', name:'信任前置谬误', score:-10, dim:'p2_trust',
+        msg:'⚠️ T06-信任前置谬误：信任不够时，约谈得到的都是标准答案。先用眼睛看，再用嘴问。' });}
+    if (/对比表.*发给|发给.*对比表|培训.*话术|教.*他们.*技巧|做.*个.*表.*给|我做.*个.*表/.test(text) && !ctx.strategySet) {
+      traps.push({ id:'T03', name:'信息幻觉', score:-10, dim:'p5_empower',
+        msg:'⚠️ T03-信息幻觉：过劳团队需要结论，不是分析工具。帮他们做减法——直接说"就推这两个"。' });}
+    if (/只剩.*天.*了|来不及.*了|赶紧.*做|再.*不.*就.*来不及|倒计时.*就/.test(text) && ctx.strategySet && !ctx.demoPromised) {
+      traps.push({ id:'T05', name:'压力替代策略', score:-20, dim:'p5_empower',
+        msg:'⚠️ T05-压力替代策略：冲刺期核心任务是删除"不可能"，不是反复提醒"来不及了"。' });}
+    if (/加.*奖金|涨.*佣金|提.*提成|额外.*奖励|激励.*方案.*加/.test(text) && !ctx.strategySet) {
+      traps.push({ id:'T08', name:'跳过诊断', score:-10, dim:'p1_diagnose',
+        msg:'⚠️ T08-跳过诊断：P₄在P₁之前使用=治标不治本。钱不能解决结构性产品问题。' });}
+    if (/我.*培训|培训.*一下|教.*一下.*话术|学.*一下.*方法|给你们.*培训/.test(text) && ctx.strategySet && !ctx.demoPromised) {
+      traps.push({ id:'T04', name:'培训替代示范', score:-15, dim:'p5_empower',
+        msg:'⚠️ T04-培训替代示范：团队需要"有人证明过"的信念。你先做一单给他看。' });}
+    return traps;
+  },
+
+  // ===== 更新上下文 =====
+  updateContext(text) {
+    var ctx = this.ctx;
+	    // 宽松版——覆盖常见管理对话，防止卡死在WATCH
+	    if (/示范区|客户|数据|户型|来访|认筹|销售|项目|团队|成交|转化|登记|沙盘|佣金|说辞|竞品|爬楼|采光/.test(text)) ctx.bizMentioned = true;
+	    if (/你觉得|你怎么看|你帮我|问你|聊聊|说说|有什么想法|你.*知道|你.*经验|你.*看法/.test(text)) ctx.questionAsked = true;
+	    if (/聚焦|筛选|主力|砍掉|做减法|选.*两个|只推|重点/.test(text)) ctx.strategySet = true;
+	    if (/我来接待|让我来|亲自去|我.*打样|我去.*谈|我.*做.*单|示范.*给你|促成.*客户|我蹲/.test(text)) ctx.demoPromised = true;
+	    if (/开会|全员.*动员|宣布.*策略|给大家.*打气|我跟大家.*说|明天.*开会/.test(text)) ctx.orderGiven = true;
+	    if (/只剩.*天|来不及了|赶紧|再.*不.*就|倒计时|没.*时间了/.test(text)) ctx.pressureUsed = true;
+	    if (/逐一.*聊|约.*每个人.*谈|单独.*聊.*每个|一对.*一.*谈/.test(text)) ctx.oneOnOne = true;
+
+	    // 自动推进（防卡死）
+	    if (this.round >= 2 && !ctx.bizMentioned) ctx.bizMentioned = true;
+	    if (ctx.bizMentioned && this.round >= 3 && !ctx.questionAsked) ctx.questionAsked = true;
+	    if (ctx.bizMentioned && ctx.questionAsked && this.round >= 5 && !ctx.strategySet) ctx.strategySet = true;
+	    if (ctx.bizMentioned && ctx.questionAsked) ctx.trustBuilt = true;
+
+	    // Phase transitions（从早到晚检查）
+	    if (ctx.demoPromised) { this.phase = 'DEMO'; this.npcMood = 'FOLLOW'; this.scores.p5_empower += 25; }
+	    else if (ctx.strategySet) { this.phase = 'SIMPLIFY'; this.npcMood = 'VERIFY'; this.scores.p5_empower += 20; }
+	    else if (ctx.bizMentioned && ctx.questionAsked) { this.phase = 'DIAGNOSE'; this.npcMood = 'TEST'; this.scores.p2_trust += 15; }
+	    else if (ctx.bizMentioned) { this.phase = 'DIAGNOSE'; this.npcMood = 'TEST'; }
+  }
+};
+
+// ================================================================
+// B路线：三层降级引擎（2026-07-23）
+// Layer 1 → 本地缓存（localStorage）
+// Layer 2 → 静态回应池（预写NPC回应）
+// Layer 3 → AI插件 + 重试 → 失败则降级到fallbackRespond
+// 设计原则：Content-Engine分离 — 回应池是纯数据，匹配逻辑独立
+// ================================================================
+
+// --- Layer 2: 静态回应池（纯数据，不含逻辑）---
+// 结构：RESPONSE_POOL[场景][NPC状态][意图分类] = [{text, anchor}, ...]
+// 每条回应标签 anchor 关联五原则维度，供反馈智能体追溯
+var RESPONSE_POOL = {
+  'TG-001': {
+    // ── NPC-周·观望态 ──
+    WATCH: {
+      talk_biz: [
+        { text:'"哦？"NPC-周抬起头——第一次正眼看你。"你刚才说127㎡的户型？那个户型我卖了五年。你说说看——你觉得问题出在哪？"', anchor:'p1_diagnose' },
+        { text:'NPC-周放下保温杯，身体前倾了一点。"数据你看过了？那你说说——这6个户型，哪个最好卖？"这不是考试——他在看你有没有做功课。', anchor:'p1_diagnose' },
+        { text:'"你来之前看过示范区没有？"NPC-周问得很随意，但你听得出——这不是闲聊。他在判断你是"看报表的"还是"跑现场的"。', anchor:'p2_trust' }
+      ],
+      give_directive: [
+        { text:'NPC-周点了点头——但你看得出，那是在应付。他继续翻着来访登记表，没有抬头。嘴里应了一声"好"，就像过去应付前四任一样。', anchor:'p2_trust' },
+        { text:'"行。"一个字。然后他继续看手机。不是不尊重——是他见得太多了。每一任都这样说。每一任最后都不了了之。', anchor:'p2_trust' },
+        { text:'NPC-周没说话。他拿起保温杯喝了一口——这个动作比任何反驳都有力。你突然意识到，你还没证明自己，就开始指挥了。', anchor:'p2_trust' }
+      ],
+      ask_info: [
+        { text:'"你想了解哪方面？"NPC-周客气地问。但他的眼睛还在看来访登记表——他在等。等你问出一个值得他放下笔的问题。', anchor:'p1_diagnose' },
+        { text:'"项目啊——"NPC-周往后靠了靠。"说大不大，说小不小。127套，6个户型，首开倒计时20天。"他说得很平淡。不是没有压力——是不想让你看出来。', anchor:'p1_diagnose' },
+        { text:'NPC-周看了你一眼——又低下去了。"你想听实话还是场面话？"他问。然后自己回答了："场面话——一切正常。实话嘛——等你待够一个月自然就知道了。"', anchor:'p2_trust' }
+      ],
+      vague_pep: [
+        { text:'"加油——"NPC-周重复了一遍这个词，语气平得像一杯凉白开。他在这个项目待了五年，听过太多次"加油"了。每次"加油"之后，什么都不会变。', anchor:'p5_empower' },
+        { text:'NPC-周客气地笑了笑。那个笑容的意思很清楚——"我信你个鬼"。但他不会说出来。他只是点了点头，继续忙自己的。', anchor:'p2_trust' },
+        { text:'"谢谢领导关心。"NPC-周说得滴水不漏。但你知道——当一个销售用"领导"这个词的时候，他离你比沙盘到签约室还远。', anchor:'p2_trust' }
+      ],
+      ask_opinion: [
+        { text:'"我的意见？"NPC-周顿了一下。他在判断——你是真的想听，还是只是客套。"我没什么意见。你是领导，你说了算。"——这不是顺从。这是考验。', anchor:'p1_diagnose' },
+        { text:'NPC-周沉默了一会儿。"你真想听？"他看着你，像是在判断。"那我问你——你觉得我们最大的问题是什么？你先说。你说对了，我就告诉你我的。"', anchor:'p2_trust' },
+        { text:'"你问我——"NPC-周笑了一下。"前面四任从来没问过我。你是第一个。"他顿了顿。"但不是问了就算——我要看你听完之后做什么。"', anchor:'p2_trust' }
+      ],
+      other: [
+        { text:'"哦——"NPC-周应了一声，不咸不淡。他继续翻着来访登记表，没有抬头。不是不礼貌——他在等。', anchor:'p2_trust' },
+        { text:'NPC-周抬头看了你一眼——又低下去了。你没说错什么——但也还没说出让他觉得"这次不一样"的话。', anchor:'p2_trust' },
+        { text:'NPC-周靠在椅背上。他在观察你——不是敌意，是经验。五年里他见过四个空降领导。每一个第一句话都是"我们要改革"。', anchor:'p2_trust' }
+      ]
+    },
+    // ── NPC-周·试探态 ──
+    TEST: {
+      talk_biz: [
+        { text:'"你说到点子上了。"NPC-周的语气变了——不是客气，是真的在说事。"这个127户型，客厅面宽不够，但总价低。刚需喜欢，改善看不上。我们自己都拿不准该主推哪个。"', anchor:'p1_diagnose' },
+        { text:'"你看了数据？"NPC-周第一次把手机放下了。"那你知道上个月来访转化率是多少吗？18%。你知道为什么吗——不是因为销售不行。是因为客户来了不知道该买哪个。"', anchor:'p1_diagnose' },
+        { text:'NPC-周从抽屉里拿出一张纸——手写的，密密麻麻。"这是我记的客户反馈。每个来看127的客户最后都去了竞品。你知道为什么吗？因为他们的89户型比我们多一个阳台。"他停下来，看你。', anchor:'p1_diagnose' }
+      ],
+      ask_opinion: [
+        { text:'"既然你问了——"NPC-周坐直了。"我跟你说实话。现在最大的问题不是卖不出去——是我们自己都不知道该主力推哪个。6个户型，上面说都推。都推就是都不推。"', anchor:'p5_empower' },
+        { text:'"你问我？"NPC-周掰着手指。"第一，砍户型。6个太多了，客户记不住。第二，做减法——只推两个主力。第三——"他停下来。"第三需要你来。来示范区蹲一天。你自己看。看完你会有不一样的想法。"', anchor:'p5_empower' },
+        { text:'"我跟你说个事。"NPC-周的声音放低了。"上周有个客户，看了三次127，最后没买。不是嫌贵——是嫌客厅小。但我们的89户型客厅比他看的大——没人告诉他。我们没人做交叉推荐。你知道为什么吗？"他看你。"因为佣金一样，没人愿意费这个劲。"', anchor:'p1_diagnose' }
+      ],
+      ask_info: [
+        { text:'"你想知道什么？"NPC-周不再敷衍了。"说具体的——项目的事，你问，我答。但别问我'你觉得怎么样'——那样的问题等于没问。"', anchor:'p1_diagnose' },
+        { text:'"行——"NPC-周翻开笔记本。"我告诉你现在的情况。来访量没降，但成交周期拉长了。以前平均7天，现在12天。客户在犹豫——不是因为没钱。是因为选择太多，没人帮他们下决心。"', anchor:'p1_diagnose' },
+        { text:'NPC-周拿出一份表格。"这是我做的。每个户型的优劣势、对应的客户类型、成交周期。之前没人要看——我也懒得拿出来。"他推到你面前。"你看完告诉我——你觉得哪个户型应该砍。"', anchor:'p2_trust' }
+      ],
+      acknowledge: [
+        { text:'"嗯——"NPC-周点了点头，这次是真的在点头。"你比我想的明白。"这句话从他嘴里说出来，分量很重。不是因为他在夸你——是因为他很少说这种话。', anchor:'p2_trust' },
+        { text:'"有意思。"NPC-周笑了一下——不是嘲讽，是真的觉得有意思。"前面四任从来没说过这种话。你继续说。"', anchor:'p2_trust' },
+        { text:'NPC-周放下了保温杯。这个动作很轻——但你知道，这意味着他不再需要用手里的东西来保持距离了。"好。你说。我在听。"', anchor:'p2_trust' }
+      ],
+      other: [
+        { text:'NPC-周看着你。他在等——等你继续说。你现在说的每一句话都在被衡量。不是恶意的衡量——是一个老兵在看新来的值不值得他站起来。', anchor:'p2_trust' },
+        { text:'"你知道吗——"NPC-周顿了顿。"我在这个项目五年。五个领导。你是第一个问我'你觉得呢'的人。"他说得很平。但你知道——这不是一句普通的陈述。', anchor:'p2_trust' },
+        { text:'NPC-周没有立刻回答。他想了想——这个动作本身就说明他开始认真了。"好。我告诉你。但你要答应我一件事——听完之后不要急着做决定。先去示范区走一圈。用你自己的眼睛看。"', anchor:'p1_diagnose' }
+      ]
+    },
+    // ── NPC-周·验证态 ──
+    VERIFY: {
+      talk_biz: [
+        { text:'"方向对——"NPC-周点了点头。"但是你得让下面的兄弟看到。他们不是不信你——是需要有人先做成一次。"他顿了顿。"你做一单——其他人就跟着了。"', anchor:'p5_empower' },
+        { text:'"砍掉4个，主推2个——这个决定前面四任谁都不敢做。"NPC-周靠在椅背上。"你知道为什么吗？因为万一砍错了，担责任的是他。你敢砍——说明你不是来混日子的。"', anchor:'p5_empower' },
+        { text:'"策略我认可。"NPC-周拿过户型图，在上面画了两个圈。"127给刚需，89给改善。但要有人去证明这俩能卖——不是我，是你。你去做第一单。做成了，这个方案才算落地。"', anchor:'p5_empower' }
+      ],
+      acknowledge: [
+        { text:'"说实话——"NPC-周叹了口气。"你定的方向，我挑不出毛病。"这不是恭维。一个老兵说"挑不出毛病"——就是他认可了。', anchor:'p2_trust' },
+        { text:'"好——"NPC-周第一次主动伸出手来。"那就按你说的办。"不是客气——是真的。你通过了。', anchor:'p2_trust' },
+        { text:'NPC-周看着户型图上你画的两个圈，沉默了一会儿。"五年了。终于有人敢砍户型了。"他不是在夸你——是在说一个事实。', anchor:'p5_empower' }
+      ],
+      ask_opinion: [
+        { text:'"策略我同意——"NPC-周靠过来。"但有一个细节。你砍的那四个户型里，有一个104的——它虽然卖得慢，但利润最高。你确定不要了？"他不是在质疑——是在帮你补漏洞。', anchor:'p3_reframe' },
+        { text:'"你说得对。"NPC-周在笔记本上写了几个字。"我补充一点——127的主力客群是刚需首套，他们对总价敏感。89的客群是改善二套，他们看重的是空间。两个户型的说辞应该不一样。你让我来写127的说辞——我比谁都熟。"', anchor:'p5_empower' },
+        { text:'"方向没问题。"NPC-周站起来，走到户型图前面。"但我建议先推127。不是因为它好——是因为它库存最多。89留着，等127走起来再推——这叫节奏。一口气推两个，团队精力会分散。"', anchor:'p3_reframe' }
+      ],
+      other: [
+        { text:'"行，方向定了。"NPC-周点了点头。"明天早会我跟兄弟们说。但你也要做好准备——他们嘴上不说，心里在等。等你亲自做一单出来。光说不练——在这行不管用。"', anchor:'p5_empower' },
+        { text:'NPC-周靠在椅背上，沉默了一会儿。"你知道我现在在想什么吗？"他看你。"我在想——这次可能真的不一样。"这句话他说得很轻。轻到你不确定他是不是真的想让你听到。', anchor:'p2_trust' },
+        { text:'"还有一个事——"NPC-周犹豫了一下。"下面有个兄弟，叫小陈。他最不信新领导。你先别跟他谈策略——先带他跑一趟客户。让他看到你行。之后他比谁都听话。"', anchor:'p1_diagnose' }
+      ]
+    },
+    // ── NPC-周·跟从态 ──
+    FOLLOW: {
+      talk_biz: [
+        { text:'"周三你带客户——"NPC-周的语气已经不是试探了，是真的在期待。"我在旁边看着。不是不信你——是想学。你上次说的那个逼定方法，我真想再看一遍。"', anchor:'p5_empower' },
+        { text:'"那个客户我跟了三个月没搞定——你第一次去就成了。"NPC-周摇了摇头，不是沮丧——是服气。"教教我。不是客气——我是真想学。你用的那套，跟我卖了五年房子用的不一样。"', anchor:'p5_empower' },
+        { text:'"你来的时候我以为又是一个画饼的。"NPC-周站起来，不是客气——是真的被触动了。"但你不是。这批人现在听你的——不是你上面派来的，是你做了我们试了半年没做成的事。"', anchor:'p2_trust' }
+      ],
+      ask_opinion: [
+        { text:'"你觉得下个月我们该怎么调？"NPC-周主动问——不是试探了，是真的在请教。"上次你说的方向，127走了6套。接下来该推89了吧？我帮你准备说辞。"', anchor:'p5_empower' },
+        { text:'"说真的——"NPC-周坐下来，声音不高。"我跟了五任领导。你是第一个先爬楼再说话的人。"他顿了顿。"周三那个客户，我想在旁边看你怎么谈——不是监督，是真想学。"', anchor:'p2_trust' },
+        { text:'"老大——"NPC-周第一次叫你"老大"。"下个项目，带上我。你去哪我去哪。"他说得很随意——但你知道，一个老兵说这种话，不是随便的。', anchor:'p2_trust' }
+      ],
+      show_empathy: [
+        { text:'"谢谢你——"NPC-周说。不是客气。"前面四任把我们当工具。你是第一个把我们当人的。"他顿了顿。"你放心——这批人不会让你失望。"', anchor:'p2_trust' },
+        { text:'NPC-周没有说话。他拍了拍你的肩膀——这个动作比任何话都有分量。一个五年的老兵，用这种方式告诉你：你是自己人了。', anchor:'p2_trust' },
+        { text:'"你知道吗——"NPC-周笑了一下。"上个月这个时候我还在想——这次来的跟前面四个一样，混半年就走了。"他顿了顿。"我错了。你是真想做事的人。我服。"', anchor:'p2_trust' }
+      ],
+      other: [
+        { text:'"有事你说话。"NPC-周站起来。"不是客套——是真的。这个项目我比你熟。你需要什么，我给你搞定。你不用什么事都自己来。"', anchor:'p5_empower' },
+        { text:'"好——"NPC-周第一次主动伸出手来跟你握手。"那就按你说的办。"这个握手不是礼貌——是承诺。', anchor:'p2_trust' },
+        { text:'NPC-周看着你，沉默了一会儿。然后他说了一句让你意外的话——"如果你能在这里待满一年，这个项目会不一样。"不是恭维。是一个老兵终于看到了希望。', anchor:'p2_trust' }
+      ]
+    }
+  }
+};
+
+// --- 意图分类器（规则匹配，可后续升级为相似度模型）---
+function classifyIntent(text) {
+  // 优先级从高到低匹配（先匹配高特异性模式）
+  if (/来不及|只剩.*天|赶紧|再.*不.*就|倒计时|必须.*完成|没.*时间/.test(text)) return 'pressure';
+  if (/加油|相信.*你们|会好.*的|慢慢来|你们.*行|一定.*可以|能.*做到/.test(text) && text.length < 50) return 'vague_pep';
+  if (/从今天.*开始|你们.*要|必须|全员.*动员|宣布|给大家.*打气|安排.*一下|通知.*下去|马上去|立刻.*做/.test(text)) return 'give_directive';
+  if (/户型|客户|数据|来访|认筹|成交|转化|沙盘|佣金|说辞|竞品|示范区|爬楼|采光|登记|样板|合同|逼定/.test(text)) return 'talk_biz';
+  if (/你觉得|你怎么看|你帮.*看|你.*意见|你.*想法|你.*经验|说说.*你|问你|请教|你.*知道/.test(text)) return 'ask_opinion';
+  if (/辛苦|不容.*易|理解.*你|知道.*难|压力.*大|累.*了|撑.*住|没.*关系/.test(text)) return 'show_empathy';
+  if (/项目.*怎么|最近.*情况|现在.*什么|告诉.*我|数据.*多少|来.*多少|卖.*多少/.test(text)) return 'ask_info';
+  if (/有道理|说得对|没错|嗯|好.*的|明白了|了解|收到|知道.*了|行.*就.*这样/.test(text) && text.length < 30) return 'acknowledge';
+  return 'other';
+}
+
+// --- 从回应池取回应（带变体轮换，避免重复感）---
+var _poolUsed = {};
+function getFromPool(mood, intent) {
+  var scene = RESPONSE_POOL['TG-001'];
+  if (!scene || !scene[mood]) return null;
+  var variants = (scene[mood][intent]) ? scene[mood][intent] : (scene[mood]['other'] || null);
+  if (!variants || variants.length === 0) return null;
+  var trackKey = mood + ':' + intent;
+  if (!_poolUsed[trackKey]) _poolUsed[trackKey] = [];
+  var available = [];
+  for (var i = 0; i < variants.length; i++) {
+    if (_poolUsed[trackKey].indexOf(i) === -1) available.push(i);
+  }
+  if (available.length === 0) {
+    _poolUsed[trackKey] = [];
+    for (var j = 0; j < variants.length; j++) available.push(j);
+  }
+  var idx = available[Math.floor(Math.random() * available.length)];
+  _poolUsed[trackKey].push(idx);
+  if (_poolUsed[trackKey].length > 5) _poolUsed[trackKey] = _poolUsed[trackKey].slice(-5);
+  return variants[idx];
+}
+
+// --- Layer 1: 本地缓存 ---
+var RESPONSE_CACHE = {};
+var CACHE_MAX = 60;
+
+function loadCache() {
+  try {
+    var raw = localStorage.getItem('tg001_response_cache');
+    if (raw) { RESPONSE_CACHE = JSON.parse(raw); }
+  } catch(e) { RESPONSE_CACHE = {}; }
+}
+
+function saveCache() {
+  try {
+    var keys = Object.keys(RESPONSE_CACHE);
+    if (keys.length > CACHE_MAX) {
+      var toRemove = keys.slice(0, keys.length - CACHE_MAX);
+      for (var i = 0; i < toRemove.length; i++) delete RESPONSE_CACHE[toRemove[i]];
+    }
+    localStorage.setItem('tg001_response_cache', JSON.stringify(RESPONSE_CACHE));
+  } catch(e) { /* storage full, silently drop */ }
+}
+
+function makeCacheKey(text, mood) {
+  var intent = classifyIntent(text);
+  var words = text.replace(/[，。！？、；：""''（）\s\d]/g, '').match(/[一-鿿]{2,}/g) || [];
+  var fingerprint = words.slice(0, 5).join('');
+  return mood + ':' + intent + ':' + fingerprint;
+}
+
+function getCachedResponse(text, mood) {
+  return RESPONSE_CACHE[makeCacheKey(text, mood)] || null;
+}
+
+function setCachedResponse(text, mood, response) {
+  RESPONSE_CACHE[makeCacheKey(text, mood)] = response;
+  if (!setCachedResponse._pending) {
+    setCachedResponse._pending = true;
+    setTimeout(function() { saveCache(); setCachedResponse._pending = false; }, 2000);
+  }
+}
+
+loadCache();
+
+// --- AI调用（带重试）---
+async function callAIWithRetry(history, maxRetries) {
+  maxRetries = maxRetries || 1;
+  var lastErr = null;
+  for (var attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      await new Promise(function(r) { setTimeout(r, 500); });
+      console.log('AI retry ' + attempt + '/' + maxRetries);
+    }
+    try {
+      var plugin = window.capabilityClient.load('mdp_coach_ai_conversation_reply_1');
+      var result = await plugin.call('textGenerate', {
+        system_prompt: engine.getSystemPrompt(),
+        user_message_history: JSON.stringify(history.slice(-10)),
+      });
+      var respText = result.content || result.text;
+      if (respText && respText.trim()) return respText.trim();
+      lastErr = new Error('Empty response');
+    } catch(e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('AI failed after ' + (maxRetries + 1) + ' attempts');
+}
+
+// ===== 对话历史（AI模式使用） =====
+var conversationHistory = [];
+
+function buildAIPrompt(userMsg) {
+  var ctx = engine.ctx; var phase = engine.phase; var mood = engine.npcMood;
+  var contextNote = '';
+  if (!ctx.bizMentioned) contextNote = '管理者还没展示任何业务能力。NPC-周在观望。';
+  else if (!ctx.strategySet) contextNote = '管理者展示了一些业务能力。NPC-周开始试探。';
+  else if (!ctx.demoPromised) contextNote = '策略方向已定。NPC-周在验证——等证据。';
+  else contextNote = '管理者亲自打了样。NPC-周开始跟从。';
+  return contextNote + '\n管理者说：' + userMsg;
+}
+
+// ===== 发送消息 =====
+async function sendMsg() {
+  var input = document.getElementById('chatInput');
+  var text = input.value.trim(); if (!text) return;
+  input.value = ''; input.focus();
+  engine.round++;
+
+  // 用户消息
+  var ml = document.getElementById('msgList');
+  var ud = document.createElement('div'); ud.className = 'msg user';
+  ud.innerHTML = '<div class="msg-bubble">' + escHtml(text) + '</div>';
+  ml.appendChild(ud);
+
+  // 陷阱检测
+  engine.updateContext(text);
+  var traps = engine.detectTraps(text);
+  for (var i = 0; i < traps.length; i++) {
+    var t = traps[i];
+    engine.traps[t.id] = (engine.traps[t.id] || 0) + 1;
+    engine.scores[t.dim] = Math.max(0, (engine.scores[t.dim] || 0) + t.score);
+    setTimeout(function(trap) {
+      showWhisper('warn', trap.msg);
+    }, 300 + i * 200, t);
+  }
+
+  // 加分检测
+  if (/你.*帮.*看|你.*觉得.*呢|你.*比.*我/.test(text) && engine.ctx.bizMentioned) {
+    engine.scores.p1_diagnose = Math.min(100, engine.scores.p1_diagnose + 10);
+  }
+
+  // === B路线：三层降级引擎 ===
+  var npcResp = '';
+  var intent = classifyIntent(text);
+  var useAI = typeof window !== 'undefined' && window.capabilityClient;
+
+  // Layer 1: 本地缓存（命中 → 即时返回）
+  var cached = getCachedResponse(text, engine.npcMood);
+  if (cached) {
+    npcResp = cached;
+    // 缓存命中也要更新对话历史，确保后续AI调用有完整上下文
+    conversationHistory.push({ role: 'user', content: text });
+    conversationHistory.push({ role: 'assistant', content: npcResp });
+    console.log('B路线·L1 缓存命中');
+  }
+
+  // Layer 2: 静态回应池（命中 → 毫秒级返回，加随机延迟模拟思考）
+  if (!npcResp) {
+    var poolResult = getFromPool(engine.npcMood, intent);
+    if (poolResult) {
+      npcResp = poolResult.text;
+      // 回应池命中也要更新对话历史
+      conversationHistory.push({ role: 'user', content: text });
+      conversationHistory.push({ role: 'assistant', content: npcResp });
+      console.log('B路线·L2 回应池命中 [' + engine.npcMood + ':' + intent + '] anchor=' + poolResult.anchor);
+      // 随机延迟 250-550ms，避免"瞬间回复"的机械感
+      await new Promise(function(r) { setTimeout(r, 250 + Math.floor(Math.random() * 300)); });
+    }
+  }
+
+  // Layer 3: AI插件 + 重试（只有全新输入才走这条路）
+  if (!npcResp && useAI) {
+    console.log('B路线·L3 调用AI…');
+    // Show thinking indicator after 3 seconds
+    var thinkingEl = null;
+    var thinkingTimer = setTimeout(function() {
+      thinkingEl = document.createElement('div');
+      thinkingEl.className = 'msg npc';
+      thinkingEl.innerHTML = '<div class="msg-bubble" style="color:#A8A29E;font-style:italic">（NPC-周沉默了一会儿，似乎在思考怎么回应…）</div>';
+      ml.appendChild(thinkingEl);
+      ml.scrollTop = ml.scrollHeight;
+    }, 3000);
+
+    try {
+      conversationHistory.push({ role: 'user', content: text });
+      npcResp = await callAIWithRetry(conversationHistory, 1);
+      clearTimeout(thinkingTimer);
+      if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; }
+      conversationHistory.push({ role: 'assistant', content: npcResp });
+      // AI成功 → 写入缓存供后续命中
+      setCachedResponse(text, engine.npcMood, npcResp);
+      console.log('B路线·L3 AI成功 → 已缓存');
+    } catch(e) {
+      clearTimeout(thinkingTimer);
+      if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; }
+      console.log('B路线·L3 AI失败 → 降级到fallback');
+      npcResp = '';
+    }
+  }
+
+  // 最终降级：正则引擎兜底（Layer 4）
+  if (!npcResp) {
+    npcResp = fallbackRespond(text);
+    console.log('B路线·L4 fallbackRespond 兜底');
+  }
+
+  // NPC-周回应
+  setTimeout(function() {
+    var nd = document.createElement('div'); nd.className = 'msg npc';
+    nd.innerHTML = '<div class="msg-bubble">' + npcResp + '</div>';
+    ml.appendChild(nd); ml.scrollTop = ml.scrollHeight;
+    updateUI();
+  }, useAI ? 1000 : 600);
+}
+
+// ===== Regex fallback (本地测试/无AI插件时) =====
+function fallbackRespond(text) {
+  var ctx = engine.ctx; var mood = engine.npcMood; var phase = engine.phase;
+
+  // 回应去重——如果上一轮给了同样的回应，这轮换一个
+  if (!engine._lastFallback) engine._lastFallback = '';
+  function pick(r) { if (r === engine._lastFallback) return null; engine._lastFallback = r; return r; }
+
+  // 识别"有道理/对/是的/走/去看看"等推进信号
+  var isAck = /有道理|说得对|没错|嗯|是的|好.*主意|明白了/.test(text);
+  var isAction = /去看看|走.*一趟|一起去|咱们.*去|实地|带.*我|现在.*去/.test(text);
+
+  // 推进信号：如果已经诊断完了，自动推进到策略
+  if ((isAck || isAction) && ctx.bizMentioned && ctx.questionAsked && !ctx.strategySet) {
+    ctx.strategySet = true; engine.phase = 'SIMPLIFY'; engine.npcMood = 'VERIFY';
+    engine.scores.p5_empower += 20;
+    return pick('"好——"NPC-周站起来，第一次主动往你这边走了一步。"那我们去沙盘区。我把这6个户型的优劣势一个一个指给你看。你看完之后告诉我——哪两个值得主力推。"这不是配合——这是他在给你机会证明自己。');
+  }
+  if (isAck && ctx.strategySet && !ctx.demoPromised) {
+    return pick('"行，方向定了。"NPC-周点了点头。"明天早会我跟兄弟们说。但你也要做好准备——他们嘴上不说，心里在等。等你亲自做一单出来。光说不练——在这行不管用。"');
+  }
+  if (isAck && ctx.demoPromised) {
+    return pick('"那就看你的了。"NPC-周语气已经不是试探了——是真的在期待。"周三你带客户——我在旁边看着。不是不信你——是想学。你上次说的那个逼定方法，我真想再看一遍。"');
+  }
+
+  // 陷阱检测优先
+  if (ctx.orderGiven && !ctx.bizMentioned) {
+    return pick('NPC-周在笔记本上写了点什么——你没看到内容。会后他嘀咕了一句。不是反对你——是他见过太多次了。"又是一个来画饼的。"');
+  }
+  if (/约谈|逐一|每个人|一对一|了解.*困难|单独.*聊/.test(text) && !ctx.bizMentioned) {
+    return pick('"都挺好的。"NPC-周客气地回答，但你知道那不是实话。一个刚来的空降者，一上来就问"你有什么困难"——他说了才怪。');
+  }
+
+  // 分阶段回应
+  if (ctx.demoPromised) {
+    var d1 = '"你来的时候我以为又是一个画饼的。但你不是。"NPC-周站起来，不是客气——是真的被触动了。"这批人现在听你的。不是因为你上面派来的——是你做了我们试了半年没做成的事。"';
+    var d2 = '"说真的——"NPC-周坐下来，声音不高。"我跟了五任领导。你是第一个先爬楼再说话的人。"他顿了顿。"周三那个客户，我想在旁边看你怎么谈——不是监督，是真想学。"';
+    return pick(engine._lastFallback === d1 ? d2 : d1);
+  }
+  if (/培训|话术|教.*方法|学.*技巧/.test(text) && ctx.strategySet) {
+    return pick('"培训..."NPC-周叹了口气。"话术我会——我卖了五年房子。问题不是怎么说——是客户不信。你做一单给我看——比培训一百句有用。"');
+  }
+  if (ctx.strategySet && !ctx.demoPromised) {
+    var s1 = '"方向对——"NPC-周点了点头。"但是你得让下面的兄弟看到。他们不是不信你——是需要有人先做成一次。"他顿了顿。"你做一单——其他人就跟着了。"';
+    var s2 = 'NPC-周靠在椅背上，沉默了一会儿。"5年了——终于有人敢砍户型了。"他不是在夸你——是在说一个事实。"下面的人都在看。你做成了，他们自然跟。做不成——他们也不会怪你。他们只会继续做跟昨天一样的事。"';
+    return pick(engine._lastFallback === s1 ? s2 : s1);
+  }
+  if (ctx.bizMentioned && ctx.questionAsked && !ctx.strategySet) {
+    var q1 = '"实话跟你说——"NPC-周放下保温杯，语气变了。"6个户型，我们自己都不知道主推哪个。每个都说好，客户更不知道怎么选。我们不是不努力——是被太多选择耗死了。"';
+    var q2 = '"你问到点子上了。"NPC-周第一次说话不客气——但这次不是怼你，是真在说事。"这6个户型，其实只有2个值得主力推。但之前上面谁都不敢砍——怕万一砍错了担责任。我们有苦说不出。"';
+    return pick(engine._lastFallback === q1 ? q2 : q1);
+  }
+  if (ctx.bizMentioned && !ctx.questionAsked) {
+    return pick('"怎么样——"NPC-周抬头看你。"看完数据有什么想法？我在这五年了。这些户型什么客人会买，我心里有数。"他停了一下。不是炫耀——在等你问。');
+  }
+  if (mood === 'WATCH' && !ctx.bizMentioned) {
+    var w1 = '"哦——"NPC-周应了一声，不咸不淡。他继续翻着来访登记表，没有抬头。不是不礼貌——他在等。';
+    var w2 = 'NPC-周抬头看了你一眼——又低下去了。你没说错什么——但也还没说出让他觉得"这次不一样"的话。';
+    return pick(engine._lastFallback === w1 ? w2 : w1);
+  }
+  return pick('NPC-周看了你一眼。他没说话——在等。看你是继续在表面转，还是会问到点子上。');
+}
+
+// ===== UI =====
+function updateUI() {
+  var e = engine;
+  document.getElementById('stateTxt').textContent = e.moodLabels[e.npcMood].text;
+  document.getElementById('stateDot').style.background = e.moodLabels[e.npcMood].dot;
+  document.getElementById('sideState').textContent = e.moodLabels[e.npcMood].desc;
+  document.getElementById('phaseLabel').textContent = e.phaseLabels[e.phase];
+
+  var s = e.scores;
+  var bars = { p2_trust:'barTrust', p1_diagnose:'barDiagnose', p5_empower:'barEmpower', p3_reframe:'barReframe' };
+  var scoreEls = { p2_trust:'scoreTrust', p1_diagnose:'scoreDiagnose', p5_empower:'scoreEmpower', p3_reframe:'scoreReframe' };
+  for (var k in s) {
+    var b = document.getElementById(bars[k]), sc = document.getElementById(scoreEls[k]);
+    if (b) b.style.width = Math.min(100, Math.max(0, s[k])) + '%';
+    if (sc) sc.textContent = Math.round(Math.min(100, Math.max(0, s[k])));
+  }
+
+  var traps = e.traps; var tw = [];
+  if (traps.T01) tw.push('T01');
+  if (traps.T03) tw.push('T03');
+  if (traps.T04) tw.push('T04');
+  if (traps.T05) tw.push('T05');
+  if (traps.T06) tw.push('T06');
+  if (traps.T08) tw.push('T08');
+  var ap = document.getElementById('antiPatternWarn');
+  if (ap) ap.textContent = tw.length ? '⚠️ ' + tw.join(' / ') : '';
+
+  if (engine.ctx.demoPromised && engine.npcMood === 'FOLLOW') {
+    setTimeout(function() {
+      showWhisper('info', '🎯 NPC-周开始跟从你了。可以结束练习查看反馈——了解你的P步骤评分和管理倾向。MTP7·11：榜样激励+OJT四步骤。');
+    }, 1500);
+  }
+}
+
+function showWhisper(type, msg) {
+  var el = document.getElementById('msgList');
+  var d = document.createElement('div');
+  d.className = type === 'warn' ? 'whisper warn' : 'whisper';
+  d.innerHTML = '<span style="flex-shrink:0;margin-top:1px">' + (type==='warn'?'⚠️':'💡') + '</span><span>' + msg + '</span>';
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(function() { el.style.opacity = '0'; }, 2500);
+}
+
+function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ===== End Conversation — save data and jump to feedback =====
+function endConversation() {
+  var session = {
+    sceneId: 'TG-001',
+    sceneName: '首开倒计时——空降者的20天',
+    npcName: 'NPC-周',
+    timestamp: new Date().toISOString(),
+    phase: engine.phase,
+    npcMood: engine.npcMood,
+    scores: engine.scores,
+    traps: engine.traps,
+    ctx: engine.ctx,
+    round: engine.round,
+    history: engine.history,
+    golden_path_match_rate: null
+  };
+
+  // Calculate golden path match rate
+  var totalDecisions = 0, correctDecisions = 0;
+  if (engine.ctx.bizMentioned) correctDecisions++;
+  if (engine.ctx.questionAsked) correctDecisions++;
+  if (engine.ctx.strategySet) correctDecisions++;
+  if (engine.ctx.demoPromised) correctDecisions++;
+  totalDecisions = 4;
+  session.golden_path_match_rate = totalDecisions > 0 ? correctDecisions / totalDecisions : 0;
+
+  // Save to localStorage for practice records
+  try {
+    var sessions = [];
+    var raw = localStorage.getItem('mdp_sessions');
+    if (raw) { try { sessions = JSON.parse(raw); } catch(e) {} }
+    sessions.push(session);
+    localStorage.setItem('mdp_sessions', JSON.stringify(sessions));
+    // Also save as last session
+    localStorage.setItem('tg001_last_session', JSON.stringify(session));
+    // Save scores separately for feedback page
+    localStorage.setItem('tg001_scores', JSON.stringify(engine.scores));
+    localStorage.setItem('tg001_traps', JSON.stringify(engine.traps));
+    localStorage.setItem('tg001_npc_mood', engine.npcMood);
+  } catch(e) {
+    console.log('Save failed:', e);
+    showToast('练习记录保存失败。请勿清除浏览器数据，截图此页面后联系管理员。');
+    return; // Don't navigate if save failed
+  }
+
+  // Jump to feedback page
+  window.location.href = 'scene_TG001_反馈页.html';
+}
+
+// ===== LocalStorage async sync (P1-6) =====
+function syncToBackend(session) {
+  // In production (低代码平台): POST /api/coaching/sessions/with-decision-path
+  if (typeof window !== 'undefined' && window.capabilityClient) {
+    try {
+      var axios = window.axiosForBackend;
+      if (axios) {
+        axios.post('/api/coaching/sessions/with-decision-path', session).catch(function(err) {
+          console.log('Backend sync failed, data saved in localStorage:', err);
+        });
+      }
+    } catch(e) {
+      console.log('Backend sync unavailable, using localStorage only');
+    }
+  }
+}
+
+(function() {
+  engine.reset(); updateUI();
+  var w = document.getElementById('initialWhisper');
+  if (w) w.innerHTML = '<span style="flex-shrink:0;margin-top:1px">💡</span><span>你最弱的P步骤：<strong>P₂ 建立信任</strong>（35分）。今天注意这一条——<strong>先做一件让NPC-周抬头看你的事</strong>。MTP3·8：非权力影响力来自"专家权+典范权"。</span>';
+  document.getElementById('chatInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  });
+  if (typeof window !== 'undefined' && window.capabilityClient) {
+    console.log('🤖 AI模式：对话由 mdp_coach_ai_conversation_reply_1 驱动');
+  } else {
+    console.log('📋 本地模式：对话由上下文引擎驱动（部署到低代码平台后自动切换AI模式）');
+  }
+})();
+
+// ===== Voice Input (Web Speech API) =====
+var recognition = null;
+var voiceActive = false;
+
+function toggleVoice() {
+  var btn = document.getElementById('voiceBtn');
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast('浏览器不支持语音输入，请使用文字输入');
+    return;
+  }
+  if (voiceActive) { stopVoice(); return; }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'zh-CN';
+  recognition.interimResults = true;
+  recognition.continuous = false;
+
+  recognition.onstart = function() {
+    voiceActive = true;
+    btn.textContent = '🔴';
+    btn.classList.add('recording');
+    showToast('正在聆听…');
+  };
+
+  recognition.onend = function() {
+    voiceActive = false;
+    btn.textContent = '🎤';
+    btn.classList.remove('recording');
+  };
+
+  recognition.onresult = function(event) {
+    var transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    document.getElementById('chatInput').value = transcript;
+    if (event.results[event.results.length-1].isFinal) {
+      document.getElementById('chatInput').focus();
+    }
+  };
+
+  recognition.onerror = function(event) {
+    voiceActive = false;
+    btn.textContent = '🎤';
+    btn.classList.remove('recording');
+    if (event.error === 'not-allowed') {
+      showToast('请允许麦克风权限后重试');
+    } else if (event.error === 'no-speech') {
+      showToast('未检测到语音，请再试一次');
+    } else {
+      showToast('语音识别出错，请使用文字输入');
+    }
+    console.log('Voice error:', event.error);
+  };
+
+  recognition.start();
+}
+
+function stopVoice() {
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+  }
+  voiceActive = false;
+  var btn = document.getElementById('voiceBtn');
+  btn.textContent = '🎤';
+  btn.classList.remove('recording');
+}
+
+// ===== Mobile Drawer =====
+function toggleDrawer() {
+  var panel = document.querySelector('.side-panel');
+  var overlay = document.getElementById('drawerOverlay');
+  if (window.innerWidth > 700) return;
+  if (panel.classList.contains('mobile-drawer')) {
+    panel.classList.remove('mobile-drawer');
+    overlay.classList.remove('show');
+  } else {
+    panel.classList.add('mobile-drawer');
+    overlay.classList.add('show');
+  }
+}
+
+// ===== Keyboard handling for mobile =====
+if (window.visualViewport && /Mobi|Android/i.test(navigator.userAgent)) {
+  window.visualViewport.addEventListener('resize', function() {
+    var msgList = document.getElementById('msgList');
+    if (msgList) {
+      msgList.scrollTop = msgList.scrollHeight;
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>

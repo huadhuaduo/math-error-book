@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · 管理者B · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+  .layout{position:relative;z-index:10;max-width:1000px;margin:0 auto;padding:28px 16px 60px;display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+  .main-col{display:flex;flex-direction:column;gap:20px}
+  .side-col{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px}
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:24px 22px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .section-num{font-size:11px;font-weight:700;color:#A8A29E;letter-spacing:.08em;margin-bottom:4px}
+  .section-title{font-size:17px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:6px;letter-spacing:-.01em}
+  .section-sub{font-size:12px;color:#78716C;line-height:1.5;margin-bottom:18px}
+  .section-header{padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid rgba(0,0,0,.05)}
+
+  /* Overview */
+  .ov-narrative{font-size:14px;color:#44403C;line-height:1.75;margin-bottom:20px}
+  .radar-area{display:flex;align-items:center;gap:28px;justify-content:center;padding:12px 0;flex-wrap:wrap}
+  .radar-labels{display:flex;flex-direction:column;gap:10px;min-width:180px}
+  .radar-row{display:flex;align-items:center;gap:6px}
+  .radar-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .radar-name{color:#1C1917;font-weight:600;font-size:12px;min-width:64px}
+  .radar-score{font-weight:700;color:#1C1917;font-size:14px;min-width:24px;text-align:right}
+  .radar-desc{font-size:10px;color:#78716C;line-height:1.35;padding-left:14px;margin-top:1px}
+  .ov-verdict{font-size:14px;color:#1C1917;line-height:1.7;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.04)}
+
+  /* Self-assessment comparison */
+  .compare-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+  .compare-cell{text-align:center;padding:10px 6px;border-radius:10px;background:rgba(0,0,0,.015);border:1px solid rgba(0,0,0,.03)}
+  .compare-label{font-size:9px;color:#A8A29E;margin-bottom:3px}
+  .compare-self{font-size:13px;font-weight:600;color:#78716C}
+  .compare-actual{font-size:14px;font-weight:700;color:#1C1917}
+  .compare-gap{font-size:10px;color:#DC2626;margin-top:2px}
+  .compare-gap.ok{color:#16A34A}
+
+  /* Methodology box */
+  .method-box{background:rgba(239,246,255,.4);border:1px solid rgba(147,197,253,.2);border-radius:12px;padding:14px 16px;margin:8px 0;font-size:12px;color:#3B82F6;line-height:1.6}
+  .method-box strong{color:#1D4ED8}
+
+  /* Findings */
+  .finding{margin-bottom:16px}.finding+.finding{padding-top:14px;border-top:1px solid rgba(0,0,0,.04)}
+  .fd-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+  .fd-badge{display:inline-flex;align-items:center;gap:2px;padding:2px 9px;border-radius:100px;font-size:10px;font-weight:700}
+  .fd-principle{font-size:9px;color:#A8A29E;background:rgba(0,0,0,.025);padding:1px 7px;border-radius:100px}
+  .fd-round{font-size:10px;color:#A8A29E}
+  .fd-quote{font-size:13px;color:#44403C;line-height:1.55;padding:8px 12px;background:rgba(0,0,0,.02);border-radius:8px;margin:6px 0;font-style:italic}
+  .fd-note{font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:4px}
+  .fd-alt{font-size:12px;color:#065F46;line-height:1.5;padding:8px 12px;background:rgba(209,250,229,.2);border-radius:8px;margin-top:4px}
+  .reflect{font-size:12px;color:#3B82F6;line-height:1.5;padding:8px 12px;background:rgba(239,246,255,.25);border-radius:8px;margin-top:8px;font-style:italic}
+  .fork-box{background:rgba(254,243,199,.12);border:1px solid rgba(251,191,36,.06);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:12px}
+  .fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:4px}
+  .fork-path{padding:6px 10px;border-radius:6px;font-size:11px;line-height:1.5;margin:3px 0}
+  .fork-actual{background:rgba(254,226,226,.2);border:1px solid rgba(239,68,68,.02)}
+  .fork-alt{background:rgba(209,250,229,.2);border:1px solid rgba(16,185,129,.02)}
+  .pat-box{background:rgba(243,232,255,.15);border:1px solid rgba(167,139,250,.06);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:12px;color:#7C3AED;line-height:1.65}
+
+  /* Part 4: Action experiment */
+  .experiment-box{background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:14px 16px;margin:8px 0;font-size:12px;color:#065F46;line-height:1.6}
+  .experiment-box strong{color:#047857}
+  .action-form{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .action-row{display:flex;gap:8px}
+  .action-input{flex:1;border:none;border-bottom:1.5px solid rgba(0,0,0,.08);padding:6px 0;font-size:12px;font-family:inherit;outline:none;background:transparent;color:#1C1917;transition:border-color .2s}
+  .action-input:focus{border-bottom-color:#10B981}.action-input::placeholder{color:#D6D3D1;font-size:11px}
+
+  /* Part 5: Learning */
+  .weakness-card{background:rgba(254,243,199,.15);border:1px solid rgba(251,191,36,.08);border-radius:12px;padding:14px 16px;margin:6px 0;font-size:12px;color:#92400E;line-height:1.6}
+  .weakness-card strong{color:#78350F}
+  .course-link{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.5);border:1px solid rgba(0,0,0,.06);border-radius:10px;margin:4px 0;font-size:12px;color:#1C1917;cursor:pointer;transition:all .2s;text-decoration:none}
+  .course-link:hover{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.2)}
+  .course-arrow{color:#3B82F6;font-weight:700;margin-left:auto}
+
+  /* Side */
+  .key-card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:18px 16px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .key-title{font-size:12px;font-weight:700;color:#1C1917;margin-bottom:10px}
+  .key-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:11px;color:#44403C;line-height:1.45}
+  .key-item+.key-item{border-top:1px solid rgba(0,0,0,.03)}
+  .commit-card{border:1.5px solid rgba(16,185,129,.2)}
+  .c-title{font-size:13px;font-weight:700;color:#1C1917;margin-bottom:2px}
+  .c-sub{font-size:10px;color:#A8A29E;margin-bottom:10px}
+  .c-proposal{background:rgba(16,185,129,.03);border:1px solid rgba(16,185,129,.08);border-radius:10px;padding:10px 12px;font-size:11px;color:#065F46;line-height:1.5;margin-bottom:8px}
+  .c-input{width:100%;border:none;border-bottom:1.5px solid rgba(0,0,0,.08);padding:5px 0;font-size:12px;font-family:inherit;outline:none;background:transparent;color:#1C1917;margin-bottom:8px;transition:border-color .2s}
+  .c-input:focus{border-bottom-color:#10B981}.c-input::placeholder{color:#D6D3D1;font-size:11px}
+  .c-row{display:flex;gap:6px;margin-bottom:6px}.c-row .c-input{flex:1}
+  .btn-save{width:100%;padding:10px;border-radius:12px;border:none;background:#1C1917;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}.btn-save:hover{background:#000}
+  .btn-row{display:flex;gap:8px}
+  .btn{display:inline-flex;align-items:center;gap:5px;padding:11px 18px;border-radius:12px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;justify-content:center}
+  .btn-dark{background:#1C1917;color:#fff;flex:1}.btn-dark:hover{background:#000}
+  .btn-light{background:rgba(0,0,0,.03);color:#44403C;flex:1}.btn-light:hover{background:rgba(0,0,0,.06)}
+  .footer-text{text-align:center;font-size:11px;color:#D6D3D1;margin-top:8px}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s ease;pointer-events:none;white-space:nowrap}
+  @media(max-width:780px){.layout{grid-template-columns:1fr}.side-col{position:static}.compare-grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:500px){.compare-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="layout">
+  <div class="main-col">
+
+    <!-- ====== ① 整体评估 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">① 整体评估</div>
+        <div class="section-title">你的面谈画像</div>
+        <div class="section-sub">五条原则，五个分数——这是你这次面谈的完整画像。</div>
+      </div>
+
+      <p class="ov-narrative">
+        一场好的绩效面谈看五条线：<strong>信不信任、目不清楚、说不说话、听没听见、结不结束。</strong>每条线满分100——不是看你说了什么，是看她感受到了什么。
+      </p>
+
+      <!-- Radar -->
+      <div class="radar-area">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <polygon points="100,22 172,72 145,162 55,162 28,72" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="1.2"/>
+          <polygon points="100,50 154,78 134,137 66,137 46,78" fill="none" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+          <line x1="100" y1="100" x2="100" y2="16" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="178" y2="68" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="148" y2="166" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="52" y2="166" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="22" y2="68" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <!-- Data polygon — will be dynamically set by JS -->
+          <polygon id="radarPoly" points="100,46 100,46 100,46 100,46 100,46" fill="rgba(59,130,246,.1)" stroke="#3B82F6" stroke-width="1.8" stroke-linejoin="round"/>
+          <circle id="rd0" cx="100" cy="46" r="4" fill="#3B82F6"/>
+          <circle id="rd1" cx="100" cy="46" r="4" fill="#10B981"/>
+          <circle id="rd2" cx="100" cy="46" r="4" fill="#F59E0B"/>
+          <circle id="rd3" cx="100" cy="46" r="4" fill="#EF4444"/>
+          <circle id="rd4" cx="100" cy="46" r="4" fill="#8B5CF6"/>
+        </svg>
+        <div class="radar-labels">
+          <div><div class="radar-row"><span class="radar-dot" style="background:#3B82F6"></span><span class="radar-name">①建立信任</span><span class="radar-score" id="rvTrust">55</span></div><div class="radar-desc" id="rdTrust">——</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#10B981"></span><span class="radar-name">②说明目的</span><span class="radar-score" id="rvPurpose">50</span></div><div class="radar-desc" id="rdPurpose">——</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#F59E0B"></span><span class="radar-name">③鼓励说话</span><span class="radar-score" id="rvEncourage">50</span></div><div class="radar-desc" id="rdEncourage">——</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#EF4444"></span><span class="radar-name">④认真倾听</span><span class="radar-score" id="rvListen">50</span></div><div class="radar-desc" id="rdListen">——</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#8B5CF6"></span><span class="radar-name">⑤积极结束</span><span class="radar-score" id="rvEnd">45</span></div><div class="radar-desc" id="rdEnd">——</div></div>
+        </div>
+      </div>
+
+      <!-- Self-assessment comparison -->
+      <div class="method-box" style="margin-top:14px">
+        <strong>📖 你以为 vs 实际</strong>
+        <div class="compare-grid">
+          <div class="compare-cell"><div class="compare-label">①建立信任</div><div class="compare-self" id="selfTrust">__</div><div class="compare-actual" id="actTrust">55</div><div class="compare-gap" id="gapTrust">—</div></div>
+          <div class="compare-cell"><div class="compare-label">②说明目的</div><div class="compare-self" id="selfPurpose">__</div><div class="compare-actual" id="actPurpose">50</div><div class="compare-gap" id="gapPurpose">—</div></div>
+          <div class="compare-cell"><div class="compare-label">③鼓励说话</div><div class="compare-self" id="selfEncourage">__</div><div class="compare-actual" id="actEncourage">50</div><div class="compare-gap" id="gapEncourage">—</div></div>
+          <div class="compare-cell"><div class="compare-label">④认真倾听</div><div class="compare-self" id="selfListen">__</div><div class="compare-actual" id="actListen">50</div><div class="compare-gap" id="gapListen">—</div></div>
+          <div class="compare-cell"><div class="compare-label">⑤积极结束</div><div class="compare-self" id="selfEnd">__</div><div class="compare-actual" id="actEnd">45</div><div class="compare-gap" id="gapEnd">—</div></div>
+        </div>
+        <span style="font-size:10px;color:#78716C">如果你在准备页填了自评基线，这里就是"你觉得自己能得几分"和"实际得了多少分"的差值。差距越大的那一条——说明你对那项能力的自我感知和实际表现之间有盲区。</span>
+      </div>
+
+      <!-- Verdict -->
+      <p class="ov-verdict" id="verdictLine"><strong>她推门时脸上有笑，走的时候带着方向。</strong>你的面谈从氛围进、从约定出——中间那一段给了她一些她能抓住的东西。</p>
+
+      <!-- Structure adherence -->
+      <div class="method-box">
+        <strong>📖 面谈结构：</strong>你的面谈四个阶段用时——氛围<span id="phasePct1">—</span>%、自评<span id="phasePct2">—</span>%、诊断<span id="phasePct3">—</span>%、目标<span id="phasePct4">—</span>%。好的面谈要把足够的时间留给"怎么改"——不是"怎么错的"。
+      </div>
+    </div>
+
+    <!-- ====== ② 觉察·深入模式 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">② 觉察</div>
+        <div class="section-title">你可能没注意到的一个模式</div>
+        <div class="section-sub">不是评判——是帮你看到自己看不见的东西。</div>
+      </div>
+
+      <p class="ov-narrative" style="font-size:14px">
+        管理者B是第一次听到C。她之前接收到的所有信号都是"你做得不错"——张姐的夸奖、李哥的帮忙、同事们的好意。这些善意形成了一个保护层，让她真心以为自己做得够好。<strong>你在面谈中做对了一件事：你没有打破她的努力，你打破的是她"努力就等于好"的假设。</strong>但有一个时刻——你停在了她最需要你多走一步的地方。
+      </p>
+
+      <div class="method-box">
+        <strong>📖 你的模式：</strong>当管理者B开始理解和接受事实后，你倾向于把接下来的主动权交还给她。这个意图是好的——让她自己说出来。但对她来说，"自己说出来"的前提是她<strong>知道从哪开始</strong>。她是真的不知道什么算"做好了"——这不是态度问题，是能力盲区。当你说"你觉得从哪个地方开始"时，她脑子里是空的。她需要的不是一个开放式提问——是一个<strong>具体的质量标准</strong>。
+      </div>
+
+      <div class="reflect">💬 想一想：在你的团队里，有没有其他人你也默认他们"应该知道"——但实际上他们不知道？</div>
+
+      <div class="pat-box" style="margin-top:14px">
+        <strong>这个模式不只在管理者B这里出现：</strong>对努力但输出质量不达标的同事，你容易在指出问题后"把球传回去"——"你自己觉得该怎么改？"这个提问本身没错，但前提是对方有判断标准。管理者B没有。她需要你先给她一把尺子，再让她自己量。<strong>这叫"先给标准，再给空间"。</strong>
+      </div>
+    </div>
+
+    <!-- ====== ③ 行为复盘 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">③ 行为复盘</div>
+        <div class="section-title">你的关键行为</div>
+        <div class="section-sub">哪些在帮她——哪些可以换个方式。每一条都标了影响哪条原则。</div>
+      </div>
+
+      <!-- What went well -->
+      <div class="finding">
+        <div class="fd-head">
+          <span class="fd-badge" style="background:#DCFCE7;color:#166534">保留</span>
+          <span class="fd-principle">影响 ①②</span>
+          <span class="fd-round">开场阶段</span>
+        </div>
+        <div class="fd-quote">——你先跟她聊了两句最近的工作，没一上来就说等级。</div>
+        <div class="fd-note">她的状态从"不知道会听到什么"变成了"准备好了"。营造氛围不是浪费时间——是降低她的防御。</div>
+        <div class="method-box"><strong>📖 为什么好：</strong>绩效面谈的第一个铁律——<strong>先建立安全，再传递信息。</strong>对方是拿着事先不知道的内容进来的。如果你开门见山给结论，她的大脑前30秒只会在处理冲击，不是在听你说。你先让她放松——这30秒的投资，省了后面3分钟的情绪对抗。</div>
+      </div>
+
+      <div class="finding">
+        <div class="fd-head">
+          <span class="fd-badge" style="background:#DCFCE7;color:#166534">保留</span>
+          <span class="fd-principle">影响 ②③</span>
+          <span class="fd-round">诊断阶段</span>
+        </div>
+        <div class="fd-quote">——你给了她具体数据：返工率36%，全组平均11%。不是"你的质量不太好"——是"5个方案需要改"。</div>
+        <div class="fd-note">她用这些数据看懂了自己的差距。数据比形容词管用。</div>
+        <div class="method-box"><strong>📖 为什么好：</strong>这是②说明目的的核心——<strong>用事实锚定评估，而不是用形容词。</strong>"你的质量不太好"让她困惑——"哪里不好？多不好？"但"返工率36%，全组平均11%"让她自己算出差距。数据不需要你解释——她自己会读。</div>
+      </div>
+
+      <div class="finding">
+        <div class="fd-head">
+          <span class="fd-badge" style="background:#DCFCE7;color:#166534">保留</span>
+          <span class="fd-principle">影响 ①④</span>
+          <span class="fd-round">情绪阶段</span>
+        </div>
+        <div class="fd-quote">——她在说"没人跟我说过"的时候，你没有打断。你说了一句"我听到了"。</div>
+        <div class="fd-note">这句话让她从"要证明自己没错"变成了"好吧我可以听听看"。</div>
+        <div class="method-box"><strong>📖 为什么好：</strong>④认真倾听在绩效面谈中的核心表现是——<strong>不在对方表达情绪时打断她。</strong>她说"没人跟我说过"时，不是在推卸责任——是在表达她过去半年的信息缺失。你接住了这个事实——"我听到了"只有四个字，但告诉她：你说的话我听见了，不是耳旁风。</div>
+      </div>
+
+      <!-- What to upgrade -->
+      <div class="finding">
+        <div class="fd-head">
+          <span class="fd-badge" style="background:#FEE2E2;color:#DC2626">升级</span>
+          <span class="fd-principle">影响 ④⑤</span>
+          <span class="fd-round">过渡阶段</span>
+        </div>
+        <div class="fd-quote">你理解了差距之后——有没有给她一个具体的质量标准？比如"方案交之前自己先查三样东西"。</div>
+        <div class="fd-note">她知道了"自己不够好"，但不知道"什么叫够好"。这个空档会让她回去之后继续猜。</div>
+        <div class="fd-alt"><strong>试试这样：</strong>"以后方案交之前，你自己先查三样东西：数据有没有错、格式对不对、结论有没有依据。查完再交。你觉得做不做得到？"——这叫先给尺子，再问方向。</div>
+        <div class="method-box"><strong>📖 为什么关键：</strong>管理者B这类下属最大的困境不是"不知道要改"——是<strong>不知道怎么改</strong>。她的根因是能力不是态度（D₅），所以她的核心需求不是激励，是方法。绩效面谈对能力型下属的铁律：<strong>给标准，不给鸡汤。</strong></div>
+      </div>
+
+      <div class="finding">
+        <div class="fd-head">
+          <span class="fd-badge" style="background:#FEE2E2;color:#DC2626">升级</span>
+          <span class="fd-principle">影响 ⑤</span>
+          <span class="fd-round">收尾阶段</span>
+        </div>
+        <div class="fd-quote">收尾的时候有没有定一个具体的检查时间？还是说了类似"随时找我"的话？</div>
+        <div class="fd-note">"随时找我"等于没约定——她不知道什么时候合适，所以不会来。她会继续自己猜。</div>
+        <div class="fd-alt"><strong>试试这样：</strong>"下周三下午3点，你带着改好的方案来找我。就定这个时间——我已经记在日历上了。"——比她走出门的时候想着"我回去努力"有用一百倍。</div>
+        <div class="method-box"><strong>📖 为什么关键：</strong>⑤积极结束的核心是一个<strong>有具体时间和方式的跟进约定</strong>。绩效面谈最怕的不是谈得不好——是谈完之后什么都没变。大多数失败发生在面谈结束之后。走出会议室时，对方应该能回答三个问题：我现在的绩效怎么样？为什么？接下来我要做的第一件事是什么？第三个问题需要一个具体的答案。</div>
+      </div>
+
+      <!-- Fork point -->
+      <div class="fork-box">
+        <div class="fork-label">诊断→目标的过渡是一个岔路口</div>
+        <div class="fork-path fork-actual"><strong>你走了：</strong>让她自己说改进方向 → 她说了但很模糊 → 因为没有标准，她只能猜。</div>
+        <div class="fork-path fork-alt"><strong>可以走：</strong>先给标准（"方案自查三件事"）→ 再让她说（"你觉得做不做得到？从哪个先开始？"）→ 她有了尺子，回答就有了质量。</div>
+      </div>
+    </div>
+
+    <!-- ====== ④ 行动实验 + 练习记录 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">④ 行动实验</div>
+        <div class="section-title">你的下一步</div>
+        <div class="section-sub">在练习里试一次——然后带回真实团队。</div>
+      </div>
+
+      <div class="experiment-box">
+        <strong>🧪 系统建议：</strong>基于你最需要加强的原则——<strong>⑤积极结束</strong>，下次面谈中专门试一个动作：在收尾时刻，用"下周三下午3点"替代"随时找我"。不是建议——是刻意练习这一个行为。
+      </div>
+
+      <p style="font-size:13px;color:#44403C;line-height:1.6;margin-top:12px"><strong>在下次练习里试这个：</strong>当管理者B说"我知道了，我回去改"——不要停在这里。说：<strong>"好。那你觉得从什么时间开始？三天后你带第一个改好的给我看看。"</strong></p>
+
+      <div class="method-box"><strong>📖 为什么这个行为管用：</strong>绩效面谈中最高杠杆的行为就是收尾约定。走的时候有一个具体的时间，对方回去之后的72小时就不再是"我要努力"——是"我要在周三下午3点前改出来"。压力从道德层面（"我应该努力"）转移到了行动层面（"我得交付一个东西"）。这叫<strong>把模糊承诺变成具体交付。</strong></div>
+
+      <!-- Action plan form -->
+      <div style="margin-top:14px">
+        <p style="font-size:12px;font-weight:700;color:#1C1917;margin-bottom:8px">我的行动实验</p>
+        <div class="action-form">
+          <div class="action-row">
+            <input class="action-input" placeholder="场景（下次什么时候、跟谁）" id="expScene">
+            <input class="action-input" placeholder="具体行为（我会做…）" id="expBehavior">
+          </div>
+          <input class="action-input" placeholder="怎么判断做对了（看到什么信号就算成功）" id="expSignal">
+        </div>
+      </div>
+
+      <!-- Practice comparisons (shown when >1 practice) -->
+      <div id="practiceHistory" style="display:none;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:14px 16px;margin-top:10px;font-size:12px;color:#065F46;line-height:1.6">
+        <strong>📈 你的进步（练习记录）</strong><br>
+        <span id="phData"></span>
+        <span style="font-size:10px;color:#78716C">进步最大的原则：<strong id="phBest"></strong> · 仍需关注：<strong id="phWorst"></strong></span>
+      </div>
+    </div>
+
+    <!-- ====== ⑤ 后续学习推荐 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">⑤ 学习推荐</div>
+        <div class="section-title">薄弱点 + 推荐课程</div>
+        <div class="section-sub">基于你五条原则中得分最低的1-2条——这不是短板，是你接下来的发力点。</div>
+      </div>
+
+      <div class="weakness-card" id="weakBox1">
+        <strong>🔴 最薄弱：⑤ 积极结束（得分偏低）</strong><br>
+        对应能力：<strong>跟进闭环</strong>——从"随时找我"到"下周三见"。面谈的收尾不是告别，是铺垫下次对话的开始。<br>
+        <span style="font-size:10px;color:#78716C">这条原则决定了对方走出会议室之后，是带着模糊的"我要努力"还是带着具体的"我得在周三下午3点前做完"。</span>
+      </div>
+      <a class="course-link" href="#">
+        <span>📚</span><strong>面谈收尾：从"随时找我"到"下周三见"</strong>
+        <span class="course-arrow">→</span>
+      </a>
+
+      <div class="weakness-card" id="weakBox2" style="display:none">
+        <strong>🟡 次薄弱：④ 认真倾听（得分偏低）</strong><br>
+        对应能力：<strong>共情倾听</strong>——在对方表达情绪时不跳过、不讲道理、先说"我听到了"。<br>
+        <span style="font-size:10px;color:#78716C">情绪不是要解决掉的东西——是要接住的东西。接住了，她才会听后面的道理。</span>
+      </div>
+      <a class="course-link" href="#" id="course2" style="display:none">
+        <span>📚</span><strong>绩效面谈中的倾听：为什么"说一句我听到了"比讲道理管用</strong>
+        <span class="course-arrow">→</span>
+      </a>
+
+      <p style="font-size:11px;color:#A8A29E;margin-top:12px;text-align:center">点击课程在低代码平台中打开。建议在下次练习前先花15分钟过一遍。</p>
+    </div>
+
+  </div>
+
+  <!-- ============ RIGHT COLUMN ============ -->
+  <div class="side-col">
+    <div class="key-card">
+      <div class="key-title">📌 关键发现</div>
+      <div class="key-item"><span style="color:#16A34A">✅</span> 开场营造了安全氛围</div>
+      <div class="key-item"><span style="color:#16A34A">✅</span> 用具体数据解释等级</div>
+      <div class="key-item"><span style="color:#DC2626">⚠️</span> 过渡阶段缺具体质量标准</div>
+      <div class="key-item"><span style="color:#DC2626">⚠️</span> 收尾少了一个有时间的约定</div>
+      <div class="key-item"><span style="color:#7C3AED">🔄</span> 模式：对努力但缺标准的同事，给空间之前先给尺子</div>
+    </div>
+
+    <div class="card commit-card">
+      <div class="section-num">我的承诺</div>
+      <div class="c-title" style="font-size:15px;margin-top:2px">行动承诺</div>
+      <div class="c-sub">带到下次面谈——你可以直接用，也可以改成你自己的话。</div>
+      <div class="c-proposal">当对方理解了差距、说"我知道了"之后——<strong>接一句："好。那你觉得从什么时间开始？"</strong></div>
+      <input class="c-input" placeholder="改成你会说的话..." id="cBehavior">
+      <div class="c-row"><input class="c-input" placeholder="在谁身上试" id="cWho"><input class="c-input" placeholder="什么时候" id="cWhen"></div>
+      <input class="c-input" placeholder="怎么判断做对了" id="cSignal">
+      <button class="btn-save" onclick="save()">确认承诺</button>
+      <p style="font-size:10px;color:#A8A29E;text-align:center;margin-top:6px">下次练习加载此承诺作为对比锚点</p>
+    </div>
+
+    <div class="btn-row"><button class="btn btn-dark" onclick="window.location.href='scene_PR2_引擎驱动版_v5.html'">再练一次</button><button class="btn btn-light" onclick="window.location.href='scene_PR2_准备页_叙事版.html'">换场景</button></div>
+    <p class="footer-text">建议 3-7 天内回来</p>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ===== DATA (in production, this is passed from dialogue page) =====
+// Load session data if available, otherwise use demo data
+var sessionData=null;
+try{var raw=localStorage.getItem('pr2_last_session');if(raw){sessionData=JSON.parse(raw);}}catch(e){}
+
+var p=sessionData&&sessionData.principles
+  ? sessionData.principles
+  : {trust:68,purpose:72,encourage:55,listen:48,end:35};
+
+// Self-assessment baseline (in production, comes from preparation page)
+var self=null;
+try{var rawSelf=localStorage.getItem('pr2_self_baseline');if(rawSelf){self=JSON.parse(rawSelf);}}catch(e){}
+
+// Radar polygon calculation for 5-axis pentagon
+function calcRadar(scores){
+  // 5 axes, center 100,100, radius 78
+  var cx=100,cy=100,r=78;
+  // Angles: top starts at -90deg, going clockwise
+  // Axis 0 (trust): top (100, 22)
+  // Axis 1 (purpose): top-right (172, 72)
+  // Axis 2 (encourage): bottom-right (145, 162)
+  // Axis 3 (listen): bottom-left (55, 162)
+  // Axis 4 (end): top-left (28, 72)
+  var angles=[-90, 18, 126, 234, 306]; // degrees
+  var points=[];
+  for(var i=0;i<5;i++){
+    var ratio=scores[i]/100;
+    var rad=angles[i]*Math.PI/180;
+    var x=cx+r*ratio*Math.cos(rad);
+    var y=cy+r*ratio*Math.sin(rad);
+    points.push({x:x,y:y});
+  }
+  return points;
+}
+
+function renderRadar(){
+  var scores=[p.trust,p.purpose,p.encourage,p.listen,p.end];
+  var pts=calcRadar(scores);
+  var poly=document.getElementById('radarPoly');
+  var ptsStr=pts.map(function(pt){return pt.x.toFixed(1)+','+pt.y.toFixed(1);}).join(' ');
+  poly.setAttribute('points',ptsStr);
+
+  // Move vertex dots
+  ['rd0','rd1','rd2','rd3','rd4'].forEach(function(id,i){
+    var dot=document.getElementById(id);
+    dot.setAttribute('cx',pts[i].x.toFixed(1));
+    dot.setAttribute('cy',pts[i].y.toFixed(1));
+  });
+
+  // Update score labels
+  document.getElementById('rvTrust').textContent=p.trust;
+  document.getElementById('rvPurpose').textContent=p.purpose;
+  document.getElementById('rvEncourage').textContent=p.encourage;
+  document.getElementById('rvListen').textContent=p.listen;
+  document.getElementById('rvEnd').textContent=p.end;
+
+  // Radar descriptions
+  var descs=[
+    p.trust>=70?'开场安全·她没防御':'还可以更暖一些',
+    p.purpose>=70?'数据充分·她知道为什么是C':'等级给了但数据可以更多',
+    p.encourage>=70?'她说了很多·你说得少':'给她更多说的空间',
+    p.listen>=70?'接住了她的情绪':'先听完再给方案',
+    p.end>=70?'有具体时间跟进的约定':'收尾少了一个她抓得住的东西'
+  ];
+  document.getElementById('rdTrust').textContent=descs[0];
+  document.getElementById('rdPurpose').textContent=descs[1];
+  document.getElementById('rdEncourage').textContent=descs[2];
+  document.getElementById('rdListen').textContent=descs[3];
+  document.getElementById('rdEnd').textContent=descs[4];
+
+  // Actual scores in comparison
+  document.getElementById('actTrust').textContent=p.trust;
+  document.getElementById('actPurpose').textContent=p.purpose;
+  document.getElementById('actEncourage').textContent=p.encourage;
+  document.getElementById('actListen').textContent=p.listen;
+  document.getElementById('actEnd').textContent=p.end;
+
+  // Self-assessment comparison
+  var keys=['trust','purpose','encourage','listen','end'];
+  var labels=['Trust','Purpose','Encourage','Listen','End'];
+  var hasSelf=false;
+  keys.forEach(function(k,i){
+    var label=labels[i];
+    if(self&&self[k]!==undefined&&self[k]!=='__'&&self[k]!==''){
+      hasSelf=true;
+      document.getElementById('self'+label).textContent=self[k];
+      var gap=self[k]-p[k];
+      var gapEl=document.getElementById('gap'+label);
+      gapEl.textContent=(gap>=0?'+':'')+gap;
+      gapEl.className='compare-gap'+(Math.abs(gap)<=5?' ok':'');
+    }else{
+      document.getElementById('self'+label).textContent='—';
+      document.getElementById('gap'+label).textContent='—';
+    }
+  });
+
+  // If no self data at all, hide the comparison box title
+  if(!hasSelf){
+    var methodBoxes=document.querySelectorAll('.method-box');
+    // Keep the box but note no data
+  }
+
+  // Verdict
+  var avg=(p.trust+p.purpose+p.encourage+p.listen+p.end)/5;
+  var v=document.getElementById('verdictLine');
+  if(avg>=80)v.innerHTML='<strong>一场扎实的面谈。</strong>你给了她C的原因，也给了她一条看得见的路。';
+  else if(avg>=60)v.innerHTML='<strong>她知道了为什么是C，也感受到了你的诚意。</strong>差的那几分不在态度——在收尾少了具体的"下一步"。这就是下次练习的发力点。';
+  else if(avg>=40)v.innerHTML='<strong>几个关键行为做到了，几个没做到。</strong>她在面谈中接收了信息，但走的时候应该带走更多的东西。看下面——每一条具体怎么改都写了。';
+  else v.innerHTML='<strong>这场面谈的冲击大于帮助。</strong>她知道了C，但不太确定接下来该怎么办。你的原则分数和下面的具体复盘会告诉你可以从哪里开始改。';
+
+  // Phase breakdown (simulated if no real data)
+  if(sessionData&&sessionData.history){
+    var totalRounds=sessionData.history.length;
+    var phaseCounts={ATMOSPHERE:0,SELF_ASSESS:0,DIAGNOSIS:0,GOAL_SETTING:0};
+    sessionData.history.forEach(function(h){
+      if(h.phase&&phaseCounts[h.phase]!==undefined)phaseCounts[h.phase]++;
+    });
+    document.getElementById('phasePct1').textContent=Math.round(phaseCounts.ATMOSPHERE/totalRounds*100);
+    document.getElementById('phasePct2').textContent=Math.round(phaseCounts.SELF_ASSESS/totalRounds*100);
+    document.getElementById('phasePct3').textContent=Math.round(phaseCounts.DIAGNOSIS/totalRounds*100);
+    document.getElementById('phasePct4').textContent=Math.round(phaseCounts.GOAL_SETTING/totalRounds*100);
+  }
+
+  // Determine weakest principles
+  var sorted=keys.map(function(k,i){return {key:k,label:['建立信任','说明目的','鼓励说话','认真倾听','积极结束'][i],score:p[k]};});
+  sorted.sort(function(a,b){return a.score-b.score;});
+  var weakest=sorted[0];
+  var second=sorted[1];
+
+  // Update weakness cards
+  var wb1=document.getElementById('weakBox1');
+  wb1.innerHTML='<strong>🔴 最薄弱：'+weakest.label+'（得分'+(weakest.score)+'）</strong><br>对应能力查看下方推荐课程。这条原则是你下次练习的发力点。';
+
+  // Show second weakness only if it's also low
+  if(second.score<60){
+    var wb2=document.getElementById('weakBox2');
+    wb2.style.display='block';
+    wb2.innerHTML='<strong>🟡 次薄弱：'+second.label+'（得分'+(second.score)+'）</strong><br>这一条不算差，但还有空间——和'+weakest.label+'一起关注。';
+    document.getElementById('course2').style.display='flex';
+  }
+
+  // Practice history
+  var practiceCount=sessionData?sessionData.practiceCount:1;
+  if(practiceCount>1){
+    document.getElementById('practiceHistory').style.display='block';
+    document.getElementById('phData').innerHTML='这是你第 <strong>'+practiceCount+'</strong> 次练习管理者B场景。';
+    // In production, this would pull from stored practice history
+    document.getElementById('phBest').textContent='——';
+    document.getElementById('phWorst').textContent='⑤积极结束';
+  }
+}
+
+// ===== TOAST =====
+function showToast(m,d){var t=document.getElementById('toast');t.textContent=m;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0'},d||2500);}
+
+// ===== SAVE COMMITMENT =====
+function save(){
+  var b=document.getElementById('cBehavior').value.trim();
+  var w=document.getElementById('cWho').value.trim();
+  var wh=document.getElementById('cWhen').value.trim();
+  var expScene=document.getElementById('expScene').value.trim();
+  var expBehavior=document.getElementById('expBehavior').value.trim();
+  var expSignal=document.getElementById('expSignal').value.trim();
+
+  if(!b&&!w&&!wh&&!expBehavior){
+    showToast('至少确认系统建议，或填一个你自己的方式。',3000);
+    return;
+  }
+  // Save to localStorage
+  try{
+    var commitment={
+      behavior:b||'系统默认',who:w||'未指定',when:wh||'未指定',
+      experiment:{scene:expScene,behavior:expBehavior,signal:expSignal},
+      timestamp:Date.now()
+    };
+    localStorage.setItem('pr2_commitment',JSON.stringify(commitment));
+  }catch(e){}
+  showToast('承诺已保存。下次练习对比——上次你说了什么，这次你说了什么。',3000);
+}
+
+// Init
+renderRadar();
+</script>
+</body>
+</html>

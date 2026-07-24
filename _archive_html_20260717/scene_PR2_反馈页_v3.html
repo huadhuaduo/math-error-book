@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · 管理者B · 绩效面谈</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#FAF9F6 0%,#F4F1EC 30%,#F9F7F4 60%,#F1EEE9 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .container{max-width:620px;margin:0 auto;padding:40px 24px 60px}
+
+  /* Card */
+  .card{background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.55);border-radius:20px;padding:28px 24px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,.03)}
+
+  /* Section labels */
+  .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A8A29E;margin-bottom:10px}
+  .sec-title{font-size:16px;font-weight:700;color:#1C1917;margin-bottom:10px;line-height:1.4}
+
+  /* Reveal text */
+  .reveal{font-size:14px;color:#44403C;line-height:1.75}
+
+  /* Insight box */
+  .insight{background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.2);border-radius:14px;padding:16px 18px;margin:12px 0;font-size:13px;color:#3B82F6;line-height:1.6}
+
+  /* Fork box */
+  .fork{background:rgba(254,243,199,.3);border:1px solid rgba(251,191,36,.15);border-radius:14px;padding:18px 20px;margin:12px 0}
+  .fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:8px}
+  .fork-path{margin:8px 0;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6}
+  .fork-actual{background:rgba(254,226,226,.4);border:1px solid rgba(239,68,68,.08)}
+  .fork-alt{background:rgba(209,250,229,.4);border:1px solid rgba(16,185,129,.08)}
+
+  /* Pattern box */
+  .pattern{background:rgba(243,232,255,.4);border:1px solid rgba(167,139,250,.2);border-radius:14px;padding:18px 20px;margin:12px 0;font-size:13px;color:#7C3AED;line-height:1.65}
+
+  /* Scores — compact */
+  .scores{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .score-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,0,0,.02);border-radius:10px;font-size:12px}
+  .score-bar{width:60px;height:4px;border-radius:2px;background:#E5E7EB;overflow:hidden;flex-shrink:0;margin-left:8px}
+  .score-fill{height:100%;border-radius:2px}
+
+  /* Next action */
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .act-btn{padding:12px 24px;border-radius:14px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+  .act-primary{background:#1C1917;color:#fff}
+  .act-primary:hover{background:#000}
+  .act-secondary{background:rgba(0,0,0,.04);color:#44403C}
+  .act-secondary:hover{background:rgba(0,0,0,.08)}
+
+  hr{border:none;height:1px;background:linear-gradient(to right,transparent,rgba(0,0,0,.06),transparent);margin:20px 0}
+
+  @media(max-width:540px){.scores{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div style="text-align:center;margin-bottom:28px;">
+    <p style="font-size:12px;color:#A8A29E;margin-bottom:4px;">绩效面谈 · 管理者B · C级自评落差</p>
+    <p style="font-size:11px;color:#D6D3D1;">对话结束 · 你讲了12轮 · 现在回头看看发生了什么</p>
+  </div>
+
+  <!-- Card 1: The reveal -->
+  <div class="card">
+    <div class="sec-label">对话结束后，你可能想知道的</div>
+    <p class="reveal">
+      推门进来的时候，管理者B对你是有信任的。两年的相处，你平时对她不算差——她走进来时心情是好的，甚至笑着问了你等级。
+    </p>
+    <p class="reveal" style="margin-top:8px;">
+      你给她C级的那一刻，信任掉了一点——不是因为你做错了什么，是因为<strong>冲击本身就会消耗信任</strong>。但你紧接着说"我先说为什么""第一，五次返工记录"——信任立刻回升了。<strong>她怕的不是C。她怕的是"不知道为什么是C"。</strong>你给了她为什么，她就从"我不理解"变成了"那几次返工我确实记得"。
+    </p>
+    <div class="insight">
+      <strong>你做得对的一件事：</strong>结论和事实之间的间隔很短。她没有在猜测中消耗自己——冲击来了，解释紧接着就到了。这是整场对话的基石。
+    </div>
+  </div>
+
+  <!-- Card 2: A moment you might have missed -->
+  <div class="card">
+    <div class="sec-label">你可能没注意到的一个时刻</div>
+    <p class="reveal">
+      她在第3轮说了一句话："我真的不是不认真——我就是有时候做着做着就不知道对不对了。不知道该问谁。"
+    </p>
+    <p class="reveal" style="margin-top:8px;">
+      这句话是整场对话里最重要的一句话。不是在诉苦——是在告诉你<strong>根因</strong>。她不是不会做，不是不想做——是<strong>不知道标准</strong>。她前面两年没人告诉她"什么算做好"。李哥说"没事"、张姐说"进步大"——但没有一个人说过："这个方案不需要别人改才叫合格。"
+    </p>
+    <div class="insight">
+      <strong>这个时刻你接住了吗？</strong> [根据实际对话动态生成——"你当时回应了X，这让她..." / "你问了她另一个问题，这个信号滑过去了"]
+    </div>
+  </div>
+
+  <!-- Card 3: The fork in the road -->
+  <div class="card">
+    <div class="sec-label">一个当时可以走、但你没走的路</div>
+    <p class="reveal" style="margin-bottom:10px;">
+      在你说完三个具体事例之后，她说了那句话——"那几次返工我确实记得"。这是一个岔路口。
+    </p>
+    <div class="fork">
+      <div class="fork-label">你走的路</div>
+      <div class="fork-path fork-actual">
+        <strong>你当时说了：</strong>"[实际回应——从对话中提取]"<br>
+        <span style="font-size:12px;color:#78716C;">→ 你选择的方向是[继续解释/转向提问/给她建议/...]</span>
+      </div>
+      <div class="fork-label" style="margin-top:10px;">旁边那条路</div>
+      <div class="fork-path fork-alt">
+        <strong>如果你当时说：</strong>"管理者B，你刚才这句话很重要——'不知道该问谁'。从下个月开始，你每次做方案之前，花五分钟跟我对一下框架。不用多，就五分钟。你告诉我方向对不对——我告诉你对不对。这个习惯变了，你可能再也不用改四版方案。"<br>
+        <span style="font-size:12px;color:#78716C;">→ 这不是给她建议——是给她一根拐杖。她说了"不知道对不对"——你在给她一个"对"的确认机制。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: A pattern you might recognize -->
+  <div class="card">
+    <div class="sec-label">你身上可能有一个模式，你自己没注意到</div>
+    <div class="pattern">
+      [基于对话中的实际行为动态生成——示例：]<br><br>
+      她每次说"我不理解"的时候，你都给了她更多的解释——更多的事例、更多的数据、更多的原因。这本身没有问题。但到第4轮之后，你还在解释，而她其实已经理解了。她需要的不再是"为什么是C"，而是<strong>"那我现在该怎么办"</strong>。<br><br>
+      你多解释的那几轮——不是错了，是<strong>晚了</strong>。她已经准备好往前走了，你还在帮她理解过去。<br><br>
+      这个模式可能不只是在这个场景里出现。你在其他需要传递不好消息的场合——给上级汇报问题、给团队同步坏消息——会不会也习惯"多解释几轮"才转入行动？
+    </div>
+  </div>
+
+  <!-- Card 5: Scores — natural language -->
+  <div class="card">
+    <div class="sec-label">这次面谈，你做得怎么样</div>
+    <div class="scores">
+      <div class="score-item">
+        <span>用事实说话</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:#78716C">68分</span>
+          <div class="score-bar"><div class="score-fill" style="width:68%;background:#3B82F6"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <span>接住了她的情绪</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:#78716C">55分</span>
+          <div class="score-bar"><div class="score-fill" style="width:55%;background:#10B981"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <span>帮她看到下一步</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:#78716C">42分</span>
+          <div class="score-bar"><div class="score-fill" style="width:42%;background:#F59E0B"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <span>形成了具体的约定</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:#78716C">40分</span>
+          <div class="score-bar"><div class="score-fill" style="width:40%;background:#8B5CF6"></div></div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#78716C;margin-top:10px;line-height:1.5;">
+      <strong>一句话：</strong>你把"为什么是C"讲得很清楚。接下来值得练的是——当她开始理解之后，更快地把对话从"过去为什么"转向"接下来怎么办"。
+    </p>
+  </div>
+
+  <!-- Card 6: What to do next -->
+  <div class="card">
+    <div class="sec-label">下次可以试的一件事</div>
+    <p class="reveal">
+      下次当你注意到对方开始接受事实了——像管理者B说"那几次返工我确实记得"的时候——试着不再继续解释。而是问她：<strong>"那你觉得，从哪个地方开始改，对你来说最顺手？"</strong>
+    </p>
+    <p class="reveal" style="margin-top:8px;">
+      这句话的作用不是问她意见——是<strong>把方向盘递给她</strong>。她说了"不知道该问谁"——你给她一个她可以主动做的事情。她需要的不是更多的理解，是一个她能抓住的东西。
+    </p>
+    <div class="actions" style="margin-top:14px;">
+      <button class="act-btn act-primary">再练一次（同场景）</button>
+      <button class="act-btn act-secondary">换个场景试试</button>
+    </div>
+  </div>
+
+  <p style="text-align:center;font-size:11px;color:#D6D3D1;margin-top:24px;">建议 3-7 天内再练一次。这个窗口里，你的大脑还在消化这次体验。</p>
+
+</div>
+<script>lucide.createIcons()</script>
+</body>
+</html>

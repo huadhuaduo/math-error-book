@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试3 · 中间数据存储</title>
+<style>
+:root { --bg:#f8f9fb; --card:#fff; --border:#e5e7eb; --text:#2a2a2a; --muted:#6b7280; --success:#2d8a56; --danger:#c44; --warning:#d97706; --radius:8px; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background:var(--bg); color:var(--text); padding:40px; max-width:750px; margin:0 auto; line-height:1.6; }
+h2 { font-size:20px; margin-bottom:8px; }
+.subtitle { color:var(--muted); font-size:13px; margin-bottom:24px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-bottom:16px; }
+.card h3 { font-size:15px; margin-bottom:12px; }
+.btn { padding:8px 20px; border:none; border-radius:6px; font-size:14px; cursor:pointer; font-family:inherit; font-weight:500; background:#1a2a3a; color:#fff; margin:4px 8px 4px 0; }
+.btn:hover { background:#2c3e5a; }
+.btn-outline { background:#fff; color:#1a2a3a; border:1.5px solid #1a2a3a; }
+.btn-danger { background:#fff; color:#c44; border:1.5px solid #c44; }
+.result-box { margin-top:12px; padding:12px 16px; border-radius:6px; font-size:13px; }
+.result-box.pass { background:#edf7f0; color:#1a5c36; border:1px solid #a3d9b1; }
+.result-box.fail { background:#fef2f2; color:#7f1d1d; border:1px solid #f5c6c6; }
+.result-box.info { background:#f0f4fa; color:#2c3e5a; border:1px solid #c4d0e0; }
+.storage-status { font-size:12px; color:var(--muted); margin-top:4px; }
+.note { font-size:12px; color:var(--muted); margin-top:8px; padding:8px 12px; background:#fefce8; border-radius:6px; border-left:3px solid var(--warning); }
+</style>
+</head>
+<body>
+
+<h2>测试 3：中间数据能否存储</h2>
+<div class="subtitle">验证场景卡 JSON（约5-10KB）能否在页面间持久化——三智能体链路需要它</div>
+
+<!-- ====== Test 3a: localStorage ====== -->
+<div class="card">
+  <h3>测试 3a：localStorage 读写</h3>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">模拟一张场景卡（约 3KB），测试写入→读取→关闭页面→重新打开→读取</p>
+
+  <button class="btn" id="btnWrite">写入场景卡到 localStorage</button>
+  <button class="btn btn-outline" id="btnRead">从 localStorage 读取</button>
+  <button class="btn btn-danger" id="btnClear">清除</button>
+  <div id="storageResult"></div>
+
+  <div class="note">
+    <strong>在低代码平台上测试时：</strong>先点"写入"，关闭浏览器标签页，重新打开这个页面，点"读取"——看数据是否还在。<br>
+    ⚠️ 如果低代码平台页面运行在 iframe 或沙箱中，localStorage 可能被禁用。
+  </div>
+</div>
+
+<!-- ====== Test 3b: URL参数传递 ====== -->
+<div class="card">
+  <h3>测试 3b：URL 参数传递</h3>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">测试通过 URL 参数传递场景卡 ID（大数据不通过 URL 传，只传 ID 指向 localStorage）</p>
+
+  <button class="btn" id="btnUrlTest">生成带参数的 URL 并跳转</button>
+  <div id="urlResult"></div>
+
+  <div class="note">
+    <strong>适用于：</strong>场景生成页 → 跳转对话页时传递 scenario_id。<br>
+    对话页通过 scenario_id 从 localStorage 读取完整场景卡。<br>
+    ⚠️ URL 总长度不超过 2000 字符，所以只传 ID，不传完整 JSON。
+  </div>
+</div>
+
+<!-- ====== Test 3c: 低代码平台全局变量 ====== -->
+<div class="card">
+  <h3>测试 3c：低代码平台全局变量/状态（需在低代码平台中手动验证）</h3>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">
+    此测试无法自动化——需要你在低代码平台界面中手动检查以下功能是否存在：
+  </p>
+  <ol style="font-size:14px;padding-left:20px;line-height:2;">
+    <li>低代码平台的页面/流程编辑器中，是否有<strong>"全局变量"</strong>或<strong>"状态管理"</strong>面板？</li>
+    <li>AI 节点的输出是否可以<strong>绑定到变量</strong>？</li>
+    <li>变量是否可以在<strong>同一流程的不同节点之间</strong>共享？</li>
+    <li>变量是否可以在<strong>不同页面之间</strong>共享？</li>
+  </ol>
+  <div id="globalVarResult"></div>
+</div>
+
+<script>
+// ====== 3a: localStorage ======
+document.getElementById('btnWrite').addEventListener('click', function() {
+  // 模拟一张真实大小的场景卡（含嵌套结构 + 中文）
+  var scenarioCard = {
+    meta: {
+      scenario_id: 'TG-001', title: '首开倒计时——空降者的20天', version: '1.0.0',
+      difficulty: 'medium', estimated_duration_min: 15, task_domain: '团队激励',
+      d_vector: {
+        D1_morale_root: '过劳衰竭', D2_pressure_mode: '短期冲刺',
+        D3_experience_mix: '混合两极', D4_incentive_resource: '有限', D5_trust_base: '需要建立'
+      },
+      p_sequence: 'P₂→P₅(减法)→P₅(打样)+P₂',
+      progression_chain: '信任建立→方向减法→信心打样'
+    },
+    context: {
+      learner_role: { identity: '被紧急派往新项目支援的销售管理者', relationship_to_team: '空降支援者，非直属上级' },
+      situation: { project_status: '项目示范区已开放一周，来访量很高但认筹转化远未达预期', deadline: '首开倒计时20天' },
+      team_state: { size: 8, energy_level: '低', observable_signals: ['早会上没人说话','眼神无光','有人迅速关掉招聘网站'] },
+      opening_scene: { time: '到岗第一天晚上8点', trigger: '你翻完最后一页数据，抬头看窗外——售楼处已经关了灯。明天早上9点是第一次早会。' }
+    },
+    decision_points: [
+      {
+        dp_id: 'TG001-DP1', p_step: 'P₂_建立信任', capability_tag: 'P₂-建立信任-空降者版',
+        options: [
+          { id:'A', text:'明天召开全员动员会，宣布新的推售策略', is_best_path:false, trap_type:'T01-先发制人' },
+          { id:'B', text:'用2-3天自己消化说辞、爬楼看户型、筛选高意向客户', is_best_path:true },
+          { id:'C', text:'立即约谈每个销售员，逐一了解困难', is_best_path:false, trap_type:'T06-信任前置谬误' }
+        ]
+      },
+      {
+        dp_id: 'TG001-DP2', p_step: 'P₅_示范赋能', capability_tag: 'P₅-示范赋能-做减法',
+        options: [
+          { id:'A', text:'从6个户型中筛选2个作为主力推售户型', is_best_path:true },
+          { id:'B', text:'把所有户型优劣势做成对比表发给销售', is_best_path:false, trap_type:'T03-信息幻觉' },
+          { id:'C', text:'增加首开成交额外奖励', is_best_path:false, trap_type:'T02-激励万能论' }
+        ]
+      }
+    ]
+  };
+
+  try {
+    var jsonStr = JSON.stringify(scenarioCard);
+    var sizeBytes = new Blob([jsonStr]).size;
+    localStorage.setItem('mdp_scenario_card', jsonStr);
+    document.getElementById('storageResult').innerHTML =
+      '<div class="result-box pass">✅ 写入成功！数据大小：<strong>' + (sizeBytes/1024).toFixed(1) + ' KB</strong>（约' + sizeBytes + ' 字节）<br>' +
+      '<span class="storage-status">存储键：mdp_scenario_card · 数据包含：meta + context + 2个决策点</span></div>';
+  } catch(e) {
+    document.getElementById('storageResult').innerHTML =
+      '<div class="result-box fail">❌ 写入失败：' + e.message + '<br>可能原因：localStorage 已满、被禁用、或低代码平台沙箱限制</div>';
+  }
+});
+
+document.getElementById('btnRead').addEventListener('click', function() {
+  try {
+    var raw = localStorage.getItem('mdp_scenario_card');
+    if (!raw) {
+      document.getElementById('storageResult').innerHTML =
+        '<div class="result-box info">📭 localStorage 中没有数据。请先点"写入"。</div>';
+      return;
+    }
+    var data = JSON.parse(raw);
+    document.getElementById('storageResult').innerHTML =
+      '<div class="result-box pass">✅ 读取成功！<br>场景ID：<strong>' + data.meta.scenario_id + '</strong> · ' + data.meta.title + '<br>' +
+      'D向量：' + data.meta.d_vector.D1_morale_root + ' / ' + data.meta.d_vector.D2_pressure_mode + '<br>' +
+      '决策点：' + data.decision_points.length + ' 个 · 原始大小：约 ' + (new Blob([raw]).size/1024).toFixed(1) + ' KB</div>';
+  } catch(e) {
+    document.getElementById('storageResult').innerHTML =
+      '<div class="result-box fail">❌ 读取失败：' + e.message + '</div>';
+  }
+});
+
+document.getElementById('btnClear').addEventListener('click', function() {
+  localStorage.removeItem('mdp_scenario_card');
+  document.getElementById('storageResult').innerHTML =
+    '<div class="result-box info">🗑 已清除 localStorage 中的场景卡</div>';
+});
+
+// ====== 3b: URL参数 ======
+document.getElementById('btnUrlTest').addEventListener('click', function() {
+  var scenarioId = 'TG-001';
+  var currentUrl = window.location.href.split('?')[0];
+  var newUrl = currentUrl + '?scenario_id=' + encodeURIComponent(scenarioId) + '&mode=dialogue';
+
+  // 同时把场景卡写入 localStorage（模拟场景生成页的操作）
+  localStorage.setItem('mdp_scenario_card_' + scenarioId, '{"模拟":"这是之前存储的场景卡数据"}');
+
+  document.getElementById('urlResult').innerHTML =
+    '<div class="result-box pass">✅ URL 已生成：<br><code style="font-size:11px;word-break:break-all;">' + newUrl + '</code><br>' +
+    '<span class="storage-status">参数大小：约 30 字符（仅传 ID）· 完整场景卡在 localStorage 中</span><br><br>' +
+    '<strong>在低代码平台中：</strong>对话页读取 URL 中的 scenario_id → 从 localStorage 取完整场景卡 → 启动对话</div>';
+});
+
+// ====== 检查URL参数（页面加载时） ======
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var sid = params.get('scenario_id');
+  if (sid) {
+    document.getElementById('urlResult').innerHTML =
+      '<div class="result-box info">📥 检测到 URL 参数 scenario_id=<strong>' + sid + '</strong><br>' +
+      '如果是对话页，此时应从 localStorage 读取 mdp_scenario_card_' + sid + ' 并启动对话。</div>';
+  }
+})();
+</script>
+
+</body>
+</html>

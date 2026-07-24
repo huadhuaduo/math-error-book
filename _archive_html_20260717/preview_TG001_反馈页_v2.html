@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG-001 · 反馈报告</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;
+  background:linear-gradient(165deg,#F8F6F2,#EDE8E0,#F5F2ED,#EAE4DC);
+  min-height:100vh;-webkit-font-smoothing:antialiased;padding:28px 16px 60px;
+}
+.amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.12}
+.amb-1{width:300px;height:300px;background:#FEE2E2;top:-60px;right:-40px}
+.amb-2{width:240px;height:240px;background:#FEF3C7;bottom:-40px;left:-20px}
+
+.layout{position:relative;z-index:10;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+/* 共用卡片 */
+.card{
+  background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:22px 24px;
+  box-shadow:0 3px 16px rgba(0,0,0,.03)
+}
+.card h2{font-size:16px;font-weight:700;color:#1C1917;margin-bottom:4px}
+.card .sub{font-size:11px;color:#A8A29E;margin-bottom:14px}
+
+/* 模块① 路径回放 */
+.path-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.path-step{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.path-done{background:#DCFCE7;color:#166534}
+.path-skip{background:#FEE2E2;color:#DC2626}
+.path-arrow{color:#A8A29E;font-size:10px}
+
+/* 模块② 雷达 */
+.radar-row{margin:10px 0}
+.radar-item{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.radar-name{font-size:12px;font-weight:600;color:#1C1917;min-width:80px}
+.radar-bar{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.05);overflow:hidden}
+.radar-fill{height:100%;border-radius:4px;transition:width .7s ease}
+.radar-score{font-size:13px;font-weight:700;color:#1C1917;min-width:32px;text-align:right}
+.radar-compare{font-size:10px;color:#A8A29E;min-width:44px;text-align:right}
+.radar-compare.up{color:#16a34a}.radar-compare.down{color:#DC2626}
+
+/* 模块③ 绩优参照 */
+.best-practice{background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.1);border-radius:12px;padding:14px 16px;margin:10px 0}
+.best-practice .bp-label{font-size:9px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.best-practice .bp-row{font-size:12px;line-height:1.7;margin-bottom:8px}
+.best-practice .bp-you{color:#DC2626}.best-practice .bp-best{color:#166534}
+
+/* 模块④ 再来一练 */
+.next-practice{background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.1);border-radius:12px;padding:14px 16px;margin:10px 0}
+.next-practice .np-label{font-size:9px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:14px;
+  background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .2s}
+.btn:hover{background:#000;transform:translateY(-1px)}
+.btn-outline{background:transparent;color:#1C1917;border:1.5px solid rgba(0,0,0,.1)}
+.btn-outline:hover{background:rgba(0,0,0,.03)}
+
+/* 模式觉察 */
+.insight{font-size:12px;color:#7C3AED;line-height:1.7;padding:12px 14px;
+  background:rgba(243,232,255,.12);border-radius:10px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+
+<div class="layout">
+
+  <!-- 标题 -->
+  <div class="card" style="text-align:center">
+    <h2>TG-001 · 首开倒计时</h2>
+    <div class="sub">2026年7月15日 · 第1次练习 · 对话健康度 <strong style="color:#D97706">58分</strong></div>
+  </div>
+
+  <!-- ① 对话路径回放 -->
+  <div class="card">
+    <h2>你的对话路径</h2>
+    <div class="sub">绩优管理者的典型路径 vs 你这次的实际路径</div>
+
+    <div style="font-size:10px;color:#A8A29E;margin-bottom:6px">绩优路径</div>
+    <div class="path-row">
+      <span class="path-step path-done">先看数据</span><span class="path-arrow">→</span>
+      <span class="path-step path-done">问NPC-周看法</span><span class="path-arrow">→</span>
+      <span class="path-step path-done">聚焦两个户型</span><span class="path-arrow">→</span>
+      <span class="path-step path-done">亲自打样</span>
+    </div>
+
+    <div style="font-size:10px;color:#A8A29E;margin:10px 0 6px">你的路径</div>
+    <div class="path-row">
+      <span class="path-step path-done">先看数据</span><span class="path-arrow">→</span>
+      <span class="path-step path-done">问NPC-周看法</span><span class="path-arrow">→</span>
+      <span class="path-step path-skip">给培训方案</span><span class="path-arrow">→</span>
+      <span class="path-step path-skip">没打样</span>
+    </div>
+
+    <div class="insight">
+      <strong>你的模式：</strong>诊断做得好（看了数据、问了NPC-周），但第三步走偏了——你选择了培训和给工具，而不是聚焦做减法。最后一步缺失——你没有亲自打样，团队没看到证据。<br><br>
+      <strong>这反映出：</strong>你对"赋能"的理解偏向"教方法"而非"做示范"。对于NPC-周这种资深的团队——培训没用，他们需要亲眼看到。
+    </div>
+  </div>
+
+  <!-- ② 维度评分 + 雷达对比 -->
+  <div class="card">
+    <h2>能力维度</h2>
+    <div class="sub">本次 vs 首次（无历史数据时仅显示本次）</div>
+
+    <div class="radar-row">
+      <div class="radar-item">
+        <span class="radar-name">P₂ 建立信任</span>
+        <div class="radar-bar"><div class="radar-fill" style="width:65%;background:linear-gradient(90deg,#F59E0B,#fbbf24)"></div></div>
+        <span class="radar-score">65</span>
+        <span class="radar-compare">—</span>
+      </div>
+      <div class="radar-item">
+        <span class="radar-name">P₁ 诊断问题</span>
+        <div class="radar-bar"><div class="radar-fill" style="width:72%;background:linear-gradient(90deg,#16a34a,#22c55e)"></div></div>
+        <span class="radar-score">72</span>
+        <span class="radar-compare">—</span>
+      </div>
+      <div class="radar-item">
+        <span class="radar-name">P₅ 示范赋能</span>
+        <div class="radar-bar"><div class="radar-fill" style="width:38%;background:linear-gradient(90deg,#DC2626,#ef4444)"></div></div>
+        <span class="radar-score">38</span>
+        <span class="radar-compare">—</span>
+      </div>
+      <div class="radar-item">
+        <span class="radar-name">P₃ 重构目标</span>
+        <div class="radar-bar"><div class="radar-fill" style="width:55%;background:linear-gradient(90deg,#F59E0B,#fbbf24)"></div></div>
+        <span class="radar-score">55</span>
+        <span class="radar-compare">—</span>
+      </div>
+    </div>
+
+    <div style="font-size:10px;color:#A8A29E;text-align:center;margin-top:8px">
+      下次练习后再来对比——你会看到每个维度的变化
+    </div>
+  </div>
+
+  <!-- ③ 绩优参照 -->
+  <div class="card">
+    <h2>绩优管理者怎么做</h2>
+    <div class="sub">不是告诉你"错了"——是让你看到在这个场景下，最好的做法是什么</div>
+
+    <div class="best-practice">
+      <div class="bp-label">第三步 · 你做了 vs 绩优做法</div>
+      <div class="bp-row">
+        <span class="bp-you">你的做法：</span>给团队做了户型对比表，培训了逼定话术<br>
+        <span class="bp-best">绩优做法：</span>从6个户型中直接砍到2个——"就推B和D，其他的先放一放"<br>
+        <span style="font-size:10px;color:#A8A29E">为什么：过劳团队不需要更多信息——他们需要有人替他们做减法。给工具增加负担，砍选项减轻负担。</span>
+      </div>
+    </div>
+
+    <div class="best-practice">
+      <div class="bp-label">第四步 · 你跳过了 vs 绩优做法</div>
+      <div class="bp-row">
+        <span class="bp-you">你的做法：</span>没有做——直接跳到了"你们加油，相信你们能做到"<br>
+        <span class="bp-best">绩优做法：</span>蹲在沙盘区，亲自接待一组客户，当天促成认筹<br>
+        <span style="font-size:10px;color:#A8A29E">为什么：20天倒计时，培训太慢。你做成一单=团队亲眼看到证据。信心是传染的——但前提是有人先得了。</span>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>一句话：</strong>你最需要改变的——当团队"不信"的时候，不要讲道理或培训。亲自做给他们看。
+    </div>
+  </div>
+
+  <!-- ④ 再来一练 -->
+  <div class="card">
+    <h2>再来一练</h2>
+    <div class="sub">基于你最弱的维度（P₅ 示范赋能 38分），推荐的练习方向</div>
+
+    <div class="next-practice">
+      <div class="np-label">🎯 推荐：再练一次 TG-001，聚焦"亲自打样"</div>
+      <div style="font-size:12px;line-height:1.7">
+        这次特别关注第三步——当NPC-周说"方向对，但下面的人不信"的时候，不要说"我培训你们"。<br>
+        <strong>试着说："明天下午我蹲沙盘，带一组客户给你看。"</strong><br>
+        然后观察NPC-周的反应——跟这次有什么不同。
+      </div>
+    </div>
+
+    <div class="next-practice" style="margin-top:8px">
+      <div class="np-label">🔄 或者：换 TG-002 大户型攻坚，同样需要"示范赋能"</div>
+      <div style="font-size:12px;line-height:1.7">
+        老刘跟NPC-周一样——资深销售，需要亲眼看到证据。不同的场景，同一个能力维度。
+      </div>
+    </div>
+
+    <button class="btn" style="margin-top:12px">再练一次 TG-001</button>
+    <button class="btn btn-outline" style="margin-top:8px">换 TG-002 大户型攻坚</button>
+  </div>
+
+</div>
+</body>
+</html>

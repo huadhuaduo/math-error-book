@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · 陈睿 · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#DBEAFE;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#DCFCE7;bottom:-50px;left:-30px}
+  .layout{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:36px 24px 60px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+  .main-col{display:flex;flex-direction:column;gap:20px}
+  .side-col{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px}
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:24px 22px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .section-num{font-size:11px;font-weight:700;color:#A8A29E;letter-spacing:.08em;margin-bottom:4px}
+  .section-title{font-size:17px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:6px;letter-spacing:-.01em}
+  .section-sub{font-size:12px;color:#78716C;line-height:1.5;margin-bottom:18px}
+  .section-header{padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid rgba(0,0,0,.05)}
+  .ov-narrative{font-size:14px;color:#44403C;line-height:1.7;margin-bottom:20px}
+  .radar-area{display:flex;align-items:flex-start;gap:28px;justify-content:center;padding:16px 0 8px;flex-wrap:wrap}
+  .radar-labels{display:flex;flex-direction:column;gap:6px;font-size:12px;padding-top:8px}
+  .radar-item{display:flex;align-items:center;gap:8px}
+  .radar-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .radar-name{color:#44403C;min-width:60px;font-size:12px}
+  .radar-score{font-weight:700;color:#1C1917;font-size:14px;min-width:24px;text-align:right}
+  .radar-desc{font-size:10px;color:#A8A29E;max-width:130px;line-height:1.3}
+  .ov-verdict{font-size:14px;color:#1C1917;line-height:1.65;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.04)}
+  .finding{margin-bottom:16px}.finding+.finding{padding-top:14px;border-top:1px solid rgba(0,0,0,.04)}
+  .fd-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .fd-badge{display:inline-flex;align-items:center;gap:2px;padding:2px 9px;border-radius:100px;font-size:10px;font-weight:700}
+  .fd-round{font-size:10px;color:#A8A29E}
+  .fd-quote{font-size:13px;color:#44403C;line-height:1.55;padding:8px 12px;background:rgba(0,0,0,.02);border-radius:8px;margin:6px 0;font-style:italic}
+  .fd-note{font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:4px}
+  .fd-alt{font-size:12px;color:#065F46;line-height:1.5;padding:8px 12px;background:rgba(209,250,229,.2);border-radius:8px;margin-top:4px}
+  .reflect{font-size:12px;color:#3B82F6;line-height:1.5;padding:8px 12px;background:rgba(239,246,255,.25);border-radius:8px;margin-top:8px;font-style:italic}
+  .fork-box{background:rgba(254,243,199,.12);border:1px solid rgba(251,191,36,.06);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:12px}
+  .fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:4px}
+  .fork-path{padding:6px 10px;border-radius:6px;font-size:11px;line-height:1.5;margin:3px 0}
+  .fork-actual{background:rgba(254,226,226,.2);border:1px solid rgba(239,68,68,.02)}
+  .fork-alt{background:rgba(209,250,229,.2);border:1px solid rgba(16,185,129,.02)}
+  .pat-box{background:rgba(243,232,255,.15);border:1px solid rgba(167,139,250,.06);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:12px;color:#7C3AED;line-height:1.65}
+  .suggestion-text{font-size:14px;color:#44403C;line-height:1.65;margin-bottom:10px}
+  .bridge-highlight{font-size:13px;color:#1C1917;line-height:1.65;padding:12px 16px;background:rgba(0,0,0,.02);border-radius:10px;margin:10px 0}
+  .key-card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:18px 16px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .key-title{font-size:12px;font-weight:700;color:#1C1917;margin-bottom:10px}
+  .key-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:11px;color:#44403C;line-height:1.45}
+  .key-item+.key-item{border-top:1px solid rgba(0,0,0,.03)}
+  .commit-card{border:1.5px solid rgba(16,185,129,.2)}
+  .c-title{font-size:13px;font-weight:700;color:#1C1917;margin-bottom:2px}
+  .c-sub{font-size:10px;color:#A8A29E;margin-bottom:10px}
+  .c-proposal{background:rgba(16,185,129,.03);border:1px solid rgba(16,185,129,.08);border-radius:10px;padding:10px 12px;font-size:11px;color:#065F46;line-height:1.5;margin-bottom:8px}
+  .c-input{width:100%;border:none;border-bottom:1.5px solid rgba(0,0,0,.08);padding:5px 0;font-size:12px;font-family:inherit;outline:none;background:transparent;color:#1C1917;margin-bottom:8px;transition:border-color .2s}
+  .c-input:focus{border-bottom-color:#10B981}.c-input::placeholder{color:#D6D3D1;font-size:11px}
+  .c-row{display:flex;gap:6px;margin-bottom:6px}.c-row .c-input{flex:1}
+  .btn-save{width:100%;padding:10px;border-radius:12px;border:none;background:#1C1917;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}.btn-save:hover{background:#000}
+  .btn-row{display:flex;gap:8px}
+  .btn{display:inline-flex;align-items:center;gap:5px;padding:11px 18px;border-radius:12px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;justify-content:center}
+  .btn-dark{background:#1C1917;color:#fff;flex:1}.btn-dark:hover{background:#000}
+  .btn-light{background:rgba(0,0,0,.03);color:#44403C;flex:1}.btn-light:hover{background:rgba(0,0,0,.06)}
+  .footer-text{text-align:center;font-size:11px;color:#D6D3D1;margin-top:8px}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s ease;pointer-events:none;white-space:nowrap}
+  @media(max-width:780px){.layout{grid-template-columns:1fr}.side-col{position:static}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="layout">
+  <div class="main-col">
+    <div class="card">
+      <div class="section-header"><div class="section-num">PART 1</div><div class="section-title">总览</div><div class="section-sub">N 轮对话 · 陈睿 · A级·方向不明</div></div>
+      <p class="ov-narrative">一场好的绩效面谈，看五个维度：<strong>事实有没有说清楚、情绪有没有接住、方向有没有给到、约定有没有形成、对方的主动你有没有抓住。</strong></p>
+      <div class="radar-area">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <polygon points="100,22 172,72 145,162 55,162 28,72" fill="none" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+          <polygon points="100,48 156,78 136,141 64,141 44,78" fill="none" stroke="rgba(0,0,0,.03)" stroke-width="1"/>
+          <line x1="100" y1="100" x2="100" y2="16" stroke="rgba(0,0,0,.06)" stroke-width="1"/><line x1="100" y1="100" x2="178" y2="66" stroke="rgba(0,0,0,.06)" stroke-width="1"/>
+          <line x1="100" y1="100" x2="150" y2="168" stroke="rgba(0,0,0,.06)" stroke-width="1"/><line x1="100" y1="100" x2="50" y2="168" stroke="rgba(0,0,0,.06)" stroke-width="1"/>
+          <line x1="100" y1="100" x2="22" y2="66" stroke="rgba(0,0,0,.06)" stroke-width="1"/>
+          <polygon points="100,46 92,60 110,110 60,115 30,65" fill="rgba(59,130,246,.08)" stroke="#3B82F6" stroke-width="1.5" stroke-linejoin="round"/>
+          <text x="100" y="10" text-anchor="middle" font-size="10" fill="#78716C" font-weight="500">事实锚定</text>
+          <text x="184" y="64" text-anchor="start" font-size="10" fill="#78716C" font-weight="500">接住情绪</text>
+          <text x="154" y="178" text-anchor="middle" font-size="10" fill="#78716C" font-weight="500">赋能方向</text>
+          <text x="46" y="178" text-anchor="middle" font-size="10" fill="#78716C" font-weight="500">形成约定</text>
+          <text x="10" y="64" text-anchor="end" font-size="10" fill="#78716C" font-weight="500">抓住主动</text>
+        </svg>
+        <div class="radar-labels">
+          <div class="radar-item"><span class="radar-dot" style="background:#3B82F6"></span><span class="radar-name">事实锚定</span><span class="radar-score">[X]</span><span class="radar-desc">[从对话计算]</span></div>
+          <div class="radar-item"><span class="radar-dot" style="background:#10B981"></span><span class="radar-name">接住情绪</span><span class="radar-score">[X]</span><span class="radar-desc">[从对话计算]</span></div>
+          <div class="radar-item"><span class="radar-dot" style="background:#F59E0B"></span><span class="radar-name">赋能方向</span><span class="radar-score">[X]</span><span class="radar-desc">[从对话计算]</span></div>
+          <div class="radar-item"><span class="radar-dot" style="background:#EF4444"></span><span class="radar-name">形成约定</span><span class="radar-score">[X]</span><span class="radar-desc">[从对话计算]</span></div>
+          <div class="radar-item"><span class="radar-dot" style="background:#8B5CF6"></span><span class="radar-name">抓住主动</span><span class="radar-score">[X]</span><span class="radar-desc">他主动提了发展方向</span></div>
+        </div>
+      </div>
+      <p class="ov-verdict"><strong>你把业绩肯定做得很扎实。</strong>但在发展空间的回应上——他等了你两个月，你给他的答复里有没有一个他能抓住的时间线？A级员工需要的不是表扬——是一个信号。</p>
+    </div>
+    <div class="card">
+      <div class="section-header"><div class="section-num">PART 2</div><div class="section-title">觉察 · 我们发现</div><div class="section-sub">对话中你做了这些事——有些对方收到了，有些滑过去了。</div></div>
+      <div class="finding">
+        <div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">做得好的</span><span class="fd-round">[第N轮]</span></div>
+        <div class="fd-quote">[从对话中提取管理者原话]</div>
+        <div class="fd-note">[为什么有效——1句话解释]</div>
+        <div class="reflect">💬 [一个引导思考的问题]</div>
+      </div>
+      <div class="finding">
+        <div class="fd-head"><span class="fd-badge" style="background:#FEE2E2;color:#DC2626">可以更好</span><span class="fd-round">[第N轮]</span></div>
+        <div class="fd-quote">[从对话中提取管理者原话]</div>
+        <div class="fd-note">[问题在哪]</div>
+        <div class="fd-alt"><strong>如果这样说：</strong>[替代做法——具体到能立刻用的程度]</div>
+        <div class="reflect">💬 [一个引导思考的问题]</div>
+      </div>
+      <div class="fork-box"><div class="fork-label">[第N轮] 是一个岔路口</div><div class="fork-path fork-actual"><strong>你走了：</strong>[A路径]</div><div class="fork-path fork-alt"><strong>可以走：</strong>[B路径]</div></div>
+      <div class="pat-box"><strong>这可能是一个模式：</strong>面对高绩效者的发展诉求时，倾向于用"认可"替代"具体路径"。</div>
+    </div>
+    <div class="card">
+      <div class="section-header"><div class="section-num">PART 3</div><div class="section-title">我们的建议</div><div class="section-sub">基于上面的发现，这是你可以带回真实团队的一个动作。</div></div>
+      <p class="suggestion-text">你的团队里有像陈睿这样的人吗——业绩出色、但对未来方向感到不确定？</p>
+      <div class="bridge-highlight"><strong>这周你可以做的一件事：</strong>找一个你团队里的高绩效者，问她："如果明年这个时候你还在做现在的工作——你觉得你会怎么想？" 不要在她回答后立刻给方案——先听完。她可能会说出你没想到的东西。</div>
+    </div>
+  </div>
+  <div class="side-col">
+    <div class="key-card"><div class="key-title">📌 关键发现</div><div class="key-item">✅ [做得好的摘要]</div><div class="key-item">⚠️ [可以更好的摘要]</div><div class="key-item">🔄 模式：对高绩效者用认可替代路径</div></div>
+    <div class="card commit-card">
+      <div class="section-num">PART 4</div><div class="c-title" style="font-size:15px;margin-top:2px">我的行动承诺</div><div class="c-sub">系统建议，你可以直接用或改写。</div>
+      <div class="c-proposal">当高绩效下属表达发展困惑时——<strong>不只用"公司对你很认可"回应。给一个具体的、有时间节点的发展动作。</strong></div>
+      <input class="c-input" placeholder="改成你会说的话..." id="cBehavior"><div class="c-row"><input class="c-input" placeholder="在谁身上试" id="cWho"><input class="c-input" placeholder="什么时候" id="cWhen"></div>
+      <input class="c-input" placeholder="怎么判断做对了" id="cSignal">
+      <button class="btn-save" onclick="save()">确认承诺</button>
+      <p style="font-size:10px;color:#A8A29E;text-align:center;margin-top:6px">下次练习加载此承诺作为对比锚点</p>
+    </div>
+    <div class="btn-row"><button class="btn btn-dark">再练一次</button><button class="btn btn-light">换场景</button></div>
+    <p class="footer-text">建议 3-7 天内回来</p>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+function escapeHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function showToast(m,d){const t=document.getElementById('toast');t.textContent=m;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0'},d||2500)}
+function save(){const b=document.getElementById('cBehavior').value.trim();const w=document.getElementById('cWho').value.trim();const wh=document.getElementById('cWhen').value.trim();if(!b&&!w&&!wh){showToast('至少确认系统建议，或填一个你自己的方式');return;}showToast('承诺已保存。',3000);}
+</script>
+</body>
+</html>

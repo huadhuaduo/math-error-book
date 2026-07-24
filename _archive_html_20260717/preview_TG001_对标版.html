@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG-001 · 首开倒计时</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  background:linear-gradient(165deg,#F8F6F2,#EDE8E0,#F5F2ED,#EAE4DC);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  -webkit-font-smoothing:antialiased;
+  padding:20px;
+}
+.amb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;opacity:.1}
+.amb-1{width:280px;height:280px;background:#FEE2E2;top:-40px;right:-30px}
+.amb-2{width:220px;height:220px;background:#FEF3C7;bottom:-30px;left:-20px}
+
+.card{
+  position:relative;z-index:1;
+  max-width:440px;width:100%;
+  background:rgba(255,255,255,.5);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:18px;padding:28px 24px 24px;
+  box-shadow:0 2px 16px rgba(0,0,0,.04);
+}
+
+/* 人物角色卡 — 对标 Abilitie "background about the person" */
+.person{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.avatar{
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,#D4A574,#B8854A);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:26px;font-weight:700;flex-shrink:0;
+  box-shadow:0 3px 12px rgba(184,133,74,.2);
+}
+.person-text{flex:1}
+.person-name{font-size:18px;font-weight:700;color:#1C1917}
+.person-detail{font-size:13px;color:#78716C;line-height:1.5;margin-top:2px}
+
+/* 处境 — 对标 Abilitie "stage setting, concise" */
+.situation{
+  background:rgba(255,255,255,.6);
+  border:1px solid rgba(0,0,0,.04);
+  border-radius:12px;padding:16px 18px;margin-bottom:18px;
+  font-size:14px;color:#44403C;line-height:1.85;
+}
+.situation strong{color:#1C1917}
+
+/* 你面临的挑战 — 自然的、非AI味 */
+.challenges{margin-bottom:18px}
+.challenge-item{
+  font-size:13px;color:#44403C;line-height:1.65;
+  padding:10px 0;border-bottom:1px solid rgba(0,0,0,.04);
+}
+.challenge-item:last-child{border-bottom:none}
+.challenge-num{font-size:10px;font-weight:700;color:#D97706;margin-right:4px}
+
+/* 你想要的结果 — 对标 Abilitie "outcome you'd like to achieve" */
+.goal{
+  background:rgba(16,185,129,.04);
+  border:1px solid rgba(16,185,129,.1);
+  border-radius:12px;padding:14px 16px;margin-bottom:20px;
+  font-size:13px;color:#1C1917;line-height:1.7;
+}
+.goal-label{font-size:9px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+
+/* 按钮 */
+.btn{
+  display:block;width:100%;padding:13px;border:none;
+  border-radius:12px;background:#1C1917;
+  color:#fff;font-size:14px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+}
+.btn:hover{background:#000;transform:translateY(-1px)}
+
+/* 底部meta */
+.meta{text-align:center;font-size:10px;color:#A8A29E;margin-top:12px}
+
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+
+<div class="card">
+
+  <!-- 你要面对的人 -->
+  <div class="person">
+    <div class="avatar">周</div>
+    <div class="person-text">
+      <div class="person-name">NPC-周</div>
+      <div class="person-detail">
+        项目最资深的销售，司龄5年。<br>
+        见过四任空降领导。他在看——你是第五个。
+      </div>
+    </div>
+  </div>
+
+  <!-- 发生了什么 -->
+  <div class="situation">
+    你是被紧急派来支援的销售负责人。项目首开倒计时<strong>20天</strong>，127套房，6种户型面积相近、总价重合——客户在沙盘前反复比较，销售疲于奔命。<br><br>
+    到岗第一天晚上，你翻完过去一个月的来访数据。明天早上9点是第一次早会。
+  </div>
+
+  <!-- 你面临的挑战 —— 自然表述，不对应DP -->
+  <div class="challenges">
+    <div class="challenge-item">
+      <span class="challenge-num">1</span>
+      团队已经连续高强度干了一个多月，早会上没人说话。你是个空降的——你要说的第一句话、做的第一个动作，他们会拿来跟前四任对比。
+    </div>
+    <div class="challenge-item">
+      <span class="challenge-num">2</span>
+      6个户型让团队陷在比选瘫痪里。他们不是不努力——是被太多选项消耗了判断力。但你刚来，说"听我的，只推这两个"——他们凭什么信你？
+    </div>
+    <div class="challenge-item">
+      <span class="challenge-num">3</span>
+      策略定了，但团队成员根本不相信。你只有20天时间，讲道理太慢，培训没用——让他们信服认可，不是靠说。
+    </div>
+  </div>
+
+  <!-- 你想要的结果 -->
+  <div class="goal">
+    <div class="goal-label">这场对话结束时</div>
+    NPC-周主动拿一个客户来问你：<br>"领导，这个客户你帮我看看。"
+  </div>
+
+  <!-- 对标北森"即学即用"：MTP课后知识唤醒，不展开 -->
+  <div style="margin-bottom:20px;padding:10px 14px;border-radius:10px;
+    background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.08);
+    font-size:11px;color:#92400E;line-height:1.6;text-align:center">
+    本场景关联的 MTP 知识点（你已学过）<br>
+    <span style="font-weight:600">马斯洛需求层次 · 信任方程式 · 期望理论 · 榜样激励</span>
+  </div>
+
+  <button class="btn">开始对话</button>
+  <div class="meta">3个关键决策 · 约15分钟 · TG-001</div>
+
+</div>
+
+</body>
+</html>

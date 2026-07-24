@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TG-001 完整流程预览</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(165deg,#F8F6F2,#EDE8E0,#F5F2ED,#EAE4DC);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+.stage{display:none;width:100%;max-width:440px;padding:20px}
+.stage.active{display:block}
+
+/* ====== 阶段1：过渡动画 ====== */
+.transition-stage{text-align:center}
+.clock-wrap{width:100px;height:100px;border-radius:50%;border:2.5px solid rgba(28,25,23,.15);position:relative;margin:0 auto 24px}
+.clock-hand{position:absolute;bottom:50%;left:50%;width:2px;background:#D4A574;transform-origin:bottom center;border-radius:1px}
+.clock-hand.hour{height:20px;transform:rotate(-50deg)}.clock-hand.minute{height:30px;transform:rotate(20deg)}.clock-hand.second{height:38px;background:rgba(28,25,23,.3);animation:tick 60s linear infinite}
+@keyframes tick{to{transform:rotate(360deg)}}
+.clock-center{position:absolute;top:50%;left:50%;width:5px;height:5px;background:#D4A574;border-radius:50%;transform:translate(-50%,-50%)}
+.silhouette{width:120px;height:70px;margin:0 auto 20px;position:relative}
+.silhouette .head{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(184,133,74,.35),rgba(160,110,60,.25));margin:0 auto}
+.silhouette .body{width:36px;height:30px;background:linear-gradient(180deg,rgba(28,25,23,.06),rgba(28,25,23,.03));border-radius:8px 8px 0 0;margin:0 auto}
+.silhouette .desk{width:100%;height:2px;background:rgba(28,25,23,.06);border-radius:1px;position:absolute;bottom:0}
+.silhouette .glow{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:70px;height:30px;background:radial-gradient(ellipse,rgba(245,180,60,.12),transparent 70%)}
+.transition-text{color:#78716C;font-size:14px;line-height:2}.transition-text strong{color:#1C1917;font-size:16px}
+.transition-hint{color:rgba(28,25,23,.25);font-size:10px;font-style:italic;max-width:260px;margin:16px auto;line-height:1.6}
+.transition-btn{padding:12px 36px;border-radius:24px;border:1.5px solid rgba(184,133,74,.3);background:transparent;color:#B8854A;font-size:14px;cursor:pointer;font-family:inherit;animation:pulse 2s ease-in-out infinite;margin-top:20px}
+@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+.transition-btn:hover{background:rgba(184,133,74,.08)}
+
+/* ====== 阶段2：准备页 ====== */
+.prepare-card{background:rgba(255,255,255,.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:28px 24px;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.person-row{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#D4A574,#B8854A);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;flex-shrink:0;box-shadow:0 3px 12px rgba(184,133,74,.2)}
+.person-name{font-size:18px;font-weight:700;color:#1C1917}.person-role{font-size:12px;color:#78716C;margin-top:2px}.person-mood{font-size:11px;color:#D97706;margin-top:2px;font-style:italic}
+.story-block{background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.03);border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:#44403C;line-height:1.75}
+.story-label{font-size:9px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.challenge-item{font-size:12px;color:#44403C;line-height:1.65;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.03);display:flex;gap:8px}.challenge-item:last-child{border:none}.challenge-num{color:#D97706;font-weight:700;flex-shrink:0}
+.goal-block{background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.08);border-radius:10px;padding:12px 14px;margin:16px 0 20px;font-size:13px;line-height:1.7}
+.goal-label{font-size:9px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.challenges-label{font-size:9px;font-weight:700;color:#A8A29E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:14px;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}.btn:hover{background:#000}
+
+/* ====== 阶段3：桥接自评 ====== */
+.bridge-card{background:rgba(255,255,255,.9);border-radius:18px;padding:28px 24px;box-shadow:0 8px 32px rgba(0,0,0,.08);text-align:center}
+.bridge-title{font-size:15px;font-weight:700;color:#1C1917;margin-bottom:4px}
+.bridge-sub{font-size:11px;color:#A8A29E;margin-bottom:18px}
+.slider-row{margin-bottom:12px;text-align:left}
+.slider-label{display:flex;justify-content:space-between;font-size:11px;color:#44403C;margin-bottom:2px}
+.slider-label span:last-child{font-weight:700}
+input[type=range]{width:100%;accent-color:#1C1917}
+
+/* ====== 阶段4：聚焦选择 ====== */
+.focus-card{background:rgba(255,255,255,.9);border-radius:18px;padding:28px 24px;box-shadow:0 8px 32px rgba(0,0,0,.08);text-align:center}
+.focus-option{padding:10px 14px;margin:6px 0;border:1px solid rgba(0,0,0,.08);border-radius:10px;cursor:pointer;font-size:13px;text-align:left;transition:all .15s;color:#44403C}.focus-option:hover{border-color:#D4A574;background:rgba(212,165,116,.04)}.focus-option.sel{border-color:#B8854A;background:rgba(212,165,116,.08);font-weight:600;color:#B8854A}
+
+/* 导航 */
+.nav-dots{display:flex;gap:6px;justify-content:center;margin-bottom:20px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(0,0,0,.1)}.dot.active{background:#B8854A}
+</style>
+</head>
+<body>
+
+<!-- ====== 阶段1：过渡动画 ====== -->
+<div class="stage active" id="stage1">
+  <div class="transition-stage">
+    <div class="clock-wrap">
+      <div class="clock-hand hour"></div><div class="clock-hand minute"></div><div class="clock-hand second"></div><div class="clock-center"></div>
+    </div>
+    <div class="silhouette"><div class="glow"></div><div class="head"></div><div class="body"></div><div class="desk"></div></div>
+    <div class="transition-text">首开倒计时<strong>20天</strong><br>晚上8点 · 售楼处临时工位<br><span style="color:rgba(28,25,23,.35);font-size:12px">NPC-周还没走。他在等你开口。</span></div>
+    <div class="transition-hint">"这个户型我卖了五年。<br>你一个空降的——先让我看看你几斤几两。<br>我不反对你。但你要值得我跟。"</div>
+    <button class="transition-btn" onclick="showStage(2)">进入对话</button>
+  </div>
+</div>
+
+<!-- ====== 阶段2：准备页 ====== -->
+<div class="stage" id="stage2">
+  <div class="nav-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  <div class="prepare-card">
+    <div class="person-row">
+      <div class="avatar">周</div>
+      <div><div class="person-name">NPC-周</div><div class="person-role">最资深销售 · 司龄5年 · 团队都看他的态度</div><div class="person-mood">"见过四任空降领导。他在看——你是第五个。"</div></div>
+    </div>
+    <div class="story-block"><div class="story-label">情境</div>你是被紧急派来支援的销售负责人。项目首开倒计时20天，127套房，6种户型面积相近、总价重合——客户在沙盘前反复比较，销售疲于奔命。<br><br>到岗第一天晚上，你翻完过去一个月的来访数据。明天早上9点是第一次早会。</div>
+    <div class="challenges-label">任务挑战</div>
+    <div class="challenge-item"><span class="challenge-num">1</span><span>士气低落。团队连续干了一个多月，早会上没人说话——不是偷懒，是透支了。你说的第一句话、做的第一个动作，会被拿来跟前四任比。</span></div>
+    <div class="challenge-item"><span class="challenge-num">2</span><span>手里没有太多资源可以打。你是支援者，不是直属上级。加不了钱。你手里就两样东西：你爬楼看户型得到的数据，和你接下来做的事。</span></div>
+    <div class="challenge-item"><span class="challenge-num">3</span><span>没人真信。方向定了，但他们见过太多次"上面说一套、实际做一套"。你只有20天。光说没用——你得让他们亲眼看到，这条路走得通。</span></div>
+    <div class="goal-block"><div class="goal-label">目标</div>取得团队的信任，并且激励大家一起去努力找到目标和意义。<br>比如对话结束时，NPC-周主动拿客户来问你："这个策略需要你的帮助。"</div>
+    <button class="btn" onclick="showStage(3)">开始对话</button>
+  </div>
+</div>
+
+<!-- ====== 阶段3：桥接自评 ====== -->
+<div class="stage" id="stage3">
+  <div class="nav-dots"><span class="dot"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+  <div class="bridge-card">
+    <div class="bridge-title">开始之前，快速自评</div><div class="bridge-sub">你觉得自己在这四个维度上分别能得几分？</div>
+    <div class="slider-row"><div class="slider-label"><span>建立信任</span><span id="s0">5</span></div><input type="range" min="1" max="10" value="5" oninput="document.getElementById('s0').textContent=this.value"></div>
+    <div class="slider-row"><div class="slider-label"><span>诊断问题</span><span id="s1">5</span></div><input type="range" min="1" max="10" value="5" oninput="document.getElementById('s1').textContent=this.value"></div>
+    <div class="slider-row"><div class="slider-label"><span>示范赋能</span><span id="s2">5</span></div><input type="range" min="1" max="10" value="5" oninput="document.getElementById('s2').textContent=this.value"></div>
+    <div class="slider-row"><div class="slider-label"><span>重构目标</span><span id="s3">5</span></div><input type="range" min="1" max="10" value="5" oninput="document.getElementById('s3').textContent=this.value"></div>
+    <button class="btn" style="margin-top:16px" onclick="showStage(4)">进入对话</button>
+  </div>
+</div>
+
+<!-- ====== 阶段4：聚焦选择 ====== -->
+<div class="stage" id="stage4">
+  <div class="nav-dots"><span class="dot"></span><span class="dot"></span><span class="dot active"></span><span class="dot"></span></div>
+  <div class="focus-card">
+    <div class="bridge-title">这次对话，你最想练什么？</div><div class="bridge-sub">选一个——NPC-周会在这个维度上特别考验你</div>
+    <div class="focus-option sel" onclick="document.querySelectorAll('.focus-option').forEach(e=>e.classList.remove('sel'));this.classList.add('sel')">先做事，不说话——建立信任</div>
+    <div class="focus-option" onclick="document.querySelectorAll('.focus-option').forEach(e=>e.classList.remove('sel'));this.classList.add('sel')">先问"你觉得呢"——诊断问题</div>
+    <div class="focus-option" onclick="document.querySelectorAll('.focus-option').forEach(e=>e.classList.remove('sel'));this.classList.add('sel')">替团队做减法——不做对比表</div>
+    <div class="focus-option" onclick="document.querySelectorAll('.focus-option').forEach(e=>e.classList.remove('sel'));this.classList.add('sel')">亲自做给他们看——打样示范</div>
+    <button class="btn" style="margin-top:16px" onclick="alert('进入对话页 → AINPC-周开始对话')">开始对话</button>
+  </div>
+</div>
+
+<script>
+function showStage(n){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  document.getElementById('stage'+n).classList.add('active');
+}
+</script>
+</body>
+</html>

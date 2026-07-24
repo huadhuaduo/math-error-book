@@ -1,0 +1,29 @@
+- generic [ref=f6e2]:
+  - banner [ref=f6e3]:
+    - generic [ref=f6e4]: 2026 彩虹+计划 · 行动学习课题
+    - heading "课题经验资产库" [level=1] [ref=f6e5]
+    - generic [ref=f6e6]: 经验教训 + 业务成果 双轨录入 · 分类 · 一键生成领导汇总报告（支持上传 PPTX/DOCX/TXT）
+    - generic [ref=f6e7]: 🔒 所有数据仅存于本机浏览器（localStorage），无任何网络请求
+  - navigation [ref=f6e8]:
+    - button "经验录入" [ref=f6e9] [cursor=pointer]
+    - button "成果录入" [ref=f6e10] [cursor=pointer]
+    - button "条目库 (经验6)" [ref=f6e11] [cursor=pointer]
+    - button "生成报告" [active] [ref=f6e12] [cursor=pointer]
+    - button "备份" [ref=f6e13] [cursor=pointer]
+  - generic [ref=f6e65]:
+    - generic [ref=f6e67]:
+      - button "经验报告" [ref=f6e68] [cursor=pointer]
+      - button "成果报告" [ref=f6e69] [cursor=pointer]
+    - generic [ref=f6e70]:
+      - generic [ref=f6e71]:
+        - generic [ref=f6e72]: 报告阶段
+        - combobox [ref=f6e73]:
+          - option "中期复盘" [selected]
+          - option "结题"
+          - option "全部阶段"
+      - generic [ref=f6e74]:
+        - generic [ref=f6e75]: 报告期间标题
+        - textbox [ref=f6e76]: 2026年4月—7月（第二次作业·中期复盘）
+      - button "生成报告" [ref=f6e77] [cursor=pointer]
+      - button "打印 / 存 PDF" [ref=f6e78] [cursor=pointer]
+    - generic [ref=f6e79]: 选择报告类型，点击"生成报告"，将按当前条目库数据生成领导汇总报告

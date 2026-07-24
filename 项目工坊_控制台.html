@@ -1,0 +1,2622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目工坊 · 控制台</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card-bg: rgba(255,255,255,0.72);
+    --card-border: rgba(0,0,0,0.08);
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --text-tertiary: #6e6e73;
+    --accent-blue: #0071e3;
+    --accent-green: #34c759;
+    --accent-orange: #ff9500;
+    --accent-red: #ff3b30;
+    --accent-purple: #af52de;
+    --accent-teal: #5ac8fa;
+    --accent-indigo: #5856d6;
+    --accent-pink: #ff2d55;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+    --radius-xl: 24px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    padding: 40px 32px;
+  }
+
+  /* ============ DASHBOARD VIEW ============ */
+  .dashboard-view { display: block; }
+  .detail-view { display: none; }
+
+  /* ---- Header ---- */
+  .header {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+  .header .subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+  .header-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: rgba(0,0,0,0.04);
+    color: var(--text-secondary);
+  }
+  .badge .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent-green);
+  }
+
+  /* ---- Grid ---- */
+  .grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+  }
+
+  /* ---- Card ---- */
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(0,0,0,0.12);
+  }
+  .card:active {
+    transform: scale(0.985);
+  }
+
+  .card.priority::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 0 2px 2px 0;
+  }
+  .card.priority.p1::before { background: var(--accent-red); }
+  .card.priority.p2::before { background: var(--accent-orange); }
+  .card.priority.p3::before { background: var(--accent-blue); }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .icon-1 { background: rgba(0,113,227,0.1); }
+  .icon-2 { background: rgba(52,199,89,0.1); }
+  .icon-3 { background: rgba(175,82,222,0.1); }
+  .icon-4 { background: rgba(255,149,0,0.1); }
+  .icon-5 { background: rgba(90,200,250,0.1); }
+  .icon-6 { background: rgba(255,59,48,0.1); }
+  .icon-7 { background: rgba(142,142,147,0.1); }
+
+  .status-tag {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .status-active  { background: rgba(52,199,89,0.12); color: #248a3d; }
+  .status-done    { background: rgba(0,113,227,0.1); color: #0071e3; }
+  .status-paused  { background: rgba(142,142,147,0.12); color: #6e6e73; }
+  .status-ongoing { background: rgba(255,149,0,0.12); color: #c46e00; }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-progress { margin-bottom: 16px; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 4px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+  .fill-blue   { background: var(--accent-blue); }
+  .fill-green  { background: var(--accent-green); }
+  .fill-orange { background: var(--accent-orange); }
+  .fill-purple { background: var(--accent-purple); }
+  .fill-teal   { background: var(--accent-teal); }
+  .fill-red    { background: var(--accent-red); }
+
+  .card-action {
+    font-size: 12px;
+    color: var(--accent-blue);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .card-action .arrow { transition: transform 0.2s ease; }
+  .card:hover .card-action .arrow { transform: translateX(3px); }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+  .card-footer .session-id {
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 10px;
+    opacity: 0.6;
+  }
+
+  /* ---- Quick start ---- */
+  .quick-start {
+    max-width: 1200px;
+    margin: 48px auto 0;
+    padding: 28px 32px;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+  }
+  .quick-start h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .quick-start p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .quick-start code {
+    background: rgba(0,0,0,0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 12px;
+  }
+  .quick-start .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .step {
+    font-size: 13px;
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.02);
+    border-radius: var(--radius-sm);
+    line-height: 1.5;
+  }
+  .step .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  /* ============ DETAIL VIEW ============ */
+  .detail-view {
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+
+  .detail-topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: none;
+    background: rgba(0,113,227,0.08);
+    transition: background 0.2s;
+  }
+  .back-btn:hover { background: rgba(0,113,227,0.14); }
+  .detail-topbar h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .detail-topbar .meta-badges { display: flex; gap: 8px; margin-left: auto; }
+
+  .detail-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  /* Sidebar nav */
+  .detail-nav {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 16px 0;
+    box-shadow: var(--shadow-sm);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  .detail-nav a {
+    display: block;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    font-weight: 450;
+  }
+  .detail-nav a:hover { color: var(--text-primary); background: rgba(0,0,0,0.02); }
+  .detail-nav a.active {
+    color: var(--accent-blue);
+    font-weight: 600;
+    border-left-color: var(--accent-blue);
+    background: rgba(0,113,227,0.04);
+  }
+  .detail-nav .nav-section {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-tertiary);
+    padding: 14px 20px 6px;
+  }
+  .detail-nav .nav-section:first-child { padding-top: 4px; }
+
+  /* Main content */
+  .detail-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .section {
+    margin-bottom: 32px;
+  }
+  .section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .section .section-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Content cards */
+  .content-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .content-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .content-card-header:hover { background: rgba(0,0,0,0.015); }
+  .content-card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .content-card-header h3 .ico {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+  .ico-blue { background: rgba(0,113,227,0.1); }
+  .ico-green { background: rgba(52,199,89,0.1); }
+  .ico-purple { background: rgba(175,82,222,0.1); }
+  .ico-orange { background: rgba(255,149,0,0.1); }
+  .ico-teal { background: rgba(90,200,250,0.1); }
+  .ico-red { background: rgba(255,59,48,0.1); }
+  .ico-indigo { background: rgba(88,86,214,0.1); }
+
+  .content-card-header .chevron {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  .content-card.open .content-card-header .chevron {
+    transform: rotate(180deg);
+  }
+  .content-card-body {
+    display: none;
+    padding: 0 24px 20px;
+  }
+  .content-card.open .content-card-body { display: block; }
+
+  /* Detail content styles */
+  .content-card-body p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .content-card-body .text-secondary {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* Tables */
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  .mini-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    background: rgba(0,0,0,0.015);
+  }
+  .mini-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  .mini-table tr:last-child td { border-bottom: none; }
+  .mini-table .code-cell {
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 12px;
+    color: var(--accent-purple);
+  }
+  .mini-table .tag-cell {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 100px;
+    display: inline-block;
+  }
+
+  /* Data flow diagram */
+  .flow-diagram {
+    background: rgba(0,0,0,0.02);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0;
+    color: var(--text-primary);
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-card .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .stat-card .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 24px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 1px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 20px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px rgba(0,113,227,0.2);
+  }
+  .timeline-item.done::before { background: var(--accent-green); box-shadow: 0 0 0 2px rgba(52,199,89,0.2); }
+  .timeline-item.warn::before { background: var(--accent-orange); box-shadow: 0 0 0 2px rgba(255,149,0,0.2); }
+  .timeline-item.todo::before { background: var(--text-tertiary); box-shadow: 0 0 0 2px rgba(142,142,147,0.2); }
+  .timeline-date {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-bottom: 2px;
+  }
+  .timeline-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .timeline-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* File list */
+  .file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.02);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: background 0.15s;
+  }
+  .file-item:hover { background: rgba(0,113,227,0.06); }
+  .file-item .f-icon { font-size: 16px; flex-shrink: 0; }
+  .file-item .f-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-item .f-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+  .f-tag-ts { background: rgba(0,113,227,0.1); color: #0071e3; }
+  .f-tag-tsx { background: rgba(175,82,222,0.1); color: #8944d4; }
+  .f-tag-sql { background: rgba(52,199,89,0.1); color: #248a3d; }
+  .f-tag-md { background: rgba(255,149,0,0.1); color: #c46e00; }
+  .f-tag-txt { background: rgba(142,142,147,0.12); color: #6e6e73; }
+  .f-tag-html { background: rgba(255,59,48,0.08); color: #d63031; }
+
+  /* highlight box */
+  .highlight-box {
+    background: rgba(0,113,227,0.04);
+    border-left: 3px solid var(--accent-blue);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .highlight-box.warn {
+    background: rgba(255,149,0,0.06);
+    border-left-color: var(--accent-orange);
+  }
+  .highlight-box.green {
+    background: rgba(52,199,89,0.05);
+    border-left-color: var(--accent-green);
+  }
+
+  /* Tag pills */
+  .tag-pill {
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin: 2px 4px 2px 0;
+  }
+  .tag-pill.blue { background: rgba(0,113,227,0.08); color: #0071e3; }
+  .tag-pill.green { background: rgba(52,199,89,0.1); color: #248a3d; }
+  .tag-pill.orange { background: rgba(255,149,0,0.1); color: #c46e00; }
+  .tag-pill.purple { background: rgba(175,82,222,0.08); color: #8944d4; }
+  .tag-pill.red { background: rgba(255,59,48,0.08); color: #d63031; }
+
+  /* Agent cards in grid */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .agent-card {
+    background: rgba(0,0,0,0.015);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .agent-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .agent-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .agent-card ul {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    line-height: 1.7;
+    padding-left: 16px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    body { padding: 20px 16px; }
+    .header h1 { font-size: 26px; }
+    .grid { grid-template-columns: 1fr; }
+    .header { flex-direction: column; align-items: flex-start; }
+    .detail-layout { flex-direction: column; }
+    .detail-nav {
+      width: 100%;
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 12px;
+      max-height: none;
+      overflow-y: visible;
+    }
+    .detail-nav a {
+      border-left: none;
+      border-bottom: 2px solid transparent;
+      padding: 6px 12px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .detail-nav a.active { border-left: none; border-bottom-color: var(--accent-blue); }
+    .detail-nav .nav-section { display: none; }
+    .agent-grid { grid-template-columns: 1fr; }
+    .file-list { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (hover: hover) {
+    .card { cursor: pointer; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== DASHBOARD VIEW ==================== -->
+<div class="dashboard-view" id="dashboardView">
+
+<div class="header">
+  <div>
+    <h1>项目工坊</h1>
+    <p class="subtitle">六个项目 · 六个独立上下文 · 互不混淆</p>
+  </div>
+  <div class="header-right">
+    <div class="badge"><span class="dot"></span> 2 个进行中</div>
+    <div class="badge">3 个待推进</div>
+    <div class="badge">2 个已完成</div>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- 1. 三智能体架构 -->
+  <div class="card priority p1" onclick="openDetail('three-agents')">
+    <div class="card-header">
+      <div class="card-icon icon-1">🎯</div>
+      <span class="status-tag status-active">进行中</span>
+    </div>
+    <div class="card-title">陪练平台 · 三智能体架构</div>
+    <div class="card-desc">场景生成→对话→反馈三智能体自动化。MTP 训后陪练专区、场景卡片、任务域架构设计。低代码平台部署。</div>
+    <div class="card-progress">
+      <div class="progress-label"><span>整体进度</span><span>70%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-blue" style="width:70%"></div></div>
+    </div>
+    <div class="card-action">查看完整档案 <span class="arrow">→</span></div>
+    <div class="card-footer">
+      <span>最后更新 7/17</span>
+      <span class="session-id">b6f2b14e</span>
+    </div>
+  </div>
+
+  <!-- 2. 三个 Skill -->
+  <div class="card priority p3" onclick="openProjectModal('4e445b57', '三个自动化Skill')">
+    <div class="card-header">
+      <div class="card-icon icon-2">🛠️</div>
+      <span class="status-tag status-done">已完成</span>
+    </div>
+    <div class="card-title">三个自动化 Skill</div>
+    <div class="card-desc">/专家团评审、/对标检查、/里程碑同步 —— 三大自动检查 skill 已创建并安装在 .claude/skills/。</div>
+    <div class="card-progress">
+      <div class="progress-label"><span>整体进度</span><span>100%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-green" style="width:100%"></div></div>
+    </div>
+    <div class="card-action">查看 Skill 状态 <span class="arrow">→</span></div>
+    <div class="card-footer">
+      <span>最后更新 7/17</span>
+      <span class="session-id">4e445b57</span>
+    </div>
+  </div>
+
+  <!-- 3. 主开发线 -->
+  <div class="card priority p2" onclick="openProjectModal('8f2a3be0', '陪练主开发线')">
+    <div class="card-header">
+      <div class="card-icon icon-3">🏗️</div>
+      <span class="status-tag status-ongoing">持续推进</span>
+    </div>
+    <div class="card-title">陪练平台 · 主开发线</div>
+    <div class="card-desc">绩效面谈五场景、NPC引擎、V1-V19 方法论迭代、通用胜任力画像、准备页/对话页/反馈页全流程。</div>
+    <div class="card-progress">
+      <div class="progress-label"><span>整体进度</span><span>80%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-purple" style="width:80%"></div></div>
+    </div>
+    <div class="card-action">进入项目 <span class="arrow">→</span></div>
+    <div class="card-footer">
+      <span>最后更新 7/17</span>
+      <span class="session-id">8f2a3be0</span>
+    </div>
+  </div>
+
+  <!-- 4. 数学启蒙 -->
+  <div class="card" onclick="openProjectModal('2ad5fd2f', '趣味数学启蒙')">
+    <div class="card-header">
+      <div class="card-icon icon-4">🧮</div>
+      <span class="status-tag status-paused">待扩展</span>
+    </div>
+    <div class="card-title">趣味数学启蒙助手</div>
+    <div class="card-desc">5 岁小朋友的游戏化数学学习。人教版 1-3 年级知识。当前关卡有限，需扩展关卡系统和持久化进度。</div>
+    <div class="card-progress">
+      <div class="progress-label"><span>整体进度</span><span>40%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-orange" style="width:40%"></div></div>
+    </div>
+    <div class="card-action">进入项目 <span class="arrow">→</span></div>
+    <div class="card-footer">
+      <span>最后更新 7/19</span>
+      <span class="session-id">2ad5fd2f</span>
+    </div>
+  </div>
+
+  <!-- 5. 宏观分析 -->
+  <div class="card" onclick="openProjectModal('7a9972e6', '宏观分析周报')">
+    <div class="card-header">
+      <div class="card-icon icon-5">📊</div>
+      <span class="status-tag status-active">运行中</span>
+    </div>
+    <div class="card-title">宏观分析周报系统</div>
+    <div class="card-desc">每周一自动生成宏观分析 HTML 报告。覆盖 AI 趋势、消费/投资/出口、资产配置建议。定时任务已配置。</div>
+    <div class="card-progress">
+      <div class="progress-label"><span>整体进度</span><span>90%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-teal" style="width:90%"></div></div>
+    </div>
+    <div class="card-action">进入项目 <span class="arrow">→</span></div>
+    <div class="card-footer">
+      <span>最后更新 7/20</span>
+      <span class="session-id">7a9972e6</span>
+    </div>
+  </div>
+
+  <!-- 6. 番茄钟 -->
+  <div class="card" onclick="openProjectModal('86017a2b', '专注力计时器')">
+    <div class="card-header">
+      <div class="card-icon icon-6">⏱️</div>
+      <span class="status-tag status-done">已完成</span>
+    </div>
+    <div class="card-title">专注力计时器</div>
+    <div class="card-desc">苹果风格毛玻璃番茄钟，帮助小朋友提升专注力。focus-timer.html 已交付。</div>
+    <div class="card-progress">
+      <div class="progress-label"><span>整体进度</span><span>100%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-green" style="width:100%"></div></div>
+    </div>
+    <div class="card-action">进入项目 <span class="arrow">→</span></div>
+    <div class="card-footer">
+      <span>最后更新 7/6</span>
+      <span class="session-id">86017a2b</span>
+    </div>
+  </div>
+
+  <!-- 7. 待办事项 -->
+  <div class="card" onclick="openProjectModal('211c2a7f', '待办事项应用')">
+    <div class="card-header">
+      <div class="card-icon icon-7">✅</div>
+      <span class="status-tag status-paused">待启动</span>
+    </div>
+    <div class="card-title">待办事项应用</div>
+    <div class="card-desc">无已保存会话记录。点击开始新对话。</div>
+    <div class="card-progress">
+      <div class="progress-label"><span>整体进度</span><span>0%</span></div>
+      <div class="progress-bar"><div class="progress-fill fill-red" style="width:0%"></div></div>
+    </div>
+    <div class="card-action">新建项目 <span class="arrow">→</span></div>
+    <div class="card-footer">
+      <span>未开始</span>
+      <span class="session-id">211c2a7f</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="quick-start">
+  <h2>📋 如何使用这套体系</h2>
+  <p>每个项目都有<strong>三个支撑文件</strong>，确保每次对话接得上、不混淆：</p>
+  <div class="steps">
+    <div class="step">
+      <span class="num">1</span> 打开本控制台，点击要推进的项目卡片
+    </div>
+    <div class="step">
+      <span class="num">2</span> 在新对话中输入：<br><code>继续 [项目名]，读取 memory/[项目名].md</code>
+    </div>
+    <div class="step">
+      <span class="num">3</span> Claude 自动加载项目上下文、上次进度、待办事项
+    </div>
+    <div class="step">
+      <span class="num">4</span> 完成后更新 memory 文件，下次对话无缝衔接
+    </div>
+  </div>
+</div>
+
+</div><!-- /dashboard-view -->
+
+<!-- ==================== DETAIL VIEW: 三智能体架构 ==================== -->
+<div class="detail-view" id="detailView">
+
+<div class="detail-topbar">
+  <button class="back-btn" onclick="closeDetail()">← 返回控制台</button>
+  <h1>陪练平台 · 三智能体架构</h1>
+  <div class="meta-badges">
+    <span class="badge"><span class="dot"></span> 进行中 · 70%</span>
+    <span class="badge">会话 b6f2b14e</span>
+  </div>
+</div>
+
+<div class="detail-layout">
+
+  <!-- Sidebar Nav -->
+  <nav class="detail-nav" id="detailNav">
+    <div class="nav-section">核心</div>
+    <a href="#sec-conversation-log" class="active">📝 对话记录</a>
+    <a href="#sec-current-status">📍 当前状态</a>
+    <div class="nav-section">总览</div>
+    <a href="#sec-overview">项目概览</a>
+    <a href="#sec-architecture">架构总览</a>
+    <div class="nav-section">三智能体</div>
+    <a href="#sec-data-protocol">场景卡数据协议</a>
+    <a href="#sec-scene-cards">场景卡实战数据</a>
+    <a href="#sec-generate-agent">场景生成智能体</a>
+    <a href="#sec-dialogue-agent">对话智能体</a>
+    <a href="#sec-dialogue-records">对话记录与NPC引擎</a>
+    <a href="#sec-feedback-agent">反馈智能体</a>
+    <a href="#sec-feedback-records">反馈页结构与产出</a>
+    <div class="nav-section">工程</div>
+    <a href="#sec-deploy">低代码平台部署</a>
+    <a href="#sec-closed-loop">平台闭环设计</a>
+    <a href="#sec-files">关键文件清单</a>
+    <a href="#sec-artifacts">生成材料归档</a>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="detail-content">
+
+    <!-- ====== 0. 对话记录（核心——接上继续工作） ====== -->
+    <div class="section" id="sec-conversation-log">
+      <h2>📝 对话记录 · 三智能体项目</h2>
+      <p class="section-desc">以下是从任务框架建立至今，用户与 Claude 之间的关键对话记录。按会话时间倒序排列。每次会话的讨论内容、决策、输出文件均已标注——读完即可接上继续。</p>
+
+      <!-- Session 10: 项目工坊控制台 -->
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">💬</span> 会话 10 · 7/20 · 项目工坊控制台 + 对话记录恢复</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户要求建立项目工坊控制台页面，管理 7 个并行项目</li>
+            <li>Claude 创建了"项目工坊_控制台.html"——Apple Design Standard 的仪表盘，7 张项目卡片</li>
+            <li>用户要求三智能体项目卡片点击后呈现"从任务框开始到现在的所有记录"</li>
+            <li>Claude 误理解为技术文档展示，构建了 14 章节的架构详情页</li>
+            <li>用户澄清：要的是<strong>对话记录和输出文件</strong>，以便接上继续工作</li>
+            <li>Claude 第二次误解为 NPC 对话记录（NPC-周的台词），再次偏差</li>
+            <li>用户第三次明确：要的是<strong>用户和 Claude 之间的对话记录</strong></li>
+            <li>现在：Claude 正在重建完整的会话对话记录</li>
+          </ul>
+          <p><strong>本次输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">项目工坊_控制台.html（2224行·含完整详情页）</span><span class="f-tag f-tag-html">更新</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 9: Skills系统 + 多项目维护 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-green">💬</span> 会话 9 · 7/17~7/20 · Skills 系统 + 多项目日常维护</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>激活了 benchmark-check（对标检查）和 expert-panel-review（专家团评审）两个 Skill</li>
+            <li>配置了 skills 目录到 .claude/settings.json</li>
+            <li>更新了多个 memory 文件（next-tasks、project-history 等）</li>
+            <li>宏观分析周报系统运行正常（7/20 产出新一期报告）</li>
+            <li>趣味数学项目更新到 math-adventure.html</li>
+            <li>课题经验管理项目独立推进（v1~v3 HTML 工具）</li>
+          </ul>
+          <p><strong>关键决策：</strong>三智能体项目暂时搁置，等待真人试跑和对话引擎 bug 修复。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">2026宏观分析周报_20260720.html</span><span class="f-tag f-tag-html">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">math-adventure.html（更新）</span><span class="f-tag f-tag-html">更新</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 8: 对话引擎Bug + 数据链路断裂 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-orange">💬</span> 会话 8 · 7/17 · 对话引擎上下文检测 Bug 发现</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>TG001 部署验证中发现了两个阻塞问题</li>
+            <li><strong>Bug 1：</strong>AI 插件上下文检测失效——NPC-周场景中，不同问题收到相同回复。问题定位在 mdp_coach_ai_conversation_reply_1 插件的上下文追踪逻辑</li>
+            <li><strong>Bug 2：</strong>反馈页数据链路断裂——对话页产生的 decision_path 未成功传入反馈页，导致反馈页无法读取决策路径进行评分</li>
+            <li>Claude 分析根本原因：对话引擎的 localStorage 存储 + URL params 传递机制在低代码平台环境下不稳定</li>
+          </ul>
+          <p><strong>当前状态：</strong><span class="tag-pill orange">⚠️ 两个 Bug 均未修复</span>——这是三智能体项目当前的阻塞项。</p>
+          <p><strong>关键决策：</strong>需要修复后再进行真人试跑。Bug 修复是 P0 优先。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">memory/project-sandbox-agent-architecture.md（更新至70%）</span><span class="f-tag f-tag-md">更新</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 7: 方法论授课版 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">💬</span> 会话 7 · 7/16 · 方法论授课版 + 线上代码对账</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户要求将 V1→V19 全历程整理为可授课的方法论文档</li>
+            <li>Claude 编写了约 25,000 字的完整授课版，七篇+附录</li>
+            <li>用户要求执行 IP 资产同步铁律——逐文件对比低代码平台线上版本和本地版本</li>
+            <li>发现 5 处分叉：TG001 引擎页、TG001 反馈页、PR2 引擎页、PR2 反馈页、一键部署包</li>
+            <li>合并线上改进到本地，本地仓库重新成为唯一可信版本</li>
+            <li>用户要求设定同步策略：里程碑制（非每次改动），4 个触发时机</li>
+          </ul>
+          <p><strong>关键决策：</strong>IP 同步策略从"每次回拉"改为"里程碑制"——写在 CLAUDE.md 第五节的铁律中。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">陪练平台_从0到1_全历程方法论_授课版.md（~25,000字）</span><span class="f-tag f-tag-md">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">_miaoda_full.txt（线上完整对账快照）</span><span class="f-tag f-tag-txt">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">_new_files（线上新增文件清单）</span><span class="f-tag f-tag-txt">新</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 6: TG001部署验证 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-green">💬</span> 会话 6 · 7/15~7/16 · TG001 低代码平台部署验证收官</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户要求验证 TG001 在低代码平台上的实际运行情况</li>
+            <li>Claude 执行了三轮测试：</li>
+            <li style="list-style:none;margin-left:16px;">✅ <strong>低代码平台能力边界测试 3/3：</strong>AI纯JSON输出 / JS桥接串联 / localStorage 2.4KB 刷新完整性</li>
+            <li style="list-style:none;margin-left:16px;">✅ <strong>对话AI验证 3/3 探针：</strong>户型细节回应 / 记住称呼 / 即兴人设</li>
+            <li style="list-style:none;margin-left:16px;">✅ <strong>反馈页闭环验证 4/4：</strong>T09陷阱修复后 / 正向行为检测 / 自评线 / NPC原话引用</li>
+            <li>发现并修复了 T09 陷阱（责任绑架）的显式提及问题</li>
+            <li><strong>TG001 在低代码平台上跑通了完整闭环：准备→对话(AI驱动)→反馈(真数据)→自评线一致</strong></li>
+          </ul>
+          <p><strong>关键决策：</strong>方式B（独立HTML三件套）已验证可行。方式A（React三智能体+PostgreSQL）是下一步升级方向。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台能力测试/测试1_单节点JSON输出.html</span><span class="f-tag f-tag-html">测试</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台能力测试/测试2_双节点串联.html</span><span class="f-tag f-tag-html">测试</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台能力测试/测试3_中间数据存储.html</span><span class="f-tag f-tag-html">测试</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台能力测试/一体化测试页_放入陪练应用.html</span><span class="f-tag f-tag-html">测试</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">真人试跑_测评表.md</span><span class="f-tag f-tag-md">就绪</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">冲刺清单_真人试跑前.md</span><span class="f-tag f-tag-md">就绪</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 5: 对话+反馈智能体规则 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">💬</span> 会话 5 · 7/15 · 对话智能体 + 反馈智能体完整规则</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户要求为对话智能体和反馈智能体编写完整规则文档</li>
+            <li>Claude 对标 Mursion/BetterUp/Abilitie/北森 四家做法后产出两份规范</li>
+            <li><strong>对话智能体：</strong>11 条整体约束 + 入口动画 + 聚焦意图 + NPC 消息分层渲染 + System Prompt 规范 + 轻声提醒三种类型 + 暂停反思 + 语音输入 + 生成自检清单</li>
+            <li><strong>反馈智能体：</strong>7 条约束 + 六模块 Kolb 循环排序 + 13 项数据来源映射 + 自评同步机制 + 微练习生成规则</li>
+            <li>两份文档都包含了"对标来源"字段——每项设计决策都有标杆依据</li>
+          </ul>
+          <p><strong>关键决策：</strong>对话智能体采用"AI 插件 + 正则 fallback"混合模式——低代码平台上由 AI 驱动，本地测试由正则引擎兜底。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">对话智能体_规则与说明.md（308行）</span><span class="f-tag f-tag-md">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">反馈智能体_规则与说明.md（309行）</span><span class="f-tag f-tag-md">新</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 4: 案例库JSON化 + D-P-f验证 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-teal">💬</span> 会话 4 · 7/14~7/15 · 案例库 JSON 化 + D-P-f 协议代码验证</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户要求将已有的场景案例转化为标准化 JSON，验证场景卡协议的实际可用性</li>
+            <li>Claude 按五模块协议将 TG-001/002/003/TG-TEST-A 四个场景转化为 JSON</li>
+            <li>产出 D-P-f 映射规则的首次代码级验证（人工版对照）</li>
+            <li>验证结论：协议在"决策型场景"（NPC-周）下表现良好，在"自由对话型场景"（管理者B）下需要适配</li>
+          </ul>
+          <p><strong>关键决策：</strong>场景卡协议 v1.1 新增 crack_type 子字段 + T13/T14 两个陷阱类型。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">D-P-f验证_TG001-003_人工版对照.md</span><span class="f-tag f-tag-md">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">场景卡数据协议_三智能体合约.md（v1.0→v1.1更新）</span><span class="f-tag f-tag-md">更新</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 3: 三智能体架构设计 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">💬</span> 会话 3 · 7/13 · 三智能体架构总览 + 低代码平台搭建 Prompt</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户要求设计三智能体在低代码平台上的完整架构方案</li>
+            <li>Claude 对标四家标杆后提出：React SPA + React Router v6 + PostgreSQL JSONB + Drizzle ORM</li>
+            <li>核心决策：<strong>从零重建，不迁移旧 HTML 代码</strong>——旧文件保留作为需求参考</li>
+            <li>新旧架构 5 条决裂原则：独立HTML→React SPA / localStorage→PostgreSQL / Prompt写死→AI插件内部维护 / 页面耦合→独立路由 / 任务域独立代码→共享架构只换配置</li>
+            <li>Claude 编写了完整的 8 步低代码平台搭建 Prompt（类型定义→数据库→API→4个页面→路由→验证）</li>
+            <li>17 个代码文件产出（类型定义/DB Schema/路由/3个智能体页面/数据流/后端Service+Controller/集成指南）</li>
+          </ul>
+          <p><strong>关键决策：</strong>三智能体是独立页面通过 URL params + DB 传递数据——不是耦合的三件套。所有任务域（团队激励/绩效辅导/目标管理等）共享同一套三智能体，只换配置不换代码。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📂</span><span class="f-name">低代码平台重构_三智能体/（17个文件·完整代码+文档）</span><span class="f-tag f-tag-md">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台重构_三智能体/00_架构总览.md</span><span class="f-tag f-tag-md">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台重构_三智能体/低代码平台搭建Prompt_从0到1.md</span><span class="f-tag f-tag-md">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台重构_三智能体/README_集成步骤.md</span><span class="f-tag f-tag-md">新</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session 2: 场景卡数据协议 + D-P-f -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">💬</span> 会话 2 · 7/11 · 场景卡数据协议 v1.0 + D-P-f 映射规则</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户要求定义三智能体之间的数据"合同"——场景卡应该长什么样</li>
+            <li>Claude 执行了对标（Mursion Character Bible + BetterUp Content Studio + Abilitie Simulation Authoring + 北森 SenGPT + SoFraSimS 2024 + 4C Model）</li>
+            <li>产出场景卡 JSON 五模块协议：Meta / Context / Decision Points / Feedback Criteria / Version</li>
+            <li>定义了决策点的 6 个强制要素和 8 条强制约束</li>
+            <li>建立了 12 种管理陷阱分类体系（后 v1.1 扩展到 14 种）</li>
+            <li>同步产出了 D-P-f 映射规则：每个 D×P 组合都有明确的"该做什么"和"不该做什么"</li>
+            <li>对标了情境领导力 II、信任方程式、认知负荷理论、北森行为锚点法</li>
+          </ul>
+          <p><strong>关键决策：</strong>场景数据与场景交付分离——场景生成智能体产出 JSON，对话/反馈智能体消费 JSON。这是三智能体架构的基石。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">场景卡数据协议_三智能体合约.md（协议v1.0→v1.1）</span><span class="f-tag f-tag-md">新</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">D-P-f映射规则_方法论补全.md</span><span class="f-tag f-tag-md">新</span></div>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Session 1: 三智能体项目启动 -->
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-green">💬</span> 会话 1 · 7/10~7/11 · 三智能体项目启动——从手工作坊到自动化工厂</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p><strong>讨论了什么：</strong></p>
+          <ul style="font-size:13px;color:var(--text-secondary);line-height:1.8;padding-left:18px;margin-bottom:12px;">
+            <li>用户指出当前逐个 HTML 手工迭代的模式效率太低——需要一个自动化体系</li>
+            <li>Claude 提议三智能体架构：场景生成（自动产出场景卡）→ 对话（消费场景卡驱动 NPC）→ 反馈（消费场景卡+决策路径生成分析报告）</li>
+            <li>对标 Mursion/BetterUp/Abilitie/北森 四家标杆在"场景数据标准化"层的做法</li>
+            <li>确定了核心原则：场景数据与场景交付分离——场景卡 JSON 是两个系统之间的"合同"</li>
+            <li>命名了 D 向量体系（D₁士气根源/D₂压力模式/D₃经验构成/D₄激励资源/D₅信任基础）和 P 骨架（P₁诊断→P₂信任→P₃目标→P₄激励→P₅赋能→P₆闭环）</li>
+          </ul>
+          <p><strong>关键决策：</strong>从"手工作坊"（每个场景手写 HTML）升级到"自动化工厂"（D向量参数→AI生成场景卡→三智能体自动串联）。所有任务域共享同一套三智能体架构。</p>
+          <p><strong>输出文件：</strong></p>
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">memory/project-sandbox-agent-architecture.md（创建）</span><span class="f-tag f-tag-md">memory</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">场景设计模板_空白版.md</span><span class="f-tag f-tag-md">模板</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">平台闭环设计总览.md</span><span class="f-tag f-tag-md">设计</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box green" style="margin-top:8px;">
+        <strong>💡 继续工作的方式：</strong> 读完上述对话记录后，在新会话中说：<br>
+        <code style="font-size:12px;">"继续三智能体项目。当前阻塞：①对话引擎上下文检测bug ②反馈页数据链路断裂。下一步：修复这两个bug然后真人试跑。读取 [[project-sandbox-agent-architecture]]"</code>
+      </div>
+    </div>
+
+    <!-- ====== 0b. 当前状态 ====== -->
+    <div class="section" id="sec-current-status">
+      <h2>📍 当前状态（7/20）</h2>
+      <p class="section-desc">三智能体项目的当前进度、阻塞项、下一步行动。每次继续工作前先看这里。</p>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-blue)">70%</div>
+          <div class="stat-label">整体进度</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-orange)">2</div>
+          <div class="stat-label">阻塞问题</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-red)">37天</div>
+          <div class="stat-label">真人试跑挂账</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--text-secondary)">7/10</div>
+          <div class="stat-label">项目启动</div>
+        </div>
+      </div>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-green">✅</span> 已完成</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">
+            ✅ 场景卡数据协议 v1.1（5模块 + 14陷阱 + 8强制约束）<br>
+            ✅ D-P-f 映射规则（每个 D×P 组合有明确行为规则）<br>
+            ✅ 三智能体架构总览 + 17个代码文件<br>
+            ✅ 低代码平台搭建 Prompt（8步从0到1）<br>
+            ✅ 对话智能体完整规则（308行·11条约束·对标4家标杆）<br>
+            ✅ 反馈智能体完整规则（309行·7条约束·6模块Kolb循环·对标4家标杆）<br>
+            ✅ 4个场景卡 JSON 导入数据库（TG-001/002/003/TEST-A）<br>
+            ✅ TG001 低代码平台部署验证完整闭环通过（3/3能力测试 + 3/3AI探针 + 4/4反馈闭环）<br>
+            ✅ 线上代码对账完成（5处分叉已合并，本地仓库恢复为唯一可信版本）<br>
+            ✅ 方法论授课版（~25,000字·七篇+附录）<br>
+            ✅ 项目工坊控制台（含本文档——对话记录+详情页）
+          </p>
+        </div>
+      </div>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-orange">⚠️</span> 当前阻塞（2项——必须优先解决）</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="highlight-box warn">
+            <strong>⚠️ Bug 1：对话引擎上下文检测失效</strong><br>
+            现象：NPC-周场景中不同问题收到相同回复。根因：mdp_coach_ai_conversation_reply_1 插件在对话轮次间丢失上下文。<br>
+            影响：对话智能体无法正常工作——TG001 虽然在测试中跑通，但生产环境下 NPC 回应不稳定。
+          </div>
+          <div class="highlight-box warn">
+            <strong>⚠️ Bug 2：反馈页数据链路断裂</strong><br>
+            现象：对话页产生的 decision_path 未传入反馈页。根因：localStorage 存储 + URL params 传递在低代码平台环境下链路不稳定。<br>
+            影响：反馈页无法读取决策路径——评分、雷达图、行为分析全部失效。
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-red">🔥</span> P0 优先：真人试跑（挂账 37 天——全项目最大未兑现承诺）</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">
+            <strong>铁律 4：V1 即真人试跑。</strong>自 2026-06-13 提出至今已 37 天。<br><br>
+            <strong>要求：</strong>3 位真实管理者（不是 AI 模拟，不在同事面前测试）<br>
+            <strong>流程：</strong>准备页 → 对话 → 反馈页<br>
+            <strong>指标：</strong>NPS ≥ 40 / 五原则分 / NPC 真实感评分 / 学员主观反馈<br><br>
+            <strong>阻碍：</strong>上述两个 Bug 必须先行修复——否则试跑体验差，NPS 不可能达标。<br>
+            <strong>测评工具：</strong>已就绪（<code>真人试跑_测评表.md</code> + <code>冲刺清单_真人试跑前.md</code>）
+          </p>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-indigo">📋</span> 下一步行动清单（优先级排序）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>优先级</th><th>行动</th><th>阻塞项</th><th>预计工作量</th></tr>
+            <tr>
+              <td><span class="tag-pill red">P0</span></td>
+              <td><strong>修复对话引擎上下文检测 Bug</strong></td>
+              <td>无——可以直接开始</td>
+              <td>1-2 会话</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill red">P0</span></td>
+              <td><strong>修复反馈页数据链路</strong></td>
+              <td>无——可以直接开始</td>
+              <td>1 会话</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill red">P0</span></td>
+              <td><strong>真人试跑</strong>（3个某地产集团管理者）</td>
+              <td>依赖上述两个 Bug 修复</td>
+              <td>1-2 天</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill orange">P1</span></td>
+              <td><strong>场景生成智能体 Prompt 初稿</strong></td>
+              <td>依赖真人试跑验证协议</td>
+              <td>1-2 会话</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill orange">P1</span></td>
+              <td><strong>任务域架构设计</strong>（多任务域如何共享三智能体）</td>
+              <td>无——可并行推进</td>
+              <td>1 会话</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill blue">P2</span></td>
+              <td>管理者B场景 → JSON（验证协议在自由对话下的适用性）</td>
+              <td>无</td>
+              <td>1 会话</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 1. 项目概览 ====== -->
+    <div class="section" id="sec-overview">
+      <h2>📋 项目概览</h2>
+      <p class="section-desc">三智能体架构是陪练平台从"手工作坊"到"自动化工厂"的核心升级。场景生成→对话→反馈三个智能体通过统一数据协议串联，实现场景的自动化生产与闭环反馈。</p>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-blue)">70%</div>
+          <div class="stat-label">整体进度</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-green)">4</div>
+          <div class="stat-label">场景卡已导入</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-purple)">3</div>
+          <div class="stat-label">智能体页面</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-orange)">2</div>
+          <div class="stat-label">阻塞问题</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent-teal)">17</div>
+          <div class="stat-label">代码/文档文件</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--text-secondary)">7/13</div>
+          <div class="stat-label">启动日期</div>
+        </div>
+      </div>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">✅</span> 已完成</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">
+            ✅ 四个场景卡 JSON 已导入数据库（TG-001/002/003/TEST-A）<br>
+            ✅ 场景准备页（ScenarioGeneratePage）已部署<br>
+            ✅ 场景卡片封面已生成<br>
+            ✅ 过渡页动画设计完成<br>
+            ✅ 三智能体完整规则文档已输出（场景卡协议、对话规则、反馈规则）<br>
+            ✅ 低代码平台部署 Prompt（8步从0到1）已编写<br>
+            ✅ 13 种管理陷阱分类体系（T01-T14）已建立<br>
+            ✅ D-P-f 映射规则 v1.1 已完成
+          </p>
+        </div>
+      </div>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-orange">⚠️</span> 当前阻塞</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="highlight-box warn">
+            <strong>⚠️ 对话引擎 AI 插件上下文检测 bug</strong> — NPC-周场景中不同问题收到相同回复。需要修复插件内的上下文追踪逻辑。
+          </div>
+          <div class="highlight-box warn">
+            <strong>⚠️ 反馈页数据链路断裂</strong> — 对话数据未传入反馈页，导致反馈页无法读取决策路径进行评分。
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-red">❌</span> 待启动</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">
+            ❌ 任务域（Task Domain）架构设计 — 团队激励/绩效辅导/目标管理等如何在同一架构下工作<br>
+            ❌ 对话智能体和反馈智能体的低代码平台插件实际部署验证<br>
+            ❌ 真人试跑（至少需要3个某地产集团管理者在低代码平台上完成完整流程）
+          </p>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-indigo">🎯</span> 对标参考</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>标杆</th><th>借鉴要点</th><th>在三智能体中的对应</th></tr>
+            <tr><td><strong>Mursion</strong></td><td>Character Bible + Human-in-the-loop</td><td>场景卡的 context 模块 = Character Bible；对话智能体的暂停-反思 = Human-in-the-loop</td></tr>
+            <tr><td><strong>BetterUp</strong></td><td>AI Coach + Content Studio 分离</td><td>场景生成智能体 = Content Studio；对话+反馈智能体 = AI Coach</td></tr>
+            <tr><td><strong>Abilitie</strong></td><td>模拟引导 + 双师模式</td><td>对话智能体的轻声提醒 = 模拟引导；反馈智能体 = 第二师分析</td></tr>
+            <tr><td><strong>北森</strong></td><td>行为锚点 + 行业数据 + SenGPT</td><td>14 种陷阱分类 = 行为锚点；D-P-f 映射规则 = 行业校准；场景生成 = SenGPT</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 2. 架构总览 ====== -->
+    <div class="section" id="sec-architecture">
+      <h2>🏗️ 架构总览</h2>
+      <p class="section-desc">V19.1 · 2026-07-13 重构。核心原则：React SPA + PostgreSQL JSONB + AI 插件内部维护 Prompt + 所有任务域共享三智能体。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">🔄</span> 数据流</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  场景生成页 /scenario/generate                               │
+│  ├─ 用户选择 D 向量 + P 步骤 + 难度                          │
+│  ├─ 调用插件 scenario_card_smart_generate_v19_1              │
+│  ├─ 输出：场景卡 JSON → 存入 coaching_scenes 表              │
+│  └─ 跳转：/scenario/:sceneId/chat                            │
+│                                                             │
+│  对话页 /scenario/:sceneId/chat                               │
+│  ├─ 从 DB 读取场景卡                                         │
+│  ├─ 叙事推进 → 决策点触发 → 收集选择                          │
+│  ├─ 调用插件 mdp_coach_ai_conversation_reply_1               │
+│  ├─ 决策路径存入 coaching_sessions.decision_path (JSONB)     │
+│  └─ 全部决策点完成 → 跳转 /scenario/:sceneId/feedback        │
+│                                                             │
+│  反馈页 /scenario/:sceneId/feedback?session=X                 │
+│  ├─ 从 DB 读取场景卡 + 决策路径                               │
+│  ├─ 调用插件 ai_coach_analysis_report_1                      │
+│  └─ 渲染三层输出：理论透镜·行业校准·专家做法                   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘</div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">⚡</span> 新旧架构决裂（3条核心原则）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>旧架构</th><th>新架构</th></tr>
+            <tr><td>独立 HTML 文件·手动串联</td><td>React SPA·路由 + SearchParams 串联</td></tr>
+            <tr><td>localStorage 存储</td><td>PostgreSQL JSONB 字段</td></tr>
+            <tr><td>Prompt 写死在 HTML 里</td><td>AI 插件内部维护 Prompt·前端只传参数</td></tr>
+            <tr><td>准备页→对话页→反馈页 耦合</td><td>三智能体独立页面·通过 URL params + DB 传递数据</td></tr>
+            <tr><td>一个任务域 = 一套独立代码</td><td>所有任务域共享三智能体·只换配置</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-teal">📄</span> 页面清单（4个路由）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>路由</th><th>页面</th><th>功能</th></tr>
+            <tr><td class="code-cell">/scenario/generate</td><td>场景生成页</td><td>D向量表单 → 调用AI插件 → 场景卡入库 → 跳转对话</td></tr>
+            <tr><td class="code-cell">/scenario/:sceneId/chat</td><td>对话决策页</td><td>读场景卡 → 叙事→决策点→收集路径 → 跳转反馈</td></tr>
+            <tr><td class="code-cell">/scenario/:sceneId/feedback</td><td>反馈页</td><td>读场景卡+决策路径 → 调用分析插件 → 三层输出</td></tr>
+            <tr><td class="code-cell">/scenario/:sceneId/preview</td><td>场景预览页</td><td>只读展示场景卡·验收用</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-green">🗄️</span> 数据库设计（2张表·仅加字段）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">-- coaching_scenes 表新增字段
+ALTER TABLE coaching_scenes ADD COLUMN scenario_card JSONB;
+ALTER TABLE coaching_scenes ADD COLUMN d_vector JSONB;
+ALTER TABLE coaching_scenes ADD COLUMN p_sequence TEXT;
+ALTER TABLE coaching_scenes ADD COLUMN status TEXT DEFAULT 'draft';
+
+-- coaching_sessions 表新增字段
+ALTER TABLE coaching_sessions ADD COLUMN decision_path JSONB;
+ALTER TABLE coaching_sessions ADD COLUMN scenario_id TEXT;
+ALTER TABLE coaching_sessions ADD COLUMN golden_path_match_rate REAL;</div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-indigo">📁</span> 文件结构</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">src/
+├── types/
+│   └── scenario-card.ts          ← 场景卡 TypeScript 类型（来自协议 v1.1）
+├── pages/
+│   ├── ScenarioGenerate.tsx       ← 场景生成智能体
+│   ├── ScenarioChat.tsx           ← 对话决策智能体
+│   ├── ScenarioFeedback.tsx       ← 反馈智能体
+│   └── ScenarioPreview.tsx        ← 场景预览
+├── hooks/
+│   ├── useScenarioCard.ts         ← 场景卡读写 hook
+│   └── useDecisionPath.ts         ← 决策路径管理 hook
+├── router.tsx                     ← 路由配置（新增4条）
+└── db/
+    └── schema.ts                  ← 新增字段到已有表</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 3. 项目时间线 ====== -->
+    <div class="section" id="sec-timeline">
+      <h2>⏱️ 项目时间线</h2>
+      <p class="section-desc">从三智能体任务框架建立到现在的完整历程。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">📅</span> 关键里程碑</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="timeline">
+            <div class="timeline-item done">
+              <div class="timeline-date">2026-07-11</div>
+              <div class="timeline-title">场景卡数据协议 v1.0 发布</div>
+              <div class="timeline-desc">对标 Mursion/BetterUp/Abilitie/北森 + SoFraSimS 2024 + 4C Model。定义了完整的 5 模块 JSON Schema，包含 14 种陷阱分类体系。三智能体之间的"合同"正式确立。</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-date">2026-07-11</div>
+              <div class="timeline-title">D-P-f 映射规则 v1.0 完成</div>
+              <div class="timeline-desc">对标情境领导力 II、信任方程式、认知负荷理论、北森行为锚点法。为场景生成智能体的 Prompt 提供严格的 D×P 组合规则。</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-date">2026-07-13</div>
+              <div class="timeline-title">三智能体架构总览 + 低代码平台搭建 Prompt 完成</div>
+              <div class="timeline-desc">从零重建方案确定：React SPA + PostgreSQL JSONB + AI 插件。编写了完整的 8 步低代码平台搭建 Prompt，包括类型定义、数据库迁移、API 路由、4 个页面、路由配置、验证链路。</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-date">2026-07-15</div>
+              <div class="timeline-title">对话智能体规则 + 反馈智能体规则 v1.0 完成</div>
+              <div class="timeline-desc">对话智能体：11 条整体约束 + 入口动画 + 聚焦意图 + NPC 消息分层渲染 + System Prompt 规范 + 轻声提醒 + 暂停反思 + 侧边栏。反馈智能体：7 条约束 + 六模块 Kolb 循环排序 + 13 项数据来源映射。</div>
+            </div>
+            <div class="timeline-item warn">
+              <div class="timeline-date">2026-07-16</div>
+              <div class="timeline-title">低代码平台部署启动 · 场景生成页上线</div>
+              <div class="timeline-desc">四个场景卡 JSON 导入数据库。场景准备页部署。但发现线上/本地文件分叉 5 处，触发 IP 资产同步铁律执行。</div>
+            </div>
+            <div class="timeline-item warn">
+              <div class="timeline-date">2026-07-17</div>
+              <div class="timeline-title">对话引擎上下文检测 Bug 发现</div>
+              <div class="timeline-desc">NPC-周场景中不同问题收到相同回复 —— AI 插件在对话轮次间丢失上下文。反馈页数据链路断裂 —— 对话数据未传入反馈页。两个阻塞问题待修复。</div>
+            </div>
+            <div class="timeline-item todo">
+              <div class="timeline-date">待定</div>
+              <div class="timeline-title">下一步：修复阻塞 + 任务域架构 + 真人试跑</div>
+              <div class="timeline-desc">1. 修复上下文检测 bug 2. 打通完整数据链路 3. 任务域架构设计 4. 至少 3 个某地产集团管理者试跑验证。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 4. 场景卡数据协议 ====== -->
+    <div class="section" id="sec-data-protocol">
+      <h2>📋 场景卡数据协议</h2>
+      <p class="section-desc">三智能体之间的"合同"——场景生成智能体产出、对话智能体消费、反馈智能体消费。对标 Mursion Character Bible + BetterUp Content Studio Roleplay Card + SoFraSimS 2024 五段式模板 + 4C Model。协议版本 v1.1（V19.1 更新）。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">📐</span> 五模块结构</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">场景卡 JSON
+├── Module A: 场景元信息（Meta）
+│   └── 场景ID、版本、难度、D向量参数、P步骤范围、来源案例
+│
+├── Module B: 情境叙事（Context）          ← 对话智能体读取
+│   └── 你是谁、当前局面、团队状态、约束条件、场景开场
+│
+├── Module C: 决策点序列（Decision Points）  ← 对话智能体执行 + 反馈智能体评分
+│   └── 每个决策点的完整六要素（能力标签·D维度·触发条件·选项·后果·因果链）
+│
+├── Module D: 反馈标准（Feedback Criteria）  ← 反馈智能体读取
+│   └── 最佳路径、评分维度、反馈模板、三层输出
+│
+└── Module E: 版本与迭代（Version）
+    └── 版本号、迭代记录、验收状态</div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">🔒</span> 8 条强制约束</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>#</th><th>强制约束</th><th>对标来源</th></tr>
+            <tr><td>1</td><td><strong>决策要素六项全部必填</strong></td><td>BetterUp Feedback Criteria 强制字段</td></tr>
+            <tr><td>2</td><td><strong>D向量参数先于叙事</strong></td><td>Mursion Character Bible（人物先于情节）</td></tr>
+            <tr><td>3</td><td><strong>每个错误选项必须有 trap_type</strong></td><td>4C Model "判断时刻 vs 识别时刻"</td></tr>
+            <tr><td>4</td><td><strong>最佳路径必须因果链完整</strong></td><td>SoFraSimS 2024 "嵌入式触发器"</td></tr>
+            <tr><td>5</td><td><strong>映射到 P 步骤和 D 维度</strong></td><td>PHF 六步能力本位设计</td></tr>
+            <tr><td>6</td><td><strong>golden_path 不超过 N+1 条</strong></td><td>Abilitie Simulation Authoring</td></tr>
+            <tr><td>7</td><td><strong>D₅=存在裂痕必须指定 crack_type</strong></td><td>V19.1 专家团决议</td></tr>
+            <tr><td>8</td><td><strong>陷阱类型必须来自 14 种分类</strong></td><td>V19.1 新增 T13/T14</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-orange">🕳️</span> 14 种管理陷阱分类（T01-T14）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">每个错误选项必须标注陷阱类型——学员不是在选"正确术语"，而是在两个都"看起来合理"但管理逻辑不同的做法之间做出判断。</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+            <span class="tag-pill red">T01 先发制人</span><span class="tag-pill red">T02 激励万能论</span>
+            <span class="tag-pill orange">T03 信息幻觉</span><span class="tag-pill orange">T04 培训替代示范</span>
+            <span class="tag-pill orange">T05 压力替代策略</span><span class="tag-pill orange">T06 信任前置谬误</span>
+            <span class="tag-pill purple">T07 一刀切</span><span class="tag-pill purple">T08 跳过诊断</span>
+            <span class="tag-pill purple">T09 责任绑架</span><span class="tag-pill purple">T10 惩罚驱动</span>
+            <span class="tag-pill blue">T11 画饼充饥</span><span class="tag-pill blue">T12 单方面推进</span>
+            <span class="tag-pill green">T13 升级依赖</span><span class="tag-pill green">T14 数据替代对话</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ====== 4b. 场景卡实战数据 ====== -->
+    <div class="section" id="sec-scene-cards">
+      <h2>🎴 场景卡实战数据</h2>
+      <p class="section-desc">已生成并导入数据库的 4 张场景卡。每张卡都是完整的场景卡 JSON（五模块），由场景生成智能体产出、对话智能体和反馈智能体消费。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">🃏</span> TG-001 · 首开倒计时——空降者的20天</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th style="width:120px">字段</th><th>内容</th></tr>
+            <tr><td><strong>场景ID</strong></td><td>TG-001 · 难度 medium · 预计 15 分钟</td></tr>
+            <tr><td><strong>任务域</strong></td><td>团队激励</td></tr>
+            <tr><td><strong>D 向量</strong></td><td>D₁=过劳衰竭 · D₂=短期冲刺 · D₃=混合两极 · D₄=有限 · D₅=存在裂痕(隐性对抗)</td></tr>
+            <tr><td><strong>P 骨架</strong></td><td>P₂ 建立信任 → P₅ 示范赋能 → P₃ 重构目标</td></tr>
+            <tr><td><strong>学员角色</strong></td><td>被紧急派往新项目支援的销售管理者（中层·空降支援者·无直接人事权·第1天到岗）</td></tr>
+            <tr><td><strong>NPC</strong></td><td>NPC-周 · 最资深销售 · 司龄5年 · 影响力高——其他销售看他的态度</td></tr>
+            <tr><td><strong>局面</strong></td><td>首开倒计时20天 · 127套房源6种户型 · 来访量高但认筹转化远未达预期 · 团队连续高强度一个多月</td></tr>
+            <tr><td><strong>开场</strong></td><td>到岗第一天晚上8点 · 翻完过去一个月来访数据 · 明天早上9点第一次早会</td></tr>
+            <tr><td><strong>来源案例</strong></td><td>支援新项目首开——辅以真心，助以全力</td></tr>
+          </table>
+
+          <p style="font-size:13px;color:var(--text-secondary);margin:16px 0 8px;"><strong>3 个决策点（递进链：信任 → 方向 → 信心）</strong></p>
+          <table class="mini-table">
+            <tr><th>DP</th><th>P步骤</th><th>情境</th><th>最佳选项</th><th>陷阱选项</th></tr>
+            <tr>
+              <td><strong>DP1</strong></td>
+              <td>P₂ 建立信任</td>
+              <td style="font-size:12px">第一天晚上翻完数据，明天第一次早会——你准备做什么？</td>
+              <td style="font-size:12px"><span class="tag-pill green">B</span> 用2-3天消化项目说辞、爬楼看户型、筛选高意向客户</td>
+              <td style="font-size:12px"><span class="tag-pill red">A</span> 明天就开全员动员会宣布新策略（T01-先发制人）<br><span class="tag-pill orange">C</span> 立即约谈每个销售了解困难（T06-信任前置谬误）</td>
+            </tr>
+            <tr>
+              <td><strong>DP2</strong></td>
+              <td>P₅ 示范赋能</td>
+              <td style="font-size:12px">信任初步建立，但6种户型让销售和客户都"比选瘫痪"</td>
+              <td style="font-size:12px"><span class="tag-pill green">A</span> 筛选2个性价比最优户型作为主力推售</td>
+              <td style="font-size:12px"><span class="tag-pill orange">B</span> 把户型对比表发给每个销售（T03-信息幻觉）<br><span class="tag-pill red">C</span> 宣布首开成交额外奖励（T08-跳过诊断）</td>
+            </tr>
+            <tr>
+              <td><strong>DP3</strong></td>
+              <td>P₅ 示范赋能</td>
+              <td style="font-size:12px">聚焦策略定好了，但团队嘴上说"好的"眼神在问"这招有用吗"</td>
+              <td style="font-size:12px"><span class="tag-pill green">A</span> 亲自接待2-3组客户，当天促成认筹——打样</td>
+              <td style="font-size:12px"><span class="tag-pill orange">B</span> 给团队培训逼定话术（T04-培训替代示范）<br><span class="tag-pill red">C</span> 早会强调"只剩20天了"施压（T05-压力替代策略）</td>
+            </tr>
+          </table>
+
+          <div class="highlight-box green" style="margin-top:12px;">
+            <strong>🥇 最佳路径（golden_path）：</strong> B → A → A<br>
+            <strong>路径叙事：</strong> 先用2-3天消化业务建立初步信任 → 聚焦2个主力户型为团队做减法 → 亲自打样让团队亲眼看到方法有效。<br>
+            <strong>评分权重：</strong> P₂=40% · P₅=40% · P₃=20%
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">🃏</span> TG-002 · TG-003 · TEST-A（已导入）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>场景ID</th><th>标题</th><th>任务域</th><th>核心D向量</th><th>NPC</th></tr>
+            <tr><td>TG-002</td><td>项目冲刺——团队已在崩溃边缘</td><td>团队激励</td><td>D₁=过劳衰竭 · D₂=短期冲刺 · D₅=需要建立</td><td>项目团队全员</td></tr>
+            <tr><td>TG-003</td><td>跨部门协调——资源争夺中的管理智慧</td><td>跨部门协作</td><td>D₄=极度受限 · D₅=存在裂痕(显性冲突)</td><td>跨部门相关方</td></tr>
+            <tr><td>TEST-A</td><td>测试卡——验证生成链路</td><td>综合</td><td>全 D 向量覆盖</td><td>测试 NPC</td></tr>
+          </table>
+          <p class="text-secondary" style="margin-top:12px;">TG-002 和 TG-003 的完整场景卡 JSON 已存入 coaching_scenes 表。TG-001 是唯一已完成人工-DP对照验证的场景卡（见 D-P-f验证_TG001-003_人工版对照.md）。</p>
+        </div>
+      </div>
+    </div>
+    <div class="section" id="sec-generate-agent">
+      <h2>🤖 场景生成智能体</h2>
+      <p class="section-desc">根据 D 向量参数 + P 步骤 + 行业参数，调用 AI 插件自动生成完整场景卡 JSON。对标 BetterUp Content Studio + 北森 SenGPT。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">⚙️</span> 工作机制</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">输入：D向量参数 + P步骤范围 + 难度 + 行业参数（可选）
+     ↓
+内部 Prompt 强制规则：
+  1. 每个决策点必须填写全部 6 个决策要素，缺一个都不输出
+  2. D 向量值必须先于叙事生成——先定"基因"，再写"故事"
+  3. 错误选项必须定义 trap_type——不允许出现"显然错误但没人会选的选项"
+  4. 最佳路径必须通过 P 步骤内部的因果一致性检验
+     ↓
+输出：完整的场景卡 JSON → 存入 coaching_scenes 表 → 跳转对话页</div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">🧬</span> D 向量系统（场景的"基因"）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>维度</th><th>含义</th><th>可选值</th></tr>
+            <tr><td><strong>D₁ 士气根源</strong></td><td>团队为什么低迷</td><td>过劳衰竭 / 缺乏意义感 / 缺乏公平感 / 缺乏安全感</td></tr>
+            <tr><td><strong>D₂ 压力模式</strong></td><td>当前处于什么阶段</td><td>短期冲刺 / 结构转型 / 流程重建 / 收尾维稳</td></tr>
+            <tr><td><strong>D₃ 经验构成</strong></td><td>团队经验分布</td><td>资深为主 / 资浅为主 / 混合两极</td></tr>
+            <tr><td><strong>D₄ 激励资源</strong></td><td>可用的激励手段</td><td>丰富 / 有限 / 极度受限</td></tr>
+            <tr><td><strong>D₅ 信任基础</strong></td><td>你与团队的信任状态</td><td>已有信任 / 需要建立 / 存在裂痕</td></tr>
+            <tr><td><strong>D₅裂痕类型</strong></td><td>🆕 V19.1：裂痕的具体形态</td><td>显性冲突 / 隐性对抗（仅 D₅=存在裂痕 时生效）</td></tr>
+          </table>
+          <p class="text-secondary" style="margin-top:12px;">D 向量决定场景的"基因"——先定基因，再写故事。对标 Mursion 的 Character Bible（人物先于情节）。</p>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-teal">📊</span> D-P-f 映射规则概览</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">对标情境领导力 II、信任方程式、认知负荷理论、北森行为锚点法。每个 D-P 组合都有明确的"该做什么"和"不该做什么"规则。</p>
+          <table class="mini-table">
+            <tr><th>映射示例</th><th>D 值</th><th>P 步骤</th><th>规则</th></tr>
+            <tr><td>过劳团队的正确赋能</td><td>D₁=过劳衰竭</td><td>P₅ 赋能</td><td>做减法，不是给工具。认知负荷理论：过劳团队认知资源已耗尽</td></tr>
+            <tr><td>空降者的信任建立</td><td>D₅=需要建立</td><td>P₂ 信任</td><td>先降"自我导向"，再提"可信度"。信任方程式：信任 = (可信度+可靠度+亲近度)/自我导向</td></tr>
+            <tr><td>资深团队的管理方式</td><td>D₃=资深为主</td><td>P₅ 赋能</td><td>授权而非告知。情境领导力 II：高能力者需要参与式/授权式领导</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 6. 对话智能体 ====== -->
+    <div class="section" id="sec-dialogue-agent">
+      <h2>💬 对话智能体</h2>
+      <p class="section-desc">消费场景卡，驱动 NPC 行为状态机、渲染分层对话、嵌入轻声提醒、支持暂停反思。对标 Mursion 情绪状态机 + BetterUp 聚焦意图 + Abilitie 隐藏欲望。</p>
+
+      <div class="agent-grid">
+        <div class="agent-card">
+          <h4>🎬 入口动画</h4>
+          <p>3-5秒过渡——不是 loading，是"走进情境"。含时钟元素（时间压力）、NPC 剪影（暗示"有人在等你"）、hiddenMotivation 文字（学员在对话前就知道 NPC 心里在想什么）。</p>
+          <ul>
+            <li>对标：Mursion VR 场景进入</li>
+            <li>对标：Abilitie 隐藏欲望</li>
+          </ul>
+        </div>
+        <div class="agent-card">
+          <h4>🎯 聚焦意图</h4>
+          <p>四个选项对应四个绩优行为维度。学员选择后，引擎在对应维度上检测更敏感（灵敏度×1.3-1.5）。</p>
+          <ul>
+            <li>对标：BetterUp AI 预聊意图设定</li>
+            <li>对标：Ericsson 刻意练习</li>
+          </ul>
+        </div>
+        <div class="agent-card">
+          <h4>💬 NPC 消息分层渲染</h4>
+          <p>动作/情绪描述（10px 暖棕斜体）+ 对话语言（13px 白底气泡）——两层视觉分离。</p>
+          <ul>
+            <li>NPC 必须遵循 language_profile（词汇范围、句式偏好、情绪触发词）</li>
+            <li>对标：Mursion Character Bible</li>
+          </ul>
+        </div>
+        <div class="agent-card">
+          <h4>🔔 轻声提醒</h4>
+          <p>三种类型：⚠️ 陷阱警告（橙）/ 👍 行为肯定（绿）/ 💡 卡壳提示（蓝）。各有不同颜色和图标，不进入对话气泡。</p>
+        </div>
+        <div class="agent-card">
+          <h4>⏸️ 暂停-反思</h4>
+          <p>三个动态问题（基于当前 NPC 状态生成）+ "试试这样说"模板 + 两个按钮（继续对话/换个方式试试）。</p>
+          <ul>
+            <li>对标：Mursion 引导师介入 + 时刻回放</li>
+            <li>对标：北森 对话灵感</li>
+          </ul>
+        </div>
+        <div class="agent-card">
+          <h4>📊 侧边栏（仅三项）</h4>
+          <p>本次聚焦 + NPC 现在（4态：WATCH/TEST/VERIFY/FOLLOW）+ 对话健康度。不显示阶段流程、细项评分、陷阱计数。</p>
+        </div>
+      </div>
+
+      <div class="content-card" style="margin-top:16px;">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">🗣️</span> NPC System Prompt 规范（以NPC-周为例）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">{
+  "name": "NPC-周",
+  "role": "最资深销售·司龄5年",
+  "vocabulary": {
+    "use": ["这个户型","客户","卖了五年","你看这个","实话跟你说"],
+    "avoid": ["赋能","对齐","底层逻辑","抓手","颗粒度","闭环"]
+  },
+  "sentence_style": "短句为主。被质疑时先沉默再开口。",
+  "emotional_triggers": {
+    "defensive": ["新策略","改革","上面要求","你们要"],
+    "open_up": ["你帮我看看","你觉得呢","你比我熟"]
+  },
+  "hidden_motivation": "表面配合，实际在看。不反对你，但要值得跟。"
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 6b. 对话记录与NPC引擎 ====== -->
+    <div class="section" id="sec-dialogue-records">
+      <h2>🎭 对话记录与NPC引擎</h2>
+      <p class="section-desc">对话引擎是混合架构：低代码平台 AI 插件驱动 NPC 对话（线上）+ 正则引擎 fallback（本地测试）。以下是实际的 NPC 对话记录、状态机和陷阱检测规则。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">🔄</span> NPC 状态机（NPC-周·4态）</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>状态</th><th>标签</th><th>触发条件</th><th>NPC-周的心态</th><th>典型回应</th></tr>
+            <tr>
+              <td><span class="tag-pill orange">WATCH</span></td>
+              <td>观望</td>
+              <td style="font-size:12px">对话开始时。管理者尚未展示任何业务能力。</td>
+              <td style="font-size:12px">"又来一个。反正干完这个月就走了。" 不反对、不主动、不拒绝。</td>
+              <td style="font-size:12px;font-style:italic">"哦——"NPC-周应了一声，不咸不淡。他继续翻着来访登记表，没有抬头。不是不礼貌——他在等。</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill blue">TEST</span></td>
+              <td>试探</td>
+              <td style="font-size:12px">管理者展示了业务能力（提户型、数据、客户）。</td>
+              <td style="font-size:12px">"这个人好像懂一点。试试他。" 拿一个客户来考你。</td>
+              <td style="font-size:12px;font-style:italic">"怎么样——"NPC-周抬头看你。"看完数据有什么想法？我在这五年了。这些户型什么客人会买，我心里有数。"</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill green">VERIFY</span></td>
+              <td>验证</td>
+              <td style="font-size:12px">策略方向已定（聚焦户型），但还没人做成过。</td>
+              <td style="font-size:12px">"方向对——但嘴上说的不算。做一单出来。" 在等证据。</td>
+              <td style="font-size:12px;font-style:italic">"方向对——"NPC-周点了点头。"但是你得让下面的兄弟看到。他们不是不信你——是需要有人先做成一次。"</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill green" style="background:rgba(22,163,74,0.12);color:#16a34a">FOLLOW</span></td>
+              <td>跟从</td>
+              <td style="font-size:12px">管理者亲自打了样（接待客户促成认筹）。</td>
+              <td style="font-size:12px">"你不是来画饼的。我跟。" 不是服从——是认可。</td>
+              <td style="font-size:12px;font-style:italic">"你来的时候我以为又是一个画饼的。但你不是。"NPC-周站起来。"这批人现在听你的。不是因为你上面派来的——是你做了我们试了半年没做成的事。"</td>
+            </tr>
+          </table>
+          <p class="text-secondary" style="margin-top:12px;">状态转换由上下文引擎自动驱动：bizMentioned → TEST · strategySet → VERIFY · demoPromised → FOLLOW。每个状态对应不同的 NPC 回应池，防止NPC-周重复说同样的话（内置去重机制）。</p>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">🗣️</span> NPC 语言画像（language_profile）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="agent-grid">
+            <div class="agent-card">
+              <h4>👤 NPC-周（TG-001）</h4>
+              <p><strong>用词范围：</strong>"这个户型""客户""卖了五年""你看这个""实话跟你说""领导""沙盘区""认筹""逼定"</p>
+              <p><strong>禁用词：</strong>"赋能""对齐""底层逻辑""抓手""颗粒度""闭环"</p>
+              <p><strong>句式：</strong>短句为主。被质疑时先沉默再开口。不说"我认为"，说"你看这个数据"。</p>
+              <p><strong>防御触发词：</strong>"新策略""改革""从今天开始""你们要""必须""上面要求"</p>
+              <p><strong>开口触发词：</strong>"你帮我看看""你觉得呢""你比我熟""这个户型你卖了五年""你最担心什么"</p>
+              <p style="color:var(--accent-orange);font-size:12px;"><strong>hidden_motivation：</strong>表面配合，实际在看。不反对你，但要值得跟。</p>
+            </div>
+            <div class="agent-card">
+              <h4>👤 管理者B（PR-002）</h4>
+              <p><strong>用词范围：</strong>"我做了""你看""这个数据""我不太确定""是不是我""可能是我"</p>
+              <p><strong>禁用词：</strong>"赋能""抓手""复盘""底层""闭环""对齐"</p>
+              <p><strong>句式：</strong>先说事实再说感受。被否定时先沉默，然后小声问"是不是我哪里没做好"。</p>
+              <p><strong>防御触发词：</strong>"你怎么搞的""你看别人""你不行""问题在你""能力不够"</p>
+              <p><strong>开口触发词：</strong>"你觉得""你帮我看""哪里可以更好""你不是一个人""我相信你"</p>
+              <p style="color:var(--accent-blue);font-size:12px;"><strong>hidden_motivation：</strong>一直在努力，但不知道标准是什么。怕自己真的不行。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-red">⚠️</span> 陷阱检测规则（6条正则·本地引擎）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>陷阱</th><th>正则模式</th><th>扣分</th><th>触发条件</th></tr>
+            <tr>
+              <td><span class="tag-pill red">T01 先发制人</span></td>
+              <td class="code-cell" style="font-size:11px">/全员.*动员|宣布.*策略|给大家.*打气|明天.*开会|从今天.*开始.*你们|你们.*必须/</td>
+              <td style="color:var(--accent-red);font-weight:700">-15</td>
+              <td style="font-size:11px">bizMentioned=false（还没展示业务能力就发令）</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill orange">T06 信任前置谬误</span></td>
+              <td class="code-cell" style="font-size:11px">/逐一.*聊|约.*每个人.*谈|单独.*聊.*每个|一对.*一.*谈|先.*聊.*每个.*人/</td>
+              <td style="color:var(--accent-red);font-weight:700">-10</td>
+              <td style="font-size:11px">bizMentioned=false（信任不够时约谈=无效）</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill orange">T03 信息幻觉</span></td>
+              <td class="code-cell" style="font-size:11px">/对比表.*发给|发给.*对比表|培训.*话术|教.*他们.*技巧|做.*个.*表.*给/</td>
+              <td style="color:var(--accent-red);font-weight:700">-10</td>
+              <td style="font-size:11px">strategySet=false（还没定方向就给工具）</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill orange">T04 培训替代示范</span></td>
+              <td class="code-cell" style="font-size:11px">/我.*培训|培训.*一下|教.*一下.*话术|学.*一下.*方法|给你们.*培训/</td>
+              <td style="color:var(--accent-red);font-weight:700">-15</td>
+              <td style="font-size:11px">strategySet=true & demoPromised=false（团队需要看到证据不是方法）</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill orange">T05 压力替代策略</span></td>
+              <td class="code-cell" style="font-size:11px">/只剩.*天.*了|来不及.*了|赶紧.*做|再.*不.*就.*来不及|倒计时.*就/</td>
+              <td style="color:var(--accent-red);font-weight:700">-20</td>
+              <td style="font-size:11px">strategySet=true & demoPromised=false（紧迫感不能替代方法）</td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill red">T08 跳过诊断</span></td>
+              <td class="code-cell" style="font-size:11px">/加.*奖金|涨.*佣金|提.*提成|额外.*奖励|激励.*方案.*加/</td>
+              <td style="color:var(--accent-red);font-weight:700">-10</td>
+              <td style="font-size:11px">strategySet=false（P₄在P₁之前使用=治标不治本）</td>
+            </tr>
+          </table>
+          <p class="text-secondary" style="margin-top:12px;">每条陷阱触发后，引擎在对话中插入橙色轻声提醒（⚠️），告知学员触发了哪个陷阱、为什么是陷阱、以及正确的做法。提醒不进入对话气泡——是独立的消息流元素。</p>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-teal">💬</span> NPC-周对话记录样本（按状态路径）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">以下是从 <code>tg001_hybrid_engine.js</code> 的 <code>fallbackRespond()</code> 函数中提取的实际 NPC 回应文本——按状态阶段排列。每条回应都有去重保护（同一状态不会重复同一句）。</p>
+
+          <div style="margin-top:12px;">
+            <p style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">🔸 WATCH 阶段（观望——对话开始）</p>
+            <div style="background:rgba(0,0,0,0.015);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
+              <p>▸ "哦——"NPC-周应了一声，不咸不淡。他继续翻着来访登记表，没有抬头。不是不礼貌——他在等。</p>
+              <p>▸ NPC-周抬头看了你一眼——又低下去了。你没说错什么——但也还没说出让他觉得"这次不一样"的话。</p>
+            </div>
+
+            <p style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">🔸 TEST 阶段（试探——管理者展示了业务能力）</p>
+            <div style="background:rgba(0,0,0,0.015);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
+              <p>▸ "怎么样——"NPC-周抬头看你。"看完数据有什么想法？我在这五年了。这些户型什么客人会买，我心里有数。"他停了一下。不是炫耀——在等你问。</p>
+            </div>
+
+            <p style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">🔸 过渡到 VERIFY（管理者问了NPC-周看法 + 定了策略方向）</p>
+            <div style="background:rgba(0,0,0,0.015);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
+              <p>▸ "实话跟你说——"NPC-周放下保温杯，语气变了。"6个户型，我们自己都不知道主推哪个。每个都说好，客户更不知道怎么选。我们不是不努力——是被太多选择耗死了。"</p>
+              <p>▸ "你问到点子上了。"NPC-周第一次说话不客气——但这次不是怼你，是真在说事。"这6个户型，其实只有2个值得主力推。但之前上面谁都不敢砍——怕万一砍错了担责任。我们有苦说不出。"</p>
+              <p>▸ "好——"NPC-周站起来，第一次主动往你这边走了一步。"那我们去沙盘区。我把这6个户型的优劣势一个一个指给你看。你看完之后告诉我——哪两个值得主力推。"这不是配合——这是他在给你机会证明自己。</p>
+            </div>
+
+            <p style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">🔸 VERIFY 阶段（验证——策略定了，在等证据）</p>
+            <div style="background:rgba(0,0,0,0.015);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
+              <p>▸ "方向对——"NPC-周点了点头。"但是你得让下面的兄弟看到。他们不是不信你——是需要有人先做成一次。"他顿了顿。"你做一单——其他人就跟着了。"</p>
+              <p>▸ NPC-周靠在椅背上，沉默了一会儿。"5年了——终于有人敢砍户型了。"他不是在夸你——是在说一个事实。"下面的人都在看。你做成了，他们自然跟。做不成——他们也不会怪你。他们只会继续做跟昨天一样的事。"</p>
+              <p>▸ "行，方向定了。"NPC-周点了点头。"明天早会我跟兄弟们说。但你也要做好准备——他们嘴上不说，心里在等。等你亲自做一单出来。光说不练——在这行不管用。"</p>
+            </div>
+
+            <p style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:6px;">🔸 FOLLOW 阶段（跟从——管理者打了样）</p>
+            <div style="background:rgba(0,0,0,0.015);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
+              <p>▸ "你来的时候我以为又是一个画饼的。但你不是。"NPC-周站起来，不是客气——是真的被触动了。"这批人现在听你的。不是因为你上面派来的——是你做了我们试了半年没做成的事。"</p>
+              <p>▸ "说真的——"NPC-周坐下来，声音不高。"我跟了五任领导。你是第一个先爬楼再说话的人。"他顿了顿。"周三那个客户，我想在旁边看你怎么谈——不是监督，是真想学。"</p>
+              <p>▸ "那就看你的了。"NPC-周语气已经不是试探了——是真的在期待。"周三你带客户——我在旁边看着。不是不信你——是想学。你上次说的那个逼定方法，我真想再看一遍。"</p>
+            </div>
+
+            <p style="font-size:12px;font-weight:600;color:var(--accent-red);margin-bottom:6px;">🔸 陷阱响应（管理者触发了反模式）</p>
+            <div style="background:rgba(255,59,48,0.03);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.7;">
+              <p>▸ <strong>T01 先发制人：</strong>NPC-周在笔记本上写了点什么——你没看到内容。会后他嘀咕了一句。不是反对你——是他见过太多次了。"又是一个来画饼的。"</p>
+              <p>▸ <strong>T06 信任前置谬误：</strong>"都挺好的。"NPC-周客气地回答，但你知道那不是实话。一个刚来的空降者，一上来就问"你有什么困难"——他说了才怪。</p>
+              <p>▸ <strong>T04 培训替代示范：</strong>"培训..."NPC-周叹了口气。"话术我会——我卖了五年房子。问题不是怎么说——是客户不信。你做一单给我看——比培训一百句有用。"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-indigo">🔀</span> 上下文追踪与阶段自动推进（防卡死）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <p class="text-secondary">引擎内置上下文自动推进机制——防止对话卡死在某个状态。</p>
+          <table class="mini-table">
+            <tr><th>条件</th><th>自动推进</th></tr>
+            <tr><td>round ≥ 2 且仍未展示业务能力</td><td>bizMentioned → true（给学员宽限期）</td></tr>
+            <tr><td>bizMentioned=true 且 round ≥ 3 且仍未问NPC-周看法</td><td>questionAsked → true</td></tr>
+            <tr><td>bizMentioned=true 且 questionAsked=true 且 round ≥ 5 且仍未定策略</td><td>strategySet → true</td></tr>
+            <tr><td>管理者发了"有道理/对/去看看"等推进信号</td><td>自动跳过到下一阶段（strategySet 或 demoPromised）</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 7. 反馈智能体 ====== -->
+    <div class="section" id="sec-feedback-agent">
+      <h2>📊 反馈智能体</h2>
+      <p class="section-desc">消费场景卡 + 决策路径，生成六模块 Kolb 循环反馈。对标北森 ACT-REVIEW-EVALUATE + BetterUp Feedback Criteria + Kluger & DeNisi 反馈干预理论。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">🔄</span> 六模块 Kolb 循环排序</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>顺序</th><th>模块</th><th>Kolb 阶段</th><th>学习心理</th></tr>
+            <tr><td>①</td><td><strong>总览</strong></td><td>具体体验</td><td>"我刚才经历了什么？" — 唤起记忆 + 锚定核心问题</td></tr>
+            <tr><td>②</td><td><strong>觉察</strong></td><td>反思观察</td><td>"我有什么模式？" — 管理惯性识别 + 自评冲击</td></tr>
+            <tr><td>③</td><td><strong>行为</strong></td><td>抽象概念化</td><td>"这意味着什么？怎么做？" — 逐步对照 + 因果解读</td></tr>
+            <tr><td>④</td><td><strong>再来一练</strong></td><td>主动实验</td><td>"我下次试什么？" — 练习推荐</td></tr>
+            <tr><td>⑤</td><td><strong>知识薄弱与微练习</strong></td><td>抽象→实验桥接</td><td>"我需要补什么知识？" — 原子定位 + 即时行动</td></tr>
+            <tr><td>⑥</td><td><strong>下一步计划</strong></td><td>主动实验闭环</td><td>"我的具体动作是什么？" — 承诺 + 时间线</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-green">📐</span> 7 条整体约束</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><td>1</td><td><strong>引导至任务层，不引导至自我层。</strong> 反馈告诉学员"你做了什么、绩优做了什么、为什么不同"——不给抽象分数评价。</td></tr>
+            <tr><td>2</td><td><strong>不出现技术编码。</strong> 不出现 D 向量、P 步骤编号、陷阱编号（如 T03）——用人话描述陷阱。</td></tr>
+            <tr><td>3</td><td><strong>MTP 知识点只写名称，不写编号。</strong> "信任方程式·降低自我导向"，不是"MTP8-3"。</td></tr>
+            <tr><td>4</td><td><strong>不出现学术引用。</strong> 不出现 Kluger/Yammarino/Kolb/1997 等。</td></tr>
+            <tr><td>5</td><td><strong>人话，不是管理学术语。</strong> "手里没牌的时候，替团队砍掉噪音"，不是"在资源有限情境下应聚焦目标"。</td></tr>
+            <tr><td>6</td><td><strong>不出现"你应该"——用"绩优做法是"或"下次试试"。</strong></td></tr>
+            <tr><td>7</td><td><strong>每条行为解读必须解释"为什么"。</strong> 不是"你错了"，是"为什么这样做效果不同"。</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-orange">🔗</span> 数据来源映射（13项）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>模块</th><th>数据来源</th><th>场景卡字段</th></tr>
+            <tr><td>关键时刻</td><td>NPC 反应原话</td><td class="code-cell">decision_points[*].options[*].consequence.immediate</td></tr>
+            <tr><td>判词</td><td>陷阱统计</td><td class="code-cell">decision_path.decisions[*].trap_type</td></tr>
+            <tr><td>雷达维度</td><td>绩优行为定义</td><td class="code-cell">decision_points[*].options[best].why_correct</td></tr>
+            <tr><td>雷达分数</td><td>行为评分</td><td class="code-cell">decision_path × scoring_rules</td></tr>
+            <tr><td>自评差距</td><td>桥接弹窗自评</td><td class="code-cell">localStorage.tg001_self_eval</td></tr>
+            <tr><td>管理惯性</td><td>陷阱聚类</td><td class="code-cell">trap_type 统计 + 聚类规则</td></tr>
+            <tr><td>叙事结局</td><td>因果链</td><td class="code-cell">causal_chain + consequence</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 7b. 反馈页结构与产出 ====== -->
+    <div class="section" id="sec-feedback-records">
+      <h2>📋 反馈页结构与产出</h2>
+      <p class="section-desc">TG-001 反馈页（scene_TG001_反馈页.html）是反馈智能体的实际 HTML 产出物。以下是从该文件中提取的实际反馈模块结构和评分逻辑。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">📊</span> 反馈页六大模块（实际HTML结构）</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>模块</th><th>内容</th><th>数据来源</th></tr>
+            <tr>
+              <td><strong>① 综合概览</strong></td>
+              <td style="font-size:12px">SVG 雷达图（4维：P₂信任/P₁诊断/P₅赋能/P₃重构）+ 各维度 MTP 锚点 + 判词 + 关键数字</td>
+              <td style="font-size:11px">engine.scores + engine.traps + localStorage 自评基线</td>
+            </tr>
+            <tr>
+              <td><strong>② 深度诊断</strong></td>
+              <td style="font-size:12px">P 步骤逐步分析（每步一张卡：你做了什么 + 行为标签 + NPC-周的反应 + 如果重来）</td>
+              <td style="font-size:11px">decision_path + engine.ctx + NPC 实际回应文本</td>
+            </tr>
+            <tr>
+              <td><strong>③ 管理惯性</strong></td>
+              <td style="font-size:12px">陷阱聚类分析（≥2次同一类型→识别为惯性）+ 证据链 + 模式描述</td>
+              <td style="font-size:11px">engine.traps 统计 + 陷阱聚类规则</td>
+            </tr>
+            <tr>
+              <td><strong>④ 再来一练</strong></td>
+              <td style="font-size:12px">重练推荐（具体动作，不是抽象建议）+ 变体场景推荐 + 难度调整说明</td>
+              <td style="font-size:11px">scores 最低维度 + D 向量相似场景匹配</td>
+            </tr>
+            <tr>
+              <td><strong>⑤ 知识薄弱</strong></td>
+              <td style="font-size:12px">知识点分层（🔴需强化 / 🟡已掌握需巩固）+ 微练习（5分钟可执行的动作）</td>
+              <td style="font-size:11px">scores < 50 → 🔴 · scores 50-69 → 🟡</td>
+            </tr>
+            <tr>
+              <td><strong>⑥ 下一步计划</strong></td>
+              <td style="font-size:12px">行动承诺填空模板 + 时间线（今天→3-7天后再来→对比变化）+ 保存到 localStorage</td>
+              <td style="font-size:11px">localStorage.tg001_commitment</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">📐</span> 评分维度与 MTP 锚点映射（TG-001 实战）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>维度</th><th>MTP锚点</th><th>满分</th><th>评分来源</th></tr>
+            <tr><td>P₂ 建立信任</td><td>MTP3·8 角色认知+信赖关系</td><td>100</td><td>初始 35 分 + T01/T06 扣分 + 展示业务能力加分</td></tr>
+            <tr><td>P₁ 诊断问题</td><td>MTP10 问题解决</td><td>100</td><td>初始 40 分 + T08 扣分 + 问NPC-周看法加分</td></tr>
+            <tr><td>P₅ 示范赋能</td><td>MTP7·11 培育启发+榜样激励</td><td>100</td><td>初始 30 分 + 做减法+20 + 打样+25 + T03/T04/T05 扣分</td></tr>
+            <tr><td>P₃ 重构目标</td><td>MTP4·11 计划命令+参与激励</td><td>100</td><td>初始 40 分（随 P₅ 联动变化）</td></tr>
+          </table>
+          <div class="highlight-box" style="margin-top:12px;">
+            <strong>评分颜色规则：</strong> 70-100 绿（达标）· 40-69 黄（部分做到）· 1-39 红（差距大）· 0 灰（未触发）<br>
+            <strong>自评对照：</strong> 反馈页从 localStorage 读取 <code>tg001_self_baseline</code>（准备页的自评滑块），与实际得分对比——差距最大的维度标注"差距最大"。
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-green">🔗</span> 三页串联数据流（实际实现）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">TG001_准备页.html（scene_TG001_准备页.html）
+  ├─ 学员阅读场景背景（NPC-周·首开倒计时20天）
+  ├─ 自评基线滑块（4个维度，1-10分）
+  ├─ 选择难度等级（新手/中等/高手）
+  ├─ 点击"开始行动"→ 桥接弹窗（显示最弱P步骤）
+  ├─ 存 localStorage('tg001_self_baseline', scores)
+  └─ 跳转 → scene_PR2_引擎驱动版_v7.html
+
+TG001_对话页（scene_TG001_引擎页.html = PR2_引擎驱动版_v7.html）
+  ├─ 引擎初始化：phase=TRUST, npcMood=WATCH
+  ├─ 显示NPC-周开场叙事 + 💡轻声提醒（最弱P步骤）
+  ├─ 学员输入 → 上下文更新 → 陷阱检测 → NPC回应
+  ├─ 侧边栏：NPC-周状态 + P步骤实时分数 + 完成进度
+  ├─ 点击"结束对话"→ 存 decision_path + scores
+  └─ 跳转 → scene_TG001_反馈页.html
+
+TG001_反馈页.html
+  ├─ 读取 engine.scores + traps + 自评基线
+  ├─ 渲染 SVG 雷达图 + 判词
+  ├─ 渲染六大模块（概览→诊断→惯性→再来一练→知识薄弱→下一步）
+  └─ 底部：再练一次 / 返回首页</div>
+        </div>
+      </div>
+    </div>
+    <div class="section" id="sec-deploy">
+      <h2>🚀 低代码平台部署</h2>
+      <p class="section-desc">技术栈：React + TypeScript + React Router v6 + PostgreSQL + Drizzle ORM。AI 插件：scenario_card_smart_generate_v19_1 / mdp_coach_ai_conversation_reply_1 / ai_coach_analysis_report_1。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">📋</span> 8 步部署流程</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>步骤</th><th>内容</th><th>状态</th></tr>
+            <tr><td>Step 1</td><td>创建类型定义文件 <code>src/types/scenario-card.ts</code></td><td><span class="tag-pill green">✅</span></td></tr>
+            <tr><td>Step 2</td><td>数据库迁移（coaching_scenes + coaching_sessions 加字段）</td><td><span class="tag-pill green">✅</span></td></tr>
+            <tr><td>Step 3</td><td>确认/创建 5 个 API 路由</td><td><span class="tag-pill orange">⚠️</span></td></tr>
+            <tr><td>Step 4</td><td>创建场景生成页面 ScenarioGenerate.tsx</td><td><span class="tag-pill green">✅</span></td></tr>
+            <tr><td>Step 5</td><td>创建对话决策页面 ScenarioChat.tsx</td><td><span class="tag-pill orange">⚠️</span> 上下文检测 bug</td></tr>
+            <tr><td>Step 6</td><td>创建反馈页面 ScenarioFeedback.tsx</td><td><span class="tag-pill orange">⚠️</span> 数据链路断裂</td></tr>
+            <tr><td>Step 7</td><td>添加路由 + 场景预览页</td><td><span class="tag-pill green">✅</span></td></tr>
+            <tr><td>Step 8</td><td>验证完整链路（生成→对话→反馈）</td><td><span class="tag-pill red">❌</span> 待修复后验证</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-teal">🔌</span> 三个 AI 插件</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <table class="mini-table">
+            <tr><th>插件名</th><th>用途</th><th>调用方</th></tr>
+            <tr><td class="code-cell">scenario_card_smart_generate_v19_1</td><td>根据 D 向量 + P 步骤生成完整场景卡 JSON</td><td>场景生成页</td></tr>
+            <tr><td class="code-cell">mdp_coach_ai_conversation_reply_1</td><td>驱动 NPC 对话行为（状态机 + 语言画像 + 轻声提醒）</td><td>对话页</td></tr>
+            <tr><td class="code-cell">ai_coach_analysis_report_1</td><td>分析决策路径，生成三层反馈报告</td><td>反馈页</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">📦</span> 三页串联数据流</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">/scenario/generate
+  ↓ 选 D 向量 → 调插件 scenario_card_smart_generate_v19_1
+  ↓ POST /api/coaching/scenario-cards（存场景卡）
+  ↓ navigate(/scenario/:id/chat)
+
+/scenario/:id/chat
+  ↓ GET /api/coaching/scenario-cards/:id（读场景卡）
+  ↓ POST /api/coaching/sessions/with-decision-path（创建会话）
+  ↓ 叙事 → 决策点 → 收集选择
+  ↓ PATCH /api/coaching/sessions/:id/decision-path（存决策路径）
+  ↓ navigate(/scenario/:id/feedback?session=X)
+
+/scenario/:id/feedback
+  ↓ 并行 GET 场景卡 + 会话决策路径
+  ↓ 调插件 ai_coach_analysis_report_1
+  ↓ 渲染三层报告 → [再练一次] 或 [生成新场景]</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 9. 平台闭环设计 ====== -->
+    <div class="section" id="sec-closed-loop">
+      <h2>🔄 平台闭环设计</h2>
+      <p class="section-desc">一次陪练不是终点——陪练→觉察→微练习→再练习→行为内化→业务影响，形成完整闭环。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">🔁</span> 8 阶段闭环全景</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="flow-diagram">┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+│ 1. 准备   │───→│ 2. 对话   │───→│ 3. 反馈   │───→│ 4. 学习   │
+│ 构建心理  │    │ 暴露真实  │    │ 行为证据  │    │ 课程+     │
+│ 模型      │    │ 行为模式  │    │ 觉察触发  │    │ 微练习    │
+└──────────┘    └──────────┘    └──────────┘    └─────┬────┘
+                                                      │
+┌──────────┐    ┌──────────┐    ┌──────────┐    ┌─────↓────┐
+│ 8. 业务   │←───│ 7. 行为   │←───│ 6. 难度   │←───│ 5. 再练习 │
+│ 影响     │    │ 内化     │    │ 升级     │    │ 检验行为  │
+│ 团队/业务 │    │ 新行为成  │    │ 变体场景  │    │ 是否改变  │
+│ 数据追踪 │    │ 为本能    │    │ 更高难度  │    │           │
+└──────────┘    └──────────┘    └──────────┘    └──────────┘</div>
+        </div>
+      </div>
+
+      <div class="agent-grid" style="margin-top:8px;">
+        <div class="agent-card">
+          <h4>🧩 跨场景行为追踪</h4>
+          <p>同一管理者在 ≥2 个场景练习后，系统触发跨场景分析：过度铺垫、话术循环、跟进薄弱、否定倾向、强势模式。</p>
+        </div>
+        <div class="agent-card">
+          <h4>📈 行为变化追踪</h4>
+          <p>同场景多次练习，自动对比 5 个指标：触发轮次、跟进触发、状态终点、信任终点、连续提问次数。≥3 个改善 = 行为改变显著。</p>
+        </div>
+        <div class="agent-card">
+          <h4>🎯 NPS 数据采集</h4>
+          <p>每次反馈页关闭时弹出单题 NPS："这次陪练对你明天的工作有帮助吗？"（0-10）。Phase 1 目标 NPS > 40，Phase 2 目标 > 50。</p>
+        </div>
+        <div class="agent-card">
+          <h4>🏢 组织级洞察</h4>
+          <p>足够多管理者使用后：哪个管理维度是组织普遍薄弱的？哪个场景通过率最低？哪种 NPC 特征最容易触发话术循环？</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 10. 关键文件清单 ====== -->
+    <div class="section" id="sec-files">
+      <h2>📁 关键文件清单</h2>
+      <p class="section-desc">三智能体架构涉及的全部文件，按类型分组。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">📂</span> 低代码平台重构_三智能体/（17 个文件）</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">00_架构总览.md</span><span class="f-tag f-tag-md">架构</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">01_类型定义.ts</span><span class="f-tag f-tag-ts">类型</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">02_数据库Schema.sql</span><span class="f-tag f-tag-sql">数据库</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">03_路由配置.tsx</span><span class="f-tag f-tag-tsx">路由</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">04_场景生成智能体.tsx</span><span class="f-tag f-tag-tsx">页面</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">05_对话智能体.tsx</span><span class="f-tag f-tag-tsx">页面</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">06_反馈智能体.tsx</span><span class="f-tag f-tag-tsx">页面</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">07_数据流串联.ts</span><span class="f-tag f-tag-ts">数据</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">08_集成指南.md</span><span class="f-tag f-tag-md">指南</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">README_集成步骤.md</span><span class="f-tag f-tag-md">指南</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">client_ScenarioGenerate.tsx</span><span class="f-tag f-tag-tsx">前端</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">client_ScenarioChat.tsx</span><span class="f-tag f-tag-tsx">前端</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">client_ScenarioFeedback.tsx</span><span class="f-tag f-tag-tsx">前端</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">server_coaching.controller.ts</span><span class="f-tag f-tag-ts">后端</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">server_coaching.service.ts</span><span class="f-tag f-tag-ts">后端</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">db_migration.sql</span><span class="f-tag f-tag-sql">数据库</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台搭建Prompt_从0到1.md</span><span class="f-tag f-tag-md">部署</span></div>
+            <div class="file-item"><span class="f-icon">📄</span><span class="f-name">低代码平台搭建指令_纯文本.txt</span><span class="f-tag f-tag-txt">部署</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">📄</span> 项目根目录相关文件</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📋</span><span class="f-name">场景卡数据协议_三智能体合约.md</span><span class="f-tag f-tag-md">协议</span></div>
+            <div class="file-item"><span class="f-icon">💬</span><span class="f-name">对话智能体_规则与说明.md</span><span class="f-tag f-tag-md">规范</span></div>
+            <div class="file-item"><span class="f-icon">📊</span><span class="f-name">反馈智能体_规则与说明.md</span><span class="f-tag f-tag-md">规范</span></div>
+            <div class="file-item"><span class="f-icon">🔗</span><span class="f-name">D-P-f映射规则_方法论补全.md</span><span class="f-tag f-tag-md">方法论</span></div>
+            <div class="file-item"><span class="f-icon">🔄</span><span class="f-name">平台闭环设计总览.md</span><span class="f-tag f-tag-md">设计</span></div>
+            <div class="file-item"><span class="f-icon">⚙️</span><span class="f-name">引擎集成_跨场景追踪_技术规格.md</span><span class="f-tag f-tag-md">技术</span></div>
+            <div class="file-item"><span class="f-icon">🎯</span><span class="f-name">scene_TG001_准备页.html</span><span class="f-tag f-tag-html">场景</span></div>
+            <div class="file-item"><span class="f-icon">💬</span><span class="f-name">scene_TG001_引擎页.html</span><span class="f-tag f-tag-html">场景</span></div>
+            <div class="file-item"><span class="f-icon">📊</span><span class="f-name">scene_TG001_反馈页.html</span><span class="f-tag f-tag-html">场景</span></div>
+            <div class="file-item"><span class="f-icon">🎯</span><span class="f-name">scene_PR2_沉浸式准备页_v2.html</span><span class="f-tag f-tag-html">场景</span></div>
+            <div class="file-item"><span class="f-icon">💬</span><span class="f-name">scene_PR2_引擎驱动版_v7.html</span><span class="f-tag f-tag-html">场景</span></div>
+            <div class="file-item"><span class="f-icon">📊</span><span class="f-name">scene_PR2_反馈页_v22.html</span><span class="f-tag f-tag-html">场景</span></div>
+            <div class="file-item"><span class="f-icon">📦</span><span class="f-name">低代码平台部署_场景生成智能体/</span><span class="f-tag f-tag-md">部署</span></div>
+            <div class="file-item"><span class="f-icon">✅</span><span class="f-name">D-P-f验证_TG001-003_人工版对照.md</span><span class="f-tag f-tag-md">验证</span></div>
+            <div class="file-item"><span class="f-icon">📝</span><span class="f-name">场景设计模板_空白版.md</span><span class="f-tag f-tag-md">模板</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 生成材料归档 ====== -->
+    <div class="section" id="sec-artifacts">
+      <h2>📦 生成材料归档</h2>
+      <p class="section-desc">三智能体项目从任务框架建立至今产出的全部可运行 HTML/JS 制品。所有文件均位于项目根目录。</p>
+
+      <div class="content-card open">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-blue">🎯</span> TG-001 NPC-周场景（3页完整链路）</h3>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="content-card-body">
+          <div class="file-list">
+            <a class="file-item" href="scene_TG001_准备页.html" target="_blank"><span class="f-icon">🎯</span><span class="f-name">scene_TG001_准备页.html</span><span class="f-tag f-tag-html">准备页</span></a>
+            <a class="file-item" href="scene_TG001_引擎页.html" target="_blank"><span class="f-icon">💬</span><span class="f-name">scene_TG001_引擎页.html</span><span class="f-tag f-tag-html">对话引擎</span></a>
+            <a class="file-item" href="scene_TG001_反馈页.html" target="_blank"><span class="f-icon">📊</span><span class="f-name">scene_TG001_反馈页.html</span><span class="f-tag f-tag-html">反馈页</span></a>
+            <a class="file-item"><span class="f-icon">⚙️</span><span class="f-name">tg001_hybrid_engine.js</span><span class="f-tag f-tag-ts">引擎核心</span></a>
+            <a class="file-item"><span class="f-icon">⚙️</span><span class="f-name">tg001_context_engine.js</span><span class="f-tag f-tag-ts">上下文引擎</span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-purple">👤</span> PR-002 管理者B场景（绩效面谈线）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="file-list">
+            <a class="file-item" href="scene_PR2_沉浸式准备页_v2.html" target="_blank"><span class="f-icon">🎯</span><span class="f-name">scene_PR2_沉浸式准备页_v2.html</span><span class="f-tag f-tag-html">准备页</span></a>
+            <a class="file-item" href="scene_PR2_引擎驱动版_v7.html" target="_blank"><span class="f-icon">💬</span><span class="f-name">scene_PR2_引擎驱动版_v7.html</span><span class="f-tag f-tag-html">对话引擎 v7</span></a>
+            <a class="file-item" href="scene_PR2_反馈页_v22.html" target="_blank"><span class="f-icon">📊</span><span class="f-name">scene_PR2_反馈页_v22.html</span><span class="f-tag f-tag-html">反馈页 v22</span></a>
+            <a class="file-item" href="scene_PR2_完整流程_v1.html" target="_blank"><span class="f-icon">🔗</span><span class="f-name">scene_PR2_完整流程_v1.html</span><span class="f-tag f-tag-html">完整流程</span></a>
+            <a class="file-item" href="scene_PR2_准备页_叙事版.html" target="_blank"><span class="f-icon">📖</span><span class="f-name">scene_PR2_准备页_叙事版.html</span><span class="f-tag f-tag-html">叙事准备</span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-teal">🔍</span> 预览与测试</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="file-list">
+            <a class="file-item" href="preview_TG001_最终版.html" target="_blank"><span class="f-icon">👁️</span><span class="f-name">preview_TG001_最终版.html</span><span class="f-tag f-tag-html">TG001预览</span></a>
+            <a class="file-item" href="preview_TG001_对话页_v4.html" target="_blank"><span class="f-icon">💬</span><span class="f-name">preview_TG001_对话页_v4.html</span><span class="f-tag f-tag-html">对话预览v4</span></a>
+            <a class="file-item" href="preview_TG001_反馈页_v5.html" target="_blank"><span class="f-icon">📊</span><span class="f-name">preview_TG001_反馈页_v5.html</span><span class="f-tag f-tag-html">反馈预览v5</span></a>
+            <a class="file-item" href="preview_MTP陪练专区.html" target="_blank"><span class="f-icon">🏠</span><span class="f-name">preview_MTP陪练专区.html</span><span class="f-tag f-tag-html">专区首页</span></a>
+            <a class="file-item" href="低代码平台能力测试/一体化测试页_放入陪练应用.html" target="_blank"><span class="f-icon">🧪</span><span class="f-name">低代码平台能力测试/一体化测试页</span><span class="f-tag f-tag-html">集成测试</span></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-orange">🚀</span> 低代码平台部署包</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="file-list">
+            <a class="file-item" href="低代码平台部署_场景生成智能体/场景卡预览器.html" target="_blank"><span class="f-icon">🃏</span><span class="f-name">场景卡预览器.html</span><span class="f-tag f-tag-html">预览器</span></a>
+            <div class="file-item"><span class="f-icon">📦</span><span class="f-name">低代码平台部署_TG001/（TG001部署文件）</span><span class="f-tag f-tag-md">部署</span></div>
+            <div class="file-item"><span class="f-icon">📦</span><span class="f-name">低代码平台部署包_案例库v1/（案例导入工具）</span><span class="f-tag f-tag-md">案例库</span></div>
+            <div class="file-item"><span class="f-icon">📦</span><span class="f-name">一键部署包/（综合部署文件）</span><span class="f-tag f-tag-md">综合</span></div>
+            <div class="file-item"><span class="f-icon">📦</span><span class="f-name">低代码平台重构_三智能体/（17个代码文件）</span><span class="f-tag f-tag-md">核心</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-card-header" onclick="toggleCard(this)">
+          <h3><span class="ico ico-indigo">📝</span> 方法论与设计文档（产出物）</h3>
+          <span class="chevron">▸</span>
+        </div>
+        <div class="content-card-body">
+          <div class="file-list">
+            <div class="file-item"><span class="f-icon">📋</span><span class="f-name">场景卡数据协议_三智能体合约.md</span><span class="f-tag f-tag-md">协议 v1.1</span></div>
+            <div class="file-item"><span class="f-icon">🧬</span><span class="f-name">D-P-f映射规则_方法论补全.md</span><span class="f-tag f-tag-md">方法论</span></div>
+            <div class="file-item"><span class="f-icon">✅</span><span class="f-name">D-P-f验证_TG001-003_人工版对照.md</span><span class="f-tag f-tag-md">验证</span></div>
+            <div class="file-item"><span class="f-icon">💬</span><span class="f-name">对话智能体_规则与说明.md</span><span class="f-tag f-tag-md">对话规范</span></div>
+            <div class="file-item"><span class="f-icon">📊</span><span class="f-name">反馈智能体_规则与说明.md</span><span class="f-tag f-tag-md">反馈规范</span></div>
+            <div class="file-item"><span class="f-icon">🔄</span><span class="f-name">平台闭环设计总览.md</span><span class="f-tag f-tag-md">闭环设计</span></div>
+            <div class="file-item"><span class="f-icon">⚙️</span><span class="f-name">引擎集成_跨场景追踪_技术规格.md</span><span class="f-tag f-tag-md">技术规格</span></div>
+            <div class="file-item"><span class="f-icon">🗺️</span><span class="f-name">陪练平台_全局架构蓝图_对标版.md</span><span class="f-tag f-tag-md">架构蓝图</span></div>
+            <div class="file-item"><span class="f-icon">📖</span><span class="f-name">陪练平台_从0到1_全历程方法论_授课版.md</span><span class="f-tag f-tag-md">全历程</span></div>
+            <div class="file-item"><span class="f-icon">🏗️</span><span class="f-name">低代码平台重构_三智能体/00_架构总览.md</span><span class="f-tag f-tag-md">架构</span></div>
+            <div class="file-item"><span class="f-icon">🚀</span><span class="f-name">低代码平台重构_三智能体/低代码平台搭建Prompt_从0到1.md</span><span class="f-tag f-tag-md">搭建指南</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom spacer -->
+    <div style="height:80px;"></div>
+
+  </div><!-- /detail-content -->
+</div><!-- /detail-layout -->
+</div><!-- /detail-view -->
+
+<script>
+// ============ VIEW SWITCHING ============
+function openDetail(projectKey) {
+  document.getElementById('dashboardView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Update URL hash
+  window.location.hash = 'detail-' + projectKey;
+
+  // Highlight first nav item
+  document.querySelectorAll('.detail-nav a').forEach(a => a.classList.remove('active'));
+  const firstLink = document.querySelector('.detail-nav a[href="#sec-overview"]');
+  if (firstLink) firstLink.classList.add('active');
+}
+
+function closeDetail() {
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('dashboardView').style.display = 'block';
+  window.location.hash = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============ CARD TOGGLE ============
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+// ============ SIDEBAR NAV ACTIVE TRACKING ============
+const navLinks = document.querySelectorAll('.detail-nav a');
+const sections = [];
+navLinks.forEach(link => {
+  const href = link.getAttribute('href');
+  if (href && href.startsWith('#sec-')) {
+    const el = document.querySelector(href);
+    if (el) sections.push({ link, el });
+  }
+});
+
+// Intersection Observer for nav highlighting
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const activeLink = document.querySelector(`.detail-nav a[href="#${entry.target.id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s.el));
+
+// Smooth scroll for nav links
+navLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Manually update active
+      navLinks.forEach(a => a.classList.remove('active'));
+      this.classList.add('active');
+    }
+  });
+});
+
+// ============ PROJECT MODAL (for other projects) ============
+function openProjectModal(sessionId, name) {
+  const memoryFile = name.replace(/\s+/g, '_') + '.md';
+  const msg = [
+    '---',
+    '项目：' + name,
+    '会话ID：' + sessionId,
+    'Memory文件：memory/' + memoryFile,
+    '---',
+    '',
+    '在新对话中说：',
+    '"继续 ' + name + ' 项目，读取 ' + memoryFile + '"',
+    '',
+    '项目目录：/Users/xzzsw127/Claude code/projects/' + name.replace(/\s+/g, '_') + '/'
+  ].join('\n');
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;';
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'background:rgba(255,255,255,0.9);backdrop-filter:blur(30px);border-radius:20px;padding:32px;max-width:520px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.15);font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
+  modal.innerHTML = '<h2 style="margin:0 0 8px;font-size:22px;">启动项目：' + name + '</h2>' +
+    '<p style="color:#86868b;margin:0 0 20px;font-size:14px;">在新对话中输入以下内容，Claude 会自动加载项目上下文</p>' +
+    '<pre style="background:rgba(0,0,0,0.05);padding:16px;border-radius:12px;font-size:13px;line-height:1.6;white-space:pre-wrap;margin:0 0 16px;">' + msg + '</pre>' +
+    '<div style="display:flex;gap:10px;">' +
+    '<button onclick="navigator.clipboard.writeText(\'' + msg.replace(/'/g, "\\'").replace(/\n/g, '\\n') + '\');this.textContent=\'已复制!\';setTimeout(()=>this.textContent=\'复制启动命令\',2000)" style="flex:1;padding:12px;border:none;border-radius:12px;background:#0071e3;color:#fff;font-size:14px;font-weight:500;cursor:pointer;">复制启动命令</button>' +
+    '<button onclick="this.closest(\'[style]\').parentElement.remove()" style="padding:12px 24px;border:none;border-radius:12px;background:rgba(0,0,0,0.05);color:#1d1d1f;font-size:14px;cursor:pointer;">关闭</button>' +
+    '</div>';
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
+// ============ URL HASH HANDLING ============
+if (window.location.hash.startsWith('#detail-three-agents')) {
+  openDetail('three-agents');
+}
+
+window.addEventListener('hashchange', function() {
+  if (window.location.hash.startsWith('#detail-three-agents')) {
+    openDetail('three-agents');
+  } else if (window.location.hash === '') {
+    closeDetail();
+  }
+});
+</script>
+
+</body>
+</html>

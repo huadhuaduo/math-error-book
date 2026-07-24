@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>准备 · 王磊 · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(160deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.16}
+  .amb-1{width:360px;height:360px;background:#FEF3C7;top:-90px;right:-50px}
+  .amb-2{width:260px;height:260px;background:#FEE2E2;bottom:-50px;left:-30px}
+  .wrapper{position:relative;z-index:10;max-width:800px;width:92vw;display:flex;flex-direction:column;gap:18px}
+  .title-area{padding:0 4px}.tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.04em;margin-bottom:8px}
+  h1{font-size:22px;font-weight:700;color:#1C1917;line-height:1.25;letter-spacing:-.01em}.subtitle{font-size:13px;color:#A8A29E;margin-top:4px}
+  .cards-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:24px 22px;box-shadow:0 4px 16px rgba(0,0,0,.03)}
+  .person-top{display:flex;align-items:center;gap:18px;margin-bottom:14px}
+  .photo{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#FCD34D,#F59E0B);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+  .photo-placeholder{font-size:22px;color:#fff;font-weight:600}
+  .person-name{font-size:16px;font-weight:700;color:#1C1917}.person-role{font-size:12px;color:#78716C}
+  .person-fact{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;margin-top:4px}
+  .card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#A8A29E;margin-bottom:8px}
+  .person-bio{font-size:12px;color:#44403C;line-height:1.6}.person-bio strong{color:#1C1917}
+  .goal-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0}.goal-item+.goal-item{border-top:1px solid rgba(0,0,0,.04)}
+  .goal-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+  .goal-text{font-size:13px;color:#44403C;line-height:1.55}.goal-text strong{color:#1C1917}
+  .note{font-size:11px;color:#A8A29E;line-height:1.5;padding:4px 0}
+  .actions{display:flex;align-items:center;gap:12px;padding:0 4px}
+  .btn-start{display:flex;align-items:center;justify-content:center;gap:6px;padding:13px 28px;border:none;border-radius:14px;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.08);transition:all .25s ease}.btn-start:hover{background:#000;transform:translateY(-1px)}
+  .lv-row{display:flex;gap:3px;margin-left:auto}.lv-btn{padding:5px 12px;border-radius:100px;border:1px solid rgba(0,0,0,.06);background:transparent;cursor:pointer;font-size:11px;color:#A8A29E;font-family:inherit;transition:all .2s}.lv-btn.active{background:#1C1917;color:#fff;border-color:#1C1917}
+  @media(max-width:500px){.cards-row{grid-template-columns:1fr}.card{padding:18px 14px}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="wrapper">
+  <div class="title-area">
+    <span class="tag" style="background:#FEF3C7;color:#92400E">绩效面谈 · B级员工</span>
+    <h1>他不是能力问题。<br>他只是不想做运营了。</h1>
+    <p class="subtitle">半年前他说想转岗——你说"帮你留意"。三个月前他又说了——你说"找不到接替的人"。</p>
+  </div>
+  <div class="cards-row">
+    <div class="card">
+      <div class="card-label">你即将面谈的人</div>
+      <div class="person-top"><div class="photo"><span class="photo-placeholder">王</span></div><div><div class="person-name">王磊</div><div class="person-role">运营专员 · 30岁 · 入职3年</div><span class="person-fact" style="background:#FEF3C7;color:#92400E">绩效B级 · 本应是B+</span></div></div>
+      <p class="person-bio">能较好完成本职工作，运营经验扎实。多次提出想转型做项目土建——不是对薪酬不满，是真的想做不同的事。短期内找不到接替者，转型一直被搁置。<strong>于是他消极了。效率下降、质量下降。B+变成了B。</strong></p>
+      <p class="person-bio" style="margin-top:6px">他不是难沟通的人——但他的诉求被搁置了半年。今天他走进来时，心态不是"我要好好谈"——是<strong>"反正说了也没用"</strong>。</p>
+      <div style="background:rgba(0,0,0,.02);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:11px;color:#44403C;line-height:1.55"><div style="font-weight:700;color:#1C1917;margin-bottom:6px;font-size:11px">📊 你手里有的绩效数据</div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>运营工作年限</span><strong style="color:#1C1917">3 年 · 经验扎实</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>上季度绩效</span><strong style="color:#16A34A">B+</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>本季度绩效</span><strong style="color:#F59E0B">B · 下降一档</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>工作效率（近3个月）</span><strong style="color:#DC2626">↓ 明显下降</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>交付质量（近3个月）</span><strong style="color:#DC2626">↓ 明显下降</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0;margin-top:4px;border-top:1px solid rgba(0,0,0,.05);padding-top:4px"><span>首次提转岗</span><strong style="color:#D97706">6 个月前</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>最近一次提转岗</span><strong style="color:#DC2626">3 个月前 · 至今无进展</strong></div><div style="display:flex;justify-content:space-between;padding:2px 0"><span>对晋升加薪</span><strong style="color:#1C1917">不感兴趣</strong></div><div style="font-size:10px;color:#A8A29E;margin-top:4px">他的绩效下滑不是能力问题——是诉求被搁置的连锁反应。B+→B的距离只有一个"等"字。</div></div>
+    </div>
+    <div class="card">
+      <div class="card-label">这次面谈，你要做到的</div>
+      <div class="goal-item"><div class="goal-num" style="background:#ECFDF5;color:#065F46">1</div><div class="goal-text"><strong>先回应转岗诉求再谈绩效。</strong>打破"你又来走流程"的预期。让他先听到你对转岗的回应——不是"我理解"，是具体的进展。</div></div>
+      <div class="goal-item"><div class="goal-num" style="background:#EFF6FF;color:#1D4ED8">2</div><div class="goal-text"><strong>给阶段性方案——不能立刻转，但要看到进展。</strong>"三个月内启动转岗评估流程"比"尽量快"更能让他恢复状态。</div></div>
+      <div class="goal-item"><div class="goal-num" style="background:#FFFBEB;color:#B45309">3</div><div class="goal-text"><strong>区分"消极"和"能力"。</strong>不是"你最近表现不好"——是"你的能力是B+，消极让你变成了B。如果你恢复状态，B级不是你的天花板"。</div></div>
+      <div style="background:rgba(254,243,199,.2);border:1px solid rgba(251,191,36,.1);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:11px;color:#44403C;line-height:1.5"><strong style="color:#92400E">他可能的反应</strong><br>靠在椅背上、没带笔记本、表情是"随便吧"。<strong>他的消极不是懒——是诉求被搁置后的自我保护。</strong>如果你先谈转岗再谈绩效，他会坐起来。</div>
+      <div style="background:rgba(254,226,226,.25);border:1px solid rgba(239,68,68,.1);border-radius:10px;padding:10px 12px;margin-top:6px;font-size:11px;color:#44403C;line-height:1.5"><strong style="color:#DC2626">⚠️ 最容易踩的坑</strong><br>① 按常规顺序"先谈绩效再谈转岗"→他觉得你又在走流程<br>② 说"尽量推动"但不给时间表→和半年前的"帮你留意"一模一样<br>③ 只谈他哪里做得不好→他消极是结果不是原因，不谈原因只谈结果他听不进去</div>
+      <div style="background:rgba(239,246,255,.25);border:1px solid rgba(147,197,253,.1);border-radius:10px;padding:10px 12px;margin-top:6px;font-size:11px;color:#44403C;line-height:1.5"><strong style="color:#3B82F6">⏱️ 面谈结构建议（30分钟）</strong><br>前10分钟：先回应转岗诉求（打破预期）→中间10分钟：区分消极和能力+谈绩效→最后10分钟：形成阶段性方案+双向承诺</div>
+    </div>
+  </div>
+  <div class="actions"><button class="btn-start" onclick="start()">开始面谈</button><div class="lv-row" id="lvGroup"><button class="lv-btn" data-lv="A" onclick="selLv('A')">新手</button><button class="lv-btn active" data-lv="B" onclick="selLv('B')">中等</button><button class="lv-btn" data-lv="C" onclick="selLv('C')">高手</button></div></div>
+</div>
+<script>let cl='B';function selLv(l){cl=l;document.querySelectorAll('#lvGroup .lv-btn').forEach(b=>b.classList.toggle('active',b.dataset.lv===l))}function start(){console.log('进入面谈：王磊')}</script>
+</body>
+</html>

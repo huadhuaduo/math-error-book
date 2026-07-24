@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V18 方法论总结 · 可复用</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased;color:#1C1917;line-height:1.6}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.12}
+  .amb-1{width:360px;height:360px;background:#DBEAFE;top:-80px;right:-60px}
+  .amb-2{width:280px;height:280px;background:#DCFCE7;bottom:-50px;left:-40px}
+  .container{position:relative;z-index:10;max-width:780px;margin:0 auto;padding:48px 24px 80px}
+
+  h1{font-size:24px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#A8A29E;margin-bottom:40px}
+
+  .section{margin-bottom:44px}
+  .section-title{font-size:18px;font-weight:700;margin-bottom:4px;padding-bottom:12px;border-bottom:2px solid rgba(0,0,0,.06)}
+  .section-desc{font-size:12px;color:#78716C;margin-bottom:18px}
+
+  .card{background:rgba(255,255,255,.45);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 22px;margin-bottom:14px;box-shadow:0 3px 14px rgba(0,0,0,.03)}
+
+  .rule-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0}
+  .rule-row+.rule-row{border-top:1px solid rgba(0,0,0,.04)}
+  .rule-num{width:26px;height:26px;border-radius:50%;background:#1C1917;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+  .rule-text{font-size:13px;line-height:1.55}
+  .rule-text strong{color:#1C1917}
+  .rule-source{font-size:10px;color:#A8A29E;margin-top:2px}
+
+  .step-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0}
+  .step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px}
+  .step-text{font-size:13px;line-height:1.55}
+
+  table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
+  th{text-align:left;padding:8px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A8A29E;border-bottom:1px solid rgba(0,0,0,.06)}
+  td{padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.03);vertical-align:top;line-height:1.5}
+  td:first-child{font-weight:600;white-space:nowrap}
+
+  .tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-right:4px}
+  .tag-red{background:#FEE2E2;color:#DC2626}
+  .tag-green{background:#DCFCE7;color:#166534}
+  .tag-blue{background:#DBEAFE;color:#1D4ED8}
+  .tag-amber{background:#FEF3C7;color:#92400E}
+
+  .highlight{background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.2);border-radius:10px;padding:12px 14px;font-size:12px;color:#3B82F6;line-height:1.55;margin:10px 0}
+
+  .flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 0;font-size:13px}
+  .flow-step{background:rgba(0,0,0,.03);padding:8px 14px;border-radius:10px;font-weight:600;white-space:nowrap}
+  .flow-arrow{color:#A8A29E;font-size:16px}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .col-card{background:rgba(255,255,255,.35);border:1px solid rgba(0,0,0,.04);border-radius:12px;padding:14px 16px;font-size:12px;line-height:1.55}
+  .col-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A8A29E;margin-bottom:6px}
+
+  @media(max-width:600px){.two-col{grid-template-columns:1fr}.flow-row{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="container">
+
+<h1>V18 方法论总结</h1>
+<p class="subtitle">V1→V18 · 17轮迭代经验提炼 · 可复用于任何新品类陪练场景</p>
+
+<!-- ====== 铁律 ====== -->
+<div class="section">
+  <div class="section-title">五条铁律 · 永不再犯</div>
+  <div class="section-desc">每条都来自 V1→V18 中真实犯过的错误</div>
+
+  <div class="card">
+    <div class="rule-row">
+      <div class="rule-num">1</div>
+      <div class="rule-text"><strong>评分维度 = 用户原则</strong>——绝不自己推导分析框架。用户的方法论是唯一标准。<div class="rule-source">来源：V17 纠正——我推导的五维度偏离了用户的五原则</div></div>
+    </div>
+    <div class="rule-row">
+      <div class="rule-num">2</div>
+      <div class="rule-text"><strong>先学习再动手</strong>——拿到场景先深度研读用户材料，提取方法论清单，再映射到产品三层。<div class="rule-source">来源：准备页结构、对话流程、反馈三层——用户材料里早就有</div></div>
+    </div>
+    <div class="rule-row">
+      <div class="rule-num">3</div>
+      <div class="rule-text"><strong>内容检测优先于轮次计数</strong>——阶段切换由对话内容驱动。自评阶段 = 管理者问了"你觉得"吗。<div class="rule-source">来源：AI 陪练专家建议·V18 落地</div></div>
+    </div>
+    <div class="rule-row">
+      <div class="rule-num">4</div>
+      <div class="rule-text"><strong>V1 即真人试跑</strong>——不基于专业直觉迭代 17 版。最小可用版 → 3 人 → 数据迭代。<div class="rule-source">来源：17 个版本零真人数据</div></div>
+    </div>
+    <div class="rule-row">
+      <div class="rule-num">5</div>
+      <div class="rule-text"><strong>跨场景从 V1 设计数据结构</strong>——首个场景上线即建行为追踪，第二个场景上线即联通。<div class="rule-source">来源：v2.0 架构设计但 v16 才落地</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 产品三层模板 ====== -->
+<div class="section">
+  <div class="section-title">产品三层标准模板</div>
+  <div class="section-desc">每个新场景直接套用，替换内容即可</div>
+
+  <div class="two-col">
+    <div class="col-card">
+      <div class="col-label">准备页模板</div>
+      📍 时间地点<br>
+      👤 人物档案（含定量绩效数据）<br>
+      📋 管理者自检（四问）<br>
+      📋 员工可能的准备<br>
+      📋 推门前自评基线（五原则 1-10）<br>
+      ⚡ 开场场景<br>
+      🎯 面谈流程（四步·含时间分配）
+    </div>
+    <div class="col-card">
+      <div class="col-label">关键原则</div>
+      • 数据必须定量——"返工率36%，全组平均11%"<br>
+      • 自检让管理者建立学习意图<br>
+      • 自评基线创造"我以为 vs 实际"的对照冲击<br>
+      • NPC 开场不提问——等管理者先开口
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="col-label" style="margin-bottom:8px">对话引擎模板</div>
+    <div class="flow-row">
+      <span class="flow-step">① 营造氛围</span><span class="flow-arrow">→</span>
+      <span class="flow-step">② 引导自评</span><span class="flow-arrow">→</span>
+      <span class="flow-step">③ 绩效诊断</span><span class="flow-arrow">→</span>
+      <span class="flow-step">④ 下阶段目标</span>
+    </div>
+    <div style="font-size:11px;color:#78716C;margin-top:6px">检测：内容优先（问了"你觉得"=进入自评，用了数据=进入诊断）· 兜底：轮次超时 → 轻声提醒 · 全程：积极倾听 + 共情沟通</div>
+  </div>
+
+  <div class="card">
+    <div class="col-label" style="margin-bottom:8px">反馈页模板</div>
+    <div style="font-size:12px;line-height:1.8">
+      ① <strong>整体评估</strong> — 五原则雷达 + 自评对照 + 结构遵守度 + 判词<br>
+      ② <strong>觉察模式</strong> — 教练视角·认知模式·💬引导思考<br>
+      ③ <strong>行为复盘</strong> — 保留/强化 + 绩效管理角度分析 + 岔路口<br>
+      ④ <strong>行动实验 + 练习记录</strong> — 系统建议 + 表单 + 学习曲线<br>
+      ⑤ <strong>学习推荐</strong> — 薄弱点 → 课程链接
+    </div>
+  </div>
+</div>
+
+<!-- ====== 7步法 ====== -->
+<div class="section">
+  <div class="section-title">新场景开发 7 步法</div>
+  <div class="section-desc">从零到上线的完整流程</div>
+
+  <div class="card">
+    <div class="step-row"><div class="step-num" style="background:#1C1917;color:#fff">1</div><div class="step-text"><strong>从用户材料提取方法论</strong>——列出用户的原则/流程/禁止事项清单</div></div>
+    <div class="step-row"><div class="step-num" style="background:#1C1917;color:#fff">2</div><div class="step-text"><strong>设计五原则初始分</strong>——按场景等级调整（A级信任高/C级信任低）</div></div>
+    <div class="step-row"><div class="step-num" style="background:#1C1917;color:#fff">3</div><div class="step-text"><strong>设计准备页</strong>——按六段模板填充 + 自检四问 + 自评基线 + 定量数据卡</div></div>
+    <div class="step-row"><div class="step-num" style="background:#1C1917;color:#fff">4</div><div class="step-text"><strong>设计对话流程</strong>——四段式 + 内容检测条件 + 兜底轮次 + 轻声提醒</div></div>
+    <div class="step-row"><div class="step-num" style="background:#1C1917;color:#fff">5</div><div class="step-text"><strong>设计反馈</strong>——五段式 + 场景特定的行为复盘 + 薄弱点课程映射</div></div>
+    <div class="step-row"><div class="step-num" style="background:#1C1917;color:#fff">6</div><div class="step-text"><strong>10项验证</strong>——NPC开场/自评/数据/流程/反馈结构/五原则/课程/无人机/自评基线/自评对照</div></div>
+    <div class="step-row"><div class="step-num" style="background:#1C1917;color:#fff">7</div><div class="step-text"><strong>真人试跑</strong>——3人 → NPS + 原则得分分布 + NPC真实度 → 迭代</div></div>
+  </div>
+</div>
+
+<!-- ====== 五原则评分 ====== -->
+<div class="section">
+  <div class="section-title">五原则评分体系</div>
+  <div class="section-desc">通用 · 按场景等级调整初始分</div>
+
+  <table>
+    <tr><th>原则</th><th>蓄水行为(+)</th><th>漏水行为(-)</th></tr>
+    <tr><td>① 建立信任</td><td>承认缺失+8、接住感受+5</td><td><span class="tag tag-red">否定努力-25</span><span class="tag tag-red">横向比较-20</span><span class="tag tag-red">威胁-30</span></td></tr>
+    <tr><td>② 说明目的</td><td>给等级+10、用事实+12、告知结构+5</td><td><span class="tag tag-red">空洞安慰-5</span><span class="tag tag-red">回避延迟-8</span></td></tr>
+    <tr><td>③ 鼓励说话</td><td>开放式提问+3</td><td><span class="tag tag-red">一直自说-5</span><span class="tag tag-red">连续提问不行动-3</span></td></tr>
+    <tr><td>④ 认真倾听</td><td>接住感受+8、区分努力和有效努力+10</td><td><span class="tag tag-red">跳过情绪-5</span></td></tr>
+    <tr><td>⑤ 积极结束</td><td>提供支持+15、具体跟进+12、收尾支持+5</td><td><span class="tag tag-red">"随时找我"</span><span class="tag tag-red">无约定</span></td></tr>
+  </table>
+
+  <div class="highlight" style="margin-top:10px">
+    <strong>初始分调整：</strong>A级→信任65·目的55·鼓励55·倾听50·结束45 &nbsp;|&nbsp; B级→信任50 &nbsp;|&nbsp; C级→信任55 &nbsp;|&nbsp; C×2→信任40
+  </div>
+</div>
+
+<!-- ====== 设计决策 ====== -->
+<div class="section">
+  <div class="section-title">关键设计决策</div>
+  <div class="section-desc">V1→V18 每个重要取舍及理由</div>
+
+  <table>
+    <tr><th>决策</th><th>选择</th><th>理由</th></tr>
+    <tr><td>反馈结构</td><td><span class="tag tag-green">五段式</span></td><td>用户规范 + 行动实验和学习推荐分开</td></tr>
+    <tr><td>阶段检测</td><td><span class="tag tag-blue">内容优先·轮次兜底</span></td><td>AI 陪练专家建议</td></tr>
+    <tr><td>NPC 开场</td><td><span class="tag tag-blue">等管理者先开口</span></td><td>贴合①营造氛围</td></tr>
+    <tr><td>评分维度</td><td><span class="tag tag-green">用户五原则</span></td><td>铁律1——绝不自己推导</td></tr>
+    <tr><td>推门前</td><td><span class="tag tag-blue">自评基线</span></td><td>学习发展专家建议·创造对照冲击</td></tr>
+    <tr><td>设计风格</td><td><span class="tag tag-green">苹果设计规范</span></td><td>已写入记忆</td></tr>
+    <tr><td>语言</td><td><span class="tag tag-amber">人话</span></td><td>禁止引擎编号暴露</td></tr>
+    <tr><td>数据</td><td><span class="tag tag-green">定量数据卡</span></td><td>避免"空对空"练习</td></tr>
+  </table>
+</div>
+
+<!-- ====== 下一步 ====== -->
+<div class="section">
+  <div class="section-title">下一步迭代</div>
+
+  <table>
+    <tr><th>优先级</th><th>事项</th><th>影响</th></tr>
+    <tr><td><span class="tag tag-red">P0</span></td><td>管理者B场景真人试跑·收 NPS</td><td>验证 V18 是否真的 85 分</td></tr>
+    <tr><td><span class="tag tag-amber">P1</span></td><td>按 7 步法推广到其他 4 场景</td><td>陈睿/王磊/NPC-周/小张</td></tr>
+    <tr><td><span class="tag tag-amber">P1</span></td><td>跨场景行为追踪跑通</td><td>同一管理者 2 场景 → 对比报告</td></tr>
+    <tr><td><span class="tag tag-blue">P2</span></td><td>学习曲线实时可视化</td><td>对话引擎实时存储</td></tr>
+    <tr><td><span class="tag tag-blue">P2</span></td><td>反事实分叉点实时提示</td><td>对话中提示"你刚才可以走另一条路"</td></tr>
+  </table>
+</div>
+
+</div>
+</body>
+</html>

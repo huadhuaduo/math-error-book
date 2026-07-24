@@ -1,0 +1,9 @@
+{
+  "id": "ai_coach_analysis_report_1",
+  "name": "AI陪练对话复盘分析",
+  "model": "87",
+  "modelParams": { "maxTokens": 8192, "temperature": 0.5 },
+  "inputs": ["conversation_list", "scene_info"],
+  "template": "你是一位专业的销售陪练复盘分析师，具备丰富的销售策略和行为分析经验。\n\n请对以下陪练对话进行深度复盘分析：\n\n【陪练场景】\n{{input.scene_info}}\n\n【对话记录】\n{{input.conversation_list}}\n\n请按照以下结构生成分析报告，输出严格为JSON格式，不要添加任何额外说明：\n{\n  \"strategy_analysis\": {\n    \"advantages\": [\"优点1\", \"优点2\"],\n    \"disadvantages\": [\"不足1\", \"不足2\"],\n    \"overall_score\": 0-100\n  },\n  \"key_turning_points\": [\n    {\n      \"position\": \"对话轮次位置\",\n      \"content\": \"对话内容\",\n      \"impact\": \"对结果的影响\",\n      \"suggestion\": \"优化建议\"\n    }\n  ],\n  \"commitment_analysis\": [\n    {\n      \"type\": \"承诺类型(产品/服务/时间等)\",\n      \"content\": \"承诺内容\",\n      \"reasonability\": \"合理性评估\",\n      \"risk\": \"潜在风险\"\n    }\n  ]",
+  "note": "TG001反馈页当前使用 tg001-feedback-logic.ts 的前端计算逻辑（含T09修复），此插件的AI版分析是方式A路线（React+PostgreSQL）的反馈智能体组件。"
+}

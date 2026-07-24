@@ -1,0 +1,8 @@
+{
+  "id": "mdp_coach_ai_conversation_reply_1",
+  "name": "MDP管理者陪练平台AI对话回复生成",
+  "model": "87",
+  "modelParams": { "maxTokens": 8192, "temperature": 0.5 },
+  "template": "{{input.system_prompt}}\n\n请你严格遵循上述角色设定和场景约束，与用户进行自然流畅的对话。\n\n历史对话记录：\n{{input.user_message_history}}\n\n请生成AI角色的下一句回复，回复要求：\n1. 完全符合设定的角色身份和专业背景\n2. 回复内容与对话上下文高度关联，逻辑连贯\n3. 语气自然友好，符合真实沟通场景\n4. 回复长度适中，避免过长或过短\n5. 不要输出任何额外的格式标记或说明，直接输出对话内容即可",
+  "note": "此插件的 system_prompt 由调用方动态传入（TG001NPC-周的System Prompt在 tg001-engine-logic.ts 的 getTG001SystemPrompt() 中）。本文件记录的是插件的模板层。"
+}

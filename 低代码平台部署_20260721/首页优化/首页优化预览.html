@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 陪练 · 首页优化预览</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden;height:100vh}
+
+  /* ====== NAV ====== */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:16px 24px;
+    background:rgba(11,61,46,.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  @media(min-width:768px){.nav{padding:16px 48px}}
+  .nav-inner{max-width:1152px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+  .nav-logo-icon{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+  .nav-logo-text{color:#fff;font-weight:700;font-size:18px;letter-spacing:.02em}
+  .nav-links{display:none;gap:32px}
+  @media(min-width:768px){.nav-links{display:flex}}
+  .nav-links a{color:rgba(255,255,255,.8);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;position:relative}
+  .nav-links a:hover{color:#fff}
+  .nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:#6ee7b7;transition:width .3s}
+  .nav-links a:hover::after{width:100%}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .nav-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none;font-family:inherit}
+  .nav-btn:hover{background:rgba(255,255,255,.2)}
+  .nav-avatar{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600}
+  .nav-hamburger{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:18px}
+  @media(min-width:768px){.nav-hamburger{display:none}}
+
+  /* ====== HERO ====== */
+  .hero{position:relative;width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+  /* Merged background: gradient + 3 radial glows in one div */
+  .hero-bg{position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,.04) 0%, transparent 55%),
+      radial-gradient(circle at 80% 75%, rgba(52,211,153,.06) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,.03) 0%, transparent 50%),
+      linear-gradient(160deg, #0B3D2E 0%, #0F5240 30%, #147A5F 60%, #1BA37E 100%)}
+
+  /* Grid pattern */
+  .hero-grid{position:absolute;inset:0;z-index:0;opacity:.03;
+    background-image:
+      linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+    background-size:60px 60px}
+
+  /* Content */
+  .hero-content{position:relative;z-index:10;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px}
+
+  .hero-tag{font-size:11px;color:rgba(255,255,255,.2);letter-spacing:.3em;text-transform:uppercase;font-weight:300;margin-bottom:16px}
+  @media(min-width:768px){.hero-tag{font-size:12px;margin-bottom:0}}
+
+  .hero-title-row{display:flex;align-items:baseline;gap:24px}
+  @media(min-width:768px){.hero-title-row{gap:32px}}
+
+  .hero-title-side{display:none;font-size:12px;color:rgba(255,255,255,.2);letter-spacing:.3em;text-transform:uppercase;font-weight:300}
+  @media(min-width:768px){.hero-title-side{display:block}}
+
+  .hero-title{font-size:42px;font-weight:700;color:#fff;letter-spacing:-.02em;text-align:center;line-height:1.1}
+  @media(min-width:768px){.hero-title{font-size:64px}}
+  @media(min-width:480px){.hero-title{font-size:48px}}
+
+  .hero-cta{display:inline-flex;align-items:center;gap:8px;margin-top:48px;padding:16px 36px;
+    border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+    color:#fff;font-size:15px;font-weight:500;text-decoration:none;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    transition:all .3s;cursor:pointer}
+  .hero-cta:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4)}
+  .hero-cta .arrow{transition:transform .3s}
+  .hero-cta:hover .arrow{transform:translateX(4px)}
+
+  .hero-slogan{margin-top:40px;font-size:15px;color:rgba(255,255,255,.5);letter-spacing:.3em;font-weight:300}
+  @media(min-width:768px){.hero-slogan{font-size:18px}}
+
+  /* Animations */
+  @keyframes fadeInUp{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+  .anim-nav{animation:fadeInUp .6s ease both}
+  .anim-title{animation:fadeInUp .8s .15s ease both}
+  .anim-cta{animation:fadeInUp .8s .7s ease both}
+  .anim-slogan{animation:fadeIn 1s 1.1s ease both}
+
+  /* Mobile menu */
+  .mobile-menu{position:fixed;top:64px;left:0;right:0;z-index:40;
+    background:rgba(11,61,46,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    padding:16px 24px;display:none;flex-direction:column;gap:4px;
+    animation:fadeIn .2s ease}
+  .mobile-menu.show{display:flex}
+  .mobile-menu a{color:rgba(255,255,255,.8);text-decoration:none;font-size:15px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+  .mobile-menu a:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+
+<!-- NAV (optimized: no nested wrappers) -->
+<nav class="nav anim-nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-icon">◈</span>
+      <span class="nav-logo-text">AI 陪练</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <a href="/coaching">全部场景</a>
+      <a href="/practice">实战应用</a>
+      <a href="/dashboard">成长轨迹</a>
+    </div>
+    <div class="nav-right">
+      <a href="/admin-login" class="nav-btn">🛡 管理</a>
+      <span class="nav-btn" style="gap:8px">
+        <span class="nav-avatar">陈</span>
+        <span>管理者A</span>
+      </span>
+      <button class="nav-hamburger" onclick="toggleMenu()">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/">首页</a>
+  <a href="/coaching">全部场景</a>
+  <a href="/practice">实战应用</a>
+  <a href="/dashboard">成长轨迹</a>
+</div>
+
+<!-- HERO (optimized: 7 decorative layers → 2) -->
+<section class="hero">
+  <!-- Merged background: gradient + all glows in one div -->
+  <div class="hero-bg"></div>
+  <!-- Grid pattern -->
+  <div class="hero-grid"></div>
+
+  <!-- Content (optimized: animation directly on elements, no nested motion.div) -->
+  <div class="hero-content">
+    <div class="hero-tag anim-title">AI Coaching</div>
+
+    <div class="hero-title-row anim-title">
+      <span class="hero-title-side">AI Coaching</span>
+      <h1 class="hero-title">AI陪练实战平台</h1>
+      <span class="hero-title-side">Evolution</span>
+    </div>
+
+    <a href="/coaching" class="hero-cta anim-cta">
+      点击进入
+      <span class="arrow">→</span>
+    </a>
+
+    <p class="hero-slogan anim-slogan">每一次对话，都是蜕变的开始</p>
+  </div>
+</section>
+
+<script>
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('show');
+}
+</script>
+</body>
+</html>

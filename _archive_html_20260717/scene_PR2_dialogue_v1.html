@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>对话页 · 绩效面谈：管理者B</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:#F5F3F0;min-height:100vh;-webkit-font-smoothing:antialiased}
+  .app{display:flex;height:100vh}
+  .chat-area{flex:1;display:flex;flex-direction:column;max-width:760px;margin:0 auto;width:100%}
+  .chat-header{padding:14px 20px;background:rgba(255,255,255,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between}
+  .morale-bar{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;background:rgba(0,0,0,.04);font-size:11px;font-weight:600}
+  .state-badge{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600}
+  .msg-list{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+  .msg{max-width:82%;animation:fadeIn .3s ease}
+  .msg.npc{align-self:flex-start}
+  .msg.user{align-self:flex-end}
+  .msg-bubble{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6}
+  .msg.npc .msg-bubble{background:#fff;border:1px solid rgba(0,0,0,.06);border-bottom-left-radius:6px}
+  .msg.user .msg-bubble{background:#1E1E1E;color:#fff;border-bottom-right-radius:6px}
+  .msg-meta{font-size:10px;color:#9CA3AF;margin-top:3px;padding:0 4px}
+  .sys-note{align-self:center;font-size:11px;color:#9CA3AF;background:rgba(0,0,0,.03);padding:6px 14px;border-radius:100px;font-style:italic}
+  .awareness{align-self:stretch;margin:4px 0;background:linear-gradient(135deg,#EFF6FF,#F0F9FF);border:1px solid #BFDBFE;border-radius:14px;padding:12px 16px;font-size:12px;line-height:1.6}
+  .chat-input-area{padding:14px 20px;background:rgba(255,255,255,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(0,0,0,.06);display:flex;gap:10px;align-items:flex-end}
+  .chat-input{flex:1;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:12px 16px;font-size:14px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.6);line-height:1.5}
+  .chat-input:focus{border-color:#EF4444;box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+  .send-btn{width:42px;height:42px;border-radius:50%;border:none;background:#1E1E1E;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+  .send-btn:hover{background:#EF4444;transform:scale(1.05)}
+  .side-panel{width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-left:1px solid rgba(0,0,0,.06);padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+  .panel-card{background:rgba(255,255,255,.6);border-radius:12px;border:1px solid rgba(0,0,0,.04);padding:12px}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:768px){.side-panel{display:none}.msg{max-width:90%}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="chat-area">
+  <div class="chat-header">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center"><span class="text-sm font-bold text-white">林</span></div>
+      <div><p class="text-sm font-semibold text-[#1E1E1E]">管理者B</p><p class="text-[10px] text-[#6B7280]">25岁 · 2022届管培生 · 第一份工作</p></div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="state-badge bg-blue-100 text-blue-800" id="stateBadge">期待</span>
+      <div class="morale-bar"><span class="text-[#6B7280]">状态</span><div style="width:80px;height:6px;background:#E5E7EB;border-radius:3px"><div id="moraleFill" style="width:75%;height:100%;border-radius:3px;background:#3B82F6;transition:all .5s ease"></div></div><span id="moraleNum">75</span></div>
+      <span class="text-[10px] text-[#9CA3AF]" id="roundCounter">第 1/10 轮</span>
+    </div>
+  </div>
+
+  <div class="msg-list" id="msgList">
+    <div class="sys-note">📋 半年度绩效面谈 · 小会议室 · 30分钟</div>
+
+    <div class="msg npc">
+      <div class="msg-bubble">
+        管理者B推门进来，脸上带着笑——同事都说她做得不错，她心情是好的。<br><br>
+        "经理好！那个...我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"
+      </div>
+      <div class="msg-meta">状态：期待 · 她以为自己至少是B</div>
+    </div>
+
+    <div class="msg user">
+      <div class="msg-bubble">
+        管理者B，我先给你结果——这半年的绩效评估是C。我知道这个结果可能跟你自己的预期有差距。我先说说为什么，然后你跟我说说你的想法，好吗？
+      </div>
+    </div>
+
+    <div class="msg npc">
+      <div class="msg-bubble">
+        管理者B脸上的笑僵住了。她愣了几秒。<br><br>
+        "...C？"<br><br>
+        她的眼眶有点红，但忍住了。<br><br>
+        "经理，我不理解。我真的每天都在加班。张姐上个月还说我方案进步很大，李哥说我比刚来的时候好多了——为什么是C？"
+      </div>
+      <div class="msg-meta">状态：期待→受挫 · 自我认知与评估结果的第一次碰撞</div>
+    </div>
+
+    <div class="awareness">
+      <strong>【觉察提示】</strong> 你用结论先行+邀请对话的方式给了C级——方向是对的。管理者B的反应是"我不理解"而不是"我不接受"——这两者不同。"不理解"意味着她需要看到依据。<br>
+      <strong>下一步：</strong>接下来不要用"但是你的努力还不够"来回应——她会觉得你否定了她的付出。用具体事例解释：X事做得怎么样、Y项目返工了几次。
+    </div>
+
+    <div class="msg user">
+      <div class="msg-bubble">
+        管理者B，我先说——你的努力我看得到。这半年你确实花了大量时间在工作上，张姐和李哥说你进步很大，这些反馈都是真实的。但C级的依据是交付质量。我说三个具体的事：上个月的客户方案，你改了四版才通过——不是因为要求高，是因为前三版都有数据错误。季度的竞品分析报告，截止日延了两天，最后是李哥帮着改完的。还有日常的流程文件，三个月里出现了五次返工记录。这些不是我一个人的判断——是有记录的。
+      </div>
+    </div>
+
+    <div class="msg npc">
+      <div class="msg-bubble">
+        管理者B听着，慢慢低下头。沉默了几秒。<br><br>
+        "...那几次返工...我确实记得。但我以为改完就好了——没人跟我说这个会影响评估。李哥帮我那次，他说'没事，下次注意'——我以为那不算什么大问题。"<br><br>
+        她抬头看你，眼神不是对抗——是困惑。<br><br>
+        "经理，我真的不是不认真。我就是...有时候做着做着就不知道对不对了。改方案那几次，我自己也急，但我不知道该问谁。"
+      </div>
+      <div class="msg-meta">状态：受挫→松动 · 开始接受事实，暴露出真正的问题——不知道该怎么做才对</div>
+    </div>
+  </div>
+
+  <div class="chat-input-area">
+    <textarea class="chat-input" rows="2" placeholder="输入你的回应..." id="chatInput"></textarea>
+    <button class="send-btn" onclick="sendMsg()"><i data-lucide="send" class="w-4 h-4"></i></button>
+  </div>
+</div>
+
+<div class="side-panel">
+  <div class="panel-card"><p class="text-xs font-semibold text-[#1E1E1E] mb-2">📋 面谈目标</p><div class="space-y-1.5 text-[11px] text-[#6B7280] leading-relaxed"><p>1. 结论先行，事实紧跟</p><p>2. 接住情绪，不软化结论</p><p>3. 帮她把"努力"升级为"有效努力"</p></div></div>
+  <div class="panel-card"><p class="text-xs font-semibold text-[#1E1E1E] mb-2">⚠️ 管理者B的状态</p><div class="space-y-1.5 text-[11px] leading-relaxed"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span><span class="text-[#6B7280]">期待→受挫→困惑</span></div><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span><span class="text-[#6B7280]">需要看到依据</span></div><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span class="text-[#6B7280]">需要改进方向</span></div></div></div>
+  <div class="panel-card"><p class="text-xs font-semibold text-[#1E1E1E] mb-2">🚫 别踩</p><div class="space-y-1 text-[11px] text-[#6B7280] leading-relaxed"><p>· 说"但是你还不够努力"</p><p>· 被情绪带跑软化结论</p><p>· 只给等级不给证据</p><p>· 空洞安慰"下次会好的"</p></div></div>
+</div>
+</div>
+<script>
+lucide.createIcons();
+function sendMsg(){const i=document.getElementById('chatInput');const m=i.value.trim();if(!m)return;const l=document.getElementById('msgList');const d=document.createElement('div');d.className='msg user';d.innerHTML=`<div class="msg-bubble">${m}</div>`;l.appendChild(d);i.value='';l.scrollTop=l.scrollHeight;setTimeout(()=>{const r=document.createElement('div');r.className='msg npc';r.innerHTML='<div class="msg-bubble">管理者B看着你，等你继续说下去。</div>';l.appendChild(r);l.scrollTop=l.scrollHeight},1500)}
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}})
+</script>
+</body>
+</html>

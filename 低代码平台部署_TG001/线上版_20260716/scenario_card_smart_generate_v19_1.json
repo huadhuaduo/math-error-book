@@ -1,0 +1,21 @@
+{
+  "id": "scenario_card_smart_generate_v19_1",
+  "name": "V19.1版本场景卡智能生成",
+  "model": "87",
+  "modelParams": { "maxTokens": 16000, "temperature": 0.5 },
+  "inputs": ["d_vector", "p_step_range", "difficulty_level", "industry_param"],
+  "methodology_version": "V19.1",
+  "rules_encoded": [
+    "D-P关键性矩阵（5D×6P，★★★/★★/★/--四级）",
+    "D-P行为规则（每个★★★组合的✅允许/❌禁止操作）",
+    "D-D交互规则（加剧/抵消/转移/错配）",
+    "P步骤顺序约束（5条，P1必须在所有干预前，P6必须最后）",
+    "决策点生成规则（六要素：场景/触发/选项≥3/短期影响/长期影响/难度系数）",
+    "14种陷阱类型T01-T14（按难度递增隐蔽性）",
+    "难度等级影响规则（basic≤2陷阱80%辨识度 / medium 3-5陷阱50-80% / advanced≥6陷阱≤50%）",
+    "地产行业术语适配（沙盘区/认筹/逼定/圈层/案场/线索流转/去化率/客群画像/销控表）",
+    "JSON格式强制规则（字符串双引号包裹/数字不加引号/双引号转义/无换行符/纯输出无markdown）"
+  ],
+  "template_summary": "接收D向量+P步骤范围+难度+行业 → 按D-P-f方法论规则 → 输出符合五模块JSON Schema的场景卡（meta/context/decision_points/feedback_criteria/version）",
+  "note": "这是V19方法论的工程化载体，是Route 3策略中"所有智能在Prompt层"的核心资产。D-P-f全部规则编码在此。最不可替代的三份Prompt之一。"
+}

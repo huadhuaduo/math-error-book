@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景选择 · AI 管理陪练</title>
+<style>
+  :root{--accent:#34c759;--text:#3c3c3c;--t2:#6e6e73;--t3:#aeaeb2;--white:#fff;--border:rgba(0,0,0,.06);--r-card:24px;--r-btn:999px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;background:var(--white);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.5}
+
+  .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;height:52px;padding:0 24px;gap:8px}
+  .nav-logo{font-size:16px;font-weight:700;color:var(--text);text-decoration:none;margin-right:24px;display:flex;align-items:center;gap:8px}
+  .nav-logo::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .nav-links{display:flex;gap:4px}
+  .nav-links a{font-size:13px;color:var(--t2);text-decoration:none;padding:6px 14px;border-radius:8px;transition:all .15s}
+  .nav-links a:hover{color:var(--text);background:rgba(0,0,0,.03)}
+  .nav-links a.active{color:var(--accent);font-weight:600;background:rgba(52,199,89,.05)}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .nav-right .nav-icon{font-size:12px;color:var(--t2);text-decoration:none;padding:6px 12px;border-radius:8px;transition:all .15s;display:flex;align-items:center;gap:4px}
+  .nav-right .nav-icon:hover{color:var(--text);background:rgba(0,0,0,.03)}
+  .nav-right .nav-icon.gen{color:var(--accent);font-weight:500}
+  .nav-right .nav-icon.gen:hover{background:rgba(52,199,89,.05)}
+  .nav-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#34c759,#2d8a4e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+  .page{max-width:1160px;margin:0 auto;padding:0 24px 80px}
+
+  .cat-section{margin-top:40px}
+  .cat-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .cat-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .cat-icon.c1{background:rgba(52,199,89,.08)}.cat-icon.c2{background:rgba(0,113,227,.08)}.cat-icon.c3{background:rgba(255,149,0,.08)}
+  .cat-head h2{font-size:22px;font-weight:700;letter-spacing:-.01em}
+  .cat-head .cat-tag{font-size:11px;color:var(--t3);background:rgba(0,0,0,.03);padding:3px 10px;border-radius:var(--r-btn);font-weight:500}
+  .cat-desc{font-size:13px;color:var(--t2);margin-bottom:8px;padding-left:48px;line-height:1.6}
+
+  /* Filter chips */
+  .filter-bar{display:flex;align-items:center;gap:8px;padding-left:48px;margin-bottom:16px;flex-wrap:wrap}
+  .filter-bar .f-label{font-size:11px;color:var(--t3);font-weight:600;white-space:nowrap}
+  .filter-bar .f-chip{font-size:11px;padding:4px 12px;border-radius:var(--r-btn);border:1px solid var(--border);background:var(--white);color:var(--t2);cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+  .filter-bar .f-chip:hover{border-color:var(--accent);color:var(--accent)}
+  .filter-bar .f-chip.on{background:rgba(52,199,89,.08);border-color:var(--accent);color:var(--accent);font-weight:600}
+  .filter-bar .f-divider{width:1px;height:16px;background:var(--border);margin:0 4px}
+  .filter-bar .f-hint{font-size:11px;color:var(--accent);font-weight:500;margin-left:auto;cursor:pointer;text-decoration:none}
+  .result-count{font-size:11px;color:var(--t3);padding-left:48px;margin-bottom:4px}
+
+  /* Recommended row */
+  .rec-row{padding-left:48px;margin-bottom:20px}
+  .rec-label{font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .rec-label .rec-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-btn);background:rgba(52,199,89,.1);color:var(--accent)}
+  .rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .rec-card{background:rgba(52,199,89,.03);border:1px solid rgba(52,199,89,.12);border-radius:var(--r-card);padding:16px;cursor:pointer;text-decoration:none;color:inherit;display:flex;align-items:center;gap:12px;transition:all .2s}
+  .rec-card:hover{background:rgba(52,199,89,.06);border-color:rgba(52,199,89,.25)}
+  .rec-card .rec-icon{font-size:28px;flex-shrink:0}
+  .rec-card .rec-info{flex:1;min-width:0}
+  .rec-card .rec-info .rec-title{font-size:14px;font-weight:600;margin-bottom:2px}
+  .rec-card .rec-info .rec-reason{font-size:11px;color:var(--t2);line-height:1.4}
+  .rec-card .rec-arrow{color:var(--accent);font-size:16px;flex-shrink:0}
+
+  /* Assessment modal */
+  .as-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+  .as-box{background:#fff;border-radius:24px;padding:32px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:modalIn .2s ease}
+  @keyframes modalIn{0%{opacity:0;transform:scale(.96)}100%{opacity:1;transform:scale(1)}}
+  .as-box h2{font-size:20px;font-weight:700;margin-bottom:6px}
+  .as-box .as-sub{font-size:13px;color:var(--t2);margin-bottom:20px}
+  .as-q{margin-bottom:20px}
+  .as-q .as-q-label{font-size:13px;font-weight:600;margin-bottom:8px}
+  .as-q .as-opts{display:flex;gap:8px;flex-wrap:wrap}
+  .as-q .as-opt{padding:8px 16px;border-radius:var(--r-btn);border:1px solid var(--border);background:#fff;font-size:13px;cursor:pointer;transition:all .15s;font-family:inherit}
+  .as-q .as-opt:hover{border-color:var(--accent)}
+  .as-q .as-opt.sel{background:rgba(52,199,89,.08);border-color:var(--accent);color:var(--accent);font-weight:600}
+  .as-result{display:none;background:rgba(52,199,89,.04);border:1px solid rgba(52,199,89,.15);border-radius:16px;padding:20px;text-align:center;margin-top:8px}
+  .as-result .as-rec-scene{font-size:16px;font-weight:700;margin-bottom:4px}
+  .as-result .as-rec-why{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:14px}
+  .as-result .as-rec-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:var(--r-btn);background:var(--accent);color:#fff;font-size:14px;font-weight:600;text-decoration:none}
+  .as-close-btn{display:block;width:100%;padding:12px;border:none;border-radius:12px;background:rgba(0,0,0,.03);color:var(--t2);font-size:13px;cursor:pointer;margin-top:16px;font-family:inherit}
+  #asInput:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(52,199,89,.08)}
+
+  .card-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:8px}
+  .card{background:var(--white);border-radius:var(--r-card);overflow:hidden;border:1px solid var(--border);cursor:pointer;text-decoration:none;color:inherit;display:block;transition:all .25s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 0 32px rgba(0,0,0,.08)}
+  .card .c-media{height:90px;display:flex;align-items:center;justify-content:center;position:relative;font-size:36px}
+  .card .c-media.m1{background:linear-gradient(135deg,#0f3460,#1a1a2e)}
+  .card .c-media.m2{background:linear-gradient(135deg,#1e3a5f,#1b2838)}
+  .card .c-media.m3{background:linear-gradient(135deg,#3d3d3d,#2d2d2d)}
+  .card .c-media.m4{background:linear-gradient(135deg,#3d2a5e,#1a1a2e)}
+  .card .c-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);padding:2px 8px;border-radius:var(--r-btn)}
+  .card .c-status{position:absolute;top:10px;left:10px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-btn)}
+  .card .c-status.ready{background:rgba(52,199,89,.85);color:#fff}
+  .card .c-status.soon{background:rgba(255,149,0,.8);color:#fff}
+  .card .c-status.archived{background:rgba(142,142,147,.7);color:#fff}
+  .card .c-body{padding:12px 14px 14px}
+  .card .c-body .c-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+  .card .c-body .c-tags span{font-size:10px;padding:2px 7px;border-radius:var(--r-btn);background:rgba(0,0,0,.03);color:var(--t3)}
+  .card .c-body .c-title{font-size:14px;font-weight:600;margin-bottom:3px}
+  .card .c-body .c-desc{font-size:11px;color:var(--t2);line-height:1.45;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .c-body .c-action{font-size:12px;font-weight:600;color:var(--accent)}
+
+  .empty-card{background:var(--white);border-radius:var(--r-card);border:2px dashed rgba(0,0,0,.06);padding:28px 16px;text-align:center;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .empty-card:hover{border-color:var(--accent);background:rgba(52,199,89,.02)}
+  .empty-card .ec-icon{font-size:28px;opacity:.4}
+  .empty-card .ec-text{font-size:13px;color:var(--t2);font-weight:500}
+  .empty-card .ec-sub{font-size:11px;color:var(--t3)}
+
+  @media(max-width:900px){.card-grid{grid-template-columns:repeat(2,1fr)}.rec-grid{grid-template-columns:1fr}.filter-bar{gap:4px}}
+  @media(max-width:500px){.card-grid{grid-template-columns:1fr}.cat-head h2{font-size:18px}.page{padding:0 14px 48px}}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a href="陪练首页.html" class="nav-logo">AI 管理陪练</a>
+  <div class="nav-links">
+    <a href="陪练首页.html">首页</a>
+    <a href="#" class="active">场景</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-icon gen" href="#">🤖 智能生成</a>
+    <a class="nav-icon" href="练习记录.html">📋 我的记录</a>
+    <span class="nav-av">陈</span>
+  </div>
+</div></nav>
+
+<div class="page">
+
+<!-- ====== 训战陪练 ====== -->
+<div class="cat-section">
+  <div class="cat-head">
+    <span class="cat-icon c1">⚡</span>
+    <h2>训战陪练</h2>
+    <span class="cat-tag">老师布置 · 课后练习</span>
+  </div>
+  <p class="cat-desc">上完课不等于学会了。在这里多练几遍——你会知道自己哪里还卡着，快速强化，直到真正掌握。老师也能看到全班的数据，下次课重点讲大家最薄弱的环节。</p>
+  <div class="card-grid">
+    <a class="card" href="scene_TG001_准备页.html">
+      <div class="c-media m1"><span class="c-status ready">可练</span><span class="c-badge">15分钟</span>🏗️</div>
+      <div class="c-body"><div class="c-tags"><span>对下管理</span><span>营销</span><span>进阶</span></div><div class="c-title">首开倒计时——空降者的20天</div><div class="c-desc">被紧急派往新项目支援。早会上没人说话，NPC-周在看你。</div><span class="c-action">开始练习</span></div>
+    </a>
+    <div class="card" onclick="alert('即将上线')">
+      <div class="c-media m3"><span class="c-status soon">待建</span><span class="c-badge">20分钟</span>🏗️</div>
+      <div class="c-body"><div class="c-tags"><span>对下管理</span><span>营销</span><span>进阶</span></div><div class="c-title">大户型攻坚——能力在，意愿呢？</div><div class="c-desc">三个盘的销冠，这次却说"没把握"。</div><span class="c-action" style="color:var(--t3)">即将上线</span></div>
+    </div>
+    <div class="card" onclick="alert('即将上线')">
+      <div class="c-media m4"><span class="c-status soon">待建</span><span class="c-badge">25分钟</span>🏢</div>
+      <div class="c-body"><div class="c-tags"><span>跨部门协作</span><span>营销</span><span>挑战</span></div><div class="c-title">线索断了——数渠团队的重建</div><div class="c-desc">线上获客成本翻倍。团队在缩减，等一个信号。</div><span class="c-action" style="color:var(--t3)">即将上线</span></div>
+    </div>
+    <div class="empty-card" onclick="alert('更多MTP训后场景建设中')">
+      <span class="ec-icon">📝</span><span class="ec-text">MTP知识点练习</span><span class="ec-sub">课后检验知识点掌握程度</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 管理陪练 ====== -->
+<div class="cat-section">
+  <div class="cat-head">
+    <span class="cat-icon c2">🎯</span>
+    <h2>管理陪练</h2>
+    <span class="cat-tag">自主练习 · 管理发展 · <span id="mgmtTotal">17</span>个场景</span>
+  </div>
+  <p class="cat-desc">绩效面谈、跨部门协调、向上汇报……管理虽然没有标准答案，但这里给你一个安全的练习场。对话是自由的——练完之后，你会看到自己没注意到的习惯和盲区，在工作中更出色。</p>
+
+  <!-- Recommended Row -->
+  <div class="rec-row">
+    <div class="rec-label">✨ 推荐给你 <span class="rec-badge">从这里开始</span></div>
+    <div class="rec-grid">
+      <a class="rec-card" href="scene_PR2_沉浸式准备页_v2.html">
+        <span class="rec-icon">🏢</span>
+        <div class="rec-info"><div class="rec-title">C级员工·绩效面谈</div><div class="rec-reason">最受欢迎的管理场景，15分钟体验完整面谈流程</div></div>
+        <span class="rec-arrow">→</span>
+      </a>
+      <a class="rec-card" href="scene_TG001_准备页.html">
+        <span class="rec-icon">🏗️</span>
+        <div class="rec-info"><div class="rec-title">首开倒计时·空降者的20天</div><div class="rec-reason">热门的训战场景——被紧急派往新项目，NPC-周在等你开口</div></div>
+        <span class="rec-arrow">→</span>
+      </a>
+      <div class="rec-card" onclick="openAssessment()">
+        <span class="rec-icon">🎯</span>
+        <div class="rec-info"><div class="rec-title">不知道练哪个？</div><div class="rec-reason">快速自评——帮你找到最适合开始的那个场景</div></div>
+        <span class="rec-arrow">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="f-label">难度</span>
+    <button class="f-chip on" data-group="diff" data-val="all">全部</button>
+    <button class="f-chip" data-group="diff" data-val="入门">入门</button>
+    <button class="f-chip" data-group="diff" data-val="进阶">进阶</button>
+    <button class="f-chip" data-group="diff" data-val="挑战">挑战</button>
+    <span class="f-divider"></span>
+    <span class="f-label">条线</span>
+    <button class="f-chip on" data-group="prof" data-val="all">全部</button>
+    <button class="f-chip" data-group="prof" data-val="营销">营销</button>
+    <button class="f-chip" data-group="prof" data-val="工程">工程</button>
+    <button class="f-chip" data-group="prof" data-val="综合">综合</button>
+    <span class="f-divider"></span>
+    <span class="f-label">模块</span>
+    <button class="f-chip on" data-group="mod" data-val="all">全部</button>
+    <button class="f-chip" data-group="mod" data-val="对下管理">对下管理</button>
+    <button class="f-chip" data-group="mod" data-val="跨部门协作">跨部门协作</button>
+    <button class="f-chip" data-group="mod" data-val="拿结果">拿结果</button>
+    <button class="f-chip" data-group="mod" data-val="向上管理">向上管理</button>
+    <span class="f-divider"></span><button class="f-chip" id="fReadyOnly" data-group="ready" data-val="off" onclick="toggleReadyOnly()">仅可练</button><a class="f-hint" href="#" onclick="openAssessment()">先测再练 →</a>
+  </div>
+  <div class="result-count" id="mgmtCount">显示 17 个场景</div>
+
+  <div class="card-grid" id="mgmtGrid"></div>
+</div>
+
+<!-- ====== 业务陪练 ====== -->
+<div class="cat-section">
+  <div class="cat-head">
+    <span class="cat-icon c3">💼</span>
+    <h2>业务陪练</h2>
+    <span class="cat-tag">上传话术 · 自动生成</span>
+  </div>
+  <p class="cat-desc">把你的产品手册或话术模板上传，AI 自动生成练习场景。销售练接客、客服练投诉处理——练的是你自己的真实任务、真实场景，练完就能用。</p>
+  <div class="card-grid">
+    <div class="empty-card" onclick="alert('业务陪练模块建设中。上线后可上传产品手册，AI自动生成销售场景。')"><span class="ec-icon">📞</span><span class="ec-text">销售场景 · 话术训练</span><span class="ec-sub">上传产品手册 → AI生成</span></div>
+    <div class="empty-card" onclick="alert('业务陪练模块建设中。')"><span class="ec-icon">🎧</span><span class="ec-text">客服场景 · 投诉处理</span><span class="ec-sub">上传话术模板 → AI生成</span></div>
+    <div class="empty-card" onclick="alert('业务陪练模块建设中。')"><span class="ec-icon">📋</span><span class="ec-text">自定义场景</span><span class="ec-sub">自建模板上传</span></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ====== 管理陪练场景数据 ======
+var MGMT_SCENES = [
+  { id:'PR-002', title:'C级员工·自评与绩效落差大', module:'对下管理', prof:'综合', diff:'进阶', dur:20, desc:'她不知道今天是C。笑着推开会议室的门，你得给出等级还得让她愿意改进。', icon:'🏢', npc:'管理者B', status:'ready', link:'scene_PR2_沉浸式准备页_v2.html' },
+  { id:'TG-004', title:'尾盘清仓——谁在害怕被抛弃？', module:'对下管理', prof:'营销', diff:'进阶', dur:15, desc:'32套尾盘，人心散了。每个人都在偷偷打听新项目消息。', icon:'📋', npc:'小赵', status:'soon' },
+  { id:'scene_gt_P4', title:'三线城市新媒体营销团队激活', module:'对下管理', prof:'营销', diff:'进阶', dur:12, desc:'传统渠道失灵，团队抵触新媒体。帮老销售跨过面子关和能力关。', icon:'📋', npc:'小陈', status:'soon' },
+  { id:'scene_gt_F4', title:'跨部门资源争夺·平衡品质与成本', module:'跨部门协作', prof:'工程', diff:'挑战', dur:12, desc:'设计坚持效果，成本要求节约，工程需要明确标准。三方僵持。', icon:'🏢', npc:'陈工', status:'soon' },
+  { id:'scene_P2', title:'跨部门协作冲突协调', module:'跨部门协作', prof:'工程', diff:'挑战', dur:12, desc:'营销催交付，工程强调质量，双方激烈冲突。五年前事故的心理阴影。', icon:'🚧', npc:'周工', status:'soon' },
+  { id:'scene_R1', title:'季度目标对齐·拆解沟通', module:'拿结果', prof:'营销', diff:'挑战', dur:12, desc:'上级要求6500万目标，张磊认为过高。表面服从内心不认同——需要达成真正共识。', icon:'🏢', npc:'张磊', status:'soon' },
+  { id:'scene_R2', title:'销售人员目标拆解指导', module:'拿结果', prof:'营销', diff:'入门', dur:8, desc:'新人管理者B入职第2个月，200万目标无从下手——不知道怎么把大目标变成每天的动作。', icon:'📋', npc:'管理者B', status:'soon' },
+  { id:'scene_adv_upward_01', title:'向上汇报·项目延期问责', module:'向上管理', prof:'工程', diff:'挑战', dur:12, desc:'项目延期一周，赵总在周会上当众质问。你需要既承认责任又争取支持。', icon:'🏢', npc:'赵总', status:'soon' },
+  { id:'scene_conflict_001', title:'团队内部冲突调解', module:'对下管理', prof:'综合', diff:'进阶', dur:10, desc:'两名核心成员因工作方式分歧产生冲突，已冷战一周，团队被波及。', icon:'🏢', npc:'管理者B', status:'soon' },
+  { id:'scene_adv_gen_01', title:'跨代际员工管理', module:'对下管理', prof:'综合', diff:'进阶', dur:10, desc:'95后员工能力强但不认可传统管理方式。尊重逻辑不尊重权威。', icon:'🏢', npc:'小周', status:'soon' },
+  { id:'PR-PF-A', title:'A级员工·职业发展不明确', module:'对下管理', prof:'综合', diff:'进阶', dur:30, desc:'业绩A级但职业迷茫。你需要帮他找到下一步方向，而不只是表扬。', icon:'🏢', npc:'张', status:'soon' },
+  { id:'PR-PF-B', title:'B级员工·转型诉求受阻导致消极', module:'对下管理', prof:'综合', diff:'进阶', dur:30, desc:'能力B+，消极让他变成了B。需要区分消极和能力，帮他找回状态。', icon:'🏢', npc:'王', status:'soon' },
+  { id:'PR-PF-C2', title:'C级×2·选择性工作+法律风险', module:'对下管理', prof:'综合', diff:'挑战', dur:30, desc:'涉及法律风险，谈话需要格外谨慎。既要合规又要有效。', icon:'🏢', npc:'刘', status:'soon' },
+  { id:'PR1', title:'PR1 · 跨部门协作', module:'跨部门协作', prof:'综合', diff:'进阶', dur:20, desc:'已有准备页+反馈页HTML（_archive_html_20260717），可恢复调整。', icon:'🏢', npc:'陈', status:'archived' },
+  { id:'PR3', title:'PR3 · 绩效面谈场景', module:'对下管理', prof:'综合', diff:'进阶', dur:20, desc:'已有准备页+反馈页HTML，可恢复后调整优化。', icon:'🏢', npc:'—', status:'archived' },
+  { id:'PR4', title:'PR4 · 绩效面谈场景', module:'对下管理', prof:'综合', diff:'进阶', dur:20, desc:'已有准备页+反馈页HTML，可恢复后调整优化。', icon:'🏢', npc:'—', status:'archived' },
+  { id:'PR5', title:'PR5 · 绩效面谈场景', module:'对下管理', prof:'综合', diff:'进阶', dur:20, desc:'已有准备页+反馈页HTML（v4-v15），可恢复并选最优版本。', icon:'🏢', npc:'—', status:'archived' }
+];
+
+var filters = { diff: "all", prof: "all", mod: "all", ready: false };
+
+// Filter chip clicks
+document.querySelectorAll('.f-chip').forEach(function(chip) {
+  chip.addEventListener('click', function() {
+    var group = this.dataset.group;
+    var val = this.dataset.val;
+    // Toggle
+    document.querySelectorAll('.f-chip[data-group="' + group + '"]').forEach(function(c) { c.classList.remove('on'); });
+    this.classList.add('on');
+    filters[group] = val;
+    renderMgmt();
+  });
+});
+
+
+function toggleReadyOnly() {
+  filters.ready = !filters.ready;
+  var btn = document.getElementById("fReadyOnly");
+  if (filters.ready) { btn.classList.add("on"); btn.textContent = "仅可练 ✓"; }
+  else { btn.classList.remove("on"); btn.textContent = "仅可练"; }
+  renderMgmt();
+}
+
+function renderMgmt() {
+  var filtered = MGMT_SCENES.filter(function(s) {
+    if (filters.diff !== 'all' && s.diff !== filters.diff) return false;
+    if (filters.prof !== 'all' && s.prof !== filters.prof) return false;
+    if (filters.mod !== 'all' && s.module !== filters.mod) return false;
+    return true;
+    if (filters.ready && s.status !== "ready") return false;
+
+  });
+
+  // Sort: ready first, then soon, then archived
+  var order = { ready: 0, soon: 1, archived: 2 };
+  filtered.sort(function(a, b) { return order[a.status] - order[b.status]; });
+
+  document.getElementById('mgmtCount').textContent = '显示 ' + filtered.length + ' 个场景';
+  document.getElementById('mgmtTotal').textContent = MGMT_SCENES.length;
+
+  var statusLabels = { ready: '可练', soon: '待建', archived: '已归档' };
+  var statusCls = { ready: 'ready', soon: 'soon', archived: 'archived' };
+  var diffColors = { '入门': '#34c759', '进阶': '#0071e3', '挑战': '#ff9500' };
+
+  var html = '';
+  filtered.forEach(function(s) {
+    var click = s.link ? 'href="' + s.link + '"' : 'onclick="alert(\'' + s.title + ' 对话引擎待建。场景定义已就绪。\')"';
+    var actionText = s.status === 'ready' ? '开始练习' : (s.status === 'archived' ? '已归档' : '待建对话页');
+    var actionCls = s.status === 'ready' ? '' : ' style="color:var(--t3)"';
+    html += '<a class="card" ' + click + '>'
+      + '<div class="c-media m' + ((s.id.charCodeAt(0) + (s.id.charCodeAt(s.id.length-1)||0)) % 4 + 1) + '"><span class="c-status ' + statusCls[s.status] + '">' + statusLabels[s.status] + '</span><span class="c-badge">' + s.dur + '分钟</span>' + s.icon + '</div>'
+      + '<div class="c-body">'
+      + '<div class="c-tags"><span>' + s.module + '</span><span>' + s.prof + '</span><span style="color:' + (diffColors[s.diff]||'#6e6e73') + '">' + s.diff + '</span></div>'
+      + '<div class="c-title">' + s.title + '</div>'
+      + '<div class="c-desc">' + s.desc + '</div>'
+      + '<span class="c-action"' + actionCls + '>' + actionText + '</span>'
+      + '</div></a>';
+  });
+
+  document.getElementById('mgmtGrid').innerHTML = html || '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--t3);font-size:13px">没有匹配的场景，试试调整筛选条件</div>';
+}
+
+renderMgmt();
+
+// ====== Self-Assessment Modal ======
+function openAssessment() {
+  var overlay = document.createElement('div');
+  overlay.className = 'as-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+
+  overlay.innerHTML = '<div class="as-box">' +
+    '<h2>快速自评</h2><p class="as-sub">回答3个问题，帮你匹配最适合开始的场景。</p>' +
+
+    '<div class="as-q"><div class="as-q-label">1. 你目前的管理经验？</div><div class="as-opts">' +
+      '<button class="as-opt" data-q="1" data-v="new">新经理（<1年）</button>' +
+      '<button class="as-opt" data-q="1" data-v="mid">有经验（1-5年）</button>' +
+      '<button class="as-opt" data-q="1" data-v="senior">资深（>5年）</button>' +
+    '</div></div>' +
+
+    '<div class="as-q"><div class="as-q-label">2. 你最近遇到的主要挑战？</div><div class="as-opts">' +
+      '<button class="as-opt" data-q="2" data-v="team">带团队·激励下属</button>' +
+      '<button class="as-opt" data-q="2" data-v="cross">跨部门协作·资源协调</button>' +
+      '<button class="as-opt" data-q="2" data-v="up">向上管理·汇报沟通</button>' +
+    '</div></div>' +
+
+    '<div class="as-q"><div class="as-q-label">3. 你更想练什么？</div><div class="as-opts">' +
+      '<button class="as-opt" data-q="3" data-v="face">绩效面谈·给反馈</button>' +
+      '<button class="as-opt" data-q="3" data-v="motivate">团队激励·提士气</button>' +
+      '<button class="as-opt" data-q="3" data-v="target">目标管理·拿结果</button>' +
+    '</div></div>' +
+
+    '<div class="as-q"><div class="as-q-label">补充描述（可选，帮助更精准匹配）</div>' +
+      '<textarea id="asInput" placeholder="比如：项目尾盘人心惶惶；95后员工不服管；刚升经理第一次谈绩效……" style="width:100%;height:56px;border:1px solid var(--border);border-radius:12px;padding:10px;font-size:13px;font-family:inherit;resize:none;line-height:1.6;outline:none" oninput="refreshResult()"></textarea>' +
+    '</div>' +
+
+    '<div class="as-result" id="asResult"><div class="as-rec-scene"></div><div class="as-rec-why"></div><a class="as-rec-btn" href="#"></a></div>' +
+    '<button class="as-close-btn" onclick="this.parentElement.parentElement.remove()">关闭</button>' +
+  '</div>';
+
+  var q1 = '', q2 = '', q3 = '';
+
+  document.body.appendChild(overlay);
+
+  // Structured question clicks
+  overlay.querySelectorAll('.as-opt').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var q = this.dataset.q;
+      var v = this.dataset.v;
+      // Single-select per question
+      if (q === '1') { q1 = (q1 === v ? '' : v); this.parentElement.querySelectorAll('.as-opt').forEach(function(b) { b.classList.remove('sel'); }); if (q1) this.classList.add('sel'); }
+      if (q === '2') { q2 = (q2 === v ? '' : v); this.parentElement.querySelectorAll('.as-opt').forEach(function(b) { b.classList.remove('sel'); }); if (q2) this.classList.add('sel'); }
+      if (q === '3') { q3 = (q3 === v ? '' : v); this.parentElement.querySelectorAll('.as-opt').forEach(function(b) { b.classList.remove('sel'); }); if (q3) this.classList.add('sel'); }
+      refreshResult();
+    });
+  });
+
+  function refreshResult() {
+    var text = (overlay.querySelector('#asInput') || {}).value || '';
+    var rec = getRecommendation(q1, q2, q3, text);
+    var resultEl = overlay.querySelector('#asResult');
+    if (!q1 && !q2 && !q3 && (!text || text.trim().length < 3)) { resultEl.style.display = 'none'; return; }
+    resultEl.style.display = 'block';
+    resultEl.querySelector('.as-rec-scene').textContent = rec.title;
+    resultEl.querySelector('.as-rec-why').textContent = rec.why;
+    var btn = resultEl.querySelector('.as-rec-btn');
+    btn.textContent = rec.btnText;
+    if (rec.link) { btn.href = rec.link; btn.onclick = null; }
+    else { btn.href = '#'; btn.onclick = function(e) { e.preventDefault(); alert(rec.title + ' 对话引擎即将上线。场景定义已就绪。'); }; }
+  }
+}
+
+var FUZZY_KEYWORDS = {
+  '空降|新项目|新团队|刚.*派|支援|没人说话|士气|低迷|过劳|加班|疲劳|不说话': { title: '首开倒计时·空降者的20天', why: '你的处境和TG-001NPC-周场景高度匹配——空降新项目、团队过劳、信任为零。用行动建立信任。', btnText: '开始练习 →', link: 'scene_TG001_准备页.html' },
+  '绩效|面谈|给.*等级|打.*分|考核|C级|B级|A级|评估|反馈.*下属|告诉.*他|告诉.*她|怎么.*开口|怎么.*说': { title: 'C级员工·绩效面谈', why: '绩效面谈是管理者最高频的挑战。管理者B场景——怎么把等级说出口，同时让下属愿意改进。', btnText: '开始练习 →', link: 'scene_PR2_沉浸式准备页_v2.html' },
+  '跨部门|推不动|协调|协作|部门.*墙|资源.*争|冲突.*部门|两个.*部门|合作.*难|不配合': { title: '跨部门协作·冲突调解', why: '跨部门协调是管理中最容易踩坑的。这个场景帮你练习如何在不牺牲关系的前提下推动协作。', btnText: '了解更多 →', link: null },
+  '目标|指标|拆解|季度|KPI|OKR|定.*目标|分配.*任务|业绩.*压力|完不成': { title: '季度目标对齐·拆解沟通', why: '目标管理不是下命令——是让团队真正认同。张磊场景帮你把"上面要的"变成"我们想要的"。', btnText: '了解更多 →', link: null },
+  '向上|汇报|老板|领导.*汇报|上级|高层|赵总|问责|延期|背锅': { title: '向上汇报·项目延期问责', why: '向上管理是管理者最容易忽略的能力。赵总场景——项目延期，当众被问，你需要既承认责任又争取支持。', btnText: '了解更多 →', link: null },
+  '新经理|刚.*做.*管理|第一.*带.*团队|新晋|新手|不会.*管|从.*技术.*转|刚.*升': { title: 'C级员工·绩效面谈', why: '新经理的第一个挑战往往是绩效面谈。管理者B场景带你体验——怎么把话说清楚同时让人愿意改进。', btnText: '开始练习 →', link: 'scene_PR2_沉浸式准备页_v2.html' },
+  '老员工|资深|不.*听|消极|抵触|油条|老.*油条|不.*配合|隐性.*抗': { title: '跨代际员工管理', why: '管理资深员工需要不一样的策略。这个场景练习如何让"老同志"重新燃起动力。', btnText: '了解更多 →', link: null },
+  '95后|00后|年轻.*员工|代际|代沟|新.*一代|不.*服.*管|个性': { title: '跨代际员工管理', why: '95后尊重逻辑不尊重权威——你需要不同的管理方式。这个场景帮你找到和他们对话的语言。', btnText: '了解更多 →', link: null },
+  '尾盘|清仓|人.*散|打听.*新.*项目|想.*走|离职|留不住|人心': { title: '尾盘清仓——谁在害怕被抛弃？', why: '尾盘32套，人心散了。这个场景帮你练习稳住团队——在项目尾声保持战斗力。', btnText: '了解更多 →', link: null },
+  '销售|话术|接客|客服|投诉|客户.*骂|客户.*投诉': { title: '销售场景·话术训练', why: '业务陪练板块即将上线。上传你的产品手册，AI自动生成销售场景。', btnText: '了解业务陪练 →', link: null }
+};
+
+function updateFuzzyResult(text) {
+  var resultEl = document.getElementById('asResult');
+  if (!text || text.trim().length < 3) { resultEl.style.display = 'none'; return; }
+
+  var bestMatch = null, bestScore = 0;
+  Object.keys(FUZZY_KEYWORDS).forEach(function(pattern) {
+    var regex = new RegExp(pattern, 'i');
+    var match = text.match(regex);
+    if (match) {
+      var score = match[0].length; // Longer match = better
+      if (score > bestScore) { bestScore = score; bestMatch = FUZZY_KEYWORDS[pattern]; }
+    }
+  });
+
+  if (!bestMatch) {
+    bestMatch = { title: 'C级员工·绩效面谈', why: '根据你的描述，建议从最受欢迎的管理场景开始。绩效面谈是每个管理者都要面对的——这里开始不会错。', btnText: '开始练习 →', link: 'scene_PR2_沉浸式准备页_v2.html' };
+  }
+
+  resultEl.style.display = 'block';
+  resultEl.querySelector('.as-rec-scene').textContent = bestMatch.title;
+  resultEl.querySelector('.as-rec-why').textContent = bestMatch.why;
+  var btn = resultEl.querySelector('.as-rec-btn');
+  btn.textContent = bestMatch.btnText;
+  if (bestMatch.link) {
+    btn.href = bestMatch.link;
+    btn.onclick = null;
+  } else {
+    btn.href = '#';
+    btn.onclick = function(e) { e.preventDefault(); alert(bestMatch.title + ' 对话引擎即将上线。场景定义已就绪。'); };
+  }
+}
+</script>
+
+</body>
+</html>

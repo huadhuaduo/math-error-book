@@ -1,0 +1,68 @@
+- generic [ref=e1]:
+  - generic [ref=e101]:
+    - generic [ref=e102]:
+      - button "返回" [ref=e103] [cursor=pointer]: 🏠
+      - heading "👨‍👩‍👧 家长控制" [level=2] [ref=e104]
+    - generic [ref=e125]:
+      - generic [ref=e126]:
+        - heading "📊 最近学习热力图" [level=3] [ref=e127]
+        - generic [ref=e128]:
+          - 'generic "2026-06-22: 无数据" [ref=e129]'
+          - 'generic "2026-06-23: 无数据" [ref=e130]'
+          - 'generic "2026-06-24: 无数据" [ref=e131]'
+          - 'generic "2026-06-25: 无数据" [ref=e132]'
+          - 'generic "2026-06-26: 无数据" [ref=e133]'
+          - 'generic "2026-06-27: 无数据" [ref=e134]'
+          - 'generic "2026-06-28: 无数据" [ref=e135]'
+          - 'generic "2026-06-29: 无数据" [ref=e136]'
+          - 'generic "2026-06-30: 无数据" [ref=e137]'
+          - 'generic "2026-07-01: 无数据" [ref=e138]'
+          - 'generic "2026-07-02: 无数据" [ref=e139]'
+          - 'generic "2026-07-03: 无数据" [ref=e140]'
+          - 'generic "2026-07-04: 无数据" [ref=e141]'
+          - 'generic "2026-07-05: 无数据" [ref=e142]'
+          - 'generic "2026-07-06: 无数据" [ref=e143]'
+          - 'generic "2026-07-07: 无数据" [ref=e144]'
+          - 'generic "2026-07-08: 无数据" [ref=e145]'
+          - 'generic "2026-07-09: 无数据" [ref=e146]'
+          - 'generic "2026-07-10: 无数据" [ref=e147]'
+          - 'generic "2026-07-11: 无数据" [ref=e148]'
+          - 'generic "2026-07-12: 无数据" [ref=e149]'
+          - 'generic "2026-07-13: 无数据" [ref=e150]'
+          - 'generic "2026-07-14: 无数据" [ref=e151]'
+          - 'generic "2026-07-15: 无数据" [ref=e152]'
+          - 'generic "2026-07-16: 无数据" [ref=e153]'
+          - 'generic "2026-07-17: 无数据" [ref=e154]'
+          - 'generic "2026-07-18: 无数据" [ref=e155]'
+          - 'generic "2026-07-19: 50%" [ref=e156]'
+        - paragraph [ref=e157]: 颜色越深 = 正确率越高
+      - generic [ref=e158]:
+        - heading "⏱️ 每日学习时长（分钟）" [level=3] [ref=e159]
+        - generic [ref=e160]:
+          - 'generic "2026-07-13: 0分钟" [ref=e161]'
+          - 'generic "2026-07-14: 0分钟" [ref=e162]'
+          - 'generic "2026-07-15: 0分钟" [ref=e163]'
+          - 'generic "2026-07-16: 0分钟" [ref=e164]'
+          - 'generic "2026-07-17: 0分钟" [ref=e165]'
+          - 'generic "2026-07-18: 0分钟" [ref=e166]'
+          - 'generic "2026-07-19: 0分钟" [ref=e167]'
+      - generic [ref=e168]:
+        - heading "📝 最近错题" [level=3] [ref=e169]
+        - generic [ref=e171]:
+          - generic [ref=e172]: 数一数，一共有几个呀？ → 答了2
+          - generic [ref=e173]: 认识数字1-5
+      - generic [ref=e174]:
+        - heading "⚙️ 设置" [level=3] [ref=e175]
+        - generic [ref=e176]:
+          - generic [ref=e177]: 每日时长上限（分钟）
+          - slider [ref=e178]: "20"
+          - generic [ref=e179]: "20"
+        - generic [ref=e180]:
+          - generic [ref=e181]: 语音朗读
+          - checkbox [checked] [ref=e182]
+        - generic [ref=e183]:
+          - generic [ref=e184]: 音效
+          - checkbox [checked] [ref=e185]
+        - button "🔄 重置学习进度" [ref=e187] [cursor=pointer]
+      - button "✅ 完成，返回首页" [ref=e188] [cursor=pointer]
+  - generic: ⭐ +1 颗星！

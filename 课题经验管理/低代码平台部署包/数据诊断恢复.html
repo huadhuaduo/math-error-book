@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>课题数据诊断与恢复</title>
+<style>
+  body { font-family: -apple-system, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+  h1 { font-size: 24px; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .found { border-left: 4px solid #34c759; }
+  .empty { border-left: 4px solid #ff9500; }
+  .key { font-family: monospace; font-size: 13px; color: #6e6e73; }
+  .count { font-size: 28px; font-weight: 700; }
+  .btn { display:inline-block; padding:10px 22px; border-radius:100px; border:none; cursor:pointer; font-weight:600; font-size:14px; margin:4px; }
+  .btn-primary { background: #0071e3; color: #fff; }
+  .btn-secondary { background: rgba(0,0,0,0.05); }
+  .warning { background: #fff8e6; padding: 12px 16px; border-radius: 8px; font-size:13px; color:#8a5a00; margin-top:16px; }
+</style>
+</head>
+<body>
+<h1>🔍 课题数据诊断</h1>
+<p style="color:#6e6e73">此页面帮你找到"丢失"的数据。检查浏览器中所有可能的存储位置。</p>
+
+<div id="results"></div>
+<div id="actions" style="display:none">
+  <div class="card">
+    <h3>恢复操作</h3>
+    <p style="font-size:14px;color:#6e6e73">找到数据后，选择一个操作：</p>
+    <button id="exportFound" class="btn btn-primary">导出找到的数据为 JSON</button>
+    <button id="mergeAll" class="btn btn-secondary" style="display:none">合并所有来源数据</button>
+    <p id="status" style="margin-top:12px;font-size:13px"></p>
+  </div>
+  <div class="warning">
+    ⚠️ <b>重要</b>：导出 JSON 后，在 v5 的「备份」tab 中导入，即可恢复全部数据。<br>
+    导入后建议立即再导出一份存到本地文件夹（IP 资产同步铁律）。
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEYS = ['lessonBank_v4','lessonBank_v3','lessonBank_v2','lessonBank_v1'];
+  var foundAny = false;
+  var allEntries = [];
+
+  var html = '';
+  KEYS.forEach(function(key){
+    var raw = localStorage.getItem(key);
+    if (raw) {
+      try {
+        var data = JSON.parse(raw);
+        var arr = Array.isArray(data) ? data : (data.entries || []);
+        html += '<div class="card found">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center">';
+        html += '<div><div class="key">' + key + '</div><div class="count">' + arr.length + ' 条</div></div>';
+        html += '<span style="color:#34c759;font-weight:600">✓ 找到</span>';
+        html += '</div>';
+        if (arr.length) {
+          html += '<div style="margin-top:8px;font-size:12px;color:#6e6e73">';
+          var types = {};
+          arr.forEach(function(e){ var t = e.entryType || '旧数据(v3-)'; types[t] = (types[t]||0)+1; });
+          Object.keys(types).forEach(function(t){ html += '<span style="margin-right:12px">' + t + ': ' + types[t] + '</span>'; });
+          html += '</div>';
+        }
+        html += '</div>';
+        arr.forEach(function(e){ allEntries.push(e); });
+        foundAny = true;
+      } catch(e) {
+        html += '<div class="card empty"><div class="key">' + key + '</div><div style="color:#ff9500">数据存在但格式损坏</div></div>';
+      }
+    } else {
+      html += '<div class="card empty"><div class="key">' + key + '</div><span style="color:#ff9500">✗ 空</span></div>';
+    }
+  });
+
+  if (!foundAny) {
+    html += '<div class="card empty" style="border-left-color:#ff3b30">';
+    html += '<h3>😕 所有存储位置均为空</h3>';
+    html += '<p style="font-size:14px;color:#6e6e73">可能原因：<br>';
+    html += '1. 你换了一个浏览器打开此页面<br>';
+    html += '2. 你之前是通过 <code>file://</code> 打开 v4 的（双击文件），现在通过 <code>http://</code> 打开——它们是不同的存储空间<br>';
+    html += '3. 浏览器数据被清理了</p>';
+    html += '<p style="font-size:14px;margin-top:8px"><b>请尝试</b>：用你当初打开 v4 的<u>同一种方式</u>重新打开 v4（如果当初是双击 Finder 打开，就去 Finder 双击 v4；如果当初是通过链接打开的，就再点那个链接），然后导出 JSON。</p>';
+    html += '</div>';
+  }
+
+  document.getElementById('results').innerHTML = html;
+
+  if (foundAny) {
+    document.getElementById('actions').style.display = '';
+
+    // 去重
+    var seen = {};
+    var deduped = [];
+    allEntries.forEach(function(e){
+      if (e && e.id && !seen[e.id]) { seen[e.id] = true; deduped.push(e); }
+    });
+
+    document.getElementById('exportFound').addEventListener('click', function(){
+      var blob = new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString().slice(0,10),entries:deduped},null,2)],{type:'application/json'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '课题数据恢复_' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      document.getElementById('status').textContent = '✓ 已导出 ' + deduped.length + ' 条（已去重）。请在 v5「备份」tab 中导入此文件。';
+    });
+  }
+})();
+</script>
+</body>
+</html>

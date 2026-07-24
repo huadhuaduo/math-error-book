@@ -1,0 +1,25 @@
+- generic [active] [ref=f4e1]:
+  - heading "🔍 课题数据诊断" [level=1] [ref=f4e2]
+  - paragraph [ref=f4e3]: 此页面帮你找到"丢失"的数据。检查浏览器中所有可能的存储位置。
+  - generic [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [ref=f4e6]: lessonBank_v4
+      - text: ✗ 空
+    - generic [ref=f4e7]:
+      - generic [ref=f4e8]: lessonBank_v3
+      - text: ✗ 空
+    - generic [ref=f4e9]:
+      - generic [ref=f4e10]: lessonBank_v2
+      - text: ✗ 空
+    - generic [ref=f4e11]:
+      - generic [ref=f4e12]: lessonBank_v1
+      - text: ✗ 空
+    - generic [ref=f4e13]:
+      - heading "😕 所有存储位置均为空" [level=3] [ref=f4e14]
+      - paragraph [ref=f4e15]:
+        - text: 可能原因：1. 你换了一个浏览器打开此页面2. 你之前是通过
+        - code [ref=f4e16]: file://
+        - text: 打开 v4 的（双击文件），现在通过
+        - code [ref=f4e17]: http://
+        - text: 打开——它们是不同的存储空间3. 浏览器数据被清理了
+      - paragraph [ref=f4e18]: 请尝试：用你当初打开 v4 的同一种方式重新打开 v4（如果当初是双击 Finder 打开，就去 Finder 双击 v4；如果当初是通过链接打开的，就再点那个链接），然后导出 JSON。

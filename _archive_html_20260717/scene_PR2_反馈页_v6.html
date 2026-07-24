@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · 小张 · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#DCFCE7;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#DBEAFE;bottom:-50px;left:-30px}
+  .layout{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:36px 24px 60px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+  .main-col{display:flex;flex-direction:column;gap:20px}
+  .side-col{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px}
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:24px 22px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .section-num{font-size:11px;font-weight:700;color:#A8A29E;letter-spacing:.08em;margin-bottom:4px}
+  .section-title{font-size:17px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:6px;letter-spacing:-.01em}
+  .section-sub{font-size:12px;color:#78716C;line-height:1.5;margin-bottom:18px}
+  .section-header{padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid rgba(0,0,0,.05)}
+  .ov-narrative{font-size:14px;color:#44403C;line-height:1.7;margin-bottom:20px}
+  .radar-area{display:flex;align-items:center;gap:36px;justify-content:center;padding:16px 0;flex-wrap:wrap}
+  .radar-labels{display:flex;flex-direction:column;gap:14px;min-width:200px}
+  .radar-row{display:flex;align-items:center;gap:8px}
+  .radar-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .radar-name{color:#1C1917;font-weight:600;font-size:13px;min-width:56px}
+  .radar-score{font-weight:700;color:#1C1917;font-size:15px;min-width:28px;text-align:right}
+  .radar-desc{font-size:11px;color:#78716C;line-height:1.4;padding-left:16px;margin-top:1px}
+  .ov-verdict{font-size:14px;color:#1C1917;line-height:1.65;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.04)}
+
+  /* Methodology insight box */
+  .method-box{background:rgba(239,246,255,.4);border:1px solid rgba(147,197,253,.2);border-radius:12px;padding:14px 16px;margin:8px 0;font-size:13px;color:#3B82F6;line-height:1.6}
+  .method-box strong{color:#1D4ED8}
+
+  /* Findings */
+  .finding{margin-bottom:16px}.finding+.finding{padding-top:14px;border-top:1px solid rgba(0,0,0,.04)}
+  .fd-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .fd-badge{display:inline-flex;align-items:center;gap:2px;padding:2px 9px;border-radius:100px;font-size:10px;font-weight:700}
+  .fd-round{font-size:10px;color:#A8A29E}
+  .fd-quote{font-size:13px;color:#44403C;line-height:1.55;padding:8px 12px;background:rgba(0,0,0,.02);border-radius:8px;margin:6px 0;font-style:italic}
+  .fd-note{font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:4px}
+  .fd-alt{font-size:12px;color:#065F46;line-height:1.5;padding:8px 12px;background:rgba(209,250,229,.2);border-radius:8px;margin-top:4px}
+  .reflect{font-size:12px;color:#3B82F6;line-height:1.5;padding:8px 12px;background:rgba(239,246,255,.25);border-radius:8px;margin-top:8px;font-style:italic}
+  .fork-box{background:rgba(254,243,199,.12);border:1px solid rgba(251,191,36,.06);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:12px}
+  .fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:4px}
+  .fork-path{padding:6px 10px;border-radius:6px;font-size:11px;line-height:1.5;margin:3px 0}
+  .fork-actual{background:rgba(254,226,226,.2);border:1px solid rgba(239,68,68,.02)}
+  .fork-alt{background:rgba(209,250,229,.2);border:1px solid rgba(16,185,129,.02)}
+  .pat-box{background:rgba(243,232,255,.15);border:1px solid rgba(167,139,250,.06);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:12px;color:#7C3AED;line-height:1.65}
+
+  /* Bridge — now inside Part 3 */
+  .bridge-highlight{font-size:13px;color:#1C1917;line-height:1.65;padding:12px 16px;background:rgba(0,0,0,.02);border-radius:10px;margin:10px 0}
+
+  /* Side */
+  .key-card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:18px 16px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .key-title{font-size:12px;font-weight:700;color:#1C1917;margin-bottom:10px}
+  .key-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:11px;color:#44403C;line-height:1.45}
+  .key-item+.key-item{border-top:1px solid rgba(0,0,0,.03)}
+  .commit-card{border:1.5px solid rgba(16,185,129,.2)}
+  .c-title{font-size:13px;font-weight:700;color:#1C1917;margin-bottom:2px}
+  .c-sub{font-size:10px;color:#A8A29E;margin-bottom:10px}
+  .c-proposal{background:rgba(16,185,129,.03);border:1px solid rgba(16,185,129,.08);border-radius:10px;padding:10px 12px;font-size:11px;color:#065F46;line-height:1.5;margin-bottom:8px}
+  .c-input{width:100%;border:none;border-bottom:1.5px solid rgba(0,0,0,.08);padding:5px 0;font-size:12px;font-family:inherit;outline:none;background:transparent;color:#1C1917;margin-bottom:8px;transition:border-color .2s}
+  .c-input:focus{border-bottom-color:#10B981}.c-input::placeholder{color:#D6D3D1;font-size:11px}
+  .c-row{display:flex;gap:6px;margin-bottom:6px}.c-row .c-input{flex:1}
+  .btn-save{width:100%;padding:10px;border-radius:12px;border:none;background:#1C1917;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}.btn-save:hover{background:#000}
+  .btn-row{display:flex;gap:8px}
+  .btn{display:inline-flex;align-items:center;gap:5px;padding:11px 18px;border-radius:12px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;justify-content:center}
+  .btn-dark{background:#1C1917;color:#fff;flex:1}.btn-dark:hover{background:#000}
+  .btn-light{background:rgba(0,0,0,.03);color:#44403C;flex:1}.btn-light:hover{background:rgba(0,0,0,.06)}
+  .footer-text{text-align:center;font-size:11px;color:#D6D3D1;margin-top:8px}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s ease;pointer-events:none;white-space:nowrap}
+  @media(max-width:780px){.layout{grid-template-columns:1fr}.side-col{position:static}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="layout">
+  <div class="main-col">
+
+    <!-- ====== PART 1 · 总览 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">PART 1</div>
+        <div class="section-title">整体反馈</div>
+        <div class="section-sub">9 轮对话 · 5 个维度 · 这是你的面谈画像</div>
+      </div>
+      <p class="ov-narrative">一场好的绩效面谈，看五个维度：<strong>事实有没有说清楚、情绪有没有接住、方向有没有给到、约定有没有形成、对方的主动你有没有抓住。</strong></p>
+      <div class="radar-area">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <!-- Grid rings — visible but subtle -->
+          <polygon points="100,22 172,72 145,162 55,162 28,72" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="1.2"/>
+          <polygon points="100,50 154,78 134,137 66,137 46,78" fill="none" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+          <!-- Axes — light guides from center to each vertex -->
+          <line x1="100" y1="100" x2="100" y2="16" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="178" y2="68" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="148" y2="166" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="52" y2="166" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <line x1="100" y1="100" x2="22" y2="68" stroke="rgba(0,0,0,.06)" stroke-width=".5"/>
+          <!-- Data polygon -->
+          <polygon points="100,46 92,66 136,124 62,130 28,70" fill="rgba(59,130,246,.1)" stroke="#3B82F6" stroke-width="1.8" stroke-linejoin="round"/>
+          <!-- Colored vertex dots — match the label colors -->
+          <circle cx="100" cy="46" r="4" fill="#3B82F6"/>
+          <circle cx="92" cy="66" r="4" fill="#10B981"/>
+          <circle cx="136" cy="124" r="4" fill="#F59E0B"/>
+          <circle cx="62" cy="130" r="4" fill="#EF4444"/>
+          <circle cx="28" cy="70" r="4" fill="#8B5CF6"/>
+        </svg>
+        <div class="radar-labels">
+          <div><div class="radar-row"><span class="radar-dot" style="background:#3B82F6"></span><span class="radar-name">事实锚定</span><span class="radar-score">72</span></div><div class="radar-desc">开场三个具体数字，她立刻翻开笔记本</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#10B981"></span><span class="radar-name">接住情绪</span><span class="radar-score">65</span></div><div class="radar-desc">她带了复盘笔记来，你接住了这个主动</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#F59E0B"></span><span class="radar-name">赋能方向</span><span class="radar-score">38</span></div><div class="radar-desc">问题点到了，但方法没递过去</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#EF4444"></span><span class="radar-name">形成约定</span><span class="radar-score">25</span></div><div class="radar-desc">收尾少了一个她抓得住的东西</div></div>
+          <div><div class="radar-row"><span class="radar-dot" style="background:#8B5CF6"></span><span class="radar-name">抓住主动</span><span class="radar-score">65</span></div><div class="radar-desc">她的复盘你回应了——她感觉被看见</div></div>
+        </div>
+      </div>
+      <p class="ov-verdict"><strong>开场让她觉得"这次不一样"。收尾让她觉得"还是差不多"。</strong></p>
+      <div class="method-box"><strong>📖 面谈结构遵守度：</strong>你的面谈共[从对话计算]轮。[诊断阶段]占[%]，[规划阶段]占[%]。A级面谈的理想结构是：回顾30%+反馈20%+<strong>发展50%</strong>。你的发展时间偏少——这就是为什么"赋能方向"和"形成约定"得分偏低。面谈的终点不是结论，是行动。</div>
+      <!-- Learning curve (shown when practiceCount > 1) -->
+      <div id="learningCurve" style="display:none;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:14px 16px;margin-top:10px;font-size:12px;color:#065F46;line-height:1.6">
+        <strong>📈 你的进步（第<span id="lcCurrent">2</span>次 vs 第1次）</strong><br>
+        <span id="lcData"></span>
+        <span style="font-size:10px;color:#78716C">进步最大的维度：<strong id="lcBest"></strong> · 仍需关注：<strong id="lcWorst"></strong></span>
+      </div>
+      <div class="method-box">
+        <strong>📖 绩效面谈中，这个为什么重要：</strong>对于A级员工，绩效面谈的核心不是纠偏——是<strong>扫清障碍</strong>。她的业绩数据没有问题，问题是一个隐性的行为模式在阻碍她从第二到第一。你的面谈在诊断上花了大量时间，但在<strong>给她具体的发展动作</strong>上——只给了一句"我相信你能调整"。A级面谈的黄金比例是：30%回顾数据、20%反馈观察、<strong>50%讨论发展</strong>。你前两个比例做得很好，第三个比例几乎没有。
+      </div>
+    </div>
+
+    <!-- ====== PART 2 · 觉察·心智模式 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">PART 2</div>
+        <div class="section-title">我们观察到的</div>
+        <div class="section-sub">你可能没注意的一个模式——以及它为什么重要。</div>
+      </div>
+
+      <p class="ov-narrative" style="font-size:14px">小张推门进来时带着自己的复盘笔记——<strong>她来面谈是要东西的，不是来听表扬的。</strong>你在帮她看到"退缩"模式的过程中，停在了"我相信你能调整"——这正是她上次面谈后最失望的那种回应。</p>
+
+      <div class="method-box">
+        <strong>📖 你的模式 + 绩效面谈中这意味着什么：</strong>面对高绩效下属时，你习惯用<strong>"肯定+信任"来回应他们的困惑</strong>。这个模式在绩效面谈中有一个隐藏的代价：当你用信任替代方向时，你实际上把改进的责任<strong>完全放到了对方身上</strong>。绩效面谈的铁律是——管理者和下属<strong>共同承担</strong>改进的责任。你说"我相信你能调整"——她听到的是"你自己想办法"。
+      </div>
+
+      <div class="reflect">💬 想一想：在你的团队里，有没有其他人你也是这样对待的——给了信任，但没给工具？</div>
+
+      <div class="pat-box" style="margin-top:14px">
+        <strong>这个模式可能不只在这个场景里出现：</strong>在其他需要你给具体反馈的时刻，你是不是也倾向于用"我相信你"来替代具体的方向指引？绩效面谈中这叫<strong>"信任替代"</strong>——管理者以为自己在赋能，其实是在回避给方向的难度。
+      </div>
+    </div>
+
+    <!-- ====== PART 3 · 行为·具体改变 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">PART 3</div>
+        <div class="section-title">你的行为</div>
+        <div class="section-sub">哪些在帮她——哪些可以换个方式。</div>
+      </div>
+
+      <div class="finding">
+        <div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">保留</span><span class="fd-round">第 1 轮</span></div>
+        <div class="fd-quote">"你上半年的表现很亮眼，取得了部门第二的成绩，三个重点项目全部完成。我对你是非常认可的。"</div>
+        <div class="fd-note">上次"继续保持"四个字让她失望了半年。这次三个具体数字替代了四个模糊的字——她听完翻开笔记本，不是礼貌点头。</div>
+        <div class="method-box"><strong>📖 绩效面谈中，为什么这个好：</strong>这是绩效面谈的<strong>"事实锚定"原则</strong>——用可验证的数据开场，而不是笼统的评价。数据有三个作用：让对方无法否认、让对话有客观基础、让下属感觉到"你确实看了我的工作"。</div>
+      </div>
+
+      <div class="finding">
+        <div class="fd-head"><span class="fd-badge" style="background:#FEE2E2;color:#DC2626">升级</span><span class="fd-round">第 5 轮</span></div>
+        <div class="fd-quote">"我觉得你有时候面对压力会慢半拍——但我相信你能调整过来。"</div>
+        <div class="fd-note">你点出了"慢半拍"——方向对的。<strong>"我相信你能调整"不是方法，是期望。</strong></div>
+        <div class="fd-alt"><strong>升级为：</strong>"我注意到三个流失客户都在价格谈判最后阶段流失。下次谈判前，<strong>先跟我预演一遍。试三次，肌肉记忆就有了。</strong>"</div>
+        <div class="method-box"><strong>📖 绩效面谈中，为什么这个升级关键：</strong>绩效面谈有一个经典的失败模式叫<strong>"诊断无处方"</strong>——管理者指出了问题，但没有给出改进的具体路径。这会让下属觉得"我又多了一个问题要自己解决"。有效的绩效面谈要求<strong>每个负向反馈必须配一个可执行的发展动作</strong>。你给了诊断（慢半拍），给了信任（你能调整），但没有给处方（预演三遍）。</div>
+      </div>
+
+      <div class="finding">
+        <div class="fd-head"><span class="fd-badge" style="background:#FEE2E2;color:#DC2626">升级</span><span class="fd-round">第 8 轮 · 收尾</span></div>
+        <div class="fd-quote">"你回去好好调整，有什么需要随时找我。"</div>
+        <div class="fd-note">"随时找我"等于"没时间"——她不知道什么时候合适，所以不会来。</div>
+        <div class="fd-alt"><strong>升级为：</strong>"我们定两件事。下周三下午你带三个流失客户复盘来找我。<strong>我已经把下周三3点锁在日历上了。</strong>"</div>
+        <div class="method-box"><strong>📖 绩效面谈中，为什么这个升级关键：</strong>绩效面谈的<strong>第一杀手不是"谈得不好"——是"谈完之后什么都没变"</strong>。大多数绩效面谈的失败发生在面谈结束之后。有效面谈的收尾铁律是：下属走出会议室时，应该能回答三个问题——"我现在的绩效是什么等级？为什么？我接下来要做的第一件事是什么？"你的收尾让她只能回答前两个。第三个——她没有答案。</div>
+      </div>
+
+      <div class="fork-box">
+        <div class="fork-label">第 5 轮是一个岔路口</div>
+        <div class="fork-path fork-actual"><strong>你走了：</strong>"我相信你能调整" → 她点头，笔记本没再翻开。</div>
+        <div class="fork-path fork-alt"><strong>可以走：</strong>"我们拆一下——上次'缩'是什么时候？怎么弹回来的？"→ 她自己找规律。</div>
+      </div>
+    </div>
+
+    <!-- ====== PART 4 · 行动·承诺+闭环 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">PART 4</div>
+        <div class="section-title">你的下一步</div>
+        <div class="section-sub">带回练习，带回团队。</div>
+      </div>
+
+      <p style="font-size:14px;color:#44403C;line-height:1.65;margin-bottom:8px"><strong>在练习里试一次：</strong>当高绩效下属说"我知道我有这个问题"——不要停在"我相信你能改"。追问：<strong>"你上次出现这个问题是什么时候？当时你是怎么反应过来的？"</strong></p>
+
+      <div class="method-box"><strong>📖 这个行为在绩效面谈中为什么是决定性的：</strong>绩效面谈的最高境界不是"你告诉对方他哪里需要改"——是<strong>对方自己说出来</strong>。这叫"自我认知校准"。研究表明，当下属自己说出改进方向时，他执行的概率是你替他说的3倍。你追问"上次出现是什么时候"——就是在帮他校准：不是"我觉得我有这个问题"，而是"上次这个时刻，我是这样反应的"。</div>
+
+      <div class="bridge-highlight" style="margin-top:14px">
+        <strong>🔗 带回你的真实团队：</strong>你的团队里有像小张这样的人吗——业绩不错、态度积极、但有一个自己也知道却不知道怎么改的短板？<br><br>
+        <strong>这周你做一件事：</strong>下次一对一，拿一个具体的项目案例，问她：<strong>"你回想一下——有没有哪个时刻你觉得'卡住了'？当时你是怎么反应过来的？"</strong><br><br>
+        这个动作只需要你比她多问一层。她回答过无数次"我哪里需要改进"——但"上次卡住时发生了什么"这一层，她可能从来没想过。<br><br>
+        <span style="font-size:11px;color:#78716C">下次回到平台时，系统会问你：试了吗？她的反应和小张有什么不同？——这就是闭环。</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ RIGHT COLUMN ============ -->
+  <div class="side-col">
+    <div class="key-card">
+      <div class="key-title">📌 关键发现</div>
+      <div class="key-item"><span style="color:#16A34A">✅</span> 开场用数据，她翻开了笔记本</div>
+      <div class="key-item"><span style="color:#DC2626">⚠️</span> 诊断无处方——停在"我相信你"</div>
+      <div class="key-item"><span style="color:#DC2626">⚠️</span> 收尾无约定——"随时找我"=没时间</div>
+      <div class="key-item"><span style="color:#7C3AED">🔄</span> 模式：对高绩效者用信任替代方向</div>
+    </div>
+
+    <div class="card commit-card">
+      <div class="section-num">我的承诺</div>
+      <div class="c-title" style="font-size:15px;margin-top:2px">行动承诺</div>
+      <div class="c-sub">基于上面的发现——你可以直接用，也可以改。</div>
+      <div class="c-proposal">当高绩效下属说<strong>"我知道我有这个问题"</strong>——追问：<strong>"上次出现是什么时候？怎么反应过来的？"</strong></div>
+      <input class="c-input" placeholder="改成你会说的话..." id="cBehavior">
+      <div class="c-row"><input class="c-input" placeholder="在谁身上试" id="cWho"><input class="c-input" placeholder="什么时候" id="cWhen"></div>
+      <input class="c-input" placeholder="怎么判断做对了" id="cSignal">
+      <button class="btn-save" onclick="save()">确认承诺</button>
+      <p style="font-size:10px;color:#A8A29E;text-align:center;margin-top:6px">下次练习加载此承诺作为对比锚点</p>
+    </div>
+
+    <div class="btn-row"><button class="btn btn-dark">再练一次</button><button class="btn btn-light">换场景</button></div>
+    <p class="footer-text">建议 3-7 天内回来</p>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+function showToast(m,d){const t=document.getElementById('toast');t.textContent=m;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0'},d||2500)}
+function save(){const b=document.getElementById('cBehavior').value.trim();const w=document.getElementById('cWho').value.trim();const wh=document.getElementById('cWhen').value.trim();if(!b&&!w&&!wh){showToast('至少确认系统建议，或填一个你自己的方式');return;}showToast('承诺已保存。下次练习对比——上次你说了"我相信你能调整"，这次你说了什么。',3000);}
+</script>
+</body>
+</html>

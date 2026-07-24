@@ -1,0 +1,16 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e55]:
+    - button "返回" [ref=e57] [cursor=pointer]: 🏠
+    - generic [ref=e64]:
+      - generic [ref=e65]: 🥚
+      - paragraph [ref=e66]: 小恐龙的魔法蛋不见啦！它翻过小山，来到一片森林...
+    - generic [ref=e67]:
+      - generic [ref=e68]: 🌽 🌽 🌽 🌽 🌽
+      - generic [ref=e69]: 数一数，一共有几个呀？
+      - generic [ref=e70]:
+        - button "6" [disabled] [ref=e71] [cursor=pointer]
+        - button "5" [disabled] [ref=e72] [cursor=pointer]
+        - button "4" [disabled] [ref=e73] [cursor=pointer]
+        - button "1" [disabled] [ref=e74] [cursor=pointer]
+      - generic [ref=e76]: 答对啦！👏
+  - generic: ⭐ +1 颗星！

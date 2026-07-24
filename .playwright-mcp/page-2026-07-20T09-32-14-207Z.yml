@@ -1,0 +1,74 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - banner [ref=f4e3]:
+      - generic [ref=f4e4]: 2026 彩虹+计划 · 行动学习课题
+      - heading "课题经验资产库" [level=1] [ref=f4e5]
+      - generic [ref=f4e6]: 经验教训 + 业务成果 双轨录入 · 分类 · 一键生成领导汇总报告（支持上传 PPTX/DOCX/TXT）
+      - generic [ref=f4e7]: 🔒 所有数据仅存于本机浏览器（localStorage），无任何网络请求
+    - navigation [ref=f4e8]:
+      - button "经验录入" [ref=f4e9] [cursor=pointer]
+      - button "成果录入" [ref=f4e10] [cursor=pointer]
+      - button "条目库 (经验1+成果1)" [ref=f4e110] [cursor=pointer]
+      - button "生成报告" [ref=f4e12] [cursor=pointer]
+      - button "备份" [ref=f4e13] [cursor=pointer]
+    - generic [ref=f4e155]:
+      - generic [ref=f4e157]:
+        - button "经验报告" [ref=f4e158] [cursor=pointer]
+        - button "成果报告" [ref=f4e159] [cursor=pointer]
+      - generic [ref=f4e160]:
+        - generic [ref=f4e161]:
+          - generic [ref=f4e162]: 报告阶段
+          - combobox [ref=f4e163]:
+            - option "中期复盘" [selected]
+            - option "结题"
+            - option "全部阶段"
+        - generic [ref=f4e164]:
+          - generic [ref=f4e165]: 报告期间标题
+          - textbox [ref=f4e166]: 2026年4月—7月（第二次作业·中期复盘）
+        - button "生成报告" [active] [ref=f4e167] [cursor=pointer]
+        - button "打印 / 存 PDF" [ref=f4e168] [cursor=pointer]
+      - generic [ref=f4e169]:
+        - generic [ref=f4e171]: 2026 彩虹+计划 · 行动学习课题
+        - heading "中期复盘 · 经验教训汇总报告" [level=2] [ref=f4e172]
+        - generic [ref=f4e173]:
+          - generic [ref=f4e174]: 报告期间：2026年4月—7月（第二次作业·中期复盘）
+          - generic [ref=f4e175]: 数据来源：学员报告"经验教训"章节原文
+          - generic [ref=f4e176]: 生成日期：2026-07-20
+        - generic [ref=f4e177]:
+          - generic [ref=f4e178]:
+            - generic [ref=f4e179]: "1"
+            - generic [ref=f4e180]: 覆盖课题
+          - generic [ref=f4e181]:
+            - generic [ref=f4e182]: "1"
+            - generic [ref=f4e183]: 经验条目
+          - generic [ref=f4e184]:
+            - generic [ref=f4e185]: "0"
+            - generic [ref=f4e186]: 教训条目
+          - generic [ref=f4e187]:
+            - generic [ref=f4e188]: "1"
+            - generic [ref=f4e189]: 含量化数据条目
+        - generic [ref=f4e190]:
+          - heading "🏗️ 投资拓展" [level=3] [ref=f4e191]
+          - generic [ref=f4e192]: 经验 1 · 教训 0
+          - generic [ref=f4e193]:
+            - generic [ref=f4e194]:
+              - generic [ref=f4e195]: 经验
+              - generic [ref=f4e196]: 经验
+              - generic [ref=f4e197]: 机制层面
+              - generic [ref=f4e198]: 投资拓展
+              - generic [ref=f4e199]: 有量化数据
+              - generic [ref=f4e200]: 中期复盘
+            - generic [ref=f4e201]:
+              - text: 在成本适配环节，我们发现提前3个月介入方案设计，通过优化结构方案和材料选型，单项目平均节省成本约120万元，同时缩短工期15天。
+              - generic [ref=f4e202]: ▎学员原文，一字未改
+            - generic [ref=f4e203]:
+              - generic [ref=f4e204]: （未填课题名称）
+              - generic [ref=f4e205]: 出处：2026-07-20
+        - generic [ref=f4e206]:
+          - heading "客观性与可查性说明（每期报告固定附带）" [level=3] [ref=f4e207]
+          - list [ref=f4e208]:
+            - listitem [ref=f4e209]: 只摘不写——所有条目均为学员报告原文引用，汇总过程不改写、不评价、不补充。
+            - listitem [ref=f4e210]: 条条可溯——每条注明来源课题、单位、提交人、报告章节与提交日期，可回查原始报告对应段落。
+            - listitem [ref=f4e211]: 分类留痕——按公开的"专业条线 × 成果层面"体系分类，每条记录分类确认人，异议可复核改判。
+        - generic [ref=f4e212]: 2026 彩虹+计划 · 课题经验资产库 · 数据仅存于本地，不经任何外部服务
+  - generic [ref=f4e63]: 经验报告已生成（1 条）

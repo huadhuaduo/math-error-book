@@ -1,0 +1,459 @@
+<script>
+// ============================================================
+// TG-001 NPC ENGINE — NPC-周 · 首开空降 · 四态机
+// 状态：观望→试探→验证→跟从
+// 阶段：建立信任→诊断问题→做减法→打样示范
+// 评分：P₂信任/P₁诊断/P₅赋能/P₃目标
+// 反模式：T01/T03/T04/T05/T06/T08
+// MTP知识点映射：非权力影响力·信任激励·榜样激励·期望理论·辅导四步法
+// ============================================================
+
+var engine={
+  phase:'TRUST',   // TRUST | DIAGNOSE | SIMPLIFY | DEMO
+  npcMood:'WATCH', // WATCH | TEST | VERIFY | FOLLOW
+  round:0,
+  history:[],
+  usedVariants:{},
+  practiceCount:0,
+
+  // NPC 知识模型——NPC-周知道什么
+  revealed:{
+    bizShown:false,         // 你展示了业务能力（爬楼/户型/数据）
+    strategyProposed:false, // 你提出了策略方向（聚焦户型）
+    demoDone:false,         // 你亲自打了样（促成认筹）
+    laoZhouOpened:false,    // NPC-周主动来找你咨询
+  },
+
+  // P步骤评分
+  principles:{p2_trust:35, p1_diagnose:40, p5_empower:30, p3_reframe:40},
+
+  // 反模式追踪（TG-001 相关的6个陷阱）
+  antiPatterns:{
+    T01_preemptive:0,    // T01-先发制人：信任建立前就发号施令
+    T03_infoIllusion:0,  // T03-信息幻觉：给工具不给方向
+    T04_trainNotDemo:0,  // T04-培训替代示范：教方法不证明
+    T05_pressureNotMethod:0, // T05-压力替代策略
+    T06_trustPremise:0,  // T06-信任前置谬误：没信任就深度沟通
+    T08_skipDiagnosis:0, // T08-跳过诊断：没搞清楚就解决
+  },
+
+  vagueComfortCount:0,
+
+  phaseLabels:{
+    TRUST:'建立信任',
+    DIAGNOSE:'诊断问题',
+    SIMPLIFY:'做减法',
+    DEMO:'打样示范'
+  },
+
+  moodLabels:{
+    WATCH:{text:'观望',dot:'#F59E0B',side:'在观望。他见过太多空降的领导——先看你是真有本事还是只会画饼。'},
+    TEST:{text:'试探',dot:'#3B82F6',side:'在试探。你展示了一点业务能力——他拿一个客户来试你。这不是找你帮忙，是考你。'},
+    VERIFY:{text:'验证',dot:'#10B981',side:'在验证。策略方向有了——他在等证据。你亲自做成的那一单，比一百句"相信我"有用。'},
+    FOLLOW:{text:'跟从',dot:'#16A34A',side:'开始跟从。他主动来找你咨询客户——这不是服从，是认可。'}
+  },
+
+  reset(){
+    this.phase='TRUST';this.npcMood='WATCH';this.round=0;this.history=[];
+    this.usedVariants={};
+    this.revealed={bizShown:false,strategyProposed:false,demoDone:false,laoZhouOpened:false};
+    this.principles={p2_trust:35,p1_diagnose:40,p5_empower:30,p3_reframe:40};
+    this.antiPatterns={T01_preemptive:0,T03_infoIllusion:0,T04_trainNotDemo:0,T05_pressureNotMethod:0,T06_trustPremise:0,T08_skipDiagnosis:0};
+    this.vagueComfortCount=0;this._lastPhase=null;
+    if(!this._globalPracticeId)this._globalPracticeId='tg001_'+Date.now();
+    this.practiceCount=(parseInt(localStorage.getItem('tg001_count')||'0'))+1;
+    localStorage.setItem('tg001_count',this.practiceCount);
+    var self=this;
+    try{
+      var d=localStorage.getItem('tg001_difficulty');
+      if(d==='hard'){self.principles={p2_trust:25,p1_diagnose:30,p5_empower:20,p3_reframe:30};}
+      else if(d==='easy'){self.principles={p2_trust:50,p1_diagnose:50,p5_empower:45,p3_reframe:50};}
+    }catch(e){}
+  },
+
+  // ==================== MANAGER INTENT DETECTION (TG-001) ====================
+  detectIntent(text){
+    var t=text.toLowerCase();
+    var intent={
+      type:'OTHER',
+      isShowBiz:false,          // 展示业务能力：爬楼/看户型/分析数据
+      isAskOpen:false,          // 开放式提问：你觉得呢
+      isGiveOrder:false,        // 直接发令：宣布策略/开会动员
+      isPushPressure:false,     // 施压：强调倒计时/来不及
+      isGiveTool:false,         // 给工具：对比表/培训
+      isDoDemo:false,           // 亲自打样：我来接待/做一单
+      isOneOnOne:false,         // 逐一约谈
+      isOfferBonus:false,       // 加钱激励
+      isRecognizeExp:false,     // 认可经验：你卖了五年/你比我熟
+      isVagueComfort:false,
+    };
+
+    // 展示业务能力
+    if(/爬楼|户型|采光|数据|说辞|竞品|我先|了解|消化|熟悉.*项目|看.*数据|自己.*先|先.*看看/.test(t)){
+      intent.isShowBiz=true;
+    }
+    // 开放式提问
+    if(/你觉得|你怎么看|你帮我看看|你比我|你.*觉得.*呢|你说.*看/.test(t)){
+      intent.isAskOpen=true;
+    }
+    // 直接发令
+    if(/开会|动员|宣布|新策略|打气|跟大家说|从今天开始|你们要|必须|要求/.test(t)){
+      intent.isGiveOrder=true;
+    }
+    // 施压
+    if(/只剩|倒计时|来不及|赶紧|催|再不|紧迫|只剩.*天|\d+天/.test(t)){
+      intent.isPushPressure=true;
+    }
+    // 给工具不聚焦
+    if(/对比表|发给大家|培训|教.*他们|话术|学.*方法|表格|分析.*工具/.test(t)){
+      intent.isGiveTool=true;
+    }
+    // 亲自打样
+    if(/我来|亲自|接待.*客户|做一单|打样|示范|我做.*一|沙盘|促成/.test(t)){
+      intent.isDoDemo=true;
+    }
+    // 逐一约谈
+    if(/约谈|逐一|每个人|一对一|了解困难|聊一聊|单独/.test(t)){
+      intent.isOneOnOne=true;
+    }
+    // 加钱
+    if(/加钱|奖金|激励|提成|涨|额外.*奖|佣金.*加/.test(t)){
+      intent.isOfferBonus=true;
+    }
+    // 认可经验
+    if(/你卖了.*年|你比我|你有经验|这个.*你最|你.*熟|你.*知道/.test(t)){
+      intent.isRecognizeExp=true;
+    }
+    // 空洞安慰
+    if(/加油|相信.*你|没问题|慢慢.*来|会.*好.*的/.test(t)){
+      intent.isVagueComfort=true;
+    }
+
+    return intent;
+  },
+
+  // ==================== CONTEXT-DRIVEN NPC RESPONSE ====================
+  generateResponse(managerText, intent){
+    var ctx=this;var r=ctx.revealed;var phase=ctx.phase;var mood=ctx.npcMood;
+
+    // ---- PHASE: TRUST (建立信任) ----
+    if(phase==='TRUST'){
+
+      // 展示业务能力 → NPC-周从观望转试探
+      if(intent.isShowBiz && !r.bizShown){
+        ctx.revealed.bizShown=true;ctx.npcMood='TEST';
+        ctx.principles.p2_trust+=20;
+        var resp=[
+          "\"你爬完楼了？\"NPC-周抬起头，第一次认真看了你一眼。\"B户型在12楼以上的视野确实好——我之前跟一个客户说过，他不信。\"他顿了一下。\"领导，你说的B户型，我手上有个客户一直在对比——你帮我看看？\"",
+          "\"你刚才说的采光那个——\"NPC-周从工位上站起来，走到你旁边。\"D户型早上10点之前的采光确实最好的。我之前跟客户说过，他们觉得我在忽悠。你去看过了，那不一样。\"他把一份来访登记推到你面前。\"这个客户，你帮我看一眼。\"",
+          "\"你比我预想的快。\"NPC-周说这话的时候，语气里没有恭维——是陈述。\"之前来的几个领导，第一个月都没进过沙盘区。\"他沉默了两秒，然后开口：\"领导，你刚才说的B户型和D户型，你觉得哪个适合我这个客户？\""
+        ];
+        return pickVariant(resp,'bizshow');
+      }
+
+      // 展示业务能力 + 认可经验
+      if(intent.isShowBiz && intent.isRecognizeExp){
+        ctx.principles.p2_trust+=10;
+      }
+
+      // 直接发令 → T01-先发制人
+      if(intent.isGiveOrder){
+        ctx.antiPatterns.T01_preemptive+=1;ctx.principles.p2_trust-=15;
+        ctx.npcMood='WATCH';
+        var t01=[
+          "\"嗯。\"NPC-周在笔记本上写了点什么——你没看到内容。会后茶水间里他嘀咕了一句：\"又来一个画饼的。\"",
+          "\"好的领导。\"NPC-周点了头，跟其他几个销售交换了一个你读不懂的眼神。散会后没有人讨论你的策略——他们继续做跟昨天一样的事。"
+        ];
+        showWhisper('warn','⚠️ T01-先发制人：信任没建立前就发号施令。NPC-周表面点头，背后不买账。下一次：先做一件让团队觉得"你跟他们是一边"的事。');
+        return pickVariant(t01,'t01');
+      }
+
+      // 逐一约谈 → T06-信任前置谬误
+      if(intent.isOneOnOne){
+        ctx.antiPatterns.T06_trustPremise+=1;ctx.principles.p2_trust-=10;
+        var t06=[
+          "\"都挺好的。\"NPC-周客气地回答，但你知道那不是实话。一个刚来的空降者，一上来就问\"你有什么困难\"——NPC-周想的是：\"我说了你能解决吗？你连户型都还不熟悉。\""
+        ];
+        showWhisper('warn','⚠️ T06-信任前置谬误：信任不够时，约谈得到的都是标准答案。下一次：先用自己的眼睛看，再用嘴问。');
+        return pickVariant(t06,'t06');
+      }
+
+      // 开放式提问在观望阶段 = 无效
+      if(intent.isAskOpen && mood==='WATCH' && !r.bizShown){
+        return "\"说不好。\"NPC-周淡淡回了一句，继续看他的来访登记表。他不是不想说——是你还没有证明你值得他认真回答。";
+      }
+
+      // WATCH 状态 - 还没展示能力
+      if(mood==='WATCH' && !r.bizShown){
+        var watch=[
+          "\"哦——\"NPC-周应了一声，语气不咸不淡。他继续翻着来访登记表，没有抬头。不是不礼貌——他在看你出什么牌。",
+          "\"你说了算，领导。\"NPC-周把保温杯端起来喝了一口。这句话的意思是：你刚来，我不跟你争——但我也不会主动跟。"
+        ];
+        return pickVariant(watch,'watch');
+      }
+    }
+
+    // ---- PHASE: DIAGNOSE (诊断问题) ----
+    if(phase==='DIAGNOSE' || (phase==='TRUST' && r.bizShown)){
+
+      // 认可NPC-周经验 + 问看法
+      if(intent.isAskOpen && intent.isRecognizeExp){
+        ctx.phase='DIAGNOSE';ctx.principles.p1_diagnose+=15;
+        ctx.revealed.laoZhouOpened=true;
+        var diag=[
+          "\"实话跟你说——\"NPC-周放下保温杯，语气变了。\"6个户型，客户在沙盘前逛一圈就晕了。我们自己都不知道主推哪个——每个都说好，客户更不知道怎么选。我们不是不努力——是被太多选择耗死了。\"",
+          "\"你问到点子上了。\"NPC-周第一次说话不客气——但这次不是怼你，是真在说事。\"这6个户型，其实只有2个值得主力推。但之前上面谁都不敢砍——怕万一砍错了担责任。我们有苦说不出。\""
+        ];
+        return pickVariant(diag,'diagnose');
+      }
+
+      // 给了业务展示但还没进入诊断
+      if(r.bizShown && !r.laoZhouOpened){
+        return "\"怎么样——\"NPC-周抬头看你。\"看完数据有什么想法？我在这五年了，这些户型什么客人会买，我心里有数。你想听吗？\"这不是邀请——是第二道考题。";
+      }
+    }
+
+    // ---- PHASE: SIMPLIFY (做减法) ----
+    if(phase==='SIMPLIFY' || (phase==='DIAGNOSE' && r.laoZhouOpened)){
+
+      // 聚焦策略
+      if(intent.isShowBiz && !r.strategyProposed){
+        ctx.phase='SIMPLIFY';ctx.revealed.strategyProposed=true;
+        ctx.principles.p5_empower+=20;ctx.principles.p3_reframe+=15;
+        ctx.npcMood='VERIFY';
+        var simpl=[
+          "\"砍到2个？\"NPC-周沉默了几秒。不是你预想的反对——他在认真想。\"B和D...你说得对。我之前也想过，但没人拍这个板。\"他抬头看你，眼神跟之前不一样了。\"行——那就试这两个。但客户信不信，还得看数据。\"",
+          "\"终于有人敢砍了。\"NPC-周笑了一下——那是他今天第一次笑。\"你知道我们被这6个户型折腾了多久吗？不是不想卖——是哪个都卖不动。砍掉4个，我第一个支持。但领导——下面的兄弟们要看结果。光说不行。\""
+        ];
+        showWhisper('info','💡 P₅-做减法：替团队砍掉噪音。NPC-周从试探进入验证——他在等证据。下一步的关键：亲自打样。');
+        return pickVariant(simpl,'simplify');
+      }
+
+      // T03-信息幻觉：给工具不给方向
+      if(intent.isGiveTool && !r.strategyProposed){
+        ctx.antiPatterns.T03_infoIllusion+=1;ctx.principles.p5_empower-=10;
+        var t03=[
+          "\"对比表...\"NPC-周扫了一眼，放在一边。\"领导，我不是不领情——但这6个户型我们每天都在看。问题不是不知道哪个好——是谁也不敢说'就推这两个'。你给我一个表，不如你给我一个决定。\""
+        ];
+        showWhisper('warn','⚠️ T03-信息幻觉：过劳团队需要的是结论，不是分析工具。下一次：帮他们做减法——直接说"就推这两个"。');
+        return pickVariant(t03,'t03');
+      }
+
+      // T08-跳过诊断：直接加钱
+      if(intent.isOfferBonus && !r.strategyProposed){
+        ctx.antiPatterns.T08_skipDiagnosis+=1;ctx.principles.p1_diagnose-=10;
+        var t08=[
+          "\"加钱？\"NPC-周的表情暗了一下。\"领导，问题不是钱——是6个户型压得我们喘不过气。你给我加再多佣金，客人还是不知道怎么选。\"他顿了顿。\"这招上一个领导用过——没用。\""
+        ];
+        showWhisper('warn','⚠️ T08-跳过诊断：P₄在P₁之前使用=治标不治本。钱不能解决"6个户型比选瘫痪"。');
+        return pickVariant(t08,'t08');
+      }
+    }
+
+    // ---- PHASE: DEMO (打样示范) ----
+    if(phase==='DEMO' || (phase==='SIMPLIFY' && r.strategyProposed)){
+
+      // 亲自打样
+      if(intent.isDoDemo && !r.demoDone){
+        ctx.phase='DEMO';ctx.revealed.demoDone=true;
+        ctx.principles.p5_empower+=25;ctx.npcMood='FOLLOW';
+        var demo=[
+          "\"他真的认筹了？\"NPC-周听到消息，从工位上站起来走到你面前。\"领导——你怎么说的？这客户我跟过他三次，他都说再看看。\"办公室其他人也围过来了。这一刻——你不是空降的了。你是那个做到了他们一直在试但没做成的事的人。",
+          "\"你蹲沙盘那个下午——\"NPC-周后来跟其他销售说起这件事，\"我就知道这次不一样。\"他第二天拿了自己手上最犹豫的客户来找你：\"帮我看看这个。按你的方式。\""
+        ];
+        showWhisper('info','💡 P₅-打样示范：信心是传染的——但传染的前提是有人先得了。MTP知识点：榜样激励——示范是无声语言。');
+        return pickVariant(demo,'demo');
+      }
+
+      // T04-培训替代示范
+      if(intent.isGiveTool && r.strategyProposed && !r.demoDone){
+        ctx.antiPatterns.T04_trainNotDemo+=1;ctx.principles.p5_empower-=15;
+        var t04=[
+          "\"培训...\"NPC-周叹了口气。\"领导，话术我会——我卖了五年房子。问题不是怎么说——是客户不信。你培训得再好，我没有底气——因为我自己都没亲眼见过这个方法成功。\""
+        ];
+        showWhisper('warn','⚠️ T04-培训替代示范：团队需要的是"有人证明过这条路行得通"，不是"你应该用这个方法"。MTP知识点：辅导四步法——第一步是"我示范你观察"。');
+        return pickVariant(t04,'t04');
+      }
+
+      // T05-压力替代策略
+      if(intent.isPushPressure && r.strategyProposed && !r.demoDone){
+        ctx.antiPatterns.T05_pressureNotMethod+=1;ctx.principles.p5_empower-=20;
+        var t05=[
+          "\"20天——\"NPC-周的语气变了。\"领导，我们知道只剩20天。你不需要每天提醒。\"他站起来，走到窗边。\"你再喊一周——有人就要开始投简历了。\"这不是威胁。是实话。团队已经很疲惫了——紧迫感不是动力，是最后一根稻草。"
+        ];
+        showWhisper('warn','⚠️ T05-压力替代策略：冲刺期管理者的核心任务是删除"不可能"，不是反复提醒"来不及了"。');
+        return pickVariant(t05,'t05');
+      }
+
+      // VERIFY 状态 - 策略定了但还没打样
+      if(mood==='VERIFY' && r.strategyProposed && !r.demoDone){
+        var verify=[
+          "\"策略方向对——\"NPC-周靠在椅背上，\"但下面的人都在看。你光说不行。\"他顿了顿。\"你得让他们看见——这个方法真的有用。\"他的语气不是反对——是实话。经验老的人不会因为一句话就信——他们信结果。",
+          "\"我听你的，先推B和D。\"NPC-周点了点头，\"但是领导——你最好自己先做一单。我跟着可以。其他人——得看到有人先做到了才愿意动。\"这话不中听——但这是他在帮你。"
+        ];
+        return pickVariant(verify,'verify');
+      }
+
+      // FOLLOW 状态
+      if(mood==='FOLLOW' && r.demoDone){
+        var follow=[
+          "\"领导，我这个客户——\"NPC-周端着保温杯过来了，语气跟第一天完全不一样。那时候是客气的试探——现在是真正的咨询。\"他一直在对比B和D，但预算差一点。你帮我想想怎么切入。\"",
+          "\"说真的——\"NPC-周坐下来，第一次跟你面对面说了长话。\"你来的时候我以为又是一个画饼的。但你不一样——你做了我五年来一直想让上面做的事。\"他顿了顿。\"现在这批人听你的。\""
+        ];
+        ctx.principles.p2_trust+=10;
+        return pickVariant(follow,'follow');
+      }
+    }
+
+    // ---- FALLBACK ----
+    return "NPC-周看了你一眼，没有立刻回应。他在判断——你是认真的，还是在走过场。";
+  },
+
+  // ==================== PHASE DETECTION ====================
+  detectPhase(){
+    var ctx=this;var r=ctx.revealed;
+    if(r.demoDone) ctx.phase='DEMO';
+    else if(r.strategyProposed) ctx.phase='SIMPLIFY';
+    else if(r.laoZhouOpened || r.bizShown) ctx.phase='DIAGNOSE';
+    else ctx.phase='TRUST';
+    return ctx.phaseLabels[ctx.phase];
+  },
+
+  // ==================== GET LOWEST P-STEP - MTP MAPPING ====================
+  getLowestPrinciple(){
+    var p=this.principles;
+    var min=999,mink='';
+    for(var k in p){if(p[k]<min){min=p[k];mink=k;}}
+    var labels={p2_trust:'P₂ 建立信任',p1_diagnose:'P₁ 诊断问题',p5_empower:'P₅ 示范赋能',p3_reframe:'P₃ 重构目标'};
+    var mtpMap={
+      p2_trust:'对应MTP：非权力影响力·信任激励——信任比规则更能激发。管理者对下的非权力影响力来自"专家权+典范权"。',
+      p1_diagnose:'对应MTP：期望理论——激励力=期望值×效价。诊断清楚问题是提高"效价"的前提。',
+      p5_empower:'对应MTP：榜样激励·辅导四步法——示范是无声语言。"我示范你观察→我指导你试做→你试做我指导→你汇报我跟踪"。',
+      p3_reframe:'对应MTP：目标管理——让团队参与目标制定，从"要我做"变"我要做"。'
+    };
+    return {key:mink,label:labels[mink]||mink,score:min,mtp:mtpMap[mink]||''};
+  }
+};
+
+// ==================== UTILITY ====================
+function pickVariant(pool,key){
+  var eng=engine;if(!eng.usedVariants[key])eng.usedVariants[key]=[];
+  var used=eng.usedVariants[key];
+  if(used.length>=pool.length)used=[];
+  var available=pool.filter(function(_,i){return used.indexOf(i)===-1;});
+  if(available.length===0){used=[];available=pool;}
+  var idx=pool.indexOf(available[0]);used.push(idx);eng.usedVariants[key]=used;
+  return pool[idx];
+}
+
+function showWhisper(type,msg){
+  var el=document.getElementById('msgList');
+  var d=document.createElement('div');
+  d.className=type==='warn'?'whisper warn':'whisper';
+  d.innerHTML='<span style="flex-shrink:0;margin-top:1px">'+(type==='warn'?'⚠️':'💡')+'</span><span>'+msg+'</span>';
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+
+// ==================== UI UPDATE ====================
+function updateSidePanel(){
+  var ctx=engine;
+  document.getElementById('stateTxt').textContent=ctx.moodLabels[ctx.npcMood].text;
+  document.getElementById('stateDot').style.background=ctx.moodLabels[ctx.npcMood].dot;
+  document.getElementById('sideState').textContent=ctx.moodLabels[ctx.npcMood].side;
+
+  // P步骤评分条
+  var p=ctx.principles;
+  var bars={p2_trust:'barTrust',p1_diagnose:'barDiagnose',p5_empower:'barEmpower',p3_reframe:'barReframe'};
+  var scores={p2_trust:'scoreTrust',p1_diagnose:'scoreDiagnose',p5_empower:'scoreEmpower',p3_reframe:'scoreReframe'};
+  for(var k in p){
+    var bar=document.getElementById(bars[k]),sc=document.getElementById(scores[k]);
+    if(bar)bar.style.width=p[k]+'%';
+    if(sc)sc.textContent=p[k];
+  }
+
+  // Phase
+  document.getElementById('phaseLabel').textContent=ctx.detectPhase();
+
+  // 反模式警告
+  var ap=ctx.antiPatterns;
+  var apWarn=[];
+  if(ap.T01_preemptive>=1) apWarn.push('T01-先发制人');
+  if(ap.T03_infoIllusion>=1) apWarn.push('T03-信息幻觉');
+  if(ap.T04_trainNotDemo>=1) apWarn.push('T04-培训替代示范');
+  if(ap.T05_pressureNotMethod>=1) apWarn.push('T05-压力替代策略');
+  if(ap.T06_trustPremise>=1) apWarn.push('T06-信任前置谬误');
+  if(ap.T08_skipDiagnosis>=1) apWarn.push('T08-跳过诊断');
+  var apEl=document.getElementById('antiPatternWarn');
+  if(apEl) apEl.textContent=apWarn.length>0?'⚠️ 已触发：'+apWarn.join(' / '):'';
+}
+
+// ==================== SEND MESSAGE ====================
+function sendMsg(){
+  var input=document.getElementById('chatInput');
+  var text=input.value.trim();if(!text)return;
+  input.value='';input.focus();
+  engine.round++;
+
+  // Render user msg
+  var ml=document.getElementById('msgList');
+  var ud=document.createElement('div');ud.className='msg user';
+  ud.innerHTML='<div class="msg-bubble">'+escHtml(text)+'</div>';
+  ml.appendChild(ud);
+
+  // Detect intent + generate NPC response
+  var intent=engine.detectIntent(text);
+  var resp=engine.generateResponse(text,intent);
+  engine.detectPhase();
+
+  // Render NPC msg
+  setTimeout(function(){
+    var nd=document.createElement('div');nd.className='msg npc';
+    nd.innerHTML='<div class="msg-bubble">'+resp+'</div>';
+    ml.appendChild(nd);ml.scrollTop=ml.scrollHeight;
+    updateSidePanel();
+  },600);
+
+  // Anti-pattern visual alert
+  var ap=engine.antiPatterns;
+  var totalAP=ap.T01_preemptive+ap.T03_infoIllusion+ap.T04_trainNotDemo+ap.T05_pressureNotMethod+ap.T06_trustPremise+ap.T08_skipDiagnosis;
+  if(totalAP>=2){
+    showWhisper('warn','⚠️ 多个管理陷阱已被触发。注意你的管理倾向——MTP提醒：激励常犯错误包括"跳过诊断直接给药"和"用压力替代方法"。');
+  }
+
+  // 每次发送后检查是否接近结束
+  if(engine.revealed.demoDone && engine.npcMood==='FOLLOW'){
+    setTimeout(function(){
+      showWhisper('info','🎯 NPC-周已经开始跟从你了。你可以结束练习，查看反馈报告——了解你的P步骤评分和管理倾向。');
+    },1200);
+  }
+}
+
+function escHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// ==================== INIT ====================
+(function(){
+  engine.reset();
+  updateSidePanel();
+
+  // 初始轻声提醒
+  var low=engine.getLowestPrinciple();
+  var w=document.getElementById('initialWhisper');
+  if(w && low.key){
+    w.innerHTML='<span style="flex-shrink:0;margin-top:1px">💡</span><span>你最弱的P步骤是<strong>'+low.label+'</strong>（'+low.score+'分）。今天注意这一条。<br><small style="color:#6b7280">'+low.mtp+'</small></span>';
+  }
+
+  // Enter key to send
+  document.getElementById('chatInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
+  });
+
+  // Side panel 反模式显示区
+  var sp=document.getElementById('sidePrinciples');
+  if(sp){
+    var apDiv=document.createElement('div');
+    apDiv.style.cssText='margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.05);font-size:10px;color:#92400E;line-height:1.5;';
+    apDiv.id='antiPatternWarn';
+    sp.parentNode.appendChild(apDiv);
+  }
+})();
+</script>

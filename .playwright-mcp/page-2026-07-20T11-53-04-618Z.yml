@@ -1,0 +1,80 @@
+- generic [ref=f7e2]:
+  - banner [ref=f7e3]:
+    - generic [ref=f7e4]: 2026 彩虹+计划 · 行动学习课题
+    - heading "课题经验资产库" [level=1] [ref=f7e5]
+    - generic [ref=f7e6]: 经验教训录入（支持粘贴 / 上传 PPTX/DOCX/TXT） · 分类 · 一键生成领导汇总报告（收集阶段版）
+    - generic [ref=f7e7]: 🔒 所有数据仅存于本机浏览器（localStorage），无任何网络请求
+  - navigation [ref=f7e8]:
+    - button "录入" [ref=f7e9] [cursor=pointer]
+    - button "条目库" [ref=f7e10] [cursor=pointer]
+    - button "生成报告" [ref=f7e11] [cursor=pointer]
+    - button "备份" [ref=f7e12] [cursor=pointer]
+  - generic [ref=f7e14]:
+    - heading "录入经验条目" [level=2] [ref=f7e15]
+    - paragraph [ref=f7e16]: 从学员报告"💡 经验教训（可复制）"章节原文粘贴，一字不改（只摘不写）。分类确认人 = 人工核对分类是否准确的人。
+    - generic [ref=f7e17]:
+      - generic [ref=f7e18]:
+        - generic [ref=f7e19]:
+          - text: 学员原文引用 *（粘贴文字，或上传文件自动提取）
+          - button "📎 上传 PPTX / DOCX / TXT" [ref=f7e20] [cursor=pointer]
+        - textbox "粘贴学员报告中的经验/教训原文，或点击" [ref=f7e21]
+      - generic [ref=f7e22]:
+        - generic [ref=f7e23]: 类型 *
+        - combobox [ref=f7e24]:
+          - option "经验" [selected]
+          - option "教训"
+      - generic [ref=f7e25]:
+        - generic [ref=f7e26]: 专业条线 *
+        - combobox [ref=f7e27]:
+          - option "投资拓展" [selected]
+          - option "成本管理"
+          - option "招采与供应链"
+          - option "设计管理"
+          - option "工程管理"
+          - option "营销与客研"
+          - option "交付与客服"
+          - option "运营与综合"
+      - generic [ref=f7e28]:
+        - generic [ref=f7e29]: 成果层面
+        - combobox [ref=f7e30]:
+          - option "机制层面" [selected]
+          - option "组织层面"
+          - option "流程层面"
+          - option "制度层面"
+          - option "未归层"
+      - generic [ref=f7e31]:
+        - generic [ref=f7e32]: 证据等级
+        - combobox [ref=f7e33]:
+          - option "有量化数据" [selected]
+          - option "仅定性描述"
+      - generic [ref=f7e34]:
+        - generic [ref=f7e35]: 所属阶段 *
+        - combobox [ref=f7e36]:
+          - option "中期复盘" [selected]
+          - option "结题"
+      - generic [ref=f7e37]:
+        - generic [ref=f7e38]: 提交日期
+        - textbox [ref=f7e39]: 2026-07-20
+      - generic [ref=f7e40]:
+        - generic [ref=f7e41]: 课题名称
+        - textbox "如：经营视角下成本适配能力提升" [ref=f7e42]
+      - generic [ref=f7e43]:
+        - generic [ref=f7e44]: 单位
+        - textbox "如：XX城市公司 / 项目群 / 片区" [ref=f7e45]
+      - generic [ref=f7e46]:
+        - generic [ref=f7e47]: 提交人
+        - textbox "学员姓名" [ref=f7e48]
+      - generic [ref=f7e49]:
+        - generic [ref=f7e50]: 报告出处（章节）
+        - textbox "如：中期复盘报告 · 经验教训 2" [ref=f7e51]
+      - generic [ref=f7e52]:
+        - generic [ref=f7e53]: 分类确认人
+        - textbox "人工确认分类的人" [ref=f7e54]
+      - generic [ref=f7e55]:
+        - generic [ref=f7e56]: 列入"本季值得关注"
+        - combobox [ref=f7e57]:
+          - option "否" [selected]
+          - option "是"
+    - generic [ref=f7e58]:
+      - button "保存条目" [ref=f7e59] [cursor=pointer]
+      - button "清空表单" [ref=f7e60] [cursor=pointer]

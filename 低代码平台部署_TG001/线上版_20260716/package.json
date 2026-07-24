@@ -1,0 +1,16 @@
+{
+  "name": "fullstack-nestjs-template",
+  "version": "2.2.4",
+  "flags": {
+    "supportBusinessUser": true,
+    "supportScrollReveal": true,
+    "supportTiptapAndStreamdown": true,
+    "customToaster": true
+  },
+  "engines": { "node": ">=22.0.0", "npm": ">=10.0.0" },
+  "actionPlugins": {
+    "@official-plugins/ai-text-generate": "1.0.17",
+    "@official-plugins/send-feishu-message": "1.0.29",
+    "@official-plugins/ai-speech-synthesis": "1.0.13"
+  }
+}

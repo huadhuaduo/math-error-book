@@ -1,0 +1,42 @@
+{
+  "tasks": [
+    {
+      "id": "b8957e6d",
+      "cron": "57 9 * * 1",
+      "prompt": "每周方法论更新提醒：请检查 V19_方法论总结_可复用.md，更新本周的复盘内容（做了什么→为什么这样做→哪里有坑→可复制经验）。同步检查 memory 文件是否需要更新。更新后升级版本号（V19→V19.1→V19.2...），然后在文档末尾\"下周待办\"中列出下周优先级。",
+      "createdAt": 1783908604448,
+      "recurring": true,
+      "createdBySessionId": "86017a2b-ddf6-4cc3-a7f8-6cfd4e72bb28",
+      "createdByPid": 27144,
+      "createdByProcStart": "Mon Jul 20 01:34:13 2026"
+    },
+    {
+      "id": "be7dd6a0",
+      "cron": "0 9 * * 1",
+      "prompt": "执行每周待办清单审视。步骤：1. 读取 [[next-tasks]]、[[project-sandbox-agent-architecture]]、[[project-history]] 和 行动清单_20260721.md 2. 逐项检查每个P0/P1/P2任务的状态——是否有推进？是否有新的阻塞？是否有被遗忘的承诺？3. 扫描最近的对话记录，确认没有新产生的但未记录的任务 4. 如有遗漏或过期承诺，向用户报告。报告格式：✅已完成 / ⚠️进行中 / 🔴被遗忘（需立即关注）/ ⏳未启动。",
+      "createdAt": 1784620901549,
+      "recurring": true,
+      "createdBySessionId": "58964438-dcfe-482d-9510-3e635257d7ae",
+      "createdByPid": 65924,
+      "createdByProcStart": "Mon Jul 20 03:30:07 2026"
+    },
+    {
+      "id": "25fbffb5",
+      "cron": "57 9 27 7 1",
+      "prompt": "宏观分析周报任务：请搜索最新一周的中国宏观经济数据（GDP、CPI、PMI、进出口、消费、投资、信贷）、AI产业动态（大模型商业化、算力、存储芯片、光模块）、全球宏观与大类资产（美联储、美债、黄金、人民币汇率）、权威机构最新研判（高盛、中金、中信等），生成一份HTML格式的宏观分析周报，保存在 /Users/xzzsw127/Claude code/reports/weekly/ 目录下，文件名格式为\"2026宏观分析周报_YYYYMMDD.html\"。\n\n周报结构（11+2节）：\n- 新增\"本周异常汇总\"板块：聚合本周所有日报的异常标记，区分噪音vs信号\n- 继承现有11节：核心发现/关键指标/GDP/通胀/PMI/进出口/消费/投资房地产/信贷/AI产业/全球宏观/机构研判/投资建议\n- 新增\"下周关注日历\"：数据发布时间表+政策事件+财报日历\n\n重点：① 关注异常项和与预期的偏差；② AI趋势和硬科技产业链；③ 消费、投资、出口三驾马车；④ 最后给出针对股票/基金投资的洞察与资产配置建议。\n\n模板CSS：读取 /Users/xzzsw127/Claude code/templates/_macro_base.css 内联到HTML中（周报使用base默认变量，无需覆盖）。\n\n报告风格：数据驱动、客观、Apple HIG设计标准（1200px宽）。\n\n⚠️ 重要：生成报告后，最后一步必须创建下一个周一的 one-shot durable cron（计算下周一日期，时间9:57 AM），以维持周报链不断。",
+      "createdAt": 1784779720058,
+      "createdBySessionId": "97ea1f98-528b-4643-824f-6beeb1b8b10b",
+      "createdByPid": 68123,
+      "createdByProcStart": "Mon Jul 20 03:52:31 2026"
+    },
+    {
+      "id": "80947869",
+      "cron": "0 21 24 7 5",
+      "prompt": "宏观分析日报任务（晚间版）：请搜索今日（当前日期）的中国A股收盘数据、美股前日收盘/当日盘中、关键异常事件（涨跌>2%、波动>10bp、放量>2倍）、AI产业动态简报（3-5条）、商品与外汇报价（黄金/布油/WTI/DXY/人民币/INE原油/10Y美债），生成一份HTML格式的宏观分析日报，保存在 /Users/xzzsw127/Claude code/reports/daily/ 目录下，文件名格式为\"2026宏观分析日报_YYYYMMDD.html\"。\n\n日报结构（8板块）：\n1. 🔴 预警等级：🟢正常 / 🟡关注 / 🔴警戒（附1-2句行动建议）\n2. 📊 市场脉搏：A股收盘数据+美股前日收盘/当日盘中，涨跌幅，板块轮动特征\n3. 🚨 异常标记：任何异常波动，用anomaly-card组件标记severe/watch级别。重点关注：能源板块表现、科技板块回调、商品异动\n4. 📌 今日判断：2-3段洞察——市场在交易什么逻辑？短期看哪几个信号？操作上怎么做？用daily-insight组件（渐变蓝紫背景）\n5. 🔮 走势推演（新增）：对次日A股大盘、能源板块（电力/煤炭/石油）、半导体/AI算力、黄金等核心方向做方向预测（↑↓→↗），附信心等级（高/中/低）和推演逻辑。用forecast-grid+forecast-card组件布局。底部加一段\"关键推演情景\"（if-then条件判断）。推演要具体——不只说\"可能涨\"，要说\"如果X则Y，概率大概Z%\"\n6. 🤖 AI每日简报：3-5条关键动态\n7. 💱 商品与外汇：单行报价条\n8. 📋 宏观数据状态表（来自最新周报）\n\n模板CSS：读取 /Users/xzzsw127/Claude code/templates/_macro_base.css 和 /Users/xzzsw127/Claude code/templates/_macro_daily.css 合并内联到HTML中。\n\n报告风格：数据驱动、客观、Apple HIG设计标准、紧凑（800px宽，3分钟读完）。走势推演要大胆但有理有据——用户需要的是方向判断，不是模棱两可。\n\n⚠️ 重要：生成报告后，最后一步必须创建下一个工作日的 21:00 one-shot durable cron（计算下一个工作日日期），以维持日报链不断。",
+      "createdAt": 1784854172300,
+      "createdBySessionId": "97ea1f98-528b-4643-824f-6beeb1b8b10b",
+      "createdByPid": 68123,
+      "createdByProcStart": "Mon Jul 20 03:52:31 2026"
+    }
+  ]
+}

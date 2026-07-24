@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>准备 · 管理者B · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(160deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+  .card{position:relative;z-index:10;max-width:620px;width:92vw;background:rgba(255,255,255,.5);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.5);border-radius:20px;padding:36px 32px;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+  .meta{font-size:11px;color:#A8A29E;text-align:center;margin-bottom:6px}
+  h1{font-size:20px;font-weight:700;color:#1C1917;line-height:1.3;text-align:center;letter-spacing:-.01em;margin-bottom:18px}
+  .story{font-size:14px;color:#44403C;line-height:1.8;margin-bottom:20px}
+  .story strong{color:#1C1917}
+  .story em{color:#78716C;font-style:normal}
+  .divider{height:1px;background:linear-gradient(to right,transparent,rgba(0,0,0,.08),transparent);margin:18px 0}
+  .check-block{font-size:13px;color:#44403C;line-height:1.7;margin-bottom:12px}
+  .check-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#A8A29E;margin-bottom:6px}
+  .self-rate{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .rate-item{flex:1;min-width:56px;text-align:center}
+  .rate-item span{font-size:9px;color:#A8A29E;display:block;margin-bottom:2px}
+  .rate-item input{width:100%;padding:6px;border:1px solid rgba(0,0,0,.08);border-radius:8px;text-align:center;font-size:14px;font-weight:600;color:#1C1917;outline:none;background:rgba(255,255,255,.5)}
+  .rate-item input:focus{border-color:#3B82F6}
+  .opening-box{background:rgba(254,243,199,.2);border:1px solid rgba(251,191,36,.1);border-radius:12px;padding:12px 16px;text-align:center;font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:14px}
+  .process-line{text-align:center;font-size:11px;color:#78716C;margin-bottom:14px;line-height:1.6}
+  .btn-start{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 28px;border:none;border-radius:14px;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.08);transition:all .25s ease;width:100%}
+  .btn-start:hover{background:#000;transform:translateY(-1px)}
+  .lv-row{display:flex;gap:4px;justify-content:center;margin-top:10px}
+  .lv-btn{padding:5px 12px;border-radius:100px;border:1px solid rgba(0,0,0,.06);background:transparent;cursor:pointer;font-size:11px;color:#A8A29E;font-family:inherit;transition:all .2s}
+  .lv-btn.active{background:#1C1917;color:#fff;border-color:#1C1917}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="card">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;justify-content:center">
+    <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#93C5FD,#3B82F6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;flex-shrink:0;box-shadow:0 4px 16px rgba(59,130,246,.2)">林</div>
+    <div style="text-align:left">
+      <p style="font-size:15px;font-weight:700;color:#1C1917;margin-bottom:1px">管理者B</p>
+      <p style="font-size:11px;color:#A8A29E">2022届通用胜任力 · 25岁 · 你带了她两年</p>
+    </div>
+  </div>
+  <p class="meta">半年度绩效面谈 · 下午3:00 · 小会议室 · 30分钟</p>
+  <h1 style="font-size:18px">她推门时脸上带着笑。<br>她不知道等待她的是C。</h1>
+
+  <p class="story">
+    管理者B是2022届通用胜任力，25岁，你带了她两年。上半年经手了六份项目分析报告——每一份都在deadline之前交，从来没等过催。加班记录全组前三。同事们都挺喜欢她，不是因为她嘴甜，是交给她的事她不会掉地上。
+  </p>
+  <p class="story">
+    但六份报告里，有三份因为数据口径不一致被打回来重做。她自己不知道"数据口径"是什么意思——学校没教过，入职时也没人系统讲过。每次被打回来，她就默默改了再交。李哥帮过她几次，改完说"没事，下次注意"。张姐在周会上夸她"进步很大"。<em>这些话听多了，她真觉得：改了就是做好了。</em>
+  </p>
+  <p class="story">
+    她推门进来的时候脸上带着笑——不是装的。她确实觉得自己上半年干得不错。同事们都说好，leader从没红过脸，deadline从没误过——换谁都会觉得自己至少是个B。<strong>但绩效结果是个C。</strong>
+  </p>
+  <p class="story">
+    你带了她两年，她觉得你是个公平的人。说C的时候她会愣住——任何人听到意料之外的评价都会愣住。但愣完之后，她的第一反应不会是哭，也不会是争辩。她会问你：<strong>"哪里没做好——你具体告诉我。"</strong>然后掏出手机记下来。
+  </p>
+  <p class="story">
+    这30分钟你不用说服她"你很努力"——加班记录摆在那里。你也不用担心她扛不住。你最需要做的一件事：在她理解了差距之后，给她一把尺子。不是"下次注意数据"，是"以后交报告之前，先对着这三个标准自己查一遍"。她拿到尺子之后，不用你催。
+  </p>
+
+  <div class="divider"></div>
+
+  <!-- Strategy Card — plain language, no D-codes -->
+  <div style="background:rgba(239,246,255,.3);border:1px solid rgba(147,197,253,.15);border-radius:14px;padding:14px 16px;margin-bottom:16px">
+    <div style="font-size:10px;font-weight:700;color:#3B82F6;letter-spacing:.06em;margin-bottom:6px">🎯 推门前，想清楚这三件事</div>
+    <p style="font-size:12px;color:#1C1917;line-height:1.75;margin:0">
+      <strong>1. 她加班是真的，别否定这个。</strong>她的加班记录全组前三。如果你说"你还不够努力"，她会关闭自己——那不符合事实。让她先说，听她讲完对自己的评价，再给她看数据。顺序不能反。<br>
+      <strong>2. 她的问题不是不想学——是不知道学什么。</strong>过去半年同事都在帮她改错，但没人告诉她：一份合格的报告，交之前应该先查哪几样。你今天给她一把尺子，比给她一百句"相信你"管用。<br>
+      <strong>3. 说C的时候她会愣住——然后她会问你"哪里不好，具体告诉我"。</strong>抓住这个时刻。当她主动追问的时候，她已经准备好听了。
+    </p>
+    <p style="font-size:11px;color:#92400E;line-height:1.5;margin:10px 0 0">
+      <strong>⚠️ 她可能会说：</strong>"张姐夸我进步大""李哥说我方向没问题"——她不是在找借口。过去半年她收到的反馈确实全是正面的。<strong>别否定张姐李哥。给她看数据标准——让她自己发现：同事说"进步"和"没事"——不等于"达到了要求"。</strong>
+    </p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+    <div>
+      <div class="check-label">推门后30分钟，成功是什么</div>
+      <div class="check-block" style="font-size:12px">
+        ✅ 她在日历上记下了<strong>下周三下午3点</strong><br>
+        ✅ 她能重复出来<strong>自己哪里需要改</strong><br>
+        ❌ 她低着头走出去说"我知道了"<br>
+        <span style="font-size:10px;color:#A8A29E">成功的面谈不是"谈完了"——是她走出去时知道具体要做什么。</span>
+      </div>
+    </div>
+    <div>
+      <div class="check-label">自评基线（1-10）</div>
+      <div class="self-rate">
+        <div class="rate-item"><span>①建立信任</span><input value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><span>②说明目的</span><input value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><span>③鼓励说话</span><input value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><span>④认真倾听</span><input value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+        <div class="rate-item"><span>⑤积极结束</span><input value="__" readonly onfocus="this.removeAttribute('readonly')"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Previous practice data -->
+  <div id="prevPracticeBar" style="display:none;text-align:center;font-size:10px;color:#78716C;padding:6px 10px;background:rgba(0,0,0,.015);border-radius:10px;margin-bottom:12px"></div>
+
+  <div class="opening-box">⚡ 她推门进来，脸上带着笑。没带笔记本。<strong>在等你先开口。</strong></div>
+
+  <div class="process-line">
+    <span style="font-weight:600;color:#1C1917">前期准备</span> → <span style="font-weight:600;color:#1C1917">营造氛围</span> → <span style="font-weight:600;color:#1C1917">员工自评</span> → <span style="font-weight:600;color:#1C1917">绩效诊断</span> → <span style="font-weight:600;color:#1C1917">下阶段目标</span><br>
+    <span style="font-size:10px;color:#A8A29E">全程：多听她说，不否定她的努力，不拿别人跟她比，不说"你再这样就要XX"。</span>
+  </div>
+
+  <button class="btn-start" onclick="start()">开始面谈</button>
+  <div class="lv-row" id="lvGroup">
+    <button class="lv-btn" data-lv="A" onclick="selLv('A')">新手</button>
+    <button class="lv-btn active" data-lv="B" onclick="selLv('B')">中等</button>
+    <button class="lv-btn" data-lv="C" onclick="selLv('C')">高手</button>
+  </div>
+</div>
+
+<!-- Bridge overlay -->
+<div id="bridgeOverlay" style="display:none;position:fixed;inset:0;background:rgba(28,25,23,.7);z-index:100;align-items:center;justify-content:center">
+  <div style="background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-radius:20px;padding:32px 28px;max-width:420px;width:90vw;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.15)">
+    <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#93C5FD,#3B82F6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;margin:0 auto 12px">林</div>
+    <p style="font-size:14px;color:#1C1917;line-height:1.6;margin-bottom:6px" id="bridgeMsg"></p>
+    <p style="font-size:11px;color:#78716C;line-height:1.5;margin-bottom:16px" id="bridgeHint"></p>
+    <button onclick="document.getElementById('bridgeOverlay').style.display='none';goToDialogue();" style="padding:12px 32px;border-radius:14px;border:none;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">准备好了，开始</button>
+    <p style="font-size:10px;color:#A8A29E;margin-top:8px;cursor:pointer" onclick="document.getElementById('bridgeOverlay').style.display='none';goToDialogue();">跳过，直接开始</p>
+  </div>
+</div>
+
+<script>
+let cl='B';
+function selLv(l){cl=l;document.querySelectorAll('#lvGroup .lv-btn').forEach(b=>b.classList.toggle('active',b.dataset.lv===l))}
+
+// Check for previous practice data
+(function(){
+  var count=parseInt(localStorage.getItem('pr2_count')||'0');
+  var prevSession=null;
+  try{var raw=localStorage.getItem('pr2_last_session');if(raw)prevSession=JSON.parse(raw);}catch(e){}
+  if(count>0&&prevSession&&prevSession.principles){
+    var bar=document.getElementById('prevPracticeBar');
+    bar.style.display='block';
+    var p=prevSession.principles;
+    var avg=Math.round((p.trust+p.purpose+p.encourage+p.listen+p.end)/5);
+    bar.innerHTML='📊 上次练习（第'+count+'次）· 均分<strong>'+avg+'</strong> · 最弱：<strong id="prevWeakest"></strong> · 今天重点关注这条';
+    var keys=['trust','purpose','encourage','listen','end'];
+    var labels=['①建立信任','②说明目的','③鼓励说话','④认真倾听','⑤积极结束'];
+    var minK=keys[0],minV=p[keys[0]];
+    keys.forEach(function(k){if(p[k]<minV){minV=p[k];minK=k;}});
+    document.getElementById('prevWeakest').textContent=labels[keys.indexOf(minK)]+'（'+minV+'分）';
+  }
+})();
+
+function start(){
+  // Save self-assessment
+  var inputs=document.querySelectorAll('.rate-item input');
+  var baseline={};
+  var keys=['trust','purpose','encourage','listen','end'];
+  inputs.forEach(function(inp,i){
+    var v=inp.value.trim();
+    if(v&&v!=='__'&&!isNaN(parseInt(v)))baseline[keys[i]]=parseInt(v);
+  });
+  try{localStorage.setItem('pr2_self_baseline',JSON.stringify(baseline));}catch(e){}
+  var diffMap={A:'easy',B:'normal',C:'hard'};
+  try{localStorage.setItem('pr2_difficulty',diffMap[cl]||'normal');}catch(e){}
+
+  // Build bridge message from self-assessment
+  var focusPrinciple='';
+  var focusScore=0;
+  if(Object.keys(baseline).length>0){
+    var lowScore=10;var lowKey='';
+    keys.forEach(function(k){if(baseline[k]!==undefined&&baseline[k]<lowScore){lowScore=baseline[k];lowKey=k;}});
+    if(lowKey){
+      var labelMap={trust:'建立信任',purpose:'说明目的',encourage:'鼓励说话',listen:'认真倾听',end:'积极结束'};
+      focusPrinciple=labelMap[lowKey];
+      focusScore=lowScore;
+    }
+  }
+
+  if(focusPrinciple){
+    document.getElementById('bridgeMsg').innerHTML='你给自己的<strong>'+focusPrinciple+'</strong>打了 <strong>'+focusScore+'</strong> 分（1-10）。<br>今天练习中，重点关注这一条。';
+    document.getElementById('bridgeHint').textContent='在对话中，每当你想跳过这一条的时候——轻声提醒会出现。那是你的教练在说话。';
+  }else{
+    document.getElementById('bridgeMsg').innerHTML='<strong>她推门进来了。</strong><br>她还不知道接下来要谈什么。';
+    document.getElementById('bridgeHint').textContent='先聊两句让她放松。这场对话不是审判。';
+  }
+
+  // Show bridge overlay
+  document.getElementById('bridgeOverlay').style.display='flex';
+}
+
+function goToDialogue(){
+  window.location.href='scene_PR2_引擎驱动版_v7.html';
+}
+</script>
+</body>
+</html>

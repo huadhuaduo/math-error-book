@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>准备 · 小张 · 绩效面谈</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(160deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;opacity:.18}
+  .amb-1{width:380px;height:380px;background:#DCFCE7;top:-100px;right:-60px}
+  .amb-2{width:280px;height:280px;background:#DBEAFE;bottom:-60px;left:-40px}
+
+  .card{position:relative;z-index:10;max-width:680px;width:94vw;background:rgba(255,255,255,.5);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.55);border-radius:22px;box-shadow:0 8px 40px rgba(0,0,0,.04);overflow:hidden}
+  .grid-2col{display:grid;grid-template-columns:280px 1fr;gap:0}
+  .col-left{padding:32px 24px 28px 28px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .col-right{padding:32px 28px 28px 24px;border-left:1px solid rgba(0,0,0,.05)}
+
+  /* Avatar — large, prominent */
+  .avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#059669,#10B981);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:600;margin-bottom:14px;box-shadow:0 4px 20px rgba(5,150,105,.2)}
+  .name{font-size:18px;font-weight:700;color:#1C1917;margin-bottom:2px}
+  .role{font-size:12px;color:#78716C;margin-bottom:12px}
+  .divider-sm{width:40px;height:2px;background:rgba(0,0,0,.06);border-radius:1px;margin-bottom:12px}
+  .bio{font-size:12px;color:#44403C;line-height:1.65;text-align:left}
+  .bio strong{color:#1C1917}
+
+  /* Quote */
+  .quote-box{background:rgba(254,243,199,.25);border:1px solid rgba(251,191,36,.1);border-radius:12px;padding:12px 14px;margin-top:14px;font-size:12px;color:#1C1917;line-height:1.55;font-style:italic;text-align:left}
+
+  /* Right column */
+  .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#A8A29E;margin-bottom:10px}
+  .goal-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;font-size:13px;color:#44403C;line-height:1.55}
+  .goal-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+
+  /* Tension — embedded in goals naturally */
+  .tension-note{font-size:11px;color:#A8A29E;line-height:1.5;padding:8px 0 2px}
+
+  .btn-row{padding:0 28px 24px;display:flex;align-items:center;gap:12px}
+  .start-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border:none;border-radius:14px;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.08);transition:all .25s ease}
+  .start-btn:hover{background:#000;transform:translateY(-1px)}
+  .lv-select{display:flex;gap:4px;margin-left:auto}
+  .lv-btn{padding:5px 12px;border-radius:100px;border:1px solid rgba(0,0,0,.06);background:transparent;cursor:pointer;font-size:11px;color:#A8A29E;font-family:inherit;transition:all .2s}
+  .lv-btn.active{background:#1C1917;color:#fff;border-color:#1C1917}
+
+  @media(max-width:640px){
+    .grid-2col{grid-template-columns:1fr}
+    .col-left{padding:24px 20px 16px;flex-direction:row;text-align:left;gap:14px;flex-wrap:wrap;align-items:flex-start}
+    .col-right{border-left:none;border-top:1px solid rgba(0,0,0,.05);padding:16px 20px 20px}
+    .avatar{width:56px;height:56px;font-size:24px;margin-bottom:0}
+    .divider-sm{display:none}
+    .btn-row{padding:0 20px 20px;flex-wrap:wrap}.lv-select{margin-left:0;margin-top:6px}
+  }
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+
+<div class="card">
+  <div class="grid-2col">
+    <!-- LEFT: Avatar + Person -->
+    <div class="col-left">
+      <div class="avatar">张</div>
+      <div class="name">小张</div>
+      <div class="role">置业顾问 · 27岁 · 入职两年半</div>
+      <div class="divider-sm"></div>
+      <p class="bio">2025年销售业绩<strong>部门第二</strong>，数据扎实。自我要求很高，工作积极主动，不让人操心。</p>
+      <p class="bio" style="margin-top:6px">但她有一个自己也知道的问题：<strong>面对压力时会慢半拍，有时会退缩。</strong>至少三个客户在价格谈判环节流失——她每次都在压力下退让了。</p>
+      <p class="bio" style="margin-top:6px">上次季度回顾时你说"继续保持就好"——<strong>她失望了。</strong></p>
+      <div class="quote-box">"经理，上次你说继续保持就好——说实话我有点失望。这次我带了自己的复盘。你帮我看看，我的判断和你的观察一致吗？"</div>
+    </div>
+
+    <!-- RIGHT: What you need to do -->
+    <div class="col-right">
+      <div class="sec-label">这次面谈，你要做到的</div>
+
+      <div class="goal-item">
+        <div class="goal-num bg-emerald-100 text-emerald-700">1</div>
+        <span><strong>用数据肯定她的业绩。</strong>说"部门第二，三个重点项目全部完成"——不是"你做得很好"。她上次失望就是因为只听到了四个字。</span>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num bg-blue-100 text-blue-700">2</div>
+        <span><strong>帮她看到"退缩"的模式，但不替她说出来。</strong>她带了复盘笔记——问她"你标注的那几个流失客户，有什么共同点？"让她自己总结。A级员工不需要你告诉她问题在哪——需要你帮她看清自己。</span>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num bg-amber-100 text-amber-700">3</div>
+        <span><strong>给她一个她能立刻用的方法。</strong>不是"我相信你能调整"——是"下次价格谈判前，先跟我预演一遍。试三次，你就有肌肉记忆了。"她来面谈是要东西的。给她一个她能抓住的。</span>
+      </div>
+
+      <p class="tension-note">这次面谈最容易犯的错：因为她是A级、态度好、主动复盘——就觉得"没什么好谈的"。上一次"继续保持"四个字，她记了半年。</p>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="start-btn" onclick="start()">开始面谈</button>
+    <div class="lv-select" id="lvGroup">
+      <button class="lv-btn" data-lv="A" onclick="selLv('A')">新手</button>
+      <button class="lv-btn active" data-lv="B" onclick="selLv('B')">中等</button>
+      <button class="lv-btn" data-lv="C" onclick="selLv('C')">高手</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let cl='B';
+function selLv(l){cl=l;document.querySelectorAll('#lvGroup .lv-btn').forEach(b=>b.classList.toggle('active',b.dataset.lv===l))}
+function start(){console.log('进入面谈：小张')}
+</script>
+</body>
+</html>

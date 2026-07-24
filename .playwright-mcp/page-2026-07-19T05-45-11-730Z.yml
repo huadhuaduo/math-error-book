@@ -1,0 +1,22 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e101]:
+    - generic [ref=e102]:
+      - button "返回" [ref=e103] [cursor=pointer]: 🏠
+      - heading "👨‍👩‍👧 家长控制" [level=2] [ref=e104]
+    - generic [ref=e105]:
+      - paragraph [ref=e106]: 请输入4位密码
+      - generic [ref=e112]:
+        - button "1" [ref=e113] [cursor=pointer]
+        - button "2" [ref=e114] [cursor=pointer]
+        - button "3" [ref=e115] [cursor=pointer]
+        - button "4" [ref=e116] [cursor=pointer]
+        - button "5" [ref=e117] [cursor=pointer]
+        - button "6" [ref=e118] [cursor=pointer]
+        - button "7" [ref=e119] [cursor=pointer]
+        - button "8" [ref=e120] [cursor=pointer]
+        - button "9" [ref=e121] [cursor=pointer]
+        - button "C" [ref=e122] [cursor=pointer]
+        - button "0" [ref=e123] [cursor=pointer]
+        - button "⌫" [ref=e124] [cursor=pointer]
+      - paragraph
+  - generic: ⭐ +1 颗星！

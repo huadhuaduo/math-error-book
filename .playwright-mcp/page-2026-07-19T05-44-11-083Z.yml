@@ -1,0 +1,32 @@
+- generic [ref=e19]:
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]: 🦕
+      - generic [ref=e23]: 小冒险家
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: ⭐
+        - generic [ref=e27]: "0"
+      - generic [ref=e28]: "19"
+  - generic [ref=e33]:
+    - generic [ref=e34] [cursor=pointer]:
+      - generic [ref=e35]: 📖
+      - generic [ref=e36]: 故事闯关
+      - generic [ref=e37]: 帮小恐龙找回魔法蛋
+    - generic [ref=e38] [cursor=pointer]:
+      - generic [ref=e39]: 🔢
+      - generic [ref=e40]: 趣味数数
+      - generic [ref=e41]: 用水果积木学数学
+    - generic [ref=e42] [cursor=pointer]:
+      - generic [ref=e43]: 🛒
+      - generic [ref=e44]: 生活模拟
+      - generic [ref=e45]: 逛超市、分蛋糕
+    - generic [ref=e46] [cursor=pointer]:
+      - generic [ref=e47]: ⚡
+      - generic [ref=e48]: 限时挑战
+      - generic [ref=e49]: 看谁算得又快又准
+    - generic [ref=e50] [cursor=pointer]:
+      - generic [ref=e51]: 👩‍🏫
+      - generic [ref=e52]: 小老师
+      - generic [ref=e53]: 教小狗做数学题
+  - button "👨‍👩‍👧 家长控制" [ref=e54] [cursor=pointer]

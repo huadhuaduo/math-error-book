@@ -1,0 +1,6 @@
+[     144ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://localhost:8765/math-adventure.html:0
+[     157ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8765/favicon.ico:0
+[     197ms] [LOG] 🦕 数学大冒险启动成功！ @ http://localhost:8765/math-adventure.html:2477
+[     197ms] [LOG]    当前等级: 1 @ http://localhost:8765/math-adventure.html:2478
+[     197ms] [LOG]    欢迎小朋友: 新朋友 @ http://localhost:8765/math-adventure.html:2479
+[   72234ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8765/favicon.ico:0

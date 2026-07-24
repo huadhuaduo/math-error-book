@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景卡预览器</title>
+<style>
+:root {
+  --navy: #1a2a3a; --navy-light: #2c3e5a; --navy-pale: #e8ecf2;
+  --gold: #c8a45c; --gold-light: #f5eed9;
+  --text: #2a2a2a; --text-muted: #6b7280;
+  --bg: #f8f9fb; --card-bg: #ffffff; --border: #e5e7eb;
+  --success: #2d8a56; --danger: #c44; --warning: #d97706;
+  --shadow: 0 1px 3px rgba(0,0,0,.06);
+  --radius: 8px; --radius-lg: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.7; padding: 40px;
+  max-width: 880px; margin: 0 auto;
+}
+h1 { font-size: 24px; color: var(--navy); margin-bottom: 4px; }
+h2 { font-size: 18px; color: var(--navy); margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+h3 { font-size: 15px; color: var(--navy-light); margin: 16px 0 8px; }
+
+/* Input area */
+.editor-area { margin: 20px 0; }
+.editor-area textarea {
+  width: 100%; height: 200px; font-family: 'SF Mono', 'Menlo', monospace; font-size: 12px;
+  padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  resize: vertical; background: #fafbfc;
+}
+.editor-area textarea:focus { outline: none; border-color: var(--navy-light); }
+.btn-row { display: flex; gap: 10px; margin: 10px 0 20px; }
+.btn {
+  padding: 8px 20px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer;
+  font-family: inherit; font-weight: 500; transition: all .15s;
+}
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-primary:hover { background: var(--navy-light); }
+.btn-outline { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); }
+.btn-outline:hover { background: var(--navy-pale); }
+.btn-danger { background: #fff; color: var(--danger); border: 1.5px solid var(--danger); font-size: 12px; padding: 4px 12px; }
+.btn-danger:hover { background: #fef2f2; }
+
+/* Preview area */
+.preview { display: none; }
+.preview.active { display: block; }
+.error-box { display: none; background: #fef2f2; border: 1px solid var(--danger); border-radius: var(--radius); padding: 12px 16px; margin: 10px 0; color: #7f1d1d; font-size: 13px; }
+.error-box.active { display: block; }
+.validation-box { display: none; background: #edf7f0; border: 1px solid var(--success); border-radius: var(--radius); padding: 12px 16px; margin: 10px 0; color: #1a5c36; font-size: 13px; }
+.validation-box.active { display: block; }
+.validation-box.warn { background: #fefce8; border-color: var(--warning); color: #78350f; }
+
+/* Card styles */
+.card {
+  background: var(--card-bg); border-radius: var(--radius-lg); padding: 24px 28px;
+  margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; display: inline-block;
+}
+.tag-d { background: #e8f0fe; color: #1a56db; }
+.tag-p { background: #fef3c7; color: #92400e; }
+.tag-level { background: #fce7f3; color: #9d174d; }
+.tag-best { background: #edf7f0; color: #1a5c36; }
+.tag-trap { background: #fef2f2; color: #7f1d1d; }
+.tag-cap { background: #f0f4fa; color: #2c3e5a; font-size: 12px; }
+
+.prog-chain {
+  font-size: 12px; color: var(--navy-light); padding: 6px 12px;
+  background: #f0f4fa; border-radius: 4px; margin-bottom: 14px;
+  border-left: 3px solid var(--navy-light);
+}
+
+.narrative {
+  background: linear-gradient(135deg, #fafbfc 0%, #f0f3f7 100%);
+  border-radius: var(--radius); padding: 18px 22px;
+  font-size: 14px; line-height: 1.9; margin: 10px 0 16px;
+  border-left: 3px solid var(--navy-light);
+}
+
+.dp-block {
+  background: #fafbfc; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 22px; margin: 12px 0;
+}
+.dp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.dp-label { font-size: 14px; font-weight: 700; color: var(--navy); }
+.dp-cap { font-size: 11px; color: var(--navy-light); margin-top: 2px; }
+.dp-question { font-size: 15px; font-weight: 600; color: var(--navy); margin: 10px 0; }
+
+.option-item {
+  display: flex; gap: 10px; padding: 10px 14px; margin: 6px 0;
+  border-radius: 6px; font-size: 13px; line-height: 1.6;
+}
+.option-item.best { background: #edf7f0; border: 1px solid #a3d9b1; }
+.option-item.wrong { background: #fef2f2; border: 1px solid #f5c6c6; }
+.opt-id { font-weight: 700; font-size: 13px; min-width: 20px; }
+.opt-text { flex: 1; }
+
+.consequence-box {
+  margin-top: 8px; padding: 10px 14px; border-radius: 6px; font-size: 12px; line-height: 1.7;
+}
+.consequence-box.correct { background: #edf7f0; color: #1a5c36; }
+.consequence-box.wrong { background: #fef2f2; color: #7f1d1d; }
+
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0; }
+.meta-item { font-size: 13px; }
+.meta-item .key { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+.meta-item .val { color: var(--text); font-weight: 500; }
+
+.feedback-preview { font-size: 13px; color: var(--text-muted); padding: 10px 14px; background: #fafbfc; border-radius: 6px; margin-top: 10px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: var(--navy); color: #fff; padding: 10px 24px;
+  border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity .3s;
+  pointer-events: none; z-index: 999;
+}
+</style>
+</head>
+<body>
+
+<h1>场景卡预览器</h1>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">
+  粘贴场景生成智能体输出的 JSON → 渲染为人类可读的场景卡 → 人工验收
+</p>
+
+<div class="editor-area">
+  <textarea id="jsonInput" placeholder='粘贴场景卡 JSON 到这里...'></textarea>
+  <div class="btn-row">
+    <button class="btn btn-primary" id="btnRender">渲染预览</button>
+    <button class="btn btn-outline" id="btnValidate">仅校验</button>
+    <button class="btn btn-outline" id="btnSample">加载示例</button>
+    <button class="btn btn-danger" id="btnClear">清空</button>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+  <div class="validation-box" id="validationBox"></div>
+</div>
+
+<div class="preview" id="preview"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function showToast(msg, duration) {
+  duration = duration || 2000;
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.opacity = '0'; }, duration);
+}
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function validateCard(sc) {
+  var issues = [];
+  // Required top-level keys
+  if (!sc.meta) issues.push('缺少 meta');
+  if (!sc.context) issues.push('缺少 context');
+  if (!sc.decision_points || !sc.decision_points.length) issues.push('缺少 decision_points');
+  if (!sc.feedback_criteria) issues.push('缺少 feedback_criteria');
+  if (issues.length) return { valid: false, issues: issues };
+
+  var m = sc.meta;
+  var dv = m.d_vector || {};
+  if (!dv.D1_morale_root) issues.push('D₁ 未赋值');
+  if (!dv.D2_pressure_mode) issues.push('D₂ 未赋值');
+  if (!dv.D3_experience_mix) issues.push('D₃ 未赋值');
+  if (!dv.D4_incentive_resource) issues.push('D₄ 未赋值');
+  if (!dv.D5_trust_base) issues.push('D₅ 未赋值');
+  if (dv.D5_trust_base === '存在裂痕' && !dv.D5_crack_type) issues.push('D₅=存在裂痕 但 D5_crack_type 为空');
+
+  var dps = sc.decision_points;
+  if (dps.length < 2) issues.push('决策点少于2个');
+  if (dps.length > 4) issues.push('决策点多于4个');
+
+  for (var i = 0; i < dps.length; i++) {
+    var dp = dps[i];
+    if (!dp.capability_tag) issues.push('DP'+(i+1)+' 缺少能力标签');
+    if (!dp.d_tags || !dp.d_tags.length) issues.push('DP'+(i+1)+' 缺少D维度标签');
+    if (!dp.options || dp.options.length !== 3) issues.push('DP'+(i+1)+' 选项不为3个');
+    if (!dp.progression_from_previous && i > 0) issues.push('DP'+(i+1)+' 缺少递进关系');
+    if (dp.options) {
+      var bestCount = 0, trapEmpty = 0;
+      for (var j = 0; j < dp.options.length; j++) {
+        if (dp.options[j].is_best_path) bestCount++;
+        if (!dp.options[j].is_best_path && !dp.options[j].trap_type) trapEmpty++;
+      }
+      if (bestCount !== 1) issues.push('DP'+(i+1)+' 最佳选项不为1个（当前'+bestCount+'个）');
+      if (trapEmpty > 0) issues.push('DP'+(i+1)+' 有'+trapEmpty+'个错误选项缺少陷阱类型');
+    }
+  }
+
+  return { valid: issues.length === 0, issues: issues };
+}
+
+function renderCard(sc) {
+  var m = sc.meta, ctx = sc.context, dps = sc.decision_points, fc = sc.feedback_criteria;
+  var dv = m.d_vector || {};
+
+  var dTags = [];
+  if (dv.D1_morale_root) dTags.push('D₁:'+dv.D1_morale_root);
+  if (dv.D2_pressure_mode) dTags.push('D₂:'+dv.D2_pressure_mode);
+  if (dv.D3_experience_mix) dTags.push('D₃:'+dv.D3_experience_mix);
+  if (dv.D4_incentive_resource) dTags.push('D₄:'+dv.D4_incentive_resource);
+  if (dv.D5_trust_base) dTags.push('D₅:'+dv.D5_trust_base+(dv.D5_crack_type?'('+dv.D5_crack_type+')':''));
+
+  var html = '';
+  html += '<h1>'+esc(m.title || '未命名')+'</h1>';
+  html += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">'+esc(m.scenario_id||'')+' · 难度：'+esc(m.difficulty||'')+' · '+esc(m.estimated_duration_min||15)+'分钟 · '+esc(m.task_domain||'')+'</div>';
+
+  // D/P tags
+  html += '<div class="tag-row">';
+  for (var i = 0; i < dTags.length; i++) { html += '<span class="tag tag-d">'+esc(dTags[i])+'</span>'; }
+  html += '<span class="tag tag-p">'+esc(m.p_sequence||'')+'</span>';
+  html += '<span class="tag tag-level">难度:'+esc(m.difficulty||'')+'</span>';
+  html += '</div>';
+
+  // Progression chain
+  if (m.progression_chain) {
+    html += '<div class="prog-chain">🔗 递进链：'+esc(m.progression_chain)+'</div>';
+  }
+
+  // Context
+  html += '<h2>情境叙事</h2><div class="card">';
+
+  // Learner role
+  var lr = ctx.learner_role || {};
+  html += '<h3>你是谁</h3>';
+  html += '<div class="meta-grid">';
+  html += '<div class="meta-item"><div class="key">身份</div><div class="val">'+esc(lr.identity||'')+'</div></div>';
+  html += '<div class="meta-item"><div class="key">与团队关系</div><div class="val">'+esc(lr.relationship_to_team||'')+'</div></div>';
+  html += '<div class="meta-item"><div class="key">角色时长</div><div class="val">'+esc(lr.tenure_in_role||'')+'</div></div>';
+  html += '</div>';
+
+  // Situation
+  var sit = ctx.situation || {};
+  html += '<h3>当前局面</h3>';
+  html += '<div class="narrative">';
+  html += '<strong>项目状态：</strong>'+esc(sit.project_status||'')+'<br>';
+  if (sit.deadline) html += '<strong>时间压力：</strong>'+esc(sit.deadline)+'<br>';
+  if (sit.metrics && sit.metrics.key_problem) html += '<strong>核心困境：</strong>'+esc(sit.metrics.key_problem)+'<br>';
+  if (sit.what_happened_before) html += '<strong>此前：</strong>'+esc(sit.what_happened_before);
+  html += '</div>';
+
+  // Team state
+  var ts = ctx.team_state || {};
+  html += '<h3>团队状态</h3>';
+  html += '<div class="meta-grid">';
+  html += '<div class="meta-item"><div class="key">团队规模</div><div class="val">'+esc(String(ts.size||''))+'人</div></div>';
+  html += '<div class="meta-item"><div class="key">能量水平</div><div class="val">'+esc(ts.energy_level||'')+'</div></div>';
+  html += '</div>';
+  if (ts.observable_signals && ts.observable_signals.length) {
+    html += '<p style="font-size:13px;margin-top:4px;"><strong>可观察信号：</strong>';
+    for (var j = 0; j < ts.observable_signals.length; j++) {
+      html += (j>0?' · ':'') + esc(ts.observable_signals[j]);
+    }
+    html += '</p>';
+  }
+  if (ts.unspoken_sentiment) html += '<p style="font-size:13px;color:var(--text-muted);">💭 '+esc(ts.unspoken_sentiment)+'</p>';
+  if (ts.crack_type) html += '<p style="font-size:13px;color:var(--danger);">⚠️ 裂痕类型：'+esc(ts.crack_type)+' — '+esc(ts.crack_history||'')+'</p>';
+
+  // Key individuals
+  if (ts.key_individuals && ts.key_individuals.length) {
+    html += '<h3>关键人物</h3>';
+    for (var j = 0; j < ts.key_individuals.length; j++) {
+      var ki = ts.key_individuals[j];
+      html += '<div style="font-size:13px;padding:4px 0;">';
+      html += '<strong>'+esc(ki.name)+'</strong> · '+esc(ki.role)+' · 司龄'+esc(String(ki.tenure||''))+'年';
+      html += '<br>态度：'+esc(ki.attitude||'')+' · 影响力：'+esc(ki.influence||'');
+      html += '</div>';
+    }
+  }
+
+  // Constraints
+  var cons = ctx.constraints || {};
+  html += '<h3>约束条件</h3>';
+  html += '<div class="meta-grid">';
+  if (cons.time_pressure) html += '<div class="meta-item"><div class="key">时间约束</div><div class="val">'+esc(cons.time_pressure)+'</div></div>';
+  if (cons.resource_limits) html += '<div class="meta-item"><div class="key">资源约束</div><div class="val">'+esc(cons.resource_limits)+'</div></div>';
+  if (cons.political_sensitivity) html += '<div class="meta-item"><div class="key">权力/关系约束</div><div class="val">'+esc(cons.political_sensitivity)+'</div></div>';
+  html += '</div>';
+
+  // Opening scene
+  var os = ctx.opening_scene || {};
+  html += '<h3>开场场景</h3>';
+  html += '<div class="narrative">';
+  html += esc(os.time||'')+' · '+esc(os.location||'')+'<br><br>';
+  html += esc(os.trigger||'')+'<br><br>';
+  html += '<strong>'+esc(os.opening_question||'')+'</strong>';
+  html += '</div>';
+
+  html += '</div>'; // end context card
+
+  // Decision points
+  html += '<h2>决策点序列</h2>';
+  for (var i = 0; i < dps.length; i++) {
+    var dp = dps[i];
+    html += '<div class="dp-block">';
+    html += '<div class="dp-header">';
+    html += '<div><div class="dp-label">决策点 #'+(i+1)+'</div>';
+    html += '<div class="dp-cap"><span class="tag tag-cap">'+esc(dp.capability_tag||'')+'</span> ';
+    if (dp.d_tags) for (var j = 0; j < dp.d_tags.length; j++) {
+      html += '<span class="tag tag-d">'+esc(dp.d_tags[j])+'</span> ';
+    }
+    html += '</div></div>';
+    if (dp.dp_meta && dp.dp_meta.is_critical) {
+      html += '<span style="font-size:11px;color:var(--danger);">⚠️ 关键决策点</span>';
+    }
+    html += '</div>';
+
+    if (dp.progression_from_previous) {
+      html += '<div style="font-size:12px;color:var(--navy-light);margin-bottom:8px;">📌 '+esc(dp.progression_from_previous)+'</div>';
+    }
+
+    // Trigger
+    var tr = dp.trigger || {};
+    html += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">触发：'+esc(tr.pause_text||tr.context_cue||'')+'</div>';
+
+    html += '<div class="dp-question">'+esc(dp.capability_definition||'')+'</div>';
+
+    // Options
+    if (dp.options) for (var j = 0; j < dp.options.length; j++) {
+      var opt = dp.options[j];
+      var cls = opt.is_best_path ? 'best' : 'wrong';
+      html += '<div class="option-item '+cls+'">';
+      html += '<span class="opt-id">'+esc(opt.id)+'</span>';
+      html += '<span class="opt-text">'+esc(opt.text)+(opt.is_best_path?' <span class="tag tag-best">最佳</span>':' <span class="tag tag-trap">'+esc(opt.trap_type||'')+'</span>')+'</span>';
+      html += '</div>';
+
+      // Consequence
+      var cs = opt.consequence || {};
+      html += '<div class="consequence-box '+(opt.is_best_path?'correct':'wrong')+'">';
+      html += '<strong>后果：</strong>'+esc(cs.immediate||'')+' '+esc(cs.short_term||'')+'<br>';
+      html += '<strong>NPC状态：</strong>'+esc(cs.npc_state_after||'');
+      html += '</div>';
+
+      // Logic
+      html += '<div style="font-size:11px;color:var(--text-muted);margin:4px 0 8px 30px;">';
+      if (opt.is_best_path) {
+        html += '✅ '+esc(opt.why_correct||'');
+      } else {
+        html += '❌ '+esc(opt.why_wrong||'')+' · 陷阱机制：'+esc(opt.trap_mechanism||'');
+      }
+      html += '<br>⛓ 因果链：'+esc(opt.causal_chain||'');
+      html += '</div>';
+    }
+
+    html += '</div>'; // end dp-block
+  }
+
+  // Feedback criteria
+  html += '<h2>反馈标准</h2><div class="card">';
+  html += '<p style="font-size:13px;"><strong>最佳路径：</strong>'+esc((fc.golden_path||[]).join(' → '))+'</p>';
+  html += '<p style="font-size:13px;">'+esc(fc.golden_path_narrative||'')+'</p>';
+
+  if (fc.scoring_dimensions) {
+    html += '<h3>评分维度</h3>';
+    for (var i = 0; i < fc.scoring_dimensions.length; i++) {
+      var dim = fc.scoring_dimensions[i];
+      html += '<div style="font-size:13px;margin:6px 0;">';
+      html += '<strong>'+esc(dim.name)+'</strong> (权重:'+esc(String(dim.weight||0))+') ';
+      html += '</div>';
+    }
+  }
+
+  if (fc.crack_type_awareness && fc.crack_type_awareness.applicable) {
+    html += '<div style="font-size:13px;color:var(--danger);margin-top:8px;">';
+    html += '⚠️ 裂痕感知已启用：类型='+esc(fc.crack_type_awareness.crack_type||'')+'<br>';
+    html += '检测规则：'+esc(fc.crack_type_awareness.detection_rule||'');
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  return html;
+}
+
+document.getElementById('btnRender').addEventListener('click', function() {
+  var input = document.getElementById('jsonInput').value.trim();
+  var errBox = document.getElementById('errorBox');
+  var valBox = document.getElementById('validationBox');
+  var preview = document.getElementById('preview');
+  errBox.classList.remove('active');
+  valBox.classList.remove('active', 'warn');
+  preview.classList.remove('active');
+
+  if (!input) {
+    errBox.textContent = '请先粘贴 JSON';
+    errBox.classList.add('active');
+    return;
+  }
+
+  var sc;
+  try {
+    sc = JSON.parse(input);
+  } catch(e) {
+    errBox.textContent = 'JSON 解析失败：' + e.message;
+    errBox.classList.add('active');
+    return;
+  }
+
+  var result = validateCard(sc);
+  if (!result.valid) {
+    valBox.innerHTML = '⚠️ 校验未通过：<br>· '+result.issues.join('<br>· ');
+    valBox.classList.add('active', 'warn');
+  } else {
+    valBox.textContent = '✅ 校验通过';
+    valBox.classList.add('active');
+  }
+
+  preview.innerHTML = renderCard(sc);
+  preview.classList.add('active');
+  showToast(result.valid ? '渲染完成' : '渲染完成（有校验警告）');
+});
+
+document.getElementById('btnValidate').addEventListener('click', function() {
+  var input = document.getElementById('jsonInput').value.trim();
+  var errBox = document.getElementById('errorBox');
+  var valBox = document.getElementById('validationBox');
+  errBox.classList.remove('active');
+  valBox.classList.remove('active', 'warn');
+
+  if (!input) {
+    errBox.textContent = '请先粘贴 JSON';
+    errBox.classList.add('active');
+    return;
+  }
+
+  var sc;
+  try {
+    sc = JSON.parse(input);
+  } catch(e) {
+    errBox.textContent = 'JSON 解析失败：' + e.message;
+    errBox.classList.add('active');
+    return;
+  }
+
+  var result = validateCard(sc);
+  if (result.valid) {
+    valBox.textContent = '✅ 校验通过——场景卡结构完整，可以验收';
+    valBox.classList.add('active');
+  } else {
+    valBox.innerHTML = '⚠️ 校验未通过：<br>· '+result.issues.join('<br>· ');
+    valBox.classList.add('active', 'warn');
+  }
+});
+
+document.getElementById('btnSample').addEventListener('click', function() {
+  // Load a minimal TG-001-like sample
+  var sample = {
+    "meta": {
+      "scenario_id": "TG-001", "title": "首开倒计时——空降者的20天", "version": "1.0.0",
+      "difficulty": "medium", "estimated_duration_min": 15, "task_domain": "团队激励",
+      "d_vector": {
+        "D1_morale_root": "过劳衰竭", "D2_pressure_mode": "短期冲刺",
+        "D3_experience_mix": "混合两极", "D4_incentive_resource": "有限",
+        "D5_trust_base": "需要建立", "D5_crack_type": null
+      },
+      "p_sequence": "P₂→P₅(减法)→P₅(打样)+P₂",
+      "progression_chain": "信任建立→方向减法→信心打样。DP1是入场券，DP2是方向，DP3是证据。"
+    },
+    "context": {
+      "learner_role": { "identity": "被紧急派往新项目支援的销售管理者", "relationship_to_team": "空降支援者，非直属上级。原直属上级仍在位但已默许你主导。", "tenure_in_role": "第1天" },
+      "situation": { "project_status": "项目示范区已开放一周，来访量高但认筹转化远未达预期", "deadline": "首开倒计时20天", "metrics": { "key_problem": "127套房源涉及6种户型，多户型面积相近总价重合，客户对比周期长" }, "what_happened_before": "团队已连续高强度作战一个多月。上一任策略是全面推售，没有聚焦户型。" },
+      "team_state": { "size": 8, "energy_level": "低", "observable_signals": ["早会上没人说话","眼神无光","你进办公室时有人迅速关掉招聘网站"], "unspoken_sentiment": "又来一个。反正干完这个月就走了。", "crack_type": null, "crack_history": null,
+        "key_individuals": [{"name":"NPC-周","role":"最资深的销售","tenure":5,"attitude":"观望——在看你是真有本事还是只会画饼","influence":"高——其他销售看他的态度"}]
+      },
+      "constraints": { "time_pressure": "20天倒计时，每过一天压力递增", "resource_limits": "激励预算已用完，不能靠加钱解决", "political_sensitivity": "项目原负责人仍在场，你只是支援者" },
+      "opening_scene": { "time": "到岗第一天晚上8点", "location": "临时工位，桌上堆着过去一个月的来访登记表和成交数据", "trigger": "你翻完最后一页数据，抬头看窗外——售楼处已经关了灯。明天早上9点是第一次早会。", "opening_question": "你明天准备做什么？" }
+    },
+    "decision_points": [
+      {
+        "dp_id": "TG001-DP1", "sequence": 1, "p_step": "P₂_建立信任",
+        "d_tags": ["D₅=需要建立","D₃=混合两极"],
+        "capability_tag": "P₂-建立信任-空降者版",
+        "capability_definition": "在没有正式职权的情况下，通过行动而非语言，让团队在72小时内从'观望'转为'愿意给你一个机会'",
+        "observable_indicator": "学员是否选择'先自己了解业务'而非'先发号施令'或'先拉关系'",
+        "trigger": { "context_cue": "叙事推进到'第一天晚上，你翻完数据，决定了明天的行动'", "trigger_type": "narrative", "npc_state_before": "团队对你零认知——在等你出第一张牌", "pause_text": "明天早上9点是第一次早会。现在是晚上8点。你翻完了过去一个月的来访数据，对项目有了初步判断。" },
+        "options": [
+          { "id":"A","text":"明天召开全员动员会，分析市场形势给大家打气，宣布新的推售策略","is_best_path":false,"trap_type":"T01-先发制人","trap_mechanism":"空降者没有信任资本时，动员会被解读为画饼","consequence":{"immediate":"几个销售象征性地鼓了掌。散会后茶水间有人嘀咕：又来一个画饼的。","short_term":"接下来一周，你的策略没有人反对——但也没有人真的执行。","npc_state_after":"从零认知转为轻度抵触——你被归类为'上一任那种人'"},"why_wrong":"跳过P₁和P₂。空降者没有信任资本，直接发令=信用透支。","causal_chain":"无信任基础→动员会被解读为画饼→表面服从+私下抵制→策略无法落地" },
+          { "id":"B","text":"用2-3天自己消化项目说辞、竞品数据，实地爬楼看各户型景观和采光，从数据中筛选高意向客户名单","is_best_path":true,"trap_type":"无","why_correct":"P₂的正确策略：用行动而非语言建立第一笔信任。空降者的第一件武器不是口才，是业务能力。","consequence":{"immediate":"你用了三天爬完整栋楼。第四天早会上你没有讲策略，只是说：B户型和D户型在12楼以上的景观性价比最好。你们觉得呢？","short_term":"几个老销售抬头看了你一眼——眼神跟第一天不一样了。一个销售会后主动过来：领导，我手上有个客户一直在对比，你帮我看看？","npc_state_after":"从零认知转为'这个人至少懂业务'。信任余额从0到+1。"},"causal_chain":"先做事再说话→用业务能力证明自己→团队从'观望'转为'试试看'→信任基础建立" },
+          { "id":"C","text":"立即约谈每个销售员，逐一了解他们的困难和想法，建立信任","is_best_path":false,"trap_type":"T06-信任前置谬误","trap_mechanism":"一个刚来的空降者，一上来就问'你有什么困难'——销售会想：我说了你能解决吗？你连户型都不熟悉。","consequence":{"immediate":"大部分人客气地回答：都挺好的，就是客户观望。真正的困难没说出来。","short_term":"你收集了一堆标准答案，对真实情况的了解没有增加。","npc_state_after":"客气但疏远——你被归类为'流程型管理者'"},"why_wrong":"深度沟通需要信任基础。信任没建立之前，P₁应该先用自己的眼睛看。","causal_chain":"无信任基础→约谈得到标准答案→管理者误以为了解了情况→基于虚假信息做决策" }
+        ],
+        "dp_meta": { "zone":1, "is_critical":true, "progression_from_previous":"本场景第一个决策点——建立后续所有DP的基础。只有信任建立了，DP2的减法才能被接受，DP3的打样才能被相信。" }
+      }
+    ],
+    "feedback_criteria": {
+      "golden_path": ["TG001-DP1-B"],
+      "golden_path_narrative": "先用行动建立信任——这是空降者场景的第一原则。信任没建立之前，任何策略都是废纸。",
+      "scoring_dimensions": [
+        { "dimension_id":"P₂","name":"建立信任","weight":1.0,"scoring_rules":{"DP1_B":{"score":100,"comment":"用行动建立信任"},"DP1_C":{"score":50,"comment":"方向对但时机错"},"DP1_A":{"score":20,"comment":"完全跳过信任建立"}}
+      ],
+      "crack_type_awareness": { "applicable":false, "crack_type":null }
+    }
+  };
+  document.getElementById('jsonInput').value = JSON.stringify(sample, null, 2);
+  showToast('已加载示例（TG-001简化版）');
+});
+
+document.getElementById('btnClear').addEventListener('click', function() {
+  document.getElementById('jsonInput').value = '';
+  document.getElementById('preview').classList.remove('active');
+  document.getElementById('errorBox').classList.remove('active');
+  document.getElementById('validationBox').classList.remove('active', 'warn');
+});
+</script>
+
+</body>
+</html>

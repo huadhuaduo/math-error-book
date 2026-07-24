@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>骨干员工状态下滑的反馈 - 准备页</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          fg: '#1E1E1E',
+          mu: '#6B7280',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: linear-gradient(165deg, #FAF9F6 0%, #F4F1EC 30%, #F9F7F4 60%, #F1EEE9 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .amb {
+    position: fixed; border-radius: 50%; filter: blur(100px);
+    pointer-events: none; z-index: 0; opacity: 0.3;
+  }
+  .amb-1 { width: 400px; height: 400px; background: #DBEAFE; top: -120px; right: -80px; }
+  .amb-2 { width: 300px; height: 300px; background: #FEF3C7; bottom: -60px; left: -40px; }
+
+  .glass {
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  }
+
+  .ring-on { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #60a5fa; }
+
+  .hr {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #E5E0D8 20%, #E5E0D8 80%, transparent);
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 100;
+    background: rgba(30,30,30,0.9); backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #fff; padding: 12px 18px; border-radius: 12px;
+    font-size: 13px; font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  }
+  .toast.hidden { opacity: 0; transform: translateY(10px); pointer-events: none; }
+
+  /* ── Failure pattern card ── */
+  .fail-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    background: rgba(254,242,242,0.5);
+    border: 1px solid rgba(254,202,202,0.4);
+    font-size: 13px; line-height: 1.6;
+  }
+
+  /* ── Anchor card ── */
+  .anchor-card {
+    background: rgba(255,255,255,0.65);
+    border: 1.5px solid rgba(16,185,129,0.3);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  /* ── Trap tag ── */
+  .trap {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+    background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA;
+  }
+
+  /* ── Perspective toggle ── */
+  .perspective-btn {
+    padding: 8px 16px; border-radius: 100px; border: 1px solid #E5E0D8;
+    background: transparent; cursor: pointer; font-size: 13px; font-weight: 500;
+    font-family: inherit; transition: all 0.2s;
+    color: #6B7280;
+  }
+  .perspective-btn.active {
+    background: #1E1E1E; color: #fff; border-color: #1E1E1E;
+  }
+
+  /* ── Role avatar (original style) ── */
+  .role-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 6px 10px; border-radius: 14px; border: none;
+    background: transparent; cursor: pointer; transition: all 0.25s;
+    font-family: inherit;
+  }
+  .role-btn:hover { background: rgba(0,0,0,0.03); }
+
+  .level-option {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 12px 14px; border-radius: 12px;
+    border: 1.5px solid rgba(229,231,235,0.7);
+    background: transparent; cursor: pointer;
+    transition: all 0.25s; font-family: inherit; text-align: left;
+  }
+  .level-option:hover { background: rgba(0,0,0,0.02); }
+  .level-option.active { background: rgba(59,130,246,0.06); border-color: #93C5FD; }
+  .level-option.active .lv-dot { background: #3B82F6; color: #fff; }
+  .lv-dot {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .btn-go {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px; border: none; border-radius: 16px;
+    background: #1E1E1E; color: #fff; font-size: 16px; font-weight: 600;
+    font-family: inherit; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    transition: all 0.3s;
+  }
+  .btn-go:hover { background: #111; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(0,0,0,0.18); }
+  .btn-go:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+
+<div class="amb amb-1"></div>
+<div class="amb amb-2"></div>
+
+<div class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+    <!-- ==================== LEFT ==================== -->
+    <div class="lg:col-span-8 space-y-4">
+
+      <!-- Compact header -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <h1 class="text-xl sm:text-2xl font-bold text-fg tracking-tight">
+          骨干员工状态下滑的反馈
+        </h1>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white" style="background:#3B82F6;">带团队</span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">挑战级</span>
+      </div>
+
+      <!-- ====== CARD 1: THE FAILURE PATTERN (error-first) ====== -->
+      <div class="glass p-5 sm:p-6 space-y-4" style="border-left: 3px solid #EF4444;">
+
+        <div class="flex items-center gap-2">
+          <span class="trap">⚠️ 真实试跑数据</span>
+          <span class="text-xs text-mu">大多数管理者在这个场景中失败的同一个原因</span>
+        </div>
+
+        <p class="text-sm text-fg leading-relaxed">
+          他们用了所有<strong>正确的教练技术</strong>——开放式提问、积极倾听、共创方案。<br>
+          但NPC-张要的不是技术。<strong>他要的是证据。</strong>
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div class="fail-item">
+            <span class="text-red-400 font-bold shrink-0">①</span>
+            <span>说"上次我没做好"，但不做任何<strong>具体动作</strong>——NPC-张觉得你在背台词</span>
+          </div>
+          <div class="fail-item">
+            <span class="text-red-400 font-bold shrink-0">②</span>
+            <span>问"你需要什么支持"，但<strong>不做具体承诺</strong>——比不问更伤信任</span>
+          </div>
+          <div class="fail-item">
+            <span class="text-red-400 font-bold shrink-0">③</span>
+            <span>在 4-5 个教练话术之间<strong>循环</strong>——NPC-张第 3 轮就会识破</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== CARD 2: THE ONE THING ====== -->
+      <div class="glass p-5 sm:p-6 space-y-4">
+
+        <div class="flex items-center gap-2">
+          <i data-lucide="crosshair" class="w-4 h-4 text-emerald-600"></i>
+          <span class="text-sm font-bold text-fg">你唯一要做的一件事</span>
+        </div>
+
+        <div class="anchor-card space-y-3">
+          <p class="text-base text-fg leading-relaxed font-medium">
+            在对话的前 30 秒，做一件<strong style="color:#059669;">NPC-张看得见的具体动作</strong>。
+          </p>
+
+          <div class="space-y-2 text-sm text-fg leading-relaxed">
+            <div class="flex items-start gap-2">
+              <span class="text-red-400 font-bold shrink-0">✗</span>
+              <span class="text-mu">"我理解你的感受。"</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-red-400 font-bold shrink-0">✗</span>
+              <span class="text-mu">"我们需要一起努力。"</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-red-400 font-bold shrink-0">✗</span>
+              <span class="text-mu">"你放心，这次我会跟进的。"</span>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="space-y-2">
+            <div class="flex items-start gap-2">
+              <span class="text-emerald-500 font-bold shrink-0">✓</span>
+              <span class="text-sm text-fg"><strong>拿出手机，当着他的面设好下周三下午 3 点的日历提醒。</strong>主题就写"NPC-张进度会"。</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-emerald-500 font-bold shrink-0">✓</span>
+              <span class="text-sm text-fg"><strong>"上周四你发的方案修改建议，我现在就给你反馈。"</strong>——然后真的给。</span>
+            </div>
+          </div>
+
+          <p class="text-xs text-mu mt-1">
+            NPC-张不需要你的理解。他需要<strong>证据</strong>——证明这次和上次不一样。
+          </p>
+        </div>
+      </div>
+
+      <!-- ====== CARD 3: THE MOMENT OF TRUTH ====== -->
+      <div class="glass p-5 sm:p-6 space-y-3">
+
+        <div class="flex items-center gap-2">
+          <i data-lucide="door-open" class="w-4 h-4 text-amber-500"></i>
+          <span class="text-sm font-bold text-fg">推门进来的那一刻</span>
+        </div>
+
+        <!-- NPC-张视角 -->
+        <div class="bg-amber-50/40 rounded-xl px-5 py-4 border border-amber-100/60">
+          <p class="text-sm sm:text-base text-fg leading-relaxed font-medium">
+            "经理，这次又谈什么？你让我改，我也试了——前两周的数据你看到了吧？第三周掉回去，不是我不努力，是实在不知道方向对不对。你说「好，那就这样」，然后<strong style="color:#B45309;">3 周没找过我。我以为你已经放弃我了。</strong>"
+          </p>
+        </div>
+
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50/70">
+          <i data-lucide="lightbulb" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5"></i>
+          <div class="text-xs text-fg leading-relaxed">
+            <p><strong>这句话不是攻击你。这句话是信任的最后一根稻草。</strong></p>
+            <p class="text-mu mt-1">他在说：<em>"我还愿意跟你说这些——说明我还没放弃。但你如果这次还是老样子，我就真的放弃了。"</em></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== CARD 4: TRAPS + GOALS (compact) ====== -->
+      <div class="glass p-5 sm:p-6 space-y-4">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Traps -->
+          <div class="space-y-2.5">
+            <div class="flex items-center gap-2">
+              <span class="trap" style="font-size:11px;">🚫 别踩</span>
+            </div>
+            <div class="space-y-1.5 text-xs text-fg leading-relaxed">
+              <div class="flex items-start gap-1.5">
+                <span class="text-red-400 shrink-0">•</span>
+                <span>别用"你觉得第一步可以是什么"——上次用过了，这次是嘲讽</span>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="text-red-400 shrink-0">•</span>
+                <span>别说"有问题随时找我"——上次说完 3 周没回邮件</span>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="text-red-400 shrink-0">•</span>
+                <span>别绕回标准流程——如果NPC-张说"你又问这个"，说明你已经在循环了</span>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="text-red-400 shrink-0">•</span>
+                <span>绝不暗示辞退或威胁</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Goals -->
+          <div class="space-y-2.5">
+            <div class="flex items-center gap-2">
+              <i data-lucide="target" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span class="text-xs font-bold text-fg">20 分钟内做到</span>
+            </div>
+            <div class="space-y-1.5 text-xs text-fg leading-relaxed">
+              <div class="flex items-start gap-1.5">
+                <span class="text-emerald-500 font-bold shrink-0">1</span>
+                <span><strong>承认缺失</strong>：不背台词，做一个具体动作</span>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="text-emerald-500 font-bold shrink-0">2</span>
+                <span><strong>定位根因</strong>：问"前两周做对了什么，第三周卡在哪里"</span>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="text-emerald-500 font-bold shrink-0">3</span>
+                <span><strong>双向承诺</strong>：你承诺的跟进方式，当场让NPC-张看到</span>
+              </div>
+            </div>
+            <div class="text-[11px] text-mu mt-1">
+              明天向老板汇报，这次必须有可追踪的结果。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== RIGHT ==================== -->
+    <div class="lg:col-span-4">
+      <div class="sticky top-6 space-y-3">
+
+        <!-- Role (original avatars) -->
+        <div class="glass p-4 space-y-3">
+          <p class="text-xs font-semibold text-mu">选择角色</p>
+          <div class="flex items-center justify-center gap-2" id="roleGroup">
+            <button id="npc-A" onclick="selNpc('A')" class="flex flex-col items-center gap-1.5 transition-all scale-105">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center ring-on">
+                <span class="text-sm font-bold text-white">A</span>
+              </div>
+              <span class="text-[10px] font-medium text-fg">NPC-张</span>
+            </button>
+            <button id="npc-B" onclick="selNpc('B')" class="flex flex-col items-center gap-1.5 transition-all opacity-60 hover:opacity-80">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                <span class="text-sm font-bold text-white">B</span>
+              </div>
+              <span class="text-[10px] font-medium text-mu">小李</span>
+            </button>
+            <button id="npc-C" onclick="selNpc('C')" class="flex flex-col items-center gap-1.5 transition-all opacity-60 hover:opacity-80">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+                <span class="text-sm font-bold text-white">C</span>
+              </div>
+              <span class="text-[10px] font-medium text-mu">阿杰</span>
+            </button>
+            <button id="npc-D" onclick="selNpc('D')" class="flex flex-col items-center gap-1.5 transition-all opacity-60 hover:opacity-80">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center">
+                <span class="text-sm font-bold text-white">D</span>
+              </div>
+              <span class="text-[10px] font-medium text-mu">小陈</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Level -->
+        <div class="glass p-4 space-y-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="book-open" class="w-3.5 h-3.5 text-blue-600"></i>
+            <p class="text-xs font-semibold text-fg">选择经验水平</p>
+          </div>
+          <p class="text-[11px] text-mu -mt-1">AI 根据你的水平调整反馈方式</p>
+          <div class="space-y-2" id="levelGroup">
+            <button id="lev-A" onclick="selLev('A')" class="level-option">
+              <div class="lv-dot bg-gray-200 text-mu">A</div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-fg">新手</p>
+                <p class="text-xs text-mu mt-0.5">没处理过下属状态下滑</p>
+              </div>
+              <span class="text-[10px] text-mu">40%觉察<br>60%复盘</span>
+            </button>
+            <button id="lev-B" onclick="selLev('B')" class="level-option active">
+              <div class="lv-dot">B</div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-fg">中等</p>
+                <p class="text-xs text-mu mt-0.5">做过1-3次，不太有信心</p>
+              </div>
+              <span class="text-[10px] text-mu">50%觉察<br>50%复盘</span>
+            </button>
+            <button id="lev-C" onclick="selLev('C')" class="level-option">
+              <div class="lv-dot bg-gray-200 text-mu">C</div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-fg">高手</p>
+                <p class="text-xs text-mu mt-0.5">做过4次以上，想提升深度</p>
+              </div>
+              <span class="text-[10px] text-mu">70%觉察<br>30%复盘</span>
+            </button>
+          </div>
+        </div>
+
+        <button onclick="start()" class="btn-go">
+          <i data-lucide="play" class="w-5 h-5"></i>
+          开始陪练
+        </button>
+        <p class="text-center text-[11px] text-mu/60">
+          按 <kbd class="px-1.5 py-0.5 rounded text-[10px] bg-gray-100 border border-gray-200 font-mono">Space</kbd> 快速开始
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden">
+  <div class="flex items-center gap-2">
+    <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+    <span id="tmsg"></span>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  let cn='A',cl='B';
+
+  function selNpc(n){
+    cn=n;
+    const ns={A:'NPC-张',B:'小李',C:'阿杰',D:'小陈'};
+    const cs={A:'blue',B:'emerald',C:'amber',D:'rose'};
+    ['A','B','C','D'].forEach(x=>{
+      const b=document.getElementById(`npc-${x}`);
+      const c=b.querySelector('div');
+      const l=b.querySelector('span');
+      if(x===n){
+        b.className='flex flex-col items-center gap-1.5 transition-all scale-105';
+        c.className=`w-11 h-11 rounded-full bg-gradient-to-br from-${cs[x]}-400 to-${cs[x]}-600 flex items-center justify-center ring-on`;
+        l.className='text-[10px] font-medium text-fg';
+      }else{
+        b.className='flex flex-col items-center gap-1.5 transition-all opacity-60 hover:opacity-80';
+        c.className=`w-11 h-11 rounded-full bg-gradient-to-br from-${cs[x]}-400 to-${cs[x]}-600 flex items-center justify-center`;
+        l.className='text-[10px] font-medium text-mu';
+      }
+    });
+    toast(`已选角色：${ns[n]}`);
+  }
+
+  function selLev(l){
+    cl=l;
+    const ns={A:'新手',B:'中等',C:'高手'};
+    ['A','B','C'].forEach(x=>{
+      const b=document.getElementById(`lev-${x}`);
+      if(x===l){
+        b.className='level-option active';
+        b.querySelector('.lv-dot').className='lv-dot';
+        b.querySelectorAll('span')[1].className='text-sm font-medium text-fg';
+        b.querySelectorAll('span')[2].className='text-[10px] ml-auto text-mu';
+        b.querySelector('p').className='text-xs mt-0.5 ml-7 text-mu';
+      }else{
+        b.className='level-option';
+        b.querySelector('.lv-dot').className='lv-dot bg-gray-200 text-mu';
+        b.querySelectorAll('span')[1].className='text-sm font-medium text-fg';
+        b.querySelectorAll('span')[2].className='text-[10px] ml-auto text-mu';
+        b.querySelector('p').className='text-xs mt-0.5 ml-7 text-mu';
+      }
+    });
+    toast(`经验水平：${ns[l]}`);
+  }
+
+  function start(){
+    const ns={A:'NPC-张',B:'小李',C:'阿杰',D:'小陈'};
+    const ls={A:'新手',B:'中等',C:'高手'};
+    toast(`进入陪练：${ns[cn]} · ${ls[cl]}`);
+  }
+
+  function toast(m){
+    const e=document.getElementById('toast');
+    document.getElementById('tmsg').textContent=m;
+    e.classList.remove('hidden');
+    clearTimeout(e._t);
+    e._t=setTimeout(()=>e.classList.add('hidden'),2000);
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(e.code==='Space'&&e.target===document.body){e.preventDefault();start();}
+  });
+</script>
+</body>
+</html>

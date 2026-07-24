@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专注番茄钟 🍅</title>
+<style>
+  :root {
+    --focus: #FF6B6B;
+    --focus-end: #FF8E53;
+    --break-short: #34C759;
+    --break-short-end: #30D158;
+    --break-long: #5AC8FA;
+    --break-long-end: #007AFF;
+    --text-primary: #1C1C1E;
+    --text-secondary: #636366;
+    --text-tertiary: #AEAEB2;
+    --card-bg: rgba(255, 255, 255, 0.45);
+    --card-border: rgba(255, 255, 255, 0.5);
+    --card-shadow: 0 8px 40px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+    --btn-bg: rgba(255, 255, 255, 0.6);
+    --btn-hover: rgba(255, 255, 255, 0.85);
+    --pill-bg: rgba(0, 0, 0, 0.04);
+    --pill-active: rgba(255, 255, 255, 0.9);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5e6ff 0%, #e8f0ff 25%, #fff0e8 50%, #e8fff0 75%, #f5e6ff 100%);
+    background-size: 400% 400%;
+    animation: bgShift 25s ease-in-out infinite;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @keyframes bgShift {
+    0%, 100% { background-position: 0% 50%; }
+    25% { background-position: 100% 0%; }
+    50% { background-position: 100% 100%; }
+    75% { background-position: 0% 100%; }
+  }
+
+  /* Decorative orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+    animation: orbFloat 18s ease-in-out infinite;
+  }
+  .orb--1 {
+    width: 320px; height: 320px;
+    background: #FFB3C1;
+    top: -80px; left: -60px;
+    animation-delay: 0s;
+  }
+  .orb--2 {
+    width: 280px; height: 280px;
+    background: #B3D4FF;
+    bottom: -60px; right: -80px;
+    animation-delay: -6s;
+  }
+  .orb--3 {
+    width: 240px; height: 240px;
+    background: #FFE0B3;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -12s;
+  }
+  .orb--4 {
+    width: 200px; height: 200px;
+    background: #B3F0D4;
+    top: -40px; right: 20%;
+    animation-delay: -3s;
+  }
+  .orb--5 {
+    width: 180px; height: 180px;
+    background: #E0C3FF;
+    bottom: -30px; left: 20%;
+    animation-delay: -9s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(var(--tx, 0), var(--ty, 0)) scale(1); }
+    25% { transform: translate(calc(var(--tx, 0px) + 30px), calc(var(--ty, 0px) - 20px)) scale(1.08); }
+    50% { transform: translate(calc(var(--tx, 0px) - 15px), calc(var(--ty, 0px) + 25px)) scale(0.95); }
+    75% { transform: translate(calc(var(--tx, 0px) - 25px), calc(var(--ty, 0px) - 15px)) scale(1.05); }
+  }
+  .orb--1 { --tx: 0px; --ty: 0px; }
+  .orb--2 { --tx: 0px; --ty: 0px; }
+  .orb--4 { --tx: 0px; --ty: 0px; }
+  .orb--5 { --tx: 0px; --ty: 0px; }
+
+  /* Main card */
+  .card {
+    position: relative;
+    z-index: 1;
+    background: var(--card-bg);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--card-border);
+    border-radius: 32px;
+    box-shadow: var(--card-shadow);
+    padding: 48px 44px 40px;
+    max-width: 420px;
+    width: 90vw;
+    text-align: center;
+    transition: border-color 0.5s ease;
+  }
+
+  /* Mode tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--pill-bg);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 36px;
+  }
+  .tab {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 8px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    font-family: inherit;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+  .tab.active {
+    background: var(--pill-active);
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.02);
+    font-weight: 600;
+  }
+  .tab:hover:not(.active) {
+    color: var(--text-primary);
+  }
+
+  /* Timer ring area */
+  .ring-container {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 0 auto 32px;
+  }
+  .ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .ring-bg {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.06);
+    stroke-width: 10;
+  }
+  .ring-progress {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.15s linear, stroke 0.5s ease;
+  }
+  .ring-glow {
+    fill: none;
+    stroke-width: 18;
+    stroke-linecap: round;
+    opacity: 0.15;
+    transition: stroke-dashoffset 0.15s linear, stroke 0.5s ease;
+    filter: blur(6px);
+  }
+
+  /* Time display */
+  .time-display {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .time-digits {
+    font-size: 64px;
+    font-weight: 200;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition: color 0.5s ease;
+  }
+  .time-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.5s ease;
+  }
+
+  /* Duration presets */
+  .presets {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .preset {
+    border: none;
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: inherit;
+  }
+  .preset:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text-primary);
+  }
+  .preset.active {
+    background: var(--text-primary);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* Buttons */
+  .controls {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn:active {
+    transform: scale(0.95);
+  }
+
+  .btn--start {
+    background: var(--text-primary);
+    color: #fff;
+    padding: 15px 48px;
+    font-size: 17px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  .btn--start:hover {
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    transform: translateY(-1px);
+  }
+  .btn--start:active {
+    transform: scale(0.96) translateY(0);
+  }
+  .btn--start.running {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+    box-shadow: none;
+  }
+  .btn--start.running:hover {
+    background: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .btn--reset {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text-secondary);
+    padding: 15px 22px;
+    font-size: 18px;
+    aspect-ratio: 1;
+  }
+  .btn--reset:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text-primary);
+  }
+
+  /* Session info */
+  .session-info {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+  }
+  .session-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    transition: background 0.5s ease;
+  }
+  .session-dot.done {
+    background: var(--break-short);
+  }
+
+  /* Message */
+  .message {
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    min-height: 22px;
+    transition: all 0.4s ease;
+  }
+
+  /* Celebration overlay */
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .confetti-container.active {
+    opacity: 1;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    animation: confettiFall 2s ease-out forwards;
+  }
+
+  @keyframes confettiFall {
+    0% {
+      transform: translateY(-120px) rotate(0deg) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(105vh) rotate(720deg) scale(0.2);
+      opacity: 0;
+    }
+  }
+
+  /* Completion pulse */
+  .card.completed {
+    animation: completePulse 0.8s ease-out;
+  }
+  @keyframes completePulse {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+
+  /* Responsive */
+  @media (max-width: 440px) {
+    .card {
+      padding: 36px 24px 32px;
+      border-radius: 28px;
+    }
+    .ring-container {
+      width: 220px;
+      height: 220px;
+    }
+    .time-digits {
+      font-size: 54px;
+    }
+    .tabs {
+      margin-bottom: 28px;
+    }
+    .tab {
+      font-size: 13px;
+      padding: 8px 6px;
+    }
+    .btn--start {
+      padding: 14px 36px;
+      font-size: 16px;
+    }
+    .presets {
+      gap: 6px;
+    }
+    .preset {
+      font-size: 12px;
+      padding: 6px 13px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Decorative background orbs -->
+<div class="orb orb--1"></div>
+<div class="orb orb--2"></div>
+<div class="orb orb--3"></div>
+<div class="orb orb--4"></div>
+<div class="orb orb--5"></div>
+
+<!-- Confetti -->
+<div class="confetti-container" id="confetti"></div>
+
+<!-- Main card -->
+<div class="card" id="card">
+  <!-- Mode tabs -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-mode="focus">🎯 专注</button>
+    <button class="tab" data-mode="shortBreak">☕ 小休息</button>
+    <button class="tab" data-mode="longBreak">🌿 大休息</button>
+  </div>
+
+  <!-- Timer ring -->
+  <div class="ring-container">
+    <svg class="ring-svg" viewBox="0 0 260 260">
+      <defs>
+        <linearGradient id="gradFocus" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FF6B6B" />
+          <stop offset="100%" stop-color="#FF8E53" />
+        </linearGradient>
+        <linearGradient id="gradShort" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#34C759" />
+          <stop offset="100%" stop-color="#30D158" />
+        </linearGradient>
+        <linearGradient id="gradLong" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#5AC8FA" />
+          <stop offset="100%" stop-color="#007AFF" />
+        </linearGradient>
+      </defs>
+      <circle class="ring-bg" cx="130" cy="130" r="118" />
+      <circle class="ring-glow" id="ringGlow" cx="130" cy="130" r="118" />
+      <circle class="ring-progress" id="ringProgress" cx="130" cy="130" r="118" />
+    </svg>
+    <div class="time-display">
+      <div class="time-digits" id="timeDigits">15:00</div>
+      <div class="time-label" id="timeLabel">准备开始</div>
+    </div>
+  </div>
+
+  <!-- Duration presets -->
+  <div class="presets" id="presets"></div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn btn--start" id="btnStart" aria-label="开始">
+      <span id="btnIcon">▶</span>
+      <span id="btnText">开始专注</span>
+    </button>
+    <button class="btn btn--reset" id="btnReset" aria-label="重置" title="重置">
+      ↺
+    </button>
+  </div>
+
+  <!-- Session counter -->
+  <div class="session-info" id="sessionInfo">
+    <span>今日已完成</span>
+    <span id="sessionDots"></span>
+    <span id="sessionCount">0</span>
+    <span>个番茄</span>
+  </div>
+
+  <!-- Encouraging message -->
+  <div class="message" id="message">选择时间，开始你的专注之旅 ✨</div>
+</div>
+
+<script>
+class PomodoroTimer {
+  constructor() {
+    this.mode = 'focus';
+    this.durations = {
+      focus: 15 * 60,
+      shortBreak: 5 * 60,
+      longBreak: 15 * 60,
+    };
+    this.presets = {
+      focus: [10, 15, 20, 25],
+      shortBreak: [3, 5],
+      longBreak: [10, 15],
+    };
+    this.timeRemaining = this.durations.focus;
+    this.totalTime = this.durations.focus;
+    this.isRunning = false;
+    this.endTime = null;
+    this.tickInterval = null;
+    this.sessionsCompleted = 0;
+    this.audioCtx = null;
+
+    this.circumference = 2 * Math.PI * 118; // r=118
+
+    this.initDOM();
+    this.bindEvents();
+    this.render();
+  }
+
+  initDOM() {
+    this.els = {
+      card: document.getElementById('card'),
+      tabs: document.getElementById('tabs'),
+      presets: document.getElementById('presets'),
+      timeDigits: document.getElementById('timeDigits'),
+      timeLabel: document.getElementById('timeLabel'),
+      btnStart: document.getElementById('btnStart'),
+      btnIcon: document.getElementById('btnIcon'),
+      btnText: document.getElementById('btnText'),
+      btnReset: document.getElementById('btnReset'),
+      ringProgress: document.getElementById('ringProgress'),
+      ringGlow: document.getElementById('ringGlow'),
+      sessionDots: document.getElementById('sessionDots'),
+      sessionCount: document.getElementById('sessionCount'),
+      message: document.getElementById('message'),
+      confetti: document.getElementById('confetti'),
+    };
+  }
+
+  bindEvents() {
+    // Mode tabs
+    this.els.tabs.addEventListener('click', (e) => {
+      const tab = e.target.closest('.tab');
+      if (!tab) return;
+      const mode = tab.dataset.mode;
+      if (mode === this.mode) return;
+      this.switchMode(mode);
+    });
+
+    // Duration presets
+    this.els.presets.addEventListener('click', (e) => {
+      const btn = e.target.closest('.preset');
+      if (!btn) return;
+      const mins = parseInt(btn.dataset.mins, 10);
+      this.setDuration(mins * 60);
+    });
+
+    // Start/Pause
+    this.els.btnStart.addEventListener('click', () => {
+      if (this.isRunning) {
+        this.pause();
+      } else {
+        this.start();
+      }
+    });
+
+    // Reset
+    this.els.btnReset.addEventListener('click', () => {
+      this.reset();
+    });
+
+    // Space key
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && e.target === document.body) {
+        e.preventDefault();
+        if (this.isRunning) {
+          this.pause();
+        } else {
+          this.start();
+        }
+      }
+      if (e.code === 'KeyR' && e.target === document.body) {
+        this.reset();
+      }
+    });
+  }
+
+  switchMode(mode) {
+    if (this.isRunning) {
+      this.pause();
+    }
+    this.mode = mode;
+    this.durations[mode] = this.presets[mode][Math.floor(this.presets[mode].length / 2)] * 60;
+    this.timeRemaining = this.durations[mode];
+    this.totalTime = this.durations[mode];
+    this.render();
+  }
+
+  setDuration(seconds) {
+    if (this.isRunning) {
+      this.pause();
+    }
+    this.durations[this.mode] = seconds;
+    this.timeRemaining = seconds;
+    this.totalTime = seconds;
+    this.render();
+  }
+
+  start() {
+    if (this.timeRemaining <= 0) {
+      this.timeRemaining = this.totalTime;
+    }
+    this.isRunning = true;
+    this.endTime = Date.now() + this.timeRemaining * 1000;
+    this.tickInterval = setInterval(() => this.tick(), 100);
+    this.updateUI();
+    this.tick();
+  }
+
+  pause() {
+    this.isRunning = false;
+    this.endTime = null;
+    clearInterval(this.tickInterval);
+    this.tickInterval = null;
+    this.updateUI();
+  }
+
+  reset() {
+    if (this.isRunning) {
+      this.pause();
+    }
+    this.timeRemaining = this.durations[this.mode];
+    this.totalTime = this.durations[this.mode];
+    this.render();
+  }
+
+  tick() {
+    if (!this.isRunning) return;
+
+    const now = Date.now();
+    const remaining = Math.max(0, Math.round((this.endTime - now) / 1000));
+
+    this.timeRemaining = remaining;
+    this.updateRing();
+    this.updateTimeDisplay();
+
+    if (remaining <= 0) {
+      this.complete();
+    }
+  }
+
+  complete() {
+    this.pause();
+    this.timeRemaining = 0;
+    this.updateUI();
+
+    if (this.mode === 'focus') {
+      this.sessionsCompleted++;
+    }
+
+    // Celebration
+    this.els.card.classList.add('completed');
+    setTimeout(() => this.els.card.classList.remove('completed'), 800);
+
+    this.spawnConfetti();
+    this.playChime();
+
+    // Show encouraging message
+    if (this.mode === 'focus') {
+      this.els.message.textContent = this.randomMessage('focusComplete');
+    } else {
+      this.els.message.textContent = this.randomMessage('breakComplete');
+    }
+
+    this.render();
+  }
+
+  updateRing() {
+    const fraction = this.timeRemaining / this.totalTime;
+    const offset = this.circumference * (1 - fraction);
+    this.els.ringProgress.style.strokeDasharray = this.circumference;
+    this.els.ringProgress.style.strokeDashoffset = offset;
+    this.els.ringGlow.style.strokeDasharray = this.circumference;
+    this.els.ringGlow.style.strokeDashoffset = offset;
+  }
+
+  updateTimeDisplay() {
+    const mins = Math.floor(this.timeRemaining / 60);
+    const secs = this.timeRemaining % 60;
+    this.els.timeDigits.textContent =
+      String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+  }
+
+  updateUI() {
+    // Tabs
+    this.els.tabs.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.mode === this.mode);
+    });
+
+    // Ring color
+    const gradMap = {
+      focus: 'url(#gradFocus)',
+      shortBreak: 'url(#gradShort)',
+      longBreak: 'url(#gradLong)',
+    };
+    const colorMap = {
+      focus: '#FF6B6B',
+      shortBreak: '#34C759',
+      longBreak: '#5AC8FA',
+    };
+    this.els.ringProgress.style.stroke = gradMap[this.mode];
+    this.els.ringGlow.style.stroke = colorMap[this.mode];
+
+    // Button
+    if (this.isRunning) {
+      this.els.btnStart.classList.add('running');
+      this.els.btnIcon.textContent = '⏸';
+      this.els.btnText.textContent = '暂停';
+    } else {
+      this.els.btnStart.classList.remove('running');
+      this.els.btnIcon.textContent = '▶';
+      this.els.btnText.textContent = this.mode === 'focus' ? '开始专注' : '开始休息';
+    }
+
+    // Time label
+    if (this.timeRemaining <= 0 && !this.isRunning && this.sessionsCompleted > 0) {
+      this.els.timeLabel.textContent = '完成！';
+    } else if (this.isRunning) {
+      this.els.timeLabel.textContent =
+        this.mode === 'focus' ? '保持专注... 💪' : '放松一下 ☀️';
+    } else {
+      this.els.timeLabel.textContent = '准备开始';
+    }
+
+    // Presets
+    this.renderPresets();
+
+    // Ring
+    this.updateRing();
+    this.updateTimeDisplay();
+
+    // Session info
+    this.renderSessions();
+  }
+
+  render() {
+    this.updateUI();
+  }
+
+  renderPresets() {
+    const minsList = this.presets[this.mode];
+    const currentMins = Math.round(this.durations[this.mode] / 60);
+    this.els.presets.innerHTML = minsList
+      .map(
+        (m) =>
+          `<button class="preset${m === currentMins ? ' active' : ''}" data-mins="${m}">${m} 分钟</button>`
+      )
+      .join('');
+  }
+
+  renderSessions() {
+    const dots = [];
+    for (let i = 0; i < Math.min(this.sessionsCompleted, 8); i++) {
+      dots.push('<span class="session-dot done"></span>');
+    }
+    this.els.sessionDots.innerHTML = dots.join('');
+    this.els.sessionCount.textContent = this.sessionsCompleted;
+  }
+
+  spawnConfetti() {
+    const container = this.els.confetti;
+    const colors = ['#FF6B6B', '#FF8E53', '#34C759', '#5AC8FA', '#FFD93D', '#C084FC', '#FB923C', '#FFB3C1'];
+    const pieces = [];
+
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random() * 100 + '%';
+      el.style.top = -(Math.random() * 40 + 10) + 'px';
+      el.style.width = (Math.random() * 10 + 6) + 'px';
+      el.style.height = (Math.random() * 10 + 6) + 'px';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDelay = Math.random() * 0.5 + 's';
+      el.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+      container.appendChild(el);
+      pieces.push(el);
+    }
+
+    container.classList.add('active');
+
+    setTimeout(() => {
+      container.classList.remove('active');
+      pieces.forEach(el => el.remove());
+    }, 2500);
+  }
+
+  playChime() {
+    try {
+      if (!this.audioCtx) {
+        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      const ctx = this.audioCtx;
+
+      // Resume if suspended (autoplay policy)
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const notes = [
+        { freq: 523, delay: 0 },      // C5
+        { freq: 659, delay: 0.12 },    // E5
+        { freq: 784, delay: 0.24 },    // G5
+        { freq: 1047, delay: 0.40 },   // C6
+      ];
+
+      notes.forEach(({ freq, delay }) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+
+        const startTime = ctx.currentTime + delay;
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.25, startTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
+
+        osc.start(startTime);
+        osc.stop(startTime + 0.5);
+      });
+    } catch (e) {
+      // Audio not available — that's ok
+    }
+  }
+
+  randomMessage(type) {
+    const messages = {
+      focusComplete: [
+        '太棒了！你完成了专注时间！🎉',
+        '真厉害！又一个番茄完成了！⭐',
+        '做得好！专注力越来越强了！💪',
+        '恭喜完成！给自己鼓个掌吧！👏',
+        '太出色了！休息一下吧！🌟',
+      ],
+      breakComplete: [
+        '休息好了吗？准备好再次出发！🚀',
+        '精力恢复了吧？开始新的挑战！✨',
+        '充电完成！继续保持好状态！🔋',
+        '休息结束，让我们一起专注吧！🎯',
+      ],
+    };
+    const pool = messages[type] || messages.focusComplete;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+}
+
+// Boot
+const timer = new PomodoroTimer();
+</script>
+</body>
+</html>

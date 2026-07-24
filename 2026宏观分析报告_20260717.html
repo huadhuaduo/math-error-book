@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026年7月宏观经济学情分析报告 | 2026.07.17</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --card-bg: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --red: #ff3b30;
+    --orange: #ff9500;
+    --green: #34c759;
+    --blue: #007aff;
+    --purple: #af52de;
+    --border: #d2d2d7;
+    --border-light: #e5e5ea;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.10);
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+    --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
+    --font-mono: "SF Mono", "Menlo", "Monaco", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-stack);
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Header */
+  .report-header {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 40px;
+    text-align: center;
+  }
+  .report-header .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .report-header h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .report-header .subtitle {
+    font-size: 17px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+  .report-header .meta {
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--text-tertiary);
+  }
+
+  /* Container */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 40px;
+  }
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.019em;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon {
+    font-size: 26px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+  .card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.011em;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+  .card p, .card li {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Alert cards */
+  .alert-card {
+    border-left: 4px solid var(--red);
+    background: #fff5f5;
+    border-radius: var(--radius-sm);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .alert-card.warning {
+    border-left-color: var(--orange);
+    background: #fffaf0;
+  }
+  .alert-card.info {
+    border-left-color: var(--blue);
+    background: #f5f9ff;
+  }
+  .alert-card.success {
+    border-left-color: var(--green);
+    background: #f5fff7;
+  }
+  .alert-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .alert-card p, .alert-card li {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* Data grid */
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .data-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .data-item .label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .data-item .value {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+  }
+  .data-item .change {
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .up { color: var(--red); }
+  .down { color: var(--green); }
+  .neutral { color: var(--text-tertiary); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 16px 0;
+  }
+  thead th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-secondary);
+  }
+  tbody tr:hover {
+    background: #f9f9fb;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+  .tag-red { background: #ffe5e5; color: #cc0000; }
+  .tag-green { background: #e5ffe5; color: #007700; }
+  .tag-orange { background: #fff3e0; color: #cc6600; }
+  .tag-blue { background: #e5f0ff; color: #0055cc; }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 12px 20px;
+    margin: 16px 0;
+    background: #f5f9ff;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  blockquote strong {
+    font-style: normal;
+    color: var(--text-primary);
+  }
+
+  /* Insights section */
+  .insight-box {
+    background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+    color: #f5f5f7;
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    margin-bottom: 20px;
+  }
+  .insight-box h3 {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .insight-box h4 {
+    color: var(--orange);
+    font-size: 15px;
+    font-weight: 600;
+    margin: 20px 0 8px;
+  }
+  .insight-box p, .insight-box li {
+    color: #c0c0c8;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .insight-box .highlight {
+    color: #ffd60a;
+    font-weight: 600;
+  }
+  .insight-box .risk {
+    color: #ff6b6b;
+  }
+
+  /* Recommendation cards */
+  .rec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .rec-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .rec-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .rec-card .rec-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .rec-card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.011em;
+  }
+  .rec-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .rec-card .confidence {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .conf-high { background: #e5ffe5; color: #007700; }
+  .conf-med { background: #fff3e0; color: #cc6600; }
+  .conf-watch { background: #f0f0f5; color: #666; }
+
+  /* Footer */
+  .report-footer {
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+    padding-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+  .report-footer p { margin-bottom: 4px; }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border-light);
+    margin: 32px 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .container { padding: 20px 16px 60px; }
+    .report-header { padding: 32px 16px 28px; }
+    .report-header h1 { font-size: 26px; }
+    .card { padding: 20px; }
+    .data-grid { grid-template-columns: repeat(2, 1fr); }
+    .data-item .value { font-size: 22px; }
+    .insight-box { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HEADER ====== -->
+<header class="report-header">
+  <div class="badge">Macro Intelligence Report</div>
+  <h1>2026年7月 · 宏观经济学情分析</h1>
+  <p class="subtitle">聚焦AI产业链、消费、投资、出口 —— 面向个人投资与财产规划</p>
+  <p class="meta">报告日期：2026年7月17日 &nbsp;|&nbsp; 数据截至：2026年7月16日 &nbsp;|&nbsp; 下期：2026年7月24日</p>
+</header>
+
+<div class="container">
+
+<!-- ====== 核心摘要 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">📌</span> 核心摘要（Executive Summary）</h2>
+
+  <div class="card">
+    <p>2026年上半年中国经济GDP增长<strong>4.7%</strong>，其中Q2放缓至<strong>4.3%</strong>，低于预期。增长结构呈现极致的<strong>"K型分化"</strong>：AI驱动的高端制造与出口一枝独秀（出口同比+13.4%），而内需消费与社会信贷持续低迷（社零仅+1.3%）。</p>
+    <p style="margin-top:12px;">下半年核心关注<strong>五大变量</strong>：① 中东油价与伊朗局势（布伦特从73→120美元）；② AI业绩兑现与资本开支持续性；③ 美联储加息预期（全年或加息1次）；④ 中国财政刺激强度（政治局7月会议）；⑤ 中美关系走向。</p>
+  </div>
+
+  <!-- 关键数据速览 -->
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="label">H1 GDP 增速</div>
+      <div class="value">4.7<span style="font-size:16px">%</span></div>
+      <div class="change neutral">Q2: 4.3% ↓</div>
+    </div>
+    <div class="data-item">
+      <div class="label">6月 CPI</div>
+      <div class="value">1.0<span style="font-size:16px">%</span></div>
+      <div class="change up">温和回升</div>
+    </div>
+    <div class="data-item">
+      <div class="label">H1 出口增速</div>
+      <div class="value">13.4<span style="font-size:16px">%</span></div>
+      <div class="change up">5月单月+19.4%</div>
+    </div>
+    <div class="data-item">
+      <div class="label">6月 制造业PMI</div>
+      <div class="value">50.3<span style="font-size:16px">%</span></div>
+      <div class="change up">重返扩张区间</div>
+    </div>
+    <div class="data-item">
+      <div class="label">上证指数</div>
+      <div class="value">3882</div>
+      <div class="change down">月内-5.2%</div>
+    </div>
+    <div class="data-item">
+      <div class="label">人民币汇率</div>
+      <div class="value">6.76</div>
+      <div class="change up">较年初升值3%</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 一、宏观经济全景 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">📊</span> 一、宏观经济全景</h2>
+
+  <div class="card">
+    <h3>1.1 GDP：总量稳、结构分化、Q2放缓超预期</h3>
+    <table>
+      <thead><tr><th>指标</th><th>H1 2026</th><th>Q1 2026</th><th>Q2 2026</th><th>趋势</th></tr></thead>
+      <tbody>
+        <tr><td>GDP 同比增速</td><td>4.7%</td><td>5.0%</td><td>4.3%</td><td><span class="tag tag-orange">Q2放缓</span></td></tr>
+        <tr><td>GDP 总量</td><td>69.6万亿</td><td>—</td><td>—</td><td>增量3.6万亿（近五年最大）</td></tr>
+        <tr><td>第一产业</td><td>+3.8%</td><td>—</td><td>—</td><td>平稳</td></tr>
+        <tr><td>第二产业</td><td>+5.6%</td><td>—</td><td>—</td><td><span class="tag tag-green">制造业拉动</span></td></tr>
+        <tr><td>第三产业</td><td>+4.2%</td><td>—</td><td>—</td><td>服务业弱于工业</td></tr>
+      </tbody>
+    </table>
+    <p>高盛将全年GDP预测从4.7%小幅下调至<strong>4.6%</strong>，预计H2小幅反弹至~4.5%。IMF维持4.6%预测。</p>
+  </div>
+
+  <div class="card">
+    <h3>1.2 物价：温和回升，尚无通胀压力</h3>
+    <table>
+      <thead><tr><th>指标</th><th>H1 2026</th><th>趋势</th></tr></thead>
+      <tbody>
+        <tr><td>CPI</td><td>+1.0%</td><td>温和回升，核心CPI +1.2%</td></tr>
+        <tr><td>PPI</td><td>+1.5%</td><td>由Q1的-0.6%转正，上游价格回升</td></tr>
+        <tr><td>PPI-CPI剪刀差</td><td>+0.5pp</td><td><span class="tag tag-orange">上游热、下游冷</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>1.3 进出口：史上最强引擎</h3>
+    <table>
+      <thead><tr><th>指标</th><th>H1 2026</th><th>6月单月</th></tr></thead>
+      <tbody>
+        <tr><td>货物进出口总额</td><td>25.5万亿元（首破25万亿）</td><td>—</td></tr>
+        <tr><td>出口增速</td><td>+13.4%</td><td>+27%（6月单月）</td></tr>
+        <tr><td>进口增速</td><td>+22.1%</td><td>+36%（6月单月）</td></tr>
+        <tr><td>贸易顺差</td><td>—</td><td>1256亿美元</td></tr>
+        <tr><td>外汇储备</td><td>>3.4万亿美元</td><td>稳定</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;">核心驱动力：① 全球AI投资周期拉动AI半导体/算力产品（HS85章）出口；② "新三样"（电动车、锂电池、太阳能电池）高景气；③ 中国制造业"安全溢价"——全球地缘冲突背景下全产业链稳定性受青睐。</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 二、异常项与关键背离 ⭐ ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">⚠️</span> 二、异常项与关键背离（Anomaly Detection）</h2>
+
+  <div class="alert-card">
+    <h4>🔴 异常#1：GDP 5.0% → 4.3%，Q2失速超预期</h4>
+    <p>Q1的5.0%超预期后，Q2骤降至4.3%，低于市场共识（4.5-4.6%）。高盛因此下调全年预测。下行主因：内需塌陷（社零增速从去年同期5%降至1.3%）、房地产市场投资降幅加深至-18%、基建投资增速放缓。</p>
+  </div>
+
+  <div class="alert-card warning">
+    <h4>🟠 异常#2：出口+27% vs 社零+1.3%，K型分化极致化</h4>
+    <p>6月出口单月暴增27%，而消费几乎零增长。这是2008年以来最强的"外热内冷"背离。说明AI/制造业红利高度集中在少数行业和企业，未能有效向居民收入和消费传导。</p>
+  </div>
+
+  <div class="alert-card warning">
+    <h4>🟠 异常#3：社融-M2剪刀差持续走阔</h4>
+    <p>M2增速8.0%，社融增速降至7.4%，M1骤降至4.0%（前值5.5%）。居民中长期贷款同比少增，企业中长期贷款大幅少增4500亿，银行靠短贷+票据冲量——实体融资需求极度疲弱，"宽货币"难以转化为"宽信用"。</p>
+  </div>
+
+  <div class="alert-card info">
+    <h4>🔵 异常#4：美债/黄金"安全资产"失效</h4>
+    <p>中东油价飙升→美国CPI超4%→美联储加息预期急转。10年期美债一度触及4.7%，30年期破5%，黄金跌破4100美元。传统"避险资产"在滞胀环境下失去保护功能。全球资本正在重新定义"安全资产"——AI产业链的盈利确定性反而成为新"安全港"。</p>
+  </div>
+
+  <div class="alert-card info">
+    <h4>🔵 异常#5：一线城市房价企稳 vs 三线加速下跌</h4>
+    <p>一线新房连续4个月环比上涨（+0.1%），上海新房同比+3.1%；但三线城市新房环比-0.3%，二手房70城无一同比上涨。全国商品房销售面积同比-11.6%。"核心资产抗跌"逻辑在被验证，但总量仍在下行。</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 三、AI产业链深度 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">🤖</span> 三、AI产业链：从"讲故事"到"算账"</h2>
+
+  <div class="card">
+    <h3>3.1 产业拐点：Token商业化元年</h3>
+    <p>2026年下半年AI产业核心主线已从<strong>"谁建更多GPU"</strong> 转向 <strong>"谁以更低成本生产并变现更多Token"</strong>（招商证券）。Anthropic+OpenAI合计年化商业收入<strong>超1000亿美元</strong>，接近大厂一半收入规模。大模型正从"吞金兽"变为"印钞机"。</p>
+    <p style="margin-top:12px;">瑞银证券提出下半年三大主题：<strong>模型能力</strong>（编程是核心）、<strong>变现</strong>（编程→知识工作者）、<strong>词元ROI</strong>（从用量最大化→Token优化，中国模型性价比优势凸显）。</p>
+  </div>
+
+  <div class="card">
+    <h3>3.2 算力硬件：超级景气周期延续至2027年</h3>
+    <table>
+      <thead><tr><th>细分赛道</th><th>核心判断</th><th>关键数据</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>存储芯片 (HBM)</strong></td>
+          <td><span class="tag tag-green">最强确定性</span></td>
+          <td>HBM产能全部售罄，DRAM价格+125%，NAND+234%；HBM4量产，HBM5聚焦散热；缺口延至2027年</td>
+        </tr>
+        <tr>
+          <td><strong>光模块/光芯片</strong></td>
+          <td><span class="tag tag-green">需求放量</span></td>
+          <td>800G→1.6T演进，CPO/LPO降低功耗30-50%；硅光芯片市场份额预计突破50%；工信部首次将CPO列入核心技术攻关</td>
+        </tr>
+        <tr>
+          <td><strong>半导体设备</strong></td>
+          <td><span class="tag tag-green">扩产+国产替代</span></td>
+          <td>全球设备市场1450亿美元，近六成用于AI算力/HBM产线；国产刻蚀/薄膜沉积/量测检测加速替代</td>
+        </tr>
+        <tr>
+          <td><strong>先进封装</strong></td>
+          <td><span class="tag tag-blue">持续受益</span></td>
+          <td>Chiplet/2.5D/3D/TSV/混合键合技术成为提升算力密度关键路径</td>
+        </tr>
+        <tr>
+          <td><strong>国产算力芯片</strong></td>
+          <td><span class="tag tag-blue">战略主线</span></td>
+          <td>寒武纪实现盈利并扩产，海光DCU加速适配国产大模型，华为昇腾生态完善</td>
+        </tr>
+        <tr>
+          <td><strong>PCB</strong></td>
+          <td><span class="tag tag-blue">量价齐升</span></td>
+          <td>AI服务器PCB层数/面积持续提升，沪电/胜宏/深南受益</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;font-size:13px;color:var(--text-tertiary);">数据来源：德勤《2026全球半导体行业趋势报告》、东海证券、中信建投、东莞证券、Gartner</p>
+  </div>
+
+  <div class="card">
+    <h3>3.3 AI应用：B端是主战场</h3>
+    <p>东吴证券提出三波浪潮叠加：</p>
+    <ul style="margin:8px 0 0 20px;">
+      <li><strong>Vibe Coding（收获期）</strong>——编程是收入主要来源，已率先验证商业化</li>
+      <li><strong>Vibe Working（渗透期）</strong>——知识工作者增速是程序员3倍，金融成第二大收入源</li>
+      <li><strong>Vibe Creating（实验期）</strong>——创意类应用仍在探索</li>
+    </ul>
+    <p style="margin-top:12px;">关键洞察：Agent规模化落地的核心不在模型本身，而在<strong>Data Infra（数据基础设施）</strong>。具备"明确预算、任务高频、结果可验、数据独有"的B端场景最适合Agent渗透。</p>
+  </div>
+
+  <div class="card">
+    <h3>3.4 中国AI出海：开源+性价比双轮驱动</h3>
+    <p>DeepSeek、智谱、MiniMax等国产模型在全球获认可。OpenRouter数据显示Token调用前5均为国产开源大模型，智谱市场份额持续提升。中国模型凭借<strong>性价比优势+开源路径</strong>有望在全球进一步提升份额。DeepSeek将实施波峰波谷定价，Meta拟筹建云基础设施业务出售富余算力——行业竞争加剧但也验证了算力需求的真实性和持续性。</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 四、消费与内需 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">🛒</span> 四、消费与内需：低位蕴势，静待拐点</h2>
+
+  <div class="alert-card warning">
+    <h4>消费数据全面承压</h4>
+    <ul>
+      <li>1-6月社零累计增速仅<strong>+1.3%</strong>（去年同期+5%），5月单月转负至-0.6%</li>
+      <li>居民信贷增速<strong>首次转负</strong></li>
+      <li>居民存款同比少增3.2万亿元——收入增长放缓+偿债支出挤压</li>
+      <li>消费板块跌回2024年"924"行情之前，机构持仓为<strong>近十几年来新低</strong></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>消费板块核心逻辑：供给出清先于需求复苏</h3>
+    <table>
+      <thead><tr><th>主线</th><th>代表方向</th><th>逻辑</th></tr></thead>
+      <tbody>
+        <tr><td>高端/体验消费</td><td>户外运动、高端服饰、服务消费</td><td>服务消费好于实物，体验型消费抗跌</td></tr>
+        <tr><td>高股息消费</td><td>家纺（罗莱/富安娜分红率95-99%）</td><td>低估值+高分红提供安全边际</td></tr>
+        <tr><td>供给出清行业</td><td>餐饮供应链、乳制品、啤酒、生猪养殖</td><td>行业洗牌后龙头份额提升</td></tr>
+        <tr><td>新消费趋势</td><td>IP产业链、宠物、美妆香氛、健康饮料</td><td>结构性增量方向</td></tr>
+        <tr><td>出海消费龙头</td><td>安踏、申洲国际等</td><td>海外营收占比30-50%，海外净利率高于国内</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 五、房地产与信贷 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">🏠</span> 五、房地产与信贷：深度筑底中的结构性分化</h2>
+
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="label">商品房销售额 H1</div>
+      <div class="value down" style="font-size:22px;">-13.6<span style="font-size:14px">%</span></div>
+      <div class="change down">3.79万亿</div>
+    </div>
+    <div class="data-item">
+      <div class="label">房地产开发投资</div>
+      <div class="value down" style="font-size:22px;">-18.0<span style="font-size:14px">%</span></div>
+      <div class="change down">创年内新低</div>
+    </div>
+    <div class="data-item">
+      <div class="label">新开工面积</div>
+      <div class="value down" style="font-size:22px;">-23.4<span style="font-size:14px">%</span></div>
+      <div class="change down">供给深度收缩</div>
+    </div>
+    <div class="data-item">
+      <div class="label">一线新房价格</div>
+      <div class="value up" style="font-size:22px;">+0.1<span style="font-size:14px">%</span></div>
+      <div class="change up">连续4个月上涨</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h3>核心判断</h3>
+    <ul>
+      <li><strong>一线城市企稳信号明确</strong>：上海新房同比+3.1%，144m²以上大户型同比+5.3%，优质改善项目形成价格支撑</li>
+      <li><strong>供给端深度收缩</strong>：开发投资-18%、新开工-23.4%，库存结构边际改善（待售面积同比-0.9%），供需正走向再平衡</li>
+      <li><strong>信贷需求极度疲弱</strong>：居民中长期贷款同比少增，按揭需求未因一线房价企稳而有效转化</li>
+      <li><strong>个人财产规划含义</strong>：核心城市优质房产抗跌性验证，但流动性差、持有成本高；三四线城市房产仍在下行通道，不建议增配</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 六、全球宏观与大类资产 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">🌐</span> 六、全球宏观与大类资产配置</h2>
+
+  <div class="card">
+    <h3>6.1 核心背景：中东油价冲击改变全球宏观路径</h3>
+    <p>布伦特原油从年初~73美元飙升至近120美元，美国5月CPI超4%，美联储政策预期从降息急转为加息。新任主席沃什释放强烈鹰派信号。这一冲击导致美债、黄金、美元三大传统安全资产集体暴露功能性裂缝，全球资本重新定价"确定性"。</p>
+  </div>
+
+  <table>
+    <thead><tr><th>资产类别</th><th>上半年表现</th><th>下半年展望</th><th>核心逻辑</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>人民币</strong></td>
+        <td>升值至6.76，亚洲货币中最强</td>
+        <td>高位震荡，目标6.7</td>
+        <td>贸易顺差+外资增配人民币资产</td>
+      </tr>
+      <tr>
+        <td><strong>美债10Y</strong></td>
+        <td>一度触及4.7%</td>
+        <td>4.2%-4.6%震荡</td>
+        <td>加息预期+长债供给增加+财政赤字恶化</td>
+      </tr>
+      <tr>
+        <td><strong>美元指数</strong></td>
+        <td>升至101上方</td>
+        <td>偏强震荡</td>
+        <td>美国经济相对优势+鹰派美联储</td>
+      </tr>
+      <tr>
+        <td><strong>黄金</strong></td>
+        <td>跌破4100美元，不涨反跌</td>
+        <td>短期承压，中长期看好</td>
+        <td>央行连续三年净购金>1000吨，回调即布局机会</td>
+      </tr>
+      <tr>
+        <td><strong>A股</strong></td>
+        <td>上证3882，月内-5.2%</td>
+        <td>K型结构性行情</td>
+        <td>AI科技为主线，消费左侧布局</td>
+      </tr>
+      <tr>
+        <td><strong>港股</strong></td>
+        <td>恒指承压，科技分化</td>
+        <td>等待DeepSeek时刻</td>
+        <td>中金目标27000-28000，高盛MSCI China目标90</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 七、权威机构研判汇总 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">🏛️</span> 七、权威机构研判汇总</h2>
+
+  <table>
+    <thead><tr><th>机构</th><th>GDP预测</th><th>A股/中国资产观点</th><th>核心关注方向</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>高盛</strong></td>
+        <td>全年4.6%↓</td>
+        <td><span class="tag tag-green">超配A股</span></td>
+        <td>推出"中国AI价值链"组合(GSXACART)，认为中国AI被低估50-100%；MSCI中国目标90</td>
+      </tr>
+      <tr>
+        <td><strong>中金公司</strong></td>
+        <td>—</td>
+        <td>科技为主线+轮动</td>
+        <td>油价回落→恒科/创新药修复；科技→周期→外需轮动；标普年底7800-8000</td>
+      </tr>
+      <tr>
+        <td><strong>中信证券</strong></td>
+        <td>全年4.7%</td>
+        <td>"AI+能化"杠铃</td>
+        <td>AI驱动需求+中东供给抑制→供需缺口超预期；关注覆铜板/玻纤/电子特气/碳酸锂</td>
+      </tr>
+      <tr>
+        <td><strong>招商证券</strong></td>
+        <td>—</td>
+        <td>大模型商业化主线</td>
+        <td>Token生产与商业化为核心；Data Infra价值重估；国产算力+算力租赁</td>
+      </tr>
+      <tr>
+        <td><strong>国金证券</strong></td>
+        <td>—</td>
+        <td>四大主线</td>
+        <td>地缘冲突、美元信用、AI资本开支、中国资产重估</td>
+      </tr>
+      <tr>
+        <td><strong>国联民生</strong></td>
+        <td>—</td>
+        <td>景气+红利哑铃</td>
+        <td>减少成长单边暴露，均衡配置；光模块/算力需"去伪存真"</td>
+      </tr>
+      <tr>
+        <td><strong>德勤</strong></td>
+        <td>—</td>
+        <td>—</td>
+        <td>2026全球半导体销售额9750亿美元（+26%）；景气周期延至2027年</td>
+      </tr>
+      <tr>
+        <td><strong>IMF</strong></td>
+        <td>全年4.6%↑</td>
+        <td>—</td>
+        <td>从4.4%上调至4.6%，认可中国AI/高端制造新韧性</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 八、投资洞察与建议 ⭐ 重点 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">💡</span> 八、投资洞察与建议（重点）</h2>
+
+  <div class="insight-box">
+    <h3>🔍 核心洞察框架</h3>
+    <p>2026年下半年投资的核心矛盾是：<span class="highlight">AI科技趋势的持续性 vs. 内需修复的节奏 vs. 全球滞胀风险</span>。在当前"安全资产失效、风险资产分化"的环境中，择券能力远比择时能力重要。</p>
+
+    <h4>洞察一：AI硬件仍是最高确定性方向，但需精选环节、注意节奏</h4>
+    <p>存储芯片（HBM）、光模块（CPO/1.6T）、半导体设备处于<strong>三重共振</strong>（需求爆发+价格上行+技术迭代）。但需注意：① 板块估值已处历史高分位；② AI行情呈现"两个季度强、一个季度弱"的节奏规律——7月的大幅回调（科创50月内-16%）可能正是这种节奏的体现；③ 核心风险在于北美云厂商资本开支节奏变化。</p>
+    <p><span class="highlight">建议：</span>持仓AI硬件的投资者可<strong>逢回调分批加仓</strong>龙头（中际旭创、寒武纪、沪电股份等），而非追高；未持仓者等待Q2财报验证（7-8月）后再做决策。关注光模块海外营收占比>90%的公司（汇率升值是双刃剑）。</p>
+
+    <h4>洞察二：存储芯片是"超级周期"中最确定的环节</h4>
+    <p>DRAM价格+125%、NAND+234%，HBM产能全部售罄，缺口延至2027年。这一轮存储周期因AI需求的持续性，比前几轮<strong>更长、更确定</strong>。即使AI资本开支增速放缓，推理需求也将接棒训练需求支撑存储用量。</p>
+    <p><span class="highlight">建议：</span>存储芯片是当前AI链条中<strong>赔率+胜率综合最优</strong>的环节。关注澜起科技、江波龙、兆易创新。但需注意：存储价格已处高位，任何供给端超预期扩张都可能打破紧平衡。</p>
+
+    <h4>洞察三：消费板块"输时间不输空间"，是反向布局窗口</h4>
+    <p>消费板块估值和机构持仓均处历史极低水平，部分高股息消费股（家纺龙头分红率95-99%）的股息率已极具吸引力。<strong>核心催化剂</strong>：外需大幅走弱时，政策重心可能从科技转向刺激内需——这是消费板块最重要的拐点信号。</p>
+    <p><span class="highlight">建议：</span>不以"抄底"心态重仓，而是以<strong>定投式小仓位左侧布局</strong>：① 高股息消费龙头（家纺/白酒）；② 出海消费（安踏/申洲国际）；③ 供给出清行业（生猪养殖/啤酒/乳制品）。等待政治局会议（7月）或中央经济工作会议释放内需刺激信号后加仓。</p>
+
+    <h4>洞察四：黄金短期承压但中长期逻辑未破——回调是布局机会</h4>
+    <p>黄金上半年"该涨不涨"的核心原因是高实际利率压制。但全球央行连续三年净购金超1000吨，美元信用长期承压（IMF数据显示美元在全球外汇储备占比已从65%降至57%）。一旦美联储加息预期缓和，黄金将迎来修复。</p>
+    <p><span class="highlight">建议：</span>个人资产配置中保持<strong>5-10%黄金仓位</strong>（实物金/黄金ETF）。当前接近左侧位置，可分批建仓。不要试图精确抄底——黄金的配置价值在于尾部风险对冲，而非短期交易。</p>
+
+    <h4>洞察五：房地产——核心城市优质资产可持有，三四线不建议增配</h4>
+    <p>一线城市（尤其上海）新房连续4个月环比上涨，优质改善型大户型（144m²+）价格韧性显著。但全国总量仍在筑底，三线及以下城市二手房价无一同比上涨。</p>
+    <p><span class="highlight">建议：</span>① 持有一线/强二线核心区域房产的，继续持有，不急于变现——优质房产的"抗跌溢价"正在被验证；② 三四线城市多余房产，趁市场尚有流动性时逐步减持；③ 暂时不建议增配房地产——流动性差、持有成本高，且信贷周期未见拐点；④ 将释放出的资金向权益资产（AI ETF、高股息组合）和黄金分散。</p>
+
+    <h4>洞察六：人民币资产战略重估才刚刚开始</h4>
+    <p>人民币较年初升值约3%，亚洲货币中最强。高盛推出"中国AI价值链"组合，认为中国AI被低估50-100%。核心逻辑：① 中国AI产业链（从大模型到算力硬件到应用）正在形成闭环；② 开源+性价比优势在全球范围获认可；③ 中国制造业"安全溢价"在全球地缘冲突背景下持续凸显。</p>
+    <p><span class="highlight">建议：</span>通过A股科创50 ETF + 恒生科技ETF 构建中国AI核心仓位（建议占比权益资产的30-40%），辅以高股息红利资产（20-30%）对冲波动。剩余的配置在消费左侧（10-15%）和现金/货币基金（15-20%）以保持灵活性。</p>
+  </div>
+
+  <!-- 资产配置建议速查 -->
+  <div class="card">
+    <h3>📋 个人资产配置建议速查（2026下半年）</h3>
+    <table>
+      <thead><tr><th>资产类别</th><th>建议配置比例</th><th>信心等级</th><th>核心逻辑</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>AI/科技ETF（A股科创50+恒生科技）</td>
+          <td>30-40%</td>
+          <td><span class="tag tag-green">高确定性</span></td>
+          <td>AI产业超级周期，业绩持续验证</td>
+        </tr>
+        <tr>
+          <td>高股息红利资产（煤炭/电力/电信）</td>
+          <td>20-30%</td>
+          <td><span class="tag tag-green">高确定性</span></td>
+          <td>无风险收益率下行，高股息稀缺</td>
+        </tr>
+        <tr>
+          <td>黄金（实物/ETF）</td>
+          <td>5-10%</td>
+          <td><span class="tag tag-green">中长期看好</span></td>
+          <td>央行购金+美元信用承压，回调即布局</td>
+        </tr>
+        <tr>
+          <td>消费龙头（左侧布局）</td>
+          <td>10-15%</td>
+          <td><span class="tag tag-orange">需等催化剂</span></td>
+          <td>低估值+低持仓，等政策转向内需</td>
+        </tr>
+        <tr>
+          <td>现金/货币基金/短债</td>
+          <td>15-20%</td>
+          <td><span class="tag tag-blue">保持灵活性</span></td>
+          <td>等待Q2财报验证+政治局会议信号</td>
+        </tr>
+        <tr>
+          <td>房地产（核心城市优质）</td>
+          <td>现有持有，不增配</td>
+          <td><span class="tag tag-orange">持有观望</span></td>
+          <td>一线企稳但流动性差，三四线减持</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 风险矩阵 -->
+  <div class="card">
+    <h3>🛡️ 主要下行风险清单</h3>
+    <table>
+      <thead><tr><th>风险项</th><th>概率</th><th>影响</th><th>应对</th></tr></thead>
+      <tbody>
+        <tr><td>中东局势升级，油价突破150美元</td><td>中低</td><td><span class="tag tag-red">极高</span></td><td>减仓权益，增配现金/短债</td></tr>
+        <tr><td>美联储超预期加息（>1次）</td><td>中</td><td><span class="tag tag-red">高</span></td><td>降低科技仓位，增配红利/黄金</td></tr>
+        <tr><td>AI资本开支增速放缓</td><td>中</td><td><span class="tag tag-red">高</span></td><td>从硬件向应用/Data Infra切换</td></tr>
+        <tr><td>中美贸易摩擦升级</td><td>中</td><td><span class="tag tag-orange">中高</span></td><td>降低出口链敞口，转向内需消费</td></tr>
+        <tr><td>国内政策强刺激超预期</td><td>中</td><td><span class="tag tag-green">正面</span></td><td>加仓消费/地产链/港股</td></tr>
+        <tr><td>存储/光模块供给超预期</td><td>低</td><td><span class="tag tag-orange">中</span></td><td>减仓存储，保留光模块核心仓位</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ====== 九、下周关注 ====== -->
+<div class="section">
+  <h2 class="section-title"><span class="icon">📅</span> 九、下周重点关注（7月21日-25日）</h2>
+
+  <div class="card">
+    <ul>
+      <li>🔴 <strong>7月政治局会议</strong>（预计下旬召开）——下半年政策基调定调窗口，关注财政刺激信号</li>
+      <li>🔴 <strong>A股Q2财报季开启</strong>——AI/半导体/光模块核心公司业绩验证</li>
+      <li>🟡 美国7月密歇根消费者信心指数初值</li>
+      <li>🟡 欧元区7月PMI初值</li>
+      <li>🟢 中东局势与油价走势（布伦特能否回落至100美元以下）</li>
+      <li>🟢 科创50能否在1800点附近企稳（关键支撑位）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ====== 免责声明 ====== -->
+<div class="card" style="background:#f9f9fb;border:1px solid var(--border-light);">
+  <p style="font-size:12px;color:var(--text-tertiary);line-height:1.6;">
+    <strong>免责声明：</strong>本报告仅供个人投资研究参考，不构成任何投资建议。报告所引用数据均来自公开渠道（国家统计局、中国人民银行、海关总署、高盛、中金公司、中信证券、招商证券、德勤、IMF等），数据截至2026年7月16日。投资有风险，入市需谨慎。过往业绩不代表未来表现。请根据自身风险承受能力独立做出投资决策。
+  </p>
+</div>
+
+<!-- Footer -->
+<div class="report-footer">
+  <p>📊 2026年宏观经济学情分析报告 · 第29期</p>
+  <p>Generated on 2026-07-17 &nbsp;|&nbsp; Next: 2026-07-24</p>
+  <p style="margin-top:8px;">基于 Apple HIG for Web 设计标准</p>
+</div>
+
+</div><!-- .container -->
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e55]:
+    - button "返回" [ref=e57] [cursor=pointer]: 🏠
+    - generic [ref=e64]:
+      - generic [ref=e65]: 🥚
+      - paragraph [ref=e66]: 森林里的小鸟说：做对这道题，我就告诉你蛋在哪里！
+    - generic [ref=e67]:
+      - generic [ref=e68]: 🥕 🥕 🥕 🥕
+      - generic [ref=e69]: 数一数，一共有几个呀？
+      - generic [ref=e70]:
+        - button "2" [disabled] [ref=e88] [cursor=pointer]
+        - button "5" [disabled] [ref=e89] [cursor=pointer]
+        - button "4" [disabled] [ref=e90] [cursor=pointer]
+        - button "6" [disabled] [ref=e91] [cursor=pointer]
+      - generic [ref=e76]: 答案是 4！没关系，我们看下一题～
+  - generic: ⭐ +1 颗星！

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · NPC-周 · 首开倒计时</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .amb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;opacity:.14}
+  .amb-1{width:340px;height:340px;background:#FEE2E2;top:-80px;right:-60px}
+  .amb-2{width:260px;height:260px;background:#FEF3C7;bottom:-50px;left:-30px}
+  .layout{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:28px 16px 60px;display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+  .main-col{display:flex;flex-direction:column;gap:18px}
+  .side-col{position:sticky;top:24px;display:flex;flex-direction:column;gap:12px}
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:18px;padding:22px 20px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .section-num{font-size:10px;font-weight:700;color:#A8A29E;letter-spacing:.08em;margin-bottom:3px}
+  .section-title{font-size:16px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:4px;letter-spacing:-.01em}
+  .section-sub{font-size:11px;color:#78716C;line-height:1.5;margin-bottom:14px}
+  .section-header{padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid rgba(0,0,0,.05)}
+  .radar-area{display:flex;align-items:center;gap:22px;justify-content:center;padding:8px 0 4px;flex-wrap:wrap}
+  .radar-labels{display:flex;flex-direction:column;gap:7px;min-width:170px}
+  .radar-row{display:flex;align-items:center;gap:5px;font-size:11px}
+  .radar-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .radar-name{color:#1C1917;font-weight:600;min-width:60px}
+  .radar-score{font-weight:700;color:#1C1917;font-size:13px;min-width:22px;text-align:right}
+  .radar-desc{font-size:9px;color:#78716C;line-height:1.3;padding-left:12px;margin-top:1px}
+  .verdict-box{background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.04);border-radius:12px;padding:14px 16px;margin:14px 0;text-align:center}
+  .verdict-box .v-main{font-size:14px;color:#1C1917;line-height:1.7}
+  .verdict-box .v-tag{display:inline-block;padding:2px 10px;border-radius:100px;font-size:10px;font-weight:700;margin-top:6px}
+  .pattern-highlight{font-size:14px;color:#1C1917;line-height:1.75}
+  .insight-box{background:rgba(243,232,255,.12);border:1px solid rgba(167,139,250,.06);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:12px;color:#7C3AED;line-height:1.65}
+  .reflect-q{font-size:12px;color:#6B7280;line-height:1.5;padding:10px 14px;background:rgba(239,246,255,.25);border-radius:10px;margin-top:8px;font-style:italic}
+  .insight-consolidated{font-size:12px;color:#374151;line-height:1.6;padding:12px 14px;background:rgba(239,246,255,.35);border-radius:10px;margin-bottom:14px}
+  .finding{margin-bottom:14px}.finding+.finding{padding-top:12px;border-top:1px solid rgba(0,0,0,.04)}
+  .fd-head{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+  .fd-badge{display:inline-flex;align-items:center;gap:1px;padding:2px 8px;border-radius:100px;font-size:9px;font-weight:700}
+  .fd-quote{font-size:12px;color:#44403C;line-height:1.5;padding:6px 10px;background:rgba(0,0,0,.015);border-radius:8px;margin:4px 0;font-style:italic}
+  .fd-note{font-size:12px;color:#1C1917;line-height:1.55}
+  .fd-alt{font-size:11px;color:#065F46;line-height:1.5;padding:6px 10px;background:rgba(209,250,229,.15);border-radius:8px;margin-top:4px}
+  .fork-box{background:rgba(254,243,199,.1);border:1px solid rgba(251,191,36,.06);border-radius:10px;padding:10px 12px;margin:10px 0;font-size:11px}
+  .fork-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:3px}
+  .fork-path{padding:5px 8px;border-radius:6px;font-size:10px;line-height:1.5;margin:2px 0}
+  .fork-actual{background:rgba(254,226,226,.15);border:1px solid rgba(239,68,68,.01)}
+  .fork-alt{background:rgba(209,250,229,.15);border:1px solid rgba(16,185,129,.01)}
+  .commit-box{background:rgba(16,185,129,.03);border:1.5px solid rgba(16,185,129,.15);border-radius:14px;padding:18px 16px}
+  .one-field-input{width:100%;border:none;border-bottom:2px solid rgba(16,185,129,.3);padding:10px 0;font-size:13px;font-family:inherit;outline:none;background:transparent;color:#1C1917;margin:10px 0;transition:border-color .2s}
+  .one-field-input:focus{border-bottom-color:#10B981}
+  .one-field-input::placeholder{color:#D6D3D1;font-size:12px}
+  .weakness-card{background:rgba(254,243,199,.12);border:1px solid rgba(251,191,36,.08);border-radius:10px;padding:12px 14px;margin:6px 0;font-size:11px;color:#92400E;line-height:1.6}
+  .weakness-card strong{color:#78350F}
+  .course-link{display:flex;align-items:center;gap:8px;padding:9px 12px;background:rgba(255,255,255,.5);border:1px solid rgba(0,0,0,.06);border-radius:10px;margin:3px 0;font-size:11px;color:#1C1917;cursor:pointer;transition:all .2s;text-decoration:none}
+  .course-link:hover{background:rgba(107,114,128,.06);border-color:rgba(107,114,128,.2)}
+  .course-arrow{color:#6B7280;font-weight:700;margin-left:auto}
+  .key-card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:16px 14px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .key-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A8A29E;margin-bottom:6px}
+  .key-item{font-size:11px;color:#44403C;line-height:1.6;padding:3px 0}
+  .loop-flow{display:flex;align-items:center;gap:6px;font-size:9px;color:#78716C;margin-top:10px;flex-wrap:wrap}
+  .loop-step{background:rgba(16,185,129,.06);color:#065F46;padding:3px 8px;border-radius:100px;font-weight:600;white-space:nowrap}
+  .loop-arrow{color:#A8A29E;font-size:10px}
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.92);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:opacity .3s ease;pointer-events:none;white-space:nowrap}
+  @media(max-width:700px){.layout{grid-template-columns:1fr}.side-col{position:static}}
+  @media(max-width:480px){
+    .layout{padding:14px 10px 48px;gap:14px}
+    .card{padding:14px 14px;border-radius:14px}
+    .section-title{font-size:15px}
+    .section-sub{font-size:11px}
+    .section-header{padding-bottom:8px;margin-bottom:10px}
+    .radar-area{gap:12px}
+    .radar-labels{min-width:140px}
+    .radar-name{font-size:10px}
+    .verdict-box .v-main{font-size:13px}
+    .finding{font-size:12px}
+    .fd-quote{font-size:11px}
+    .fd-note{font-size:11px}
+    .insight-box{font-size:11px}
+    .reflect-q{font-size:11px}
+    .course-link{font-size:11px;padding:8px 10px}
+    .commit-box{padding:14px 12px}
+    .key-card{padding:12px 10px}
+  }
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+<div class="layout">
+  <div class="main-col">
+    <!-- ====== ① 综合概览 ====== -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-num">TG-001 · 首开倒计时</div>
+        <div class="section-title">这场对话的复盘</div>
+        <div class="section-sub">到岗20天，你走对了几步？</div>
+      </div>
+      <div class="radar-area">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(0,0,0,.04)" stroke-width=".5"/>
+          <circle cx="100" cy="100" r="60" fill="none" stroke="rgba(0,0,0,.04)" stroke-width=".5"/>
+          <circle cx="100" cy="100" r="35" fill="none" stroke="rgba(0,0,0,.04)" stroke-width=".5"/>
+          <polygon points="100,15 180,65 150,165 50,165 20,65" fill="rgba(107,114,128,.04)" stroke="rgba(107,114,128,.2)" stroke-width="1"/>
+          <polygon id="radarPoly" points="100,15 180,65 150,165 50,165 20,65" fill="rgba(107,114,128,.12)" stroke="#6B7280" stroke-width="1.5"/>
+          <circle cx="100" cy="15" r="3" fill="#6B7280"/><circle cx="180" cy="65" r="3" fill="#10B981"/><circle cx="150" cy="165" r="3" fill="#F59E0B"/><circle cx="50" cy="165" r="3" fill="#EF4444"/>
+          <text x="100" y="8" text-anchor="middle" fill="#6B7280" font-size="9">P₂ 建立信任</text>
+          <text x="192" y="68" fill="#10B981" font-size="9">P₁ 诊断问题</text>
+          <text x="158" y="178" fill="#F59E0B" font-size="9">P₅ 示范赋能</text>
+          <text x="30" y="178" fill="#EF4444" font-size="9">P₃ 重构目标</text>
+        </svg>
+        <div class="radar-labels" id="scoreLabels">
+          <div class="radar-row"><span class="radar-dot" style="background:#6B7280"></span><span class="radar-name">P₂ 建立信任</span><span class="radar-score" id="rP2Trust">-</span><span class="radar-desc">MTP3·8 角色认知+信赖关系</span></div>
+          <div class="radar-row"><span class="radar-dot" style="background:#10B981"></span><span class="radar-name">P₁ 诊断问题</span><span class="radar-score" id="rP1Diagnose">-</span><span class="radar-desc">MTP10 问题解决</span></div>
+          <div class="radar-row"><span class="radar-dot" style="background:#F59E0B"></span><span class="radar-name">P₅ 示范赋能</span><span class="radar-score" id="rP5Empower">-</span><span class="radar-desc">MTP7·11 培育启发+榜样激励</span></div>
+          <div class="radar-row"><span class="radar-dot" style="background:#EF4444"></span><span class="radar-name">P₃ 重构目标</span><span class="radar-score" id="rP3Reframe">-</span><span class="radar-desc">MTP4·11 计划命令+参与激励</span></div>
+        </div>
+      </div>
+      <div class="verdict-box" id="verdictBox">
+        <div class="v-main" id="verdictMain">完成一次完整对话后，这里会显示你的管理画像。</div>
+        <span class="v-tag" id="verdictTag" style="background:#F3F4F6;color:#6B7280">暂无数据</span>
+      </div>
+      <div class="structure-line" id="structureLine" style="font-size:11px;color:#78716C;text-align:center;line-height:1.5;padding-top:8px;border-top:1px solid rgba(0,0,0,.03)">到岗支援的四个阶段——从'你是谁'到'我跟你干'。</div>
+    </div>
+
+    <!-- ====== ② 模式觉察 ====== -->
+    <div class="card">
+      <div class="section-title">你可能没看到的模式</div>
+      <p class="pattern-highlight" id="patternNarr" style="font-size:13px">完成一次完整对话后，这里会显示你的管理模式洞察。</p>
+      <div class="insight-box" id="insightBox"></div>
+      <div class="reflect-q" id="reflectQ"></div>
+    </div>
+
+    <!-- ====== ③ 关键行为分析 ====== -->
+    <div class="card">
+      <div class="section-title">你做了什么，可以怎么调整</div>
+      <div class="insight-consolidated" id="consolidatedInsight"></div>
+      <div id="findingsContainer"></div>
+    </div>
+
+    <!-- ====== ④ 一句话承诺 ====== -->
+    <div class="card">
+      <div class="section-title">下次再做同样的事，你准备怎么做</div>
+      <div class="commit-box">
+        <p style="font-size:12px;color:#44403C;line-height:1.6" id="oneThingPrompt">写下你下次面对一个新团队时，会做的一件不同的事。</p>
+        <input class="one-field-input" id="commitField" placeholder="写下你的承诺..." maxlength="200">
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button onclick="save()" style="padding:8px 18px;border:none;border-radius:10px;background:#10B981;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s">保存承诺</button>
+          <button onclick="window.location.href='scene_TG001_准备页.html'" style="padding:8px 18px;border:1px solid rgba(0,0,0,.08);border-radius:10px;background:transparent;color:#44403C;font-size:12px;cursor:pointer;font-family:inherit">再练一次</button>
+        </div>
+        <div style="text-align:center;margin-top:14px">
+          <a href="练习记录.html" style="font-size:12px;color:#3B82F6;text-decoration:none;font-weight:500">查看我的练习记录 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== ⑤ 学习桥接 ====== -->
+    <div class="card">
+      <div class="section-title">你的最弱维度&amp;对应课程</div>
+      <div id="weaknessContainer"></div>
+    </div>
+  </div>
+
+  <!-- ====== 侧栏 ====== -->
+  <div class="side-col">
+    <div class="key-card">
+      <div class="key-title">📋 你的行为清单</div>
+      <div id="sideFindings"></div>
+    </div>
+    <div class="key-card">
+      <div class="key-title" style="color:#DC2626">⚠️ 需警惕的模式</div>
+      <div id="sideAntiPatterns" style="font-size:10px;color:#44403C;line-height:1.6">完成一次完整对话后显示。</div>
+    </div>
+    <div class="key-card" id="prevCommit" style="display:none"></div>
+    <div class="key-card" id="practiceHistory" style="display:none"></div>
+    <div class="key-card" style="text-align:center">
+      <div style="font-size:9px;color:#A8A29E;margin-bottom:4px">下一次练习可以选</div>
+      <div style="font-size:10px;line-height:1.6">
+        <a href="scene_TG001_准备页.html" style="color:#6B7280;text-decoration:none">🔄 再来一遍 TG-001</a><br>
+        <a href="/scenario/generate" style="color:#A8A29E;text-decoration:none">📂 案例库 · 练其他场景</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ===== Load session data =====
+var session = null;
+try { var raw = localStorage.getItem('tg001_last_session'); if (raw) { session = JSON.parse(raw); } } catch(e) {}
+
+var s = session && session.s ? session.s : null;
+var ap = session && session.ap ? session.ap : null;
+var revealed = session && session.revealed ? session.revealed : null;
+var phase = session ? (session.phase || '') : '';
+var history = session ? (session.history || []) : [];
+var npcState = session ? (session.npcState || '') : '';
+
+var prevCommit = null;
+try { var rc = localStorage.getItem('tg001_commitment'); if (rc) { prevCommit = JSON.parse(rc); } } catch(e) {}
+
+var keys = ['p2_trust','p1_diagnose','p5_empower','p3_reframe'];
+var labels = ['P₂ 建立信任','P₁ 诊断问题','P₅ 示范赋能','P₃ 重构目标'];
+var colors = ['#6B7280','#10B981','#F59E0B','#EF4444'];
+
+function renderAll() {
+  if (!session || !s) {
+    document.getElementById('verdictMain').textContent = '还没有练习数据。先完成一次 TG-001 对话，再回来看反馈。';
+    return;
+  }
+
+  // ===== Radar =====
+  var scores = [s.p2_trust||s.trust||0, s.p1_diagnose||s.diagnose||0, s.p5_empower||s.subtract||0, s.p3_reframe||s.demo||0];
+  var cx = 100, cy = 100, r = 80;
+  var angles = [-90, 18, 126, 234, 306]; // 5-way, but we use 4
+  var pts = [];
+  for (var i = 0; i < 4; i++) {
+    var val = Math.min(100, Math.max(0, scores[i])) / 100;
+    var ang = (-90 + i * 72) * Math.PI / 180;
+    var x = cx + r * val * Math.cos(ang);
+    var y = cy + r * val * Math.sin(ang);
+    pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+  }
+  document.getElementById('radarPoly').setAttribute('points', pts.join(' '));
+
+  for (var i = 0; i < 4; i++) {
+    var rid = ['rP2Trust','rP1Diagnose','rP5Empower','rP3Reframe'][i];
+    var el = document.getElementById(rid);
+    if (el) el.textContent = Math.round(scores[i]);
+  }
+
+  // ===== Verdict =====
+  var avg = ((s.p2_trust||s.trust||0) + (s.p1_diagnose||s.diagnose||0) + (s.p5_empower||s.subtract||0) + (s.p3_reframe||s.demo||0)) / 4;
+  var tagEl = document.getElementById('verdictTag');
+  var mainEl = document.getElementById('verdictMain');
+
+  if (npcState === 'FOLLOWING') {
+    tagEl.textContent = '🌟🌟🌟 出色';
+    tagEl.style.background = '#DCFCE7'; tagEl.style.color = '#166534';
+    mainEl.innerHTML = 'NPC-周最后说了"你不一样"。这是他能给的最高评价。<br>你走通了完整的四个阶段：<strong>到现场去(P₁诊断·MTP10) → 建立信任(P₂信任·MTP3/8) → 聚焦做减法(P₅赋能·MTP4/11) → 亲自示范(P₃目标·MTP7/11)</strong>。';
+  } else if (npcState === 'ACCEPTING') {
+    tagEl.textContent = '🌟🌟 不错，差一步';
+    tagEl.style.background = '#FEF3C7'; tagEl.style.color = '#92400E';
+    mainEl.innerHTML = '你已经取得了NPC-周的配合。但还差一步——<strong>亲自示范</strong>。他嘴里说"行"，心里还在等"你能做到"。<br>下一步：约一组客户一起谈，让他看到你说的和做的是一致的。';
+  } else if (phase === 'DIAGNOSE' || phase === 'BUILD_TRUST') {
+    tagEl.textContent = '🌟 起步阶段';
+    tagEl.style.background = '#F3F4F6'; tagEl.style.color = '#6B7280';
+    mainEl.innerHTML = '对话还没推进到核心阶段。NPC-周还在观望——他还没看到你区别于其他新管理者的地方。';
+  } else if (avg < 40) {
+    tagEl.textContent = '⚠️ 信任未建立';
+    tagEl.style.background = '#FEE2E2'; tagEl.style.color = '#DC2626';
+    mainEl.innerHTML = 'NPC-周对你的戒备没有解除。他见过太多"新来的"了——你的行动没有让他觉得你和之前的人不一样。<br><strong>建议：</strong>重新练一次，试着先问他的看法，再展示你的能力。';
+  }
+
+  document.getElementById('structureLine').textContent = '到岗支援的四个阶段——从"你是谁"到"我跟你干"。';
+
+  // ===== Pattern =====
+  var pn = document.getElementById('patternNarr');
+  var ib = document.getElementById('insightBox');
+  var rq = document.getElementById('reflectQ');
+
+  if (npcState === 'FOLLOWING') {
+    pn.textContent = '你做到了最难的事：让一个老员工在第一天就决定跟你干。';
+    ib.innerHTML = '<strong>🔍 你的模式：</strong>你用了"先听再看再做"的路径——不是先宣布方案，而是先了解事实。这对新管理者到岗者来说是最反直觉但最高效的策略。<br><br><strong>守住的模式：</strong>大多数新管理者会急着证明自己——急着开大会、急着改策略。你没有。你先找到了房间里最清醒的人（NPC-周），问了他看到了什么，才决定怎么做。这15分钟的价值超过你一个人看三天数据。';
+    rq.innerHTML = '💬 <strong>想一想：</strong>你这次做到了"先观察再行动"。在你的团队里，还有哪些情况适合用这个策略？比如接手一个疲态的项目、面对一个防御的跨部门同事？';
+  } else if (npcState === 'ACCEPTING') {
+    pn.textContent = '你做了关键的对的事——让NPC-周松口了。但松口≠信任。';
+    ib.innerHTML = '<strong>🔍 你的模式：</strong>你在诊断和减法上做对了——NPC-周认同了你的方向。但你的"打样"动作缺失。对NPC-周这种"不看你怎么说只看你怎么做"的人，你少了一步。<br><br><strong>缺的那一步：</strong>你告诉了他怎么做，但没有给他看到你也能做。一句"周三我带一组客户给你看"——这句话的力量超过十句"你要加油"。';
+    rq.innerHTML = '💬 <strong>想一想：</strong>你团队里有没有"NPC-周型"的成员？他们不是不认同你的方向——他们是在等你也下场。下次你可以试试：在说了"我们要聚焦这两个户型"之后，加一句"明天下午我带一组客户示范给你看"。';
+  } else {
+    pn.textContent = 'NPC-周还没有完全信任你。这不是你的失败——是大多数新管理者到岗者第一天的常态。但有一些模式值得重新看看。';
+    ib.innerHTML = '<strong>🔍 值得注意：</strong>NPC-周的工作状态是"过劳衰竭×短期冲刺×需要建立信任"。他对新来的管理者天然不信任——因为他见过太多"先开大会再改策略最后发现落地不了的"。<br><br><strong>最有效的破冰方式：</strong>不是展现你的方案有多好——是让他知道你能看到他的处境。<br><br>他说"连续干了一个多月"的时候，你回应"不容易"和你说"你们的责任感很强"是完全不同的两种信号。前者让他觉得你站在他这边，后者让他觉得你在给他戴高帽。';
+    rq.innerHTML = '💬 <strong>想一想：</strong>当你到任一个新团队，你的第一反应是"展示能力"还是"先了解现状"？绝大多数管理者下意识选前者——但效果恰恰相反。下次试试后者。';
+  }
+
+  // ===== Consolidated Insight =====
+  document.getElementById('consolidatedInsight').innerHTML = '<strong>📖 贯穿这场对话的一条主线：</strong>新管理者到岗的本质不是"你有多厉害"——是"你让团队觉得你能帮到他们"。<br><br>你做的每一个动作都在传递一个信号——NPC-周在解读这个信号。你说"聚焦两个户型"——他在解读："他懂业务吗？"你说"不容易"——他在解读："他站哪边？"你说"我亲自去谈"——他在解读："他敢不敢？"<br><br><strong>新管理者的信任公式：信任 = (能力 + 诚意) ÷ 自我导向。</strong>你越少证明自己有多厉害（降低自我导向），NPC-周越愿意相信你。';
+
+  // ===== Findings =====
+  var fc = document.getElementById('findingsContainer');
+  var fHTML = '';
+
+  if (session && revealed) {
+    if (revealed.trustAsked) {
+      fHTML += '<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">做得好</span><span class="fd-principle">①P₂ 建立信任</span></div><div class="fd-quote">——你问了NPC-周看到了什么，而不是直接告诉他你将要做什么。</div><div class="fd-note">这是新管理者到岗最难的一步——压制住自己"要先证明价值"的冲动。你做到了。NPC-周感觉到了尊重而非侵略。</div></div>';
+    }
+    if (phase === 'DIAGNOSE' || phase === 'SUBTRACT' || phase === 'DEMONSTRATE') {
+      fHTML += '<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">做得好</span><span class="fd-principle">②P₁ 诊断问题</span></div><div class="fd-quote">——你深入了解了数据或团队的真实状态。</div><div class="fd-note">NPC-周印象最深的一句话可能是你问的那个问题。不是每个新管理者都会在第一天追问"哪个户型最好卖"——他注意到了。</div></div>';
+    }
+    if (revealed.directionGiven) {
+      fHTML += '<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">做得好</span><span class="fd-principle">③P₅ 示范赋能</span></div><div class="fd-quote">——你给了团队一个具体的方向，而不是一把压力。</div><div class="fd-note">对于过劳的团队，最有效的激励不是加压——是砍掉不需要做的事。你选了一个户型聚焦策略——这比说一百句"大家一起加油"管用。</div></div>';
+    }
+    if (revealed.demoDone) {
+      fHTML += '<div class="finding"><div class="fd-head"><span class="fd-badge" style="background:#DCFCE7;color:#166534">做得好</span><span class="fd-principle">④P₃ 重构目标</span></div><div class="fd-quote">——你主动提出亲自示范。</div><div class="fd-note">这个动作的价值远超一次培训。对NPC-周来说，你亲自下场=你不是那种"只动嘴不动手"的管理者。动作本身传递的信号比做对了什么更重要。</div></div>';
+    }
+
+    // Fork analysis based on TG-001 decision points
+    fHTML += '<div class="fork-box"><div class="fork-label">第一天晚上的关键岔路口</div>';
+    fHTML += '<div class="fork-path fork-actual"><strong>你走了这条路：</strong>' + (revealed.trustAsked ? '先问数据再想办法 → 方向聚焦 → 等待行动' : '没有建立信任就进入了行动阶段') + '</div>';
+    if (revealed.demoDone) {
+      fHTML += '<div class="fork-path fork-alt"><strong>你守住了最后的台阶：</strong>亲自示范。这不是TG-001场景卡里的"最优路径"——是让NPC-周从'''行，我试试'''变成'''我跟你干'''最关键的一步。</div>';
+    } else {
+      fHTML += '<div class="fork-path fork-alt"><strong>差的那一步：</strong>如果最后你主动说"我亲自去谈一组客户给你看"——NPC-周的反应该不会是"我试试"而是"成交"。对自己——不是对他说。</div>';
+    }
+    fHTML += '<div style="font-size:9px;color:#A8A29E;margin-top:6px">TG-001 首开支援 · MTP课后练习
+MTP3管理角色→MTP8信赖关系→MTP4计划命令→MTP7培育启发→MTP11激励（对下管理·激励主线）：①先问数据不先宣布方案 ②聚焦减法不加压 ③亲自示范不培训。</div>';
+    fHTML += '</div>';
+  }
+
+  fc.innerHTML = fHTML || '<p style="font-size:12px;color:#78716C;text-align:center;padding:16px">完成一次完整对话后，这里会显示你的关键行为分析。</p>';
+
+  // ===== Weakness + Courses =====
+  if (s) {
+    var sorted = keys.map(function(k, i) { return { key: k, label: labels[i], score: s[k] }; });
+    sorted.sort(function(a, b) { return a.score - b.score; });
+    var weakest = sorted[0];
+    var second = sorted[1];
+
+    var courses = {
+      p2_trust: { title: 'MTP3·8 管理角色认知+信赖关系的形成（对下管理）', desc: '管理者对下的三大角色（管理者/教练/领导者）。非权力影响力=专家权+典范权。信任四要素。→ 课后练习：到岗第一天，用行动而非语言建立第一笔信任，识别谁是你团队里的"NPC-周"。' },
+      p1_diagnose: { title: 'MTP10·11 问题解决+激励的时机原则（诊断与决策）', desc: '问题意识、问题分类、问题解决六步骤。激励的时机原则——先诊断再激励，没搞清楚问题前任何方案都是闭眼射箭。→ 课后练习：花一天爬数据、跟岗、走访，列出三个团队自己都没意识到的卡点。' },
+      p5_empower: { title: 'MTP7·11 培育与启发+榜样激励（示范与带教）', desc: 'OJT四步骤：示教→跟做→反馈→独立。榜样激励——示范是无声语言，亲自下场的说服力超过一百句动员。→ 课后练习：亲自示范一组客户成交，用行动告诉团队"这条路走得通"。' },
+      p3_reframe: { title: 'MTP4·11 计划与命令+参与激励（目标聚焦）', desc: '计划的制定、5W2H、命令的下达方式。参与激励——让团队参与目标制定，从"要我做"变成"我要做"。→ 课后练习：列出"可以停做的事"清单，砍掉干扰项，聚焦最有把握的目标。' }
+    };
+
+    var wc = document.getElementById('weaknessContainer');
+    var wHTML = '<div class="weakness-card"><strong>🔴 最薄弱：' + weakest.label + '（得分' + Math.round(weakest.score) + '）</strong><br>' + courses[weakest.key]||courses['p2_trust'].desc + '</div>';
+    wHTML += '<a class="course-link" href="#"><span>📚</span><strong>' + courses[weakest.key]||courses['p2_trust'].title + '</strong><span class="course-arrow">→</span></a>';
+    if (second && second.score < 55 && second.key !== weakest.key) {
+      wHTML += '<div class="weakness-card" style="margin-top:8px"><strong>🟡 次薄弱：' + second.label + '（得分' + Math.round(second.score) + '）</strong><br>' + courses[second.key]||courses['p2_trust'].desc + '</div>';
+      wHTML += '<a class="course-link" href="#"><span>📚</span><strong>' + courses[second.key]||courses['p2_trust'].title + '</strong><span class="course-arrow">→</span></a>';
+    }
+    wc.innerHTML = wHTML;
+
+    // One thing commitment prompt
+    var whyMap = {
+      trust: '在下次到岗一个新团队时，第一天不说"我的方案是"——先问"你觉得最大的问题在哪"。做对的信号：NPC-周放下了戒备。',
+      diagnose: '在下次到岗新项目时，花至少一天爬数据、跟岗、聊天——不做任何决策。做对的信号：你能说出三个团队自己都没意识到的卡点。',
+      subtract: '在下次面对过劳团队时，列一个"可以停做的事"清单——而不是"还要做的事"。做对的信号：团队松一口气。',
+      demo: '在下次制定新策略后，主动说"我先做一单给你看"。做对的信号：NPC-周的称呼从"新来的"变成"你"。'
+    };
+    document.getElementById('oneThingPrompt').textContent = '你这次最需要改进的是' + weakest.label + '。想想下次你可以怎么做不同？';
+    document.getElementById('commitField').placeholder = '下次到任新团队时，我会...';
+
+    // Commitment placeholder
+    var placeholderMap = {
+      trust: '下次，当我面对一个新团队的第一天时，我不会宣布方案。我会先找到团队里最清醒的那个人，问他看到了什么。',
+      diagnose: '下次，当我接手一个新项目时，我会先花一天时间跟数据和跟人待在一起——什么决策都不做。',
+      subtract: '下次，当我看到团队在加班赶工时，我会说"哪些事可以停？"而不是"还有什么能做？"。',
+      demo: '下次，当我制定了一个新方向之后，我会说"明天我带你做一次"。而不是"你去试试"。'
+    };
+    document.getElementById('commitField').placeholder = placeholderMap[weakest.key];
+  }
+
+  // ===== Side panel =====
+  var sfEl = document.getElementById('sideFindings');
+  var side = [];
+  if (revealed) {
+    if (revealed.trustAsked) side.push('<span style="color:#16A34A">✅</span> 先问了NPC-周的看法');
+    if (phase === 'DIAGNOSE' || phase === 'SUBTRACT' || phase === 'DEMONSTRATE') side.push('<span style="color:#16A34A">✅</span> 深入了解了团队现状');
+    if (revealed.directionGiven) side.push('<span style="color:#16A34A">✅</span> 给了具体方向（MTP4聚焦做减法）');
+    if (revealed.demoDone) side.push('<span style="color:#16A34A">✅</span> 亲自示范' );
+    if (npcState !== 'FOLLOWING' && npcState !== 'ACCEPTING') side.push('<span style="color:#DC2626">⚠️</span> NPC-周还在观望');
+    side.push('<span style="color:#7C3AED">🔄</span> 关注：从"我试试"到"我跟你干"的过渡');
+  }
+  var sideHTML = '';
+  side.forEach(function(s) { sideHTML += '<div class="key-item">' + s + '</div>'; });
+  sfEl.innerHTML = sideHTML || '<div class="key-item" style="color:#A8A29E">完成一次完整对话后显示。</div>';
+
+  // Anti-patterns
+  if (ap) {
+    var apEl = document.getElementById('sideAntiPatterns');
+    var apText = [];
+    if (ap.t01_jumpToSolution >= 1) apText.push('⚠️ 第一天就想宣布方案（先发制人）');
+    if (ap.t03_infoIllusion >= 1) apText.push('⚠️ 用资料/工具替代激励');
+    if (ap.t04_trainNotDemo >= 1) apText.push('⚠️ 用培训替代了亲自示范');
+    if (ap.t05_pressureIsMotivation >= 1) apText.push('⚠️ 用加压替代了策略');
+    if (ap.t08_skipDiagnose >= 1) apText.push('⚠️ 跳过诊断直接给答案');
+    apEl.innerHTML = apText.length > 0 ? apText.join('<br>') : '✅ 没有触发明显的反模式';
+  }
+
+  // Previous commitment
+  if (prevCommit && prevCommit.behavior) {
+    var pc = document.getElementById('prevCommit');
+    pc.style.display = 'block';
+    pc.innerHTML = '<strong>📝 你上次的承诺：</strong>"' + prevCommit.behavior + '"<br><span style="font-size:9px;color:#A8A29E">' + new Date(prevCommit.timestamp).toLocaleDateString('zh-CN') + '</span>';
+  }
+
+  // Practice count
+  if (session && session.practiceCount > 1) {
+    var ph = document.getElementById('practiceHistory');
+    ph.style.display = 'block';
+    ph.innerHTML = '<strong>📈 这是你第 ' + session.practiceCount + ' 次练习 TG-001。</strong><br><span style="font-size:10px;color:#78716C">每次练习的P步骤趋势将在下一次更新中展示。</span>';
+  }
+}
+
+function save() {
+  var v = document.getElementById('commitField').value.trim();
+  if (!v) { showToast('写下你的承诺——一句话就行。', 2500); return; }
+  try { localStorage.setItem('tg001_commitment', JSON.stringify({ behavior: v, timestamp: Date.now() })); } catch(e) {}
+  showToast('承诺已保存。下次练习会调出来对比。', 2500);
+}
+
+function showToast(m, d) {
+  var t = document.getElementById('toast');
+  t.textContent = m;
+  t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(function() { t.style.opacity = '0'; }, d || 2500);
+}
+
+renderAll();
+</script>
+</body>
+</html>

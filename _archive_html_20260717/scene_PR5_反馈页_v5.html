@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · 小张 · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#FAF9F6 0%,#F4F1EC 30%,#F9F7F4 60%,#F1EEE9 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .container{max-width:680px;margin:0 auto;padding:32px 24px 60px}
+
+  /* ===== 觉察层 ===== */
+  .card{background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.55);border-radius:18px;padding:22px 20px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.03)}
+
+  .layer-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:12px}
+  .layer-title{font-size:16px;font-weight:700;color:#1C1917;line-height:1.35;margin-bottom:10px}
+
+  .header-meta{text-align:center;margin-bottom:20px}
+  .header-meta p{font-size:13px;color:#A8A29E}
+  .header-meta .highlight{color:#1C1917;font-weight:500}
+
+  /* Summary insight */
+  .insight-text{font-size:14px;color:#44403C;line-height:1.7;margin-bottom:10px}
+  .insight-text strong{color:#1C1917}
+  .aw-box{background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.2);border-radius:14px;padding:16px 18px;margin:10px 0;font-size:13px;color:#3B82F6;line-height:1.65}
+
+  /* Radar chart */
+  .radar-area{display:flex;align-items:center;gap:24px;padding:12px 0;margin:8px 0}
+  .radar-svg{flex-shrink:0}
+  .radar-labels{display:flex;flex-direction:column;gap:8px}
+  .radar-label-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#44403C}
+  .radar-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .radar-score{font-weight:600;color:#1C1917;margin-left:4px}
+
+  /* ===== 行为层 ===== */
+  .ev-item{margin-bottom:14px}
+  .ev-header-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .ev-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:700}
+  .ev-round{font-size:11px;color:#A8A29E}
+  .ev-quote{font-size:13px;color:#44403C;line-height:1.6;padding:10px 14px;background:rgba(0,0,0,.025);border-radius:10px;margin-bottom:6px;font-style:italic}
+  .ev-why{font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:4px}
+  .ev-alt{font-size:13px;color:#16A34A;line-height:1.6;padding:10px 14px;background:rgba(209,250,229,.35);border-radius:10px;margin-top:8px}
+  .ev-alt strong{color:#065F46}
+
+  /* Fork */
+  .fork-box{background:rgba(254,243,199,.25);border:1px solid rgba(251,191,36,.12);border-radius:14px;padding:16px 18px;margin:10px 0}
+  .fork-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:6px}
+  .fork-path{padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.55;margin:4px 0}
+  .fork-actual{background:rgba(254,226,226,.35);border:1px solid rgba(239,68,68,.06)}
+  .fork-alt{background:rgba(209,250,229,.35);border:1px solid rgba(16,185,129,.06)}
+
+  /* Pattern */
+  .pat-box{background:rgba(243,232,255,.35);border:1px solid rgba(167,139,250,.15);border-radius:14px;padding:16px 18px;margin:10px 0;font-size:13px;color:#7C3AED;line-height:1.65}
+
+  /* ===== 行动层 ===== */
+  .action-card{background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid rgba(16,185,129,.2);border-radius:18px;padding:22px 20px;margin-bottom:12px}
+  .action-title{font-size:15px;font-weight:600;color:#1C1917;margin-bottom:8px}
+  .action-text{font-size:14px;color:#44403C;line-height:1.65;margin-bottom:8px}
+
+  .bridge-box{background:rgba(249,250,251,.7);border:1px solid rgba(0,0,0,.06);border-radius:14px;padding:16px 18px;margin-top:12px}
+  .bridge-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6B7280;margin-bottom:6px}
+  .bridge-text{font-size:13px;color:#44403C;line-height:1.65}
+
+  .btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:13px 24px;border-radius:14px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+  .btn-dark{background:#1C1917;color:#fff}.btn-dark:hover{background:#000}
+  .btn-ghost{background:rgba(0,0,0,.03);color:#44403C}.btn-ghost:hover{background:rgba(0,0,0,.06)}
+
+  .footer-note{text-align:center;font-size:12px;color:#D6D3D1;margin-top:16px}
+
+  hr{border:none;height:1px;background:linear-gradient(to right,transparent,rgba(0,0,0,.06),transparent);margin:20px 0}
+
+  @media(max-width:540px){.radar-area{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header-meta">
+    <p>绩效面谈 · <span class="highlight">小张</span> · A级·承压待提升</p>
+    <p style="font-size:12px;color:#D6D3D1">9 轮对话结束 · 现在回头看看发生了什么</p>
+  </div>
+
+  <!-- ====== 觉察层 ====== -->
+  <div class="card">
+    <span class="layer-tag" style="background:rgba(59,130,246,.08);color:#3B82F6">觉察 · 你可能没看到的</span>
+
+    <p class="insight-text">
+      小张推门进来时带着自己的复盘笔记——<strong>她来面谈是要东西的，不是来听表扬的。</strong>你的开场给了她具体的数据肯定（她需要这个），但在帮她看到"退缩"模式的过程中，你停在了一句"我相信你能调整"——这恰好是她上次面谈后最失望的那种回应。
+    </p>
+
+    <div class="aw-box">
+      <strong>第 3 轮她暴露了一个信号：</strong>"其实我知道自己有时候会缩，但我不知道这是多大的问题。"<br>
+      对一个自我要求高的人来说，承认自己不知道是需要勇气的。她在等你帮她拆解这个模式——<strong>你给了信任，没给工具。</strong>
+    </div>
+
+    <!-- Radar chart -->
+    <div class="radar-area">
+      <svg width="140" height="140" viewBox="0 0 140 140" class="radar-svg">
+        <!-- Grid -->
+        <polygon points="70,16 121,54 102,112 38,112 19,54" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="1"/>
+        <polygon points="70,34 112,58 96,98 44,98 28,58" fill="none" stroke="rgba(0,0,0,.04)" stroke-width="1"/>
+        <polygon points="70,52 102,70 90,82 50,82 38,70" fill="none" stroke="rgba(0,0,0,.03)" stroke-width="1"/>
+        <!-- Axes -->
+        <line x1="70" y1="70" x2="70" y2="16" stroke="rgba(0,0,0,.08)" stroke-width="1"/>
+        <line x1="70" y1="70" x2="121" y2="54" stroke="rgba(0,0,0,.08)" stroke-width="1"/>
+        <line x1="70" y1="70" x2="102" y2="112" stroke="rgba(0,0,0,.08)" stroke-width="1"/>
+        <line x1="70" y1="70" x2="38" y2="112" stroke="rgba(0,0,0,.08)" stroke-width="1"/>
+        <line x1="70" y1="70" x2="19" y2="54" stroke="rgba(0,0,0,.08)" stroke-width="1"/>
+        <!-- Data (72,38,30,25,65) → scale to 0-100 → multiply by radius 54 -->
+        <polygon points="70,31 71,50 104,95 47,102 24,57" fill="rgba(59,130,246,.12)" stroke="#3B82F6" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <div class="radar-labels">
+        <div class="radar-label-item"><span class="radar-dot" style="background:#3B82F6"></span>肯定业绩 <span class="radar-score">72</span></div>
+        <div class="radar-label-item"><span class="radar-dot" style="background:#F59E0B"></span>帮她看到模式 <span class="radar-score">38</span></div>
+        <div class="radar-label-item"><span class="radar-dot" style="background:#EF4444"></span>给了具体方法 <span class="radar-score">30</span></div>
+        <div class="radar-label-item"><span class="radar-dot" style="background:#9CA3AF"></span>形成了约定 <span class="radar-score">25</span></div>
+        <div class="radar-label-item"><span class="radar-dot" style="background:#8B5CF6"></span>接住了她的主动 <span class="radar-score">65</span></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#A8A29E;margin-top:4px"><strong>一句话：</strong>开场让她觉得"这次不一样"。收尾让她觉得"还是差不多"。</p>
+  </div>
+
+  <!-- ====== 行为层 ====== -->
+  <div class="card">
+    <span class="layer-tag" style="background:rgba(16,185,129,.08);color:#10B981">行为 · 你做了什么，导致了什么</span>
+
+    <!-- Good -->
+    <div class="ev-item">
+      <div class="ev-header-row">
+        <span class="ev-badge" style="background:#DCFCE7;color:#166534">做对了</span>
+        <span class="ev-round">第 1 轮</span>
+      </div>
+      <div class="ev-quote">"你上半年的表现很亮眼，取得了部门第二的成绩，三个重点项目全部完成。我对你是非常认可的。"</div>
+      <div class="ev-why"><strong>为什么有效：</strong>上次面谈她说"继续保持就好"让她失望了半年——她做了很多，只得到了四个字。这次你给出了<strong>具体的数据锚点</strong>：部门第二、三个项目。她立刻感觉到——这次不一样，你真的看了她的业绩。她接下来的反应是主动翻开笔记本，而不是礼貌地点头。</div>
+    </div>
+
+    <hr>
+
+    <!-- Needs improvement 1 -->
+    <div class="ev-item">
+      <div class="ev-header-row">
+        <span class="ev-badge" style="background:#FEE2E2;color:#DC2626">可以不同</span>
+        <span class="ev-round">第 5 轮</span>
+      </div>
+      <div class="ev-quote">"我觉得你有时候面对压力会慢半拍——但我相信你能调整过来。你有这个能力。"</div>
+      <div class="ev-why"><strong>问题在哪：</strong>方向对了——你点出了"慢半拍"。但"我相信你能调整"<strong>不是方法，是期望。</strong>她带着复盘笔记来面谈，就是要具体路径的。"慢半拍"她自己已经察觉了——她不知道的是怎么破。</div>
+      <div class="ev-alt">
+        <strong>替代做法：</strong>"我注意到三个流失客户有一个共同点——都是在价格谈判最后阶段流失的。你回想一下那几次——你的心理状态是怎样的？下次谈判前，<strong>你先跟我预演一遍。我扮客户，你来说。试三次，你就有肌肉记忆了。</strong>"<br><br>
+        <strong>区别在哪：</strong>你说的话给了"诊断"+"期望"。替代的话给了<strong>"事例"+"方法"</strong>。她走出会议室时，一个是"我要自己想办法调整"，一个是"我下周三先跟经理预演一次"——后者是她能立刻做的。
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Needs improvement 2 -->
+    <div class="ev-item">
+      <div class="ev-header-row">
+        <span class="ev-badge" style="background:#FEE2E2;color:#DC2626">可以不同</span>
+        <span class="ev-round">第 8 轮 · 收尾</span>
+      </div>
+      <div class="ev-quote">"那我们今天就先聊到这里。你回去好好调整，有什么需要随时找我。"</div>
+      <div class="ev-why"><strong>问题在哪：</strong>"随时找我"——上次面谈你是不是也这样结尾的？她上次没有找你，不是因为没需要——是因为"随时"等于"没时间"。话是暖的，但没有一个她能抓住的约定。</div>
+      <div class="ev-alt">
+        <strong>替代做法：</strong>"我们定两件事。第一，下周三下午你带着三个流失客户的复盘来找我——一起过一遍。第二，接下来两次价格谈判前，花十分钟跟我预演。我把下周三下午3点锁在日历上了。你觉得还有什么需要加的？"<br><br>
+        <strong>区别在哪：</strong>"随时找我"=她不知道什么时候。"下周三下午3点"=她知道。前者是开放的善意，后者是<strong>一个她能放进口袋带走的东西</strong>。
+      </div>
+    </div>
+
+    <!-- Fork -->
+    <div class="fork-box">
+      <div class="fork-label">第 5 轮是一个岔路口</div>
+      <div class="fork-path fork-actual"><strong>你走的路：</strong>"我相信你能调整过来" → 她点了点头，笔记本没有再翻开。</div>
+      <div class="fork-path fork-alt"><strong>旁边那条路：</strong>"我们拆一下——你上次'缩'是什么时候？缩了多久弹回来？" → 她开始回忆具体场景，自己总结规律。</div>
+    </div>
+
+    <!-- Pattern -->
+    <div class="pat-box">
+      <strong>你可能有一个模式：</strong>面对高绩效下属时，你习惯用"肯定 + 信任"来回应他们的困惑。这本身不是错的。但当他们<strong>主动来要方法</strong>的时候，"我相信你"就不再是支持——是<strong>回避了给方向的难度</strong>。下次当高绩效下属主动问你"我该改进什么"——试着不只用你的信任回应，用你的观察。
+    </div>
+  </div>
+
+  <!-- ====== 行动层 ====== -->
+  <div class="action-card">
+    <span class="layer-tag" style="background:rgba(16,185,129,.08);color:#10B981">行动 · 下次试这个 + 带回你的团队</span>
+
+    <div class="action-title">在练习里试一次</div>
+    <p class="action-text">当高绩效下属说"我知道我有这个问题"的时候——<strong>不要停在"我相信你能改"。追问："你上次出现这个问题是什么时候？当时你是怎么反应过来的？"</strong>让她自己拆解自己的模式。</p>
+
+    <!-- Bridge to real team -->
+    <div class="bridge-box">
+      <div class="bridge-label">🔗 带回你的真实团队</div>
+      <div class="bridge-text">
+        <p>你的团队里有像小张这样的人吗——业绩不错、态度积极、但有一个自己也知道却不知道怎么改的短板？</p>
+        <p style="margin-top:6px"><strong>这周你可以做的一件事：</strong>下次一对一的时候，不要只问"最近怎么样"。拿一个<strong>具体的项目或客户案例</strong>，问她："你回想一下这个项目里——有没有哪个时刻你觉得'卡住了'？当时你是怎么反应过来的？"</p>
+        <p style="margin-top:6px;font-size:12px;color:#78716C">这个动作从小张场景里直接迁移过来。它不需要你是教练——只需要你比她多问一层。第一层是"你觉得自己哪里需要改进"，第二层是"上次出现这个问题时发生了什么"——第二层才是她没想过的。</p>
+        <p style="margin-top:6px;font-size:12px;color:#78716C">如果你做了这件事，下次练习时告诉我——她的反应和小张有什么不同。</p>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-dark">带着这个提醒，再练一次</button>
+      <button class="btn btn-ghost">换个场景试试</button>
+    </div>
+  </div>
+
+  <p class="footer-note">建议 3-7 天内再练一次。这个窗口里，你的大脑还在消化这次体验。</p>
+
+</div>
+</body>
+</html>

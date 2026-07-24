@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>绩效面谈 · 管理者B · 引擎驱动版</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(175deg,#F8F6F2 0%,#EDE8E0 30%,#F5F2ED 60%,#EAE4DC 100%);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .amb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.2}
+  .amb-1{width:420px;height:420px;background:#FEE2E2;top:-120px;left:-70px}
+  .amb-2{width:320px;height:320px;background:#FEF3C7;bottom:-80px;right:-50px}
+  .phase{display:none;position:relative;z-index:10}
+  .phase.active{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+
+  /* === PREP === */
+  .prep-card{max-width:480px;width:100%;background:rgba(255,255,255,.5);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.55);border-radius:24px;padding:40px 32px;box-shadow:0 8px 40px rgba(0,0,0,.05);animation:fadeUp .5s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .atmo{display:flex;align-items:center;gap:12px;font-size:12px;color:#A8A29E;margin-bottom:24px}
+  .hero-fact{font-size:13px;color:#DC2626;font-weight:600;margin-bottom:8px}
+  .hero-title{font-size:22px;font-weight:700;color:#1C1917;line-height:1.3;margin-bottom:10px}
+  .divider{height:1px;background:linear-gradient(to right,transparent,rgba(0,0,0,.08),transparent);margin:22px 0}
+  .sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#A8A29E;margin-bottom:8px}
+  .body-text{font-size:14px;color:#44403C;line-height:1.7}
+  .opening-box{background:rgba(254,243,199,.3);border:1px solid rgba(251,191,36,.15);border-radius:16px;padding:18px 20px;margin-top:8px}
+  .opening-quote{font-size:14px;color:#1C1917;line-height:1.6;font-style:italic}
+  .goal-line{font-size:13px;color:#44403C;line-height:1.6;margin-top:6px;padding-left:12px;border-left:2px solid rgba(16,185,129,.3)}
+  .btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;margin-top:28px;border:none;border-radius:16px;background:#1C1917;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(0,0,0,.1);transition:all .25s ease}
+  .btn-primary:hover{background:#000;transform:translateY(-1px)}
+  .btn-primary:active{transform:scale(.97)}
+
+  /* === DOOR === */
+  .door-overlay{position:fixed;inset:0;z-index:100;background:linear-gradient(175deg,rgba(28,25,23,.97),rgba(28,25,23,.94));display:flex;align-items:center;justify-content:center;animation:fadeIn .6s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .door-content{text-align:center;max-width:400px;padding:40px}
+  .door-line{font-size:14px;color:rgba(255,255,255,.5);line-height:2}
+  .door-highlight{font-size:18px;color:rgba(255,255,255,.85);font-weight:500;line-height:1.6;margin:20px 0}
+  .door-action{font-size:13px;color:rgba(255,255,255,.35);margin-top:24px;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:.7}}
+
+  /* === DIALOGUE === */
+  .dialogue-app{display:flex;width:100%;max-width:880px;height:85vh;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.08)}
+  .chat-area{flex:1;display:flex;flex-direction:column;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+  .chat-header{padding:10px 18px;background:rgba(255,255,255,.5);border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:center;gap:12px}
+  .npc-mini{display:flex;align-items:center;gap:8px}
+  .npc-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#F472B6,#EC4899);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+  .state-ind{display:flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:10px;color:#78716C;background:rgba(0,0,0,.03);margin-left:auto}
+  .state-dot{width:5px;height:5px;border-radius:50%}
+  .msg-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:82%;animation:msgIn .3s ease}
+  @keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  .msg.npc{align-self:flex-start}
+  .msg.user{align-self:flex-end}
+  .msg-bubble{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55}
+  .msg.npc .msg-bubble{background:#fff;border:1px solid rgba(0,0,0,.04);border-bottom-left-radius:4px}
+  .msg.user .msg-bubble{background:#1C1917;color:#fff;border-bottom-right-radius:4px}
+  .whisper{align-self:stretch;margin:4px 0;padding:8px 12px;background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.15);border-radius:10px;font-size:11px;color:#3B82F6;line-height:1.5;display:flex;align-items:flex-start;gap:6px}
+  .scene-note{align-self:center;font-size:10px;color:#A8A29E;padding:4px 12px}
+  .chat-input-area{padding:12px 16px;background:rgba(255,255,255,.5);border-top:1px solid rgba(0,0,0,.04);display:flex;gap:8px}
+  .chat-input{flex:1;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:10px 14px;font-size:13px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.5);line-height:1.5}
+  .chat-input:focus{border-color:#EC4899;box-shadow:0 0 0 3px rgba(236,72,153,.06)}
+  .send-btn{width:36px;height:36px;border-radius:50%;border:none;background:#1C1917;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .send-btn:hover{background:#EC4899}
+  .side-panel{width:200px;background:rgba(255,255,255,.35);border-left:1px solid rgba(0,0,0,.04);padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+  .side-card{background:rgba(255,255,255,.5);border-radius:10px;border:1px solid rgba(0,0,0,.03);padding:10px}
+  .side-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#A8A29E;margin-bottom:4px}
+  .side-text{font-size:11px;color:#44403C;line-height:1.5}
+
+  /* === FEEDBACK === */
+  .fb-container{max-width:560px;width:100%;padding:24px 0 60px}
+  .fb-card{background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.55);border-radius:20px;padding:24px 22px;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,.03);animation:fadeUp .5s ease}
+  .fb-reveal{font-size:14px;color:#44403C;line-height:1.7}
+  .fb-highlight{background:rgba(239,246,255,.5);border:1px solid rgba(147,197,253,.2);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:13px;color:#3B82F6;line-height:1.55}
+  .fb-fork{background:rgba(254,243,199,.3);border:1px solid rgba(251,191,36,.15);border-radius:12px;padding:16px 18px;margin:8px 0}
+  .fb-fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:6px}
+  .fb-path{padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.55;margin:6px 0}
+  .fb-actual{background:rgba(254,226,226,.4);border:1px solid rgba(239,68,68,.08)}
+  .fb-alt{background:rgba(209,250,229,.4);border:1px solid rgba(16,185,129,.08)}
+  .fb-pattern{background:rgba(243,232,255,.4);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:16px 18px;margin:8px 0;font-size:13px;color:#7C3AED;line-height:1.6}
+  .fb-scores{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .fb-score-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,.02);border-radius:8px;font-size:11px}
+  .fb-bar{width:50px;height:3px;border-radius:2px;background:#E5E7EB;overflow:hidden;margin-left:6px}
+  .fb-fill{height:100%;border-radius:2px}
+
+  /* Phase dots */
+  .phase-indicator{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:200;opacity:.5}
+  .phase-dot{width:6px;height:6px;border-radius:50%;background:#A8A29E}
+  .phase-dot.current{background:#1C1917}
+
+  @media(max-width:640px){.side-panel{display:none}.dialogue-app{height:90vh;border-radius:0}.msg{max-width:90%}.fb-scores{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+
+<!-- ====== PHASE 1: PREP ====== -->
+<div class="phase active" id="phase1">
+  <div class="prep-card">
+    <div class="atmo"><span>下午 3:00</span><span>·</span><span>小会议室</span><span>·</span><span>半年度面谈</span></div>
+    <div class="hero-fact">绩效评估结果：C</div>
+    <h1 class="hero-title">她以为自己是B。<br>数据说的是C。</h1>
+    <div class="divider"></div>
+    <div class="sec-label">你即将面谈的人</div>
+    <p class="body-text">管理者B，25岁，你带了两年的管培生。她对工作很上心，对你一直比较认可。同事关系处得不错——张姐常夸她进步大，李哥帮她改过几次方案。这些善意让她相信自己做的不错。她不知道的是——返工率全组最高，细节错误让同事补位多次。同事们碍于情面，没人当面说过。</p>
+    <div class="divider"></div>
+    <div class="sec-label">这次面谈最难的地方</div>
+    <p class="body-text" style="font-size:13px">她的<strong>努力是真的</strong>——加班到九点是常态。数据<strong>也是真的</strong>——五次返工记录摆在那里。你的任务是让她看到第二件事，同时不让她觉得你否定了第一件。</p>
+    <div class="divider"></div>
+    <div class="sec-label">她推门进来</div>
+    <div class="opening-box">
+      <p class="opening-quote">"经理好！我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"</p>
+      <p style="font-size:11px;color:#A8A29E;margin-top:6px">她脸上带着笑。没有带笔记本。她以为这是一场确认，不是一场挑战。</p>
+    </div>
+    <div style="margin-top:20px"><div class="sec-label">你要做的</div><p class="goal-line">告诉她C级的结果。用事实解释为什么。接住她的反应。帮她看到下一步。</p></div>
+    <button class="btn-primary" onclick="goPhase(2)"><i data-lucide="door-open" class="w-4 h-4"></i> 准备好了，推门进去</button>
+  </div>
+</div>
+
+<!-- ====== PHASE 2: DOOR ====== -->
+<div class="phase" id="phase2">
+  <div class="door-overlay" onclick="goPhase(3)">
+    <div class="door-content">
+      <div style="margin-bottom:24px;opacity:.25"><i data-lucide="door-open" style="width:48px;height:48px;color:#fff"></i></div>
+      <p class="door-line">你站在会议室门口。</p>
+      <p class="door-line">手放在门把手上。</p>
+      <p class="door-line">她不知道接下来会发生什么。</p>
+      <p class="door-highlight">你知道了。<br>记住一件事：<br><strong style="color:#fff">别让她猜。</strong></p>
+      <p class="door-line" style="font-size:12px;margin-top:14px">结论放在前30秒。事实跟在后面。</p>
+      <p class="door-action">点击任意位置，推门进去</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PHASE 3: DIALOGUE (ENGINE-DRIVEN) ====== -->
+<div class="phase" id="phase3">
+  <div class="dialogue-app">
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="npc-mini"><div class="npc-av">林</div><span style="font-size:13px;font-weight:600;color:#1C1917">管理者B</span></div>
+        <div class="state-ind" id="stateInd"><span class="state-dot" style="background:#16A34A"></span><span id="stateTxt">在听你说话</span></div>
+        <span style="font-size:10px;color:#A8A29E" id="rnd">第 1 轮</span>
+        <span style="font-size:9px;color:#A8A29E;opacity:.5;margin-left:4px" id="trustLabel"></span>
+      </div>
+      <div class="msg-list" id="msgList">
+        <div class="scene-note">下午3点 · 小会议室 · 你推门进去</div>
+        <div class="msg npc"><div class="msg-bubble">"经理好！我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"</div></div>
+        <div class="whisper"><i data-lucide="eye" class="w-3 h-3" style="flex-shrink:0;margin-top:2px"></i><span>她还不知道。你的下一句话会决定她是准备听，还是准备防御。<strong>别让她猜。</strong></span></div>
+      </div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" rows="2" placeholder="输入你的回应..." id="chatInput"></textarea>
+        <button class="send-btn" onclick="sendMsg()"><i data-lucide="send" class="w-3.5 h-3.5"></i></button>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="side-card"><div class="side-label">管理者B现在</div><div class="side-text" id="sideState">心情不错。她还不知道是C。她在等你开口。</div></div>
+      <div class="side-card"><div class="side-label">记住</div><div class="side-text">告诉她C。用事实解释。接住反应。帮她看到下一步。</div></div>
+      <div class="side-card"><div class="side-label" style="color:#DC2626">注意</div><div class="side-text" style="color:#DC2626" id="sideWarning">别说"但是你还不够努力"。</div></div>
+      <div style="margin-top:auto;text-align:center"><button onclick="endConversation()" style="padding:8px 16px;border-radius:10px;border:1px solid rgba(0,0,0,.08);background:rgba(0,0,0,.03);font-size:11px;color:#78716C;cursor:pointer;font-family:inherit">结束对话，查看反馈 →</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PHASE 4: FEEDBACK (DYNAMIC) ====== -->
+<div class="phase" id="phase4">
+  <div class="fb-container" id="fbContent">
+    <div style="text-align:center;margin-bottom:24px"><p style="font-size:12px;color:#A8A29E">对话结束 · 你讲了<span id="fbRounds">0</span>轮 · 现在回头看看发生了什么</p></div>
+    <!-- Filled dynamically by buildFeedback() -->
+  </div>
+</div>
+
+<!-- Phase dots -->
+<div class="phase-indicator" id="phaseDots">
+  <div class="phase-dot current" id="dot1"></div><div class="phase-dot" id="dot2"></div><div class="phase-dot" id="dot3"></div><div class="phase-dot" id="dot4"></div>
+</div>
+
+<script>
+lucide.createIcons();
+
+// ================================================================
+// NPC ENGINE
+// ================================================================
+const engine = {
+  state: 'GREETING',       // GREETING | SHOCK | EMOTIONAL | PROCESSING | CONSTRUCTIVE | SHUTDOWN
+  trust: 55,               // 0-100
+  round: 0,
+  history: [],             // [{round, managerSaid, state, trust, behaviors, npcSaid}]
+  ratingGiven: false,      // Has manager explicitly given the C rating?
+  factsUsed: 0,            // Count of fact-based responses
+  effortNegated: false,    // Has manager negated her effort?
+  supportOffered: false,   // Has manager offered concrete support?
+  questionLoopCount: 0,    // Consecutive open-ended questions without action
+  lastBehavior: null,
+
+  // State labels for UI
+  stateLabels: {
+    'GREETING': { text: '在听你说话', color: '#16A34A', side: '心情不错。她还不知道是C。她在等你开口。' },
+    'SHOCK': { text: '受到了冲击', color: '#DC2626', side: '刚听到C级。在消化。需要你给依据。' },
+    'EMOTIONAL': { text: '情绪在起伏', color: '#D97706', side: '委屈、困惑。需要你接住——不是安慰，是解释。' },
+    'PROCESSING': { text: '在理解原因', color: '#3B82F6', side: '开始接受事实了。准备好听下一步。' },
+    'CONSTRUCTIVE': { text: '准备好了', color: '#16A34A', side: '她在主动想方案。给她具体的方向。' },
+    'SHUTDOWN': { text: '在关闭自己', color: '#9CA3AF', side: '信任严重受损。她不再期待这次对话了。' }
+  },
+
+  reset() {
+    this.state = 'GREETING'; this.trust = 55; this.round = 0; this.history = [];
+    this.ratingGiven = false; this.factsUsed = 0; this.effortNegated = false;
+    this.supportOffered = false; this.questionLoopCount = 0; this.lastBehavior = null;
+  },
+
+  // Detect manager behaviors from input text
+  detectBehaviors(text) {
+    const b = [];
+    const t = text.toLowerCase();
+
+    if (/c级|绩效.*c|c等|评估.*c|等级.*c|结果是c|评定.*c|考核.*c/.test(t) || /你的.*等级|你的.*绩效|你的.*评估|这个季度.*c|上半年.*c/.test(t)) {
+      b.push('GAVE_RATING');
+    }
+    if (/返工|细节.*错误|数据.*错误|补位|五次|三次|记录|全组.*高|数据.*显示|具体.*事|举个例子|比如/.test(t)) {
+      b.push('USED_FACTS'); this.factsUsed++;
+    }
+    if (/理解.*感受|我知道.*难|不容易|我明白|接受.*结果|很难.*接受|不是.*否定|不是.*批评/.test(t)) {
+      b.push('VALIDATED_FEELING');
+    }
+    if (/不够努力|努力.*不够|加班.*不代表|不是.*努力.*就|态度.*问题|你就是.*不|认真.*不够/.test(t)) {
+      b.push('NEGATED_EFFORT'); this.effortNegated = true;
+    }
+    if (/每周.*对|五分钟|跟我.*确认|帮你看|对.*框架|先.*确认|我.*帮.*你.*看|设.*闹钟|记.*下来|定.*时间|周三.*碰/.test(t)) {
+      b.push('OFFERED_SUPPORT'); this.supportOffered = true;
+    }
+    if (/你觉得|你怎么看|从哪.*开始|什么.*方向|有什么.*想法|说说.*看|谈谈.*你/.test(t)) {
+      b.push('ASKED_OPEN');
+    }
+    if (/加油|相信.*你|你.*可以.*的|下次.*好|没.*关系|慢慢.*来|继续.*努力/.test(t) && !b.includes('USED_FACTS') && !b.includes('OFFERED_SUPPORT')) {
+      b.push('VAGUE_COMFORT');
+    }
+    if (/先.*不说|回头.*再|以后.*再|暂时.*不|这个.*放.*放|我们.*先.*聊.*别的/.test(t)) {
+      b.push('DELAYED');
+    }
+
+    this.lastBehavior = b;
+    return b;
+  },
+
+  // Update state based on behaviors and current state
+  updateState(behaviors) {
+    const prevState = this.state;
+
+    // Trust adjustments
+    if (behaviors.includes('GAVE_RATING') && !this.ratingGiven) {
+      this.trust -= 5; this.ratingGiven = true; // Honest but jarring
+    }
+    if (behaviors.includes('USED_FACTS')) this.trust += 12;
+    if (behaviors.includes('VALIDATED_FEELING')) this.trust += 8;
+    if (behaviors.includes('NEGATED_EFFORT')) this.trust -= 25;
+    if (behaviors.includes('OFFERED_SUPPORT')) this.trust += 15;
+    if (behaviors.includes('VAGUE_COMFORT')) this.trust -= 5;
+    if (behaviors.includes('DELAYED')) this.trust -= 8;
+    if (behaviors.includes('ASKED_OPEN') && !behaviors.includes('USED_FACTS') && !behaviors.includes('OFFERED_SUPPORT')) {
+      this.questionLoopCount++;
+      if (this.questionLoopCount >= 3) this.trust -= 3;
+    } else {
+      this.questionLoopCount = Math.max(0, this.questionLoopCount - 1);
+    }
+
+    this.trust = Math.max(0, Math.min(100, this.trust));
+
+    // State transitions
+    if (this.state === 'GREETING' && behaviors.includes('GAVE_RATING')) {
+      this.state = 'SHOCK';
+    } else if (this.state === 'SHOCK' && behaviors.includes('USED_FACTS') && this.round >= 2) {
+      this.state = 'EMOTIONAL';
+    } else if (this.state === 'EMOTIONAL' && behaviors.includes('USED_FACTS') && (behaviors.includes('VALIDATED_FEELING') || this.trust > 60)) {
+      this.state = 'PROCESSING';
+    } else if (this.state === 'PROCESSING' && (behaviors.includes('OFFERED_SUPPORT') || (behaviors.includes('ASKED_OPEN') && this.trust > 70))) {
+      this.state = 'CONSTRUCTIVE';
+    } else if (this.state === 'GREETING' && this.round >= 4 && !behaviors.includes('GAVE_RATING')) {
+      // Manager has been talking for 4 rounds without giving the rating
+      this.state = 'EMOTIONAL'; // 管理者B will ask directly
+    }
+
+    // Shutdown conditions
+    if (behaviors.includes('NEGATED_EFFORT') || this.trust < 20) {
+      this.state = 'SHUTDOWN';
+    }
+
+    return { prevState, newState: this.state, trust: this.trust };
+  },
+
+  // Generate NPC response based on current state
+  generateResponse(behaviors) {
+    const responses = {
+      'GREETING': [
+        "她看着你，脸上带着期待。在等你说等级。"
+      ],
+      'SHOCK': [
+        "她脸上的笑僵住了。愣了两秒。\n\n\"...C？\"\n\n眼眶有点红，但忍住了。\n\"经理，我不理解。我真的每天都在加班。张姐上个月还说我方案进步很大——为什么是C？\"",
+        "她沉默了。低下头，再抬起来的时候眼睛有点红。\n\n\"...C。\"她重复了一遍，像是在说服自己接受这个字。\n\"经理，我不明白。我真的尽力了。是哪里做得不好？\""
+      ],
+      'EMOTIONAL': [
+        "\"那几次返工我确实记得。但我以为改完就好了——没人跟我说这个会影响评估。李哥帮我那次，他说'没事，下次注意'——我以为那不算什么大问题。\"\n\n她声音变低了。\n\"经理，我真的不是不认真。我就是...有时候做着做着就不知道对不对了。不知道该问谁。\"",
+        "她咬了下嘴唇。\n\n\"上次张姐在大家面前说我进步大——我真的以为我做对了方向。现在你说C...我不知道该相信哪个。是张姐说得不对，还是我理解得不对？\""
+      ],
+      'PROCESSING': [
+        "\"所以...你的意思是——不是我不努力，是我努力的方向不对？\"\n\n她思考了一下。\n\"那你能告诉我吗——什么样的方案才算合格？不是'更好'那种，是具体的标准。我从来没人问过这个问题。\"",
+        "她擦了擦眼角，深吸一口气。\n\n\"好吧。我接受这个C。但我想知道——接下来我应该从哪个地方开始改？我不想下半年还是C。\""
+      ],
+      'CONSTRUCTIVE': [
+        "\"那以后我做方案之前，能不能先跟你对一下框架？五分钟就行。不用多——就告诉我方向对不对。\"\n\n她的语气变了——不是委屈了，是有了方向。\n\"周三下午你方便吗？我每周三带框架来找你。\"",
+        "\"我有个想法——以后每次交方案之前，我自己先查三个东西：数据有没有错、格式对不对、结论有没有依据。查完再交。你觉得这个标准够吗？\"\n\n她开始主动了。"
+      ],
+      'SHUTDOWN': [
+        "\"......\"\n\n她沉默了很长时间。然后站起来。\n\"经理，我知道了。还有别的事吗？没有的话我先回去了。\"",
+        "她不再看你了。声音变得很平。\n\"嗯。C级。我记住了。你还有其他要说的吗？\""
+      ]
+    };
+
+    // If state is SHOCK but manager hasn't given facts yet, push for explanation
+    if (this.state === 'SHOCK' && !behaviors.includes('USED_FACTS') && this.round >= 3) {
+      return "\"经理，你说我是C——但你一直没告诉我为什么。我需要知道原因。不是'整体不够好'那种——是具体的。\"";
+    }
+
+    // If state is GREETING and round >= 4 without rating, 管理者B pushes
+    if (this.state === 'GREETING' && this.round >= 4) {
+      this.state = 'EMOTIONAL';
+      return "\"经理，我们聊了几轮了——你还没告诉我等级。是不是不太好？你直接说吧。我已经做好心理准备了。\"";
+    }
+
+    const pool = responses[this.state] || responses['EMOTIONAL'];
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+};
+
+// ================================================================
+// UI CONTROLLER
+// ================================================================
+let currentPhase = 1;
+
+function goPhase(n) {
+  document.getElementById('phase'+currentPhase).classList.remove('active');
+  document.getElementById('phase'+n).classList.add('active');
+  document.getElementById('dot'+currentPhase).classList.remove('current');
+  document.getElementById('dot'+n).classList.add('current');
+  currentPhase = n;
+  if (n === 3) {
+    document.getElementById('chatInput').focus();
+  }
+  if (n === 4) {
+    document.getElementById('phase4').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function updateUI() {
+  const st = engine.stateLabels[engine.state];
+  document.getElementById('stateTxt').textContent = st.text;
+  document.getElementById('stateInd').querySelector('.state-dot').style.background = st.color;
+  document.getElementById('sideState').textContent = st.side;
+  document.getElementById('rnd').textContent = '第 ' + engine.round + ' 轮';
+
+  // Trust label (subtle, for debugging — can be hidden)
+  const tl = document.getElementById('trustLabel');
+  if (engine.trust >= 65) { tl.textContent = ''; }
+  else if (engine.trust >= 40) { tl.textContent = ''; }
+  else if (engine.trust >= 20) { tl.style.color = '#D97706'; tl.textContent = '⚠ 信任偏低'; }
+  else { tl.style.color = '#DC2626'; tl.textContent = '⚠ 信任严重不足'; }
+
+  // Warning
+  const warn = document.getElementById('sideWarning');
+  if (engine.effortNegated) {
+    warn.textContent = '你否定了她的努力——信任受到不可逆损伤。';
+  } else if (engine.questionLoopCount >= 3) {
+    warn.textContent = '你已经连续问了几轮开放式问题了——试着做一个具体的承诺。';
+  } else if (engine.trust < 30) {
+    warn.textContent = '信任很低。做一个具体动作——设日历、定时间、确认一个方向。';
+  } else {
+    warn.textContent = '别说"但是你还不够努力"。';
+  }
+}
+
+function addSystemNote(text) {
+  const list = document.getElementById('msgList');
+  const el = document.createElement('div');
+  el.className = 'scene-note';
+  el.textContent = text;
+  list.appendChild(el);
+}
+
+function addWhisper(text) {
+  const list = document.getElementById('msgList');
+  const el = document.createElement('div');
+  el.className = 'whisper';
+  el.innerHTML = '<i data-lucide="eye" class="w-3 h-3" style="flex-shrink:0;margin-top:2px"></i><span>' + text + '</span>';
+  list.appendChild(el);
+  lucide.createIcons();
+}
+
+function sendMsg() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  engine.round++;
+  const list = document.getElementById('msgList');
+
+  // Add user message
+  const userEl = document.createElement('div');
+  userEl.className = 'msg user';
+  const ub = document.createElement('div');
+  ub.className = 'msg-bubble';
+  ub.textContent = text;
+  userEl.appendChild(ub);
+  list.appendChild(userEl);
+
+  // Detect behaviors & update engine
+  const behaviors = engine.detectBehaviors(text);
+  const { prevState, newState, trust } = engine.updateState(behaviors);
+
+  // Generate NPC response
+  const npcResponse = engine.generateResponse(behaviors);
+
+  // Record in history
+  engine.history.push({
+    round: engine.round,
+    managerSaid: text,
+    state: newState,
+    prevState,
+    trust,
+    behaviors,
+    npcSaid: npcResponse
+  });
+
+  // Update UI
+  updateUI();
+
+  // State transition note
+  if (prevState !== newState && newState === 'SHOCK') {
+    addSystemNote('她听到了C。冲击是不可避免的——现在她需要知道为什么。');
+  } else if (prevState !== newState && newState === 'PROCESSING') {
+    addSystemNote('她从"为什么是我"转向了"原来是这样"——这是转折点。');
+  } else if (prevState !== newState && newState === 'CONSTRUCTIVE') {
+    addSystemNote('她在主动了。把方向盘给她。');
+  } else if (prevState !== newState && newState === 'SHUTDOWN') {
+    addSystemNote('信任崩塌了。她不再期待这次对话能有什么不同。');
+  }
+
+  // Whispers at key moments
+  if (newState === 'SHOCK' && engine.round === 2) {
+    addWhisper('她在等你的解释。<strong>现在给她具体的事例——她会开始理解。如果说"还需要加油"——她会开始关门。</strong>');
+  } else if (newState === 'EMOTIONAL' && behaviors.includes('USED_FACTS')) {
+    addWhisper('你说到了具体事例。她开始接受事实了。<strong>接下来接住她的感受：先共情，再继续。</strong>');
+  } else if (newState === 'PROCESSING' && !behaviors.includes('OFFERED_SUPPORT')) {
+    addWhisper('她理解了原因。现在她需要方向。<strong>不是"你觉得该怎么改"——是一个具体的、她可以抓住的东西。</strong>');
+  } else if (engine.questionLoopCount >= 3) {
+    addWhisper('你已经问了几轮问题了。<strong>试试给她一个具体的动作——比如"每周三跟我对一下框架"。</strong>');
+  }
+
+  // NPC response after short delay
+  setTimeout(() => {
+    const npcEl = document.createElement('div');
+    npcEl.className = 'msg npc';
+    npcEl.innerHTML = '<div class="msg-bubble" style="white-space:pre-wrap">' + npcResponse + '</div>';
+    list.appendChild(npcEl);
+    list.scrollTop = list.scrollHeight;
+    updateUI();
+  }, 1000);
+
+  // Clear input
+  input.value = '';
+  list.scrollTop = list.scrollHeight;
+}
+
+function endConversation() {
+  if (engine.round === 0) { goPhase(4); buildFeedback(); return; }
+  // If manager never gave the rating, note it
+  if (!engine.ratingGiven && engine.round > 0) {
+    engine.history.push({
+      round: engine.round + 1,
+      managerSaid: '[未在对话中明确给出C级]',
+      state: engine.state,
+      trust: engine.trust,
+      behaviors: ['AVOIDED_RATING'],
+      npcSaid: ''
+    });
+  }
+  goPhase(4);
+  buildFeedback();
+}
+
+// ================================================================
+// DYNAMIC FEEDBACK GENERATOR
+// ================================================================
+function buildFeedback() {
+  const h = engine.history;
+  const container = document.getElementById('fbContent');
+  document.getElementById('fbRounds').textContent = engine.round;
+
+  if (h.length === 0) {
+    container.innerHTML += '<div class="fb-card"><p class="fb-reveal">对话尚未开始。</p></div>';
+    return;
+  }
+
+  // --- Analysis ---
+  const ratingGiven = engine.ratingGiven;
+  const factsUsed = engine.factsUsed;
+  const supportOffered = engine.supportOffered;
+  const effortNegated = engine.effortNegated;
+  const finalState = engine.state;
+  const finalTrust = engine.trust;
+  const questionLoops = h.filter(r => r.behaviors.includes('ASKED_OPEN') && !r.behaviors.includes('USED_FACTS') && !r.behaviors.includes('OFFERED_SUPPORT')).length;
+
+  // Find the moment where she shifted to processing
+  const processingMoment = h.find(r => r.state === 'PROCESSING');
+  const constructiveMoment = h.find(r => r.state === 'CONSTRUCTIVE');
+  const shutdownMoment = h.find(r => r.state === 'SHUTDOWN');
+
+  // Find a fork point: when she was emotional and manager chose ASKED_OPEN instead of OFFERED_SUPPORT
+  const forkMoment = h.find(r => r.state === 'EMOTIONAL' && r.behaviors.includes('ASKED_OPEN') && !r.behaviors.includes('OFFERED_SUPPORT') && !r.behaviors.includes('USED_FACTS'));
+
+  // --- Build the reveal card ---
+  let revealHTML = '<div class="fb-card">';
+  revealHTML += '<div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">对话结束后，你可能想知道的</div>';
+
+  if (ratingGiven) {
+    const ratingRound = h.find(r => r.behaviors.includes('GAVE_RATING'));
+    if (ratingRound && ratingRound.round <= 2) {
+      revealHTML += '<p class="fb-reveal">推门进来的时候，管理者B对你是信任的。你在第' + ratingRound.round + '轮就给了她C级——<strong>没有让她猜。</strong>冲击本身消耗了一点信任，但你紧接着的解释——</p>';
+    } else if (ratingRound) {
+      revealHTML += '<p class="fb-reveal">你在第' + ratingRound.round + '轮给了她C级。这个时机——<strong>她等了一会儿了。</strong>等待的时间越长，她的情绪负荷越重。</p>';
+    }
+    if (factsUsed >= 2) {
+      revealHTML += '<p class="fb-reveal" style="margin-top:8px">你用了' + factsUsed + '次具体事例来解释C级的原因。每次你给出一个她无法否认的数据，她的接受度就上升一截。<strong>她怕的不是C——是"不知道为什么是C"。</strong>你给了她为什么。</p>';
+    }
+  } else {
+    revealHTML += '<p class="fb-reveal">在这场对话中，<strong>你没有明确告诉她绩效等级是C。</strong>她推门进来时在等这个答案——但直到对话结束，她可能还不知道。绩效面谈的第一步是让下属知道结果。当面说出来确实很难——但不说的代价是：她走出会议室时，心里比进来时更不确定。</p>';
+  }
+
+  if (effortNegated) {
+    revealHTML += '<div class="fb-highlight" style="background:rgba(254,226,226,.5);border-color:rgba(239,68,68,.2);color:#DC2626"><strong>一个需要关注的事：</strong>你否定了她的努力。在管理者B这里，努力是她最大（也许是唯一）的骄傲。否定努力对她来说不只是批评——是'你引以为傲的东西其实没有价值'。信任从这一刻开始出现了不可逆的损伤。</div>';
+  }
+
+  revealHTML += '</div>';
+  container.innerHTML += revealHTML;
+
+  // --- A moment you might have missed ---
+  if (processingMoment) {
+    let missedHTML = '<div class="fb-card">';
+    missedHTML += '<div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">你可能没注意到的一个时刻</div>';
+    missedHTML += '<p class="fb-reveal">第' + processingMoment.round + '轮，她从"我不理解为什么是C"转向了接受事实。这个转折之所以发生，是因为<strong>你用了她无法否认的具体事例。</strong></p>';
+    missedHTML += '<p class="fb-reveal" style="margin-top:8px">但还有一个她没有直接说出来的需求——她需要你告诉她<strong>接下来该怎么做</strong>。她理解了"为什么是C"，但还没得到"那我现在该怎么办"。</p>';
+
+    if (!supportOffered && !constructiveMoment) {
+      missedHTML += '<div class="fb-highlight"><strong>你在这一轮之后没有给她一个具体的方向。</strong>她准备好了——但方向盘没有递过去。</div>';
+    }
+    missedHTML += '</div>';
+    container.innerHTML += missedHTML;
+  }
+
+  // --- Fork point ---
+  if (forkMoment) {
+    let forkHTML = '<div class="fb-card">';
+    forkHTML += '<div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">一个当时可以走、但你没走的路</div>';
+    forkHTML += '<p class="fb-reveal" style="font-size:13px;margin-bottom:8px">第' + forkMoment.round + '轮，她在表达困惑——你在回应。这是一个岔路口。</p>';
+    forkHTML += '<div class="fb-fork">';
+    forkHTML += '<div class="fb-fork-label">你走的路</div>';
+    forkHTML += '<div class="fb-path fb-actual"><strong>你当时问了：</strong>"' + forkMoment.managerSaid.substring(0, 80) + (forkMoment.managerSaid.length > 80 ? '...' : '') + '"<br><span style="font-size:11px;color:#78716C">→ 你选择了继续提问。她在思考——但在等的不是一个问题。</span></div>';
+    forkHTML += '<div class="fb-fork-label" style="margin-top:8px">旁边那条路</div>';
+    forkHTML += '<div class="fb-path fb-alt"><strong>如果你当时说：</strong>"从下个月开始，你每次做方案之前花五分钟跟我对一下框架。不用多——就告诉我方向对不对，我告诉你是对还是不对。这个习惯变了，你可能再也不用改四版方案。"<br><span style="font-size:11px;color:#78716C">→ 不是给她建议——是给她一根拐杖。她刚说完自己"不知道该问谁"——你给她一个具体的"可以问"的机制。</span></div>';
+    forkHTML += '</div></div>';
+    container.innerHTML += forkHTML;
+  } else if (engine.state === 'SHUTDOWN') {
+    // If shutdown, find what triggered it
+    let forkHTML = '<div class="fb-card">';
+    forkHTML += '<div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">对话的转折——是什么让她关闭了自己</div>';
+    forkHTML += '<p class="fb-reveal">管理者B从愿意沟通变成了关闭。回头看，这个转折可能发生在——</p>';
+    if (effortNegated) {
+      forkHTML += '<div class="fb-fork"><div class="fb-fork-label">触发点</div><div class="fb-path fb-actual"><strong>你否定了她的努力。</strong>在她看来，努力是她最骄傲的东西。当这个被否定时——她会觉得"无论我做什么都是不够的"。对话从协作变成了审判。</div></div>';
+    } else if (questionLoops >= 3) {
+      forkHTML += '<div class="fb-fork"><div class="fb-fork-label">触发点</div><div class="fb-path fb-actual"><strong>你问了她太多次"你觉得呢"——但没有给她任何具体的东西。</strong>当一个人反复被提问而不被给予时，她会觉得你在走流程，不是在帮她。</div></div>';
+    } else {
+      forkHTML += '<div class="fb-fork"><div class="fb-fork-label">触发点</div><div class="fb-path fb-actual">信任在对话过程中逐渐消耗。当它降到足够低时——她不再期待这场对话能有什么不同。</div></div>';
+    }
+    forkHTML += '</div>';
+    container.innerHTML += forkHTML;
+  }
+
+  // --- Pattern ---
+  let patternHTML = '<div class="fb-card">';
+  patternHTML += '<div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">你身上可能有一个模式</div>';
+  if (questionLoops >= 3) {
+    patternHTML += '<div class="fb-pattern">在这场对话中，你多次使用了开放式的提问——"你觉得""你怎么看""从哪开始"。这些问题本身没有错。但当它们连续出现而没有搭配具体的行动时——对方会开始觉得你在走流程。<br><br>你可能有一个倾向：<strong>在不确定该怎么推进的时候，用提问来维持对话。</strong>这在管理者B这样的下属面前尤其明显——她的情绪让你不敢太直接。但讽刺的是，她需要的恰恰是直接：一个具体的动作、一个明确的方向。<br><br>这个模式在其他场景中可能也会出现——比如你需要推动一个不确定的决策，或者面对一个情绪化的团队成员时。值得留意。</div>';
+  } else if (factsUsed >= 3 && !supportOffered) {
+    patternHTML += '<div class="fb-pattern">你在解释"为什么是C"这件事上做得很好——用事实、讲数据、不回避。但到对话的后半段，你停在了"解释"上。<br><br>她其实在等你换挡——从"这是为什么"切换到"这是怎么办"。你可能有一个倾向：<strong>在传递完不好消息之后，习惯性地继续解释——而不是及时转入行动讨论。</strong>好消息是你已经解释了。她听了。现在她需要一个你能递过去的东西。</div>';
+  } else if (supportOffered && constructiveMoment) {
+    patternHTML += '<div class="fb-pattern">你在这场对话中展现了很好的节奏感——先给结论、再用事实解释、然后给她具体的方向。她最后的状态是准备好了去行动。<br><br>值得留意的是——这个模式在其他类型的面谈中是否也能复制？面对不同性格的下属，你的"结论→事实→方向"三步走是否每次都有效？这是下一步可以刻意练习的。</div>';
+  } else {
+    patternHTML += '<div class="fb-pattern">每个管理者在面对绩效面谈时都有自己的默认模式。这场对话中展现的模式，可能在其他高难度对话中也出现过。留意一下——<strong>你面对让你不舒服的对话时，你的第一反应是什么？是给出事实，还是提出问题，还是转移话题？</strong>这个反应本身，就值得被看到。</div>';
+  }
+  patternHTML += '</div>';
+  container.innerHTML += patternHTML;
+
+  // --- Scores ---
+  const factScore = Math.min(85, 50 + (ratingGiven ? 10 : 0) + factsUsed * 5);
+  const safetyScore = Math.min(80, 45 + (effortNegated ? -20 : 0) + (h.some(r => r.behaviors.includes('VALIDATED_FEELING')) ? 12 : 0));
+  const empowerScore = Math.min(75, 40 + (supportOffered ? 15 : 0) + (constructiveMoment ? 10 : 0) - (questionLoops >= 3 ? 8 : 0));
+  const followScore = Math.min(70, 40 + (supportOffered ? 12 : 0));
+
+  let scoresHTML = '<div class="fb-card">';
+  scoresHTML += '<div class="sec-label" style="font-size:10px;font-weight:700;color:#A8A29E;margin-bottom:8px">这次面谈</div>';
+  scoresHTML += '<div class="fb-scores">';
+  scoresHTML += '<div class="fb-score-item"><span>用事实说话</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">' + factScore + '</span><div class="fb-bar"><div class="fb-fill" style="width:' + factScore + '%;background:#3B82F6"></div></div></div></div>';
+  scoresHTML += '<div class="fb-score-item"><span>接住她的情绪</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">' + safetyScore + '</span><div class="fb-bar"><div class="fb-fill" style="width:' + safetyScore + '%;background:#10B981"></div></div></div></div>';
+  scoresHTML += '<div class="fb-score-item"><span>帮她看到下一步</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">' + empowerScore + '</span><div class="fb-bar"><div class="fb-fill" style="width:' + empowerScore + '%;background:#F59E0B"></div></div></div></div>';
+  scoresHTML += '<div class="fb-score-item"><span>形成了具体的约定</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:#78716C">' + followScore + '</span><div class="fb-bar"><div class="fb-fill" style="width:' + followScore + '%;background:#8B5CF6"></div></div></div></div>';
+  scoresHTML += '</div>';
+
+  // One-sentence summary
+  let summary = '';
+  if (finalState === 'CONSTRUCTIVE') summary = '你把"为什么是C"讲清楚了，也帮她看到了下一步。下次可以试试更快地从解释切换到行动——她理解得比你以为的更快。';
+  else if (finalState === 'PROCESSING') summary = '她理解了原因，但在等你的下一步指引。下次当她开始接受事实时——及时把方向盘递给她。';
+  else if (finalState === 'SHUTDOWN') summary = '对话在她关闭自己后结束。下次留意——信任的消耗往往从一个小动作开始。在它降到不可逆之前，做一个她能看见的具体承诺。';
+  else if (!ratingGiven) summary = '绩效面谈的第一步是让下属知道结果。下次试着在开场30秒内给出等级——不让对方在猜测中消耗自己。';
+  else summary = '你把事实讲清楚了。接下来值得练的是——当她开始理解之后，更快地把对话从"过去为什么"转向"接下来怎么办"。';
+
+  scoresHTML += '<p style="font-size:12px;color:#78716C;margin-top:8px;line-height:1.5"><strong>一句话：</strong>' + summary + '</p>';
+  scoresHTML += '</div>';
+  container.innerHTML += scoresHTML;
+
+  // --- ONE thing ---
+  let oneThingTitle = '下次只练一件事';
+  let oneThingText = '';
+  if (!ratingGiven) {
+    oneThingText = '<strong>开场30秒内给出等级。</strong>不铺垫、不绕弯。结论先行不是冷漠——是不让对方在猜测中消耗自己。';
+  } else if (effortNegated) {
+    oneThingText = '<strong>下次当你觉得她"努力但方向不对"时——先说"你的努力我看得到"，再说"同时我们一起看看方向"。</strong>肯定在前，调整在后。顺序不能反。';
+  } else if (questionLoops >= 3) {
+    oneThingText = '<strong>当你发现自己在反复问"你觉得"时——停下来，做一个具体的动作。</strong>设一个日历、定一个时间、确认一个方向。不是问她要答案——是给她一个她能抓住的东西。';
+  } else if (!supportOffered && (finalState === 'PROCESSING' || finalState === 'CONSTRUCTIVE')) {
+    oneThingText = '<strong>当她开始接受事实的时候——立刻给她一个具体的、她可以抓住的东西。</strong>"每周三跟我对五分钟框架"比"你觉得可以从哪里开始"更能让她动起来。';
+  } else {
+    oneThingText = '<strong>下次当她接受事实后——更快地从"为什么"切换到"怎么办"。</strong>她理解得比你以为的更快。别让她等。';
+  }
+
+  let oneHTML = '<div class="fb-card" style="border:1.5px solid rgba(16,185,129,.2)">';
+  oneHTML += '<div class="sec-label" style="font-size:10px;font-weight:700;color:#16A34A;margin-bottom:8px">' + oneThingTitle + '</div>';
+  oneHTML += '<p class="fb-reveal" style="font-size:15px;font-weight:500;color:#1C1917">' + oneThingText + '</p>';
+  oneHTML += '<div style="display:flex;gap:8px;margin-top:14px">';
+  oneHTML += '<button onclick="resetAndRetry()" style="padding:12px 22px;border-radius:12px;border:none;background:#1C1917;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">带着这个提醒，再练一次</button>';
+  oneHTML += '</div></div>';
+  container.innerHTML += oneHTML;
+
+  container.innerHTML += '<p style="text-align:center;font-size:11px;color:#D6D3D1;margin-top:16px">建议 3-7 天内再练一次。这个窗口里，你的大脑还在消化这次体验。</p>';
+}
+
+function resetAndRetry() {
+  engine.reset();
+  document.getElementById('msgList').innerHTML = '<div class="scene-note">下午3点 · 小会议室 · 你推门进去</div><div class="msg npc"><div class="msg-bubble">"经理好！我想先问一下，我的等级大概是什么呀？我这半年真的挺努力的，张姐和李哥都说我进步很大。我自己觉得应该还不错吧？"</div></div><div class="whisper"><i data-lucide="eye" class="w-3 h-3" style="flex-shrink:0;margin-top:2px"></i><span>她还不知道。你的下一句话会决定她是准备听，还是准备防御。<strong>别让她猜。</strong></span></div>';
+  document.getElementById('fbContent').innerHTML = '<div style="text-align:center;margin-bottom:24px"><p style="font-size:12px;color:#A8A29E">对话结束 · 你讲了<span id="fbRounds">0</span>轮 · 现在回头看看发生了什么</p></div>';
+  document.getElementById('stateTxt').textContent = '在听你说话';
+  document.getElementById('stateInd').querySelector('.state-dot').style.background = '#16A34A';
+  document.getElementById('sideState').textContent = '心情不错。她还不知道是C。她在等你开口。';
+  document.getElementById('sideWarning').textContent = '别说"但是你还不够努力"。';
+  document.getElementById('rnd').textContent = '第 1 轮';
+  document.getElementById('trustLabel').textContent = '';
+  updateUI();
+  goPhase(3);
+  document.getElementById('chatInput').focus();
+  lucide.createIcons();
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && e.target === document.body && currentPhase === 2) {
+    e.preventDefault(); goPhase(3);
+  }
+});
+document.getElementById('chatInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+</script>
+</body>
+</html>

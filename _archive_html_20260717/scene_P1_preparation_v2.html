@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>骨干员工状态下滑的反馈 - MDP管理者陪练平台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          surface: '#FAF9F6',
+          card: 'rgba(255,255,255,0.55)',
+          foreground: '#1E1E1E',
+          muted: '#6B7280',
+          accent: '#3B82F6',
+          warm: '#F59E0B',
+          positive: '#10B981',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  :root {
+    --card-bg: rgba(255, 255, 255, 0.55);
+    --card-border: rgba(255, 255, 255, 0.6);
+    --blur: 24px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: linear-gradient(160deg, #FAF9F6 0%, #F3F0EB 30%, #F8F6F3 60%, #F0EDE8 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Decorative ambient shapes ── */
+  .ambient {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+  }
+  .ambient-1 {
+    width: 420px; height: 420px;
+    background: #DBEAFE;
+    top: -120px; right: -80px;
+  }
+  .ambient-2 {
+    width: 300px; height: 300px;
+    background: #FEF3C7;
+    bottom: -60px; left: -40px;
+  }
+  .ambient-3 {
+    width: 260px; height: 260px;
+    background: #D1FAE5;
+    top: 40%; left: 50%;
+  }
+
+  /* ── Frosted glass card ── */
+  .glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(var(--blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(160%);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.03);
+    transition: box-shadow 0.3s ease;
+  }
+  .glass-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+  }
+
+  /* ── Section divider ── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #E5E0D8 20%, #E5E0D8 80%, transparent);
+    margin: 0;
+  }
+
+  /* ── Timeline connector ── */
+  .timeline {
+    position: relative;
+    padding-left: 20px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: linear-gradient(to bottom, #93C5FD, #3B82F6);
+    border-radius: 1px;
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #3B82F6;
+  }
+
+  /* ── Badge variants ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .badge-blue {
+    background: #EFF6FF;
+    color: #2563EB;
+    border: 1px solid #BFDBFE;
+  }
+  .badge-amber {
+    background: #FFFBEB;
+    color: #B45309;
+    border: 1px solid #FDE68A;
+  }
+  .badge-neutral {
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+  }
+
+  /* ── Constraint item ── */
+  .constraint {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(249, 250, 251, 0.7);
+    border: 1px solid rgba(229, 231, 235, 0.6);
+    transition: background 0.2s;
+  }
+  .constraint:hover {
+    background: rgba(249, 250, 251, 0.95);
+  }
+  .constraint-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Goal checkmark ── */
+  .goal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .goal-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+
+  /* ── Role avatar ── */
+  .role-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    font-family: inherit;
+  }
+  .role-btn:hover { background: rgba(0,0,0,0.03); }
+  .role-btn.active { background: rgba(59,130,246,0.08); }
+  .role-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
+    color: white;
+    transition: box-shadow 0.25s ease;
+  }
+  .role-btn.active .role-avatar {
+    box-shadow: 0 0 0 3px white, 0 0 0 5px #3B82F6;
+  }
+
+  /* ── Level option ── */
+  .level-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid rgba(229,231,235,0.7);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: inherit;
+    text-align: left;
+  }
+  .level-option:hover { background: rgba(0,0,0,0.02); }
+  .level-option.active {
+    background: rgba(59,130,246,0.06);
+    border-color: #93C5FD;
+  }
+  .level-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .level-option.active .level-dot {
+    background: #3B82F6;
+    color: white;
+  }
+
+  /* ── Start button ── */
+  .btn-start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 16px;
+    background: #1E1E1E;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+  .btn-start:hover {
+    background: #111;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    transform: translateY(-1px);
+  }
+  .btn-start:active { transform: scale(0.97); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(30,30,30,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 100;
+    transition: all 0.35s cubic-bezier(0.25,0.1,0.25,1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  .toast.hidden {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .glass-card { border-radius: 16px; }
+  }
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    .glass-card { padding: 20px !important; }
+  }
+</style>
+</head>
+<body class="relative">
+
+<!-- Ambient decoration -->
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+<div class="ambient ambient-3"></div>
+
+<!-- ================================================================ -->
+<!-- MAIN CONTENT                                                      -->
+<!-- ================================================================ -->
+<div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- ============================================================ -->
+    <!-- LEFT COLUMN (8/12)                                           -->
+    <!-- ============================================================ -->
+    <div class="lg:col-span-8 space-y-5">
+
+      <!-- ── Header ── -->
+      <div class="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+            骨干员工状态下滑的反馈
+          </h1>
+          <p class="text-sm text-muted mt-1.5">
+            进阶场景 · 你需要对一位持续绩效下滑的骨干员工进行第二次反馈对话
+          </p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="badge badge-blue">带团队</span>
+          <span class="badge badge-amber">挑战级</span>
+          <span class="badge badge-neutral">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i> 8-10轮
+          </span>
+        </div>
+      </div>
+
+      <!-- ── Card 1: 故事背景 ── -->
+      <div class="glass-card p-6 sm:p-8 space-y-6">
+
+        <!-- Section header with metadata -->
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+              <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-semibold text-foreground">故事背景</h2>
+              <p class="text-xs text-muted">了解来龙去脉，才能做出正确判断</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-muted">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> 公司3号会议室
+            </span>
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="cloud-rain" class="w-3.5 h-3.5"></i> 下午4:00 · 窗外下着小雨
+            </span>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Timeline: 3周前 → 现在 -->
+        <div class="space-y-5">
+          <!-- 3 weeks ago -->
+          <div class="timeline">
+            <div class="timeline-dot" style="top:2px; background:#3B82F6;"></div>
+            <div class="ml-1 space-y-2">
+              <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider">3 周前</span>
+              <p class="text-sm text-foreground leading-relaxed">
+                你和NPC-张有过一次认真的反馈对话。你用了正确的开局——用数据呈现差距、问了NPC-张自己的看法。NPC-张也坦诚回应，甚至告诉了你配偶失业的事。他承诺：<span class="font-medium">"我下周开始重点抓。"</span>
+              </p>
+              <div class="rounded-xl bg-red-50/60 border border-red-100 p-3.5 space-y-1.5">
+                <p class="text-xs font-semibold text-red-600/80">⚠️ 上次对话的两个遗憾：</p>
+                <p class="text-xs text-red-600/75 leading-relaxed">① 听到"我知道了"就收工了——<strong>没有追问"具体怎么改？什么时间节点？"</strong></p>
+                <p class="text-xs text-red-600/75 leading-relaxed">② 选择相信承诺，但<strong>没有设跟进机制</strong>——"好，那就这样"——然后3周没管</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 weeks later -->
+          <div class="timeline">
+            <div class="timeline-dot" style="top:2px; background:#F59E0B;"></div>
+            <div class="ml-1 space-y-2">
+              <span class="text-xs font-semibold text-amber-600 uppercase tracking-wider">3 周后的今天</span>
+              <p class="text-sm text-foreground leading-relaxed">
+                数据出来了：<strong>NPC-张的排名依然是垫底。</strong>前两周有过微弱回升——说明他确实试了。但第3周又回到了老样子。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Dual perspectives -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Your perspective -->
+          <div class="rounded-xl bg-blue-50/40 border border-blue-100/60 p-4 space-y-2">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+                <span class="text-white text-[10px] font-bold">你</span>
+              </div>
+              <span class="text-sm font-semibold text-blue-800">你的处境</span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-blue-800/75 leading-relaxed list-none">
+              <li class="flex items-start gap-2">
+                <span class="mt-1 w-1 h-1 rounded-full bg-blue-400 shrink-0"></span>
+                焦虑：上次认真谈了30分钟，结果还是这样
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mt-1 w-1 h-1 rounded-full bg-blue-400 shrink-0"></span>
+                自责：你知道上次不是NPC-张一个人的问题
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mt-1 w-1 h-1 rounded-full bg-blue-400 shrink-0"></span>
+                压力：老板知道3周前你谈过一次，也知道结果
+              </li>
+            </ul>
+          </div>
+
+          <!-- NPC-张's perspective -->
+          <div class="rounded-xl bg-amber-50/40 border border-amber-100/60 p-4 space-y-2">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center">
+                <span class="text-white text-[10px] font-bold">张</span>
+              </div>
+              <span class="text-sm font-semibold text-amber-800">NPC-张的处境</span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-amber-800/75 leading-relaxed list-none">
+              <li class="flex items-start gap-2">
+                <span class="mt-1 w-1 h-1 rounded-full bg-amber-400 shrink-0"></span>
+                失望：他说出了家里的事——你听了，点了点头，然后3周没问过
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mt-1 w-1 h-1 rounded-full bg-amber-400 shrink-0"></span>
+                委屈：前两周他真的试了，但没人告诉他方向对不对
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mt-1 w-1 h-1 rounded-full bg-amber-400 shrink-0"></span>
+                厌倦：看到你约会议室，第一反应是"又来？"
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Opening scene -->
+        <div class="rounded-xl bg-gray-50/60 border border-gray-100 p-4 space-y-2">
+          <div class="flex items-center gap-2">
+            <i data-lucide="door-open" class="w-4 h-4 text-gray-500"></i>
+            <span class="text-sm font-semibold text-foreground">NPC-张推门进来了</span>
+          </div>
+          <p class="text-sm text-foreground leading-relaxed italic">
+            这次他没有带业绩报告——上次带了。他坐下，看了你一眼，表情不是紧张、不是愤怒，而是一种平静的失望。
+          </p>
+          <div class="bg-white/70 rounded-lg px-4 py-3 border border-gray-100">
+            <p class="text-sm text-foreground/85 leading-relaxed">
+              <span class="font-medium text-foreground">NPC-张：</span>"经理，这次又谈什么？上次该说的都说了。你让我改，我也试了——前两周的数据你看到了吧？第三周掉回去，不是我不努力，是实在不知道方向对不对。你上次说「好，那就这样」，然后3周没找过我。我以为你已经放弃我了。"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Card 2: 约束 & 目标 ── -->
+      <div class="glass-card p-6 sm:p-8 space-y-5">
+
+        <!-- Constraints -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-gray-600"></i>
+            </div>
+            <span class="text-sm font-semibold text-foreground">你面临的约束</span>
+          </div>
+
+          <div class="space-y-2.5">
+            <div class="constraint">
+              <div class="constraint-icon bg-orange-50">
+                <i data-lucide="calendar-clock" class="w-4 h-4 text-orange-500"></i>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-foreground">时间压力</p>
+                <p class="text-xs text-muted mt-0.5 leading-relaxed">明天需要向老板汇报——这次不能像上次一样没结果</p>
+              </div>
+            </div>
+
+            <div class="constraint">
+              <div class="constraint-icon bg-red-50">
+                <i data-lucide="gavel" class="w-4 h-4 text-red-500"></i>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-foreground">合规底线</p>
+                <p class="text-xs text-muted mt-0.5 leading-relaxed">绝对不能暗示辞退或威胁（法律红线）</p>
+              </div>
+            </div>
+
+            <div class="constraint">
+              <div class="constraint-icon bg-amber-50">
+                <i data-lucide="users" class="w-4 h-4 text-amber-500"></i>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-foreground">向上汇报压力</p>
+                <p class="text-xs text-muted mt-0.5 leading-relaxed">如果这次谈话让NPC-张感觉"又是一次走过场"，他可能在HR回访中给负面反馈</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Goals -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+              <i data-lucide="target" class="w-4 h-4 text-emerald-600"></i>
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-foreground">你的目标</span>
+              <span class="text-xs text-muted ml-2">（20分钟内完成）</span>
+            </div>
+          </div>
+
+          <div class="space-y-0.5">
+            <div class="goal-item">
+              <div class="goal-check bg-emerald-50 text-emerald-600">1</div>
+              <p class="text-sm text-foreground leading-relaxed pt-0.5">
+                <strong>承认上次的缺失</strong>——开门见山，不回避。"上次我跟进没做好，这是我的问题。"
+              </p>
+            </div>
+            <div class="goal-item">
+              <div class="goal-check bg-emerald-50 text-emerald-600">2</div>
+              <p class="text-sm text-foreground leading-relaxed pt-0.5">
+                <strong>打破"上次的套路"</strong>——这次问具体问题："你觉得前两周做对了什么？第三周卡在哪里？"
+              </p>
+            </div>
+            <div class="goal-item">
+              <div class="goal-check bg-emerald-50 text-emerald-600">3</div>
+              <p class="text-sm text-foreground leading-relaxed pt-0.5">
+                <strong>帮NPC-张定位根因</strong>——"为什么前两周能回升、第三周又退回去了？"
+              </p>
+            </div>
+            <div class="goal-item">
+              <div class="goal-check bg-emerald-50 text-emerald-600">4</div>
+              <p class="text-sm text-foreground leading-relaxed pt-0.5">
+                <strong>形成双向承诺</strong>——不只NPC-张承诺改进，你也承诺具体的跟进动作和时间节点
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- RIGHT COLUMN (4/12)                                          -->
+    <!-- ============================================================ -->
+    <div class="lg:col-span-4">
+      <div class="sticky top-6 space-y-4">
+
+        <!-- Role Selector -->
+        <div class="glass-card p-5 space-y-3">
+          <p class="text-sm font-semibold text-foreground">选择陪练角色</p>
+          <p class="text-xs text-muted -mt-1">不同角色有不同性格和反应模式</p>
+          <div class="flex items-center justify-between px-1" id="roleSelector">
+            <button class="role-btn active" data-role="A" onclick="selectRole('A')">
+              <div class="role-avatar" style="background:linear-gradient(135deg,#3B82F6,#6366F1);">A</div>
+              <span class="text-xs font-medium text-foreground">NPC-张</span>
+              <span class="text-[10px] text-muted">骨干·老员工</span>
+            </button>
+            <button class="role-btn" data-role="B" onclick="selectRole('B')">
+              <div class="role-avatar" style="background:linear-gradient(135deg,#10B981,#059669);">B</div>
+              <span class="text-xs font-medium text-foreground">小李</span>
+              <span class="text-[10px] text-muted">新生代</span>
+            </button>
+            <button class="role-btn" data-role="C" onclick="selectRole('C')">
+              <div class="role-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706);">C</div>
+              <span class="text-xs font-medium text-foreground">阿杰</span>
+              <span class="text-[10px] text-muted">高潜·急脾气</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Experience Level -->
+        <div class="glass-card p-5 space-y-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-600"></i>
+            <p class="text-sm font-semibold text-foreground">你的经验水平</p>
+          </div>
+          <p class="text-xs text-muted -mt-1">AI 会根据你的水平自动调整反馈深度和方式</p>
+          <div class="space-y-2" id="levelSelector">
+            <button class="level-option" data-level="A" onclick="selectLevel('A')">
+              <div class="level-dot bg-gray-100 text-muted">A</div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-foreground">新手</p>
+                <p class="text-xs text-muted mt-0.5">我从没处理过下属状态下滑的情况</p>
+              </div>
+              <span class="text-[10px] text-muted shrink-0">40%觉察<br>60%复盘</span>
+            </button>
+            <button class="level-option active" data-level="B" onclick="selectLevel('B')">
+              <div class="level-dot">B</div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-foreground">中等</p>
+                <p class="text-xs text-muted mt-0.5">我做过1-3次类似的反馈对话，但不太有信心</p>
+              </div>
+              <span class="text-[10px] text-muted shrink-0">50%觉察<br>50%复盘</span>
+            </button>
+            <button class="level-option" data-level="C" onclick="selectLevel('C')">
+              <div class="level-dot bg-gray-100 text-muted">C</div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-foreground">高手</p>
+                <p class="text-xs text-muted mt-0.5">我做过4次以上，想提升反馈深度</p>
+              </div>
+              <span class="text-[10px] text-muted shrink-0">70%觉察<br>30%复盘</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Start Button -->
+        <button class="btn-start" onclick="startPractice()">
+          <i data-lucide="play" class="w-5 h-5"></i>
+          开始陪练
+        </button>
+
+        <!-- Keyboard hint -->
+        <p class="text-center text-[11px] text-muted/70">
+          按 <kbd class="px-1.5 py-0.5 rounded text-[10px] bg-gray-100 border border-gray-200 font-mono">Space</kbd> 快速开始
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden">
+  <div class="flex items-center gap-2">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toastMsg">操作成功</span>
+  </div>
+</div>
+
+<script>
+  // ── Init Lucide icons ──
+  lucide.createIcons();
+
+  // ── State ──
+  let currentRole = 'A';
+  let currentLevel = 'B';
+
+  // ── Role selection ──
+  function selectRole(role) {
+    currentRole = role;
+    const names = { A:'NPC-张', B:'小李', C:'阿杰' };
+    document.querySelectorAll('#roleSelector .role-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.role === role);
+    });
+    showToast(`已选角色：${names[role]}`);
+  }
+
+  // ── Level selection ──
+  function selectLevel(level) {
+    currentLevel = level;
+    const names = { A:'新手', B:'中等', C:'高手' };
+    document.querySelectorAll('#levelSelector .level-option').forEach(opt => {
+      const isActive = opt.dataset.level === level;
+      opt.classList.toggle('active', isActive);
+      const dot = opt.querySelector('.level-dot');
+      if (isActive) {
+        dot.className = 'level-dot';
+      } else {
+        dot.className = 'level-dot bg-gray-100 text-muted';
+      }
+    });
+    showToast(`经验水平：${names[level]}`);
+  }
+
+  // ── Start practice ──
+  function startPractice() {
+    const names = { A:'NPC-张', B:'小李', C:'阿杰' };
+    const levels = { A:'新手', B:'中等', C:'高手' };
+    showToast(`正在进入陪练：${names[currentRole]} · ${levels[currentLevel]}...`);
+  }
+
+  // ── Toast ──
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.remove('hidden');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => toast.classList.add('hidden'), 2200);
+  }
+
+  // ── Keyboard shortcut ──
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && e.target === document.body) {
+      e.preventDefault();
+      startPractice();
+    }
+  });
+</script>
+
+</body>
+</html>

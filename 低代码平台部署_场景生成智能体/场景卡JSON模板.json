@@ -1,0 +1,67 @@
+{
+  "$schema": "场景卡协议 v1.1 · V19.1",
+  "meta": {
+    "scenario_id": "",
+    "title": "",
+    "version": "1.0.0",
+    "difficulty": "",
+    "estimated_duration_min": 0,
+    "task_domain": "团队激励",
+    "d_vector": {
+      "D1_morale_root": "",
+      "D2_pressure_mode": "",
+      "D3_experience_mix": "",
+      "D4_incentive_resource": "",
+      "D5_trust_base": "",
+      "D5_crack_type": null
+    },
+    "p_sequence": "",
+    "progression_chain": ""
+  },
+  "context": {
+    "learner_role": {
+      "identity": "",
+      "relationship_to_team": "",
+      "tenure_in_role": ""
+    },
+    "situation": {
+      "project_status": "",
+      "deadline": "",
+      "metrics": { "key_problem": "" },
+      "what_happened_before": ""
+    },
+    "team_state": {
+      "size": 0,
+      "energy_level": "",
+      "observable_signals": [],
+      "unspoken_sentiment": "",
+      "crack_type": null,
+      "crack_history": null,
+      "key_individuals": []
+    },
+    "constraints": {
+      "time_pressure": "",
+      "resource_limits": "",
+      "political_sensitivity": ""
+    },
+    "opening_scene": {
+      "time": "",
+      "location": "",
+      "trigger": "",
+      "opening_question": ""
+    }
+  },
+  "decision_points": [],
+  "feedback_criteria": {
+    "golden_path": [],
+    "golden_path_narrative": "",
+    "scoring_dimensions": [],
+    "crack_type_awareness": {
+      "applicable": false,
+      "crack_type": null,
+      "detection_rule": null,
+      "wrong_strategy_signals": [],
+      "correct_strategy_signals": []
+    }
+  }
+}

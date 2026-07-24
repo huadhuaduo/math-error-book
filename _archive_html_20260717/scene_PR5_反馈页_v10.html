@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · 小张 · 绩效面谈</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Helvetica Neue',sans-serif;background:linear-gradient(165deg,#FAF9F6 0%,#F4F1EC 30%,#F9F7F4 60%,#F1EEE9 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+  .narrative{max-width:600px;margin:0 auto;padding:40px 24px 80px}
+
+  /* === PART 1: OVERVIEW === */
+  .part{margin-bottom:44px}
+  .part-meta{font-size:11px;color:#A8A29E;text-align:center;margin-bottom:6px}
+  .part-hero{font-size:20px;font-weight:700;color:#1C1917;line-height:1.35;text-align:center;margin-bottom:6px;letter-spacing:-.01em}
+  .part-sub{font-size:13px;color:#A8A29E;text-align:center;margin-bottom:22px}
+
+  .radar-area{display:flex;align-items:center;justify-content:center;gap:32px;padding:12px 0;flex-wrap:wrap}
+  .radar-labels{display:flex;flex-direction:column;gap:5px;font-size:12px}
+  .radar-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+  /* === PART 2: AWARENESS — comprehensive, conversational === */
+  .card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:22px 20px;box-shadow:0 3px 16px rgba(0,0,0,.03);margin-bottom:14px}
+  .coach-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#3B82F6;margin-bottom:10px}
+  .finding{margin-bottom:18px}
+  .finding+.finding{padding-top:16px;border-top:1px solid rgba(0,0,0,.04)}
+  .finding-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .finding-badge{display:inline-flex;align-items:center;gap:2px;padding:2px 9px;border-radius:100px;font-size:10px;font-weight:700}
+  .finding-round{font-size:10px;color:#A8A29E}
+  .finding-quote{font-size:13px;color:#44403C;line-height:1.55;padding:8px 12px;background:rgba(0,0,0,.02);border-radius:8px;margin:6px 0;font-style:italic}
+  .finding-note{font-size:13px;color:#1C1917;line-height:1.6;margin-bottom:4px}
+  .finding-alt{font-size:12px;color:#065F46;line-height:1.5;padding:8px 12px;background:rgba(209,250,229,.2);border-radius:8px;margin-top:4px}
+
+  /* Reflective question — the "引导思考" part */
+  .reflect{font-size:13px;color:#3B82F6;line-height:1.55;padding:8px 12px;background:rgba(239,246,255,.3);border-radius:8px;margin-top:8px;font-style:italic}
+  .reflect strong{color:#2563EB}
+
+  /* Fork */
+  .fork-box{background:rgba(254,243,199,.15);border:1px solid rgba(251,191,36,.08);border-radius:12px;padding:12px 14px;margin:10px 0;font-size:12px}
+  .fork-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400E;margin-bottom:4px}
+  .fork-path{padding:6px 10px;border-radius:6px;font-size:11px;line-height:1.5;margin:3px 0}
+  .fork-actual{background:rgba(254,226,226,.25);border:1px solid rgba(239,68,68,.03)}
+  .fork-alt{background:rgba(209,250,229,.25);border:1px solid rgba(16,185,129,.03)}
+
+  /* Pattern */
+  .pattern-box{background:rgba(243,232,255,.2);border:1px solid rgba(167,139,250,.08);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:13px;color:#7C3AED;line-height:1.65}
+
+  /* === PART 3: COMMITMENT === */
+  .commit-card{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid rgba(16,185,129,.25);border-radius:16px;padding:22px 20px;box-shadow:0 3px 16px rgba(0,0,0,.03)}
+  .commit-title{font-size:15px;font-weight:700;color:#1C1917;margin-bottom:4px}
+  .commit-sub{font-size:12px;color:#A8A29E;margin-bottom:14px}
+  .proposal{background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.1);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+  .proposal-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#10B981;margin-bottom:6px}
+  .proposal-text{font-size:14px;color:#1C1917;line-height:1.6}
+  .proposal-text strong{color:#065F46}
+  .adj-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .adj-field{display:flex;flex-direction:column;gap:3px}
+  .adj-label{font-size:11px;font-weight:600;color:#44403C}
+  .adj-input{width:100%;border:none;border-bottom:1.5px solid rgba(0,0,0,.08);padding:6px 0;font-size:13px;font-family:inherit;outline:none;background:transparent;color:#1C1917;transition:border-color .2s}
+  .adj-input:focus{border-bottom-color:#10B981}
+  .adj-input::placeholder{color:#D6D3D1}
+  .commit-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .btn-commit{display:inline-flex;align-items:center;gap:6px;padding:13px 28px;border-radius:14px;border:none;background:#1C1917;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+  .btn-commit:hover{background:#000}
+  .btn-skip{font-size:12px;color:#A8A29E;cursor:pointer;border:none;background:none;font-family:inherit;text-decoration:underline;text-underline-offset:3px}
+  .btn-skip:hover{color:#1C1917}
+
+  /* === PART 4: BRIDGE === */
+  .bridge-title{font-size:15px;font-weight:700;color:#1C1917;margin-bottom:8px}
+  .bridge-text{font-size:14px;color:#44403C;line-height:1.65;margin-bottom:8px}
+  .bridge-highlight{font-size:13px;color:#1C1917;line-height:1.65;padding:10px 14px;background:rgba(0,0,0,.02);border-radius:10px;margin:10px 0}
+
+  /* === PART 5: NEXT === */
+  .next-card{text-align:center}
+  .next-text{font-size:14px;color:#44403C;line-height:1.65;margin-bottom:14px}
+  .btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;border-radius:14px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+  .btn-dark{background:#1C1917;color:#fff}.btn-dark:hover{background:#000}
+  .btn-light{background:rgba(0,0,0,.03);color:#44403C}.btn-light:hover{background:rgba(0,0,0,.06)}
+
+  /* Dividers */
+  .sep{width:40px;height:3px;background:rgba(0,0,0,.06);border-radius:2px;margin:0 auto 44px}
+
+  @media(max-width:500px){.adj-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="narrative">
+
+  <!-- ====== PART 1: 体检报告 — 全局快照 ====== -->
+  <div class="part">
+    <p class="part-meta">对话结束 · 9 轮 · 小张 · A级·承压待提升</p>
+    <h1 class="part-hero">开场让她觉得"这次不一样"。<br>收尾让她觉得"还是差不多"。</h1>
+    <p class="part-sub">你的强项是让对方感觉被认可。接下来要练的是——把认可转化成她能带走的东西。</p>
+
+    <div class="radar-area">
+      <svg width="140" height="140" viewBox="0 0 140 140">
+        <polygon points="70,16 120,52 101,113 39,113 20,52" fill="none" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+        <polygon points="70,36 108,59 94,98 46,98 32,59" fill="none" stroke="rgba(0,0,0,.03)" stroke-width="1"/>
+        <line x1="70" y1="70" x2="70" y2="12" stroke="rgba(0,0,0,.05)" stroke-width="1"/><line x1="70" y1="70" x2="124" y2="48" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+        <line x1="70" y1="70" x2="105" y2="117" stroke="rgba(0,0,0,.05)" stroke-width="1"/><line x1="70" y1="70" x2="35" y2="117" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+        <line x1="70" y1="70" x2="16" y2="48" stroke="rgba(0,0,0,.05)" stroke-width="1"/>
+        <polygon points="70,34 62,50 96,92 44,96 24,56" fill="rgba(59,130,246,.08)" stroke="#3B82F6" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <div class="radar-labels">
+        <div><span class="radar-dot" style="background:#3B82F6"></span>肯定业绩 <strong>72</strong></div>
+        <div><span class="radar-dot" style="background:#F59E0B"></span>帮她看到模式 <strong>38</strong></div>
+        <div><span class="radar-dot" style="background:#EF4444"></span>给了具体方法 <strong>30</strong></div>
+        <div><span class="radar-dot" style="background:#9CA3AF"></span>形成约定 <strong>25</strong></div>
+        <div><span class="radar-dot" style="background:#8B5CF6"></span>接住她的主动 <strong>65</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- ====== PART 2: 觉察 — 看见所有 + 每一个都引导思考 ====== -->
+  <div class="part">
+    <div class="card">
+      <div class="coach-label">我们注意到的</div>
+
+      <!-- Finding 1: Good -->
+      <div class="finding">
+        <div class="finding-head"><span class="finding-badge" style="background:#DCFCE7;color:#166534">做得好的</span><span class="finding-round">第 1 轮</span></div>
+        <div class="finding-quote">"你上半年的表现很亮眼，取得了部门第二的成绩，三个重点项目全部完成。我对你是非常认可的。"</div>
+        <div class="finding-note">上次"继续保持"四个字让她失望了半年。这次你用<strong>具体数据</strong>开场——三个具体数字替代了四个模糊的字。她听完后不是礼貌点头，是翻开了笔记本。</div>
+        <div class="reflect">💬 <strong>想一想：</strong>如果开场你只说了"我对你很认可"而没给具体数据——她的反应会有什么不同？</div>
+      </div>
+
+      <!-- Finding 2: Needs improvement -->
+      <div class="finding">
+        <div class="finding-head"><span class="finding-badge" style="background:#FEE2E2;color:#DC2626">可以更好的</span><span class="finding-round">第 5 轮</span></div>
+        <div class="finding-quote">"我觉得你有时候面对压力会慢半拍——但我相信你能调整过来。你有这个能力。"</div>
+        <div class="finding-note">你点出了"慢半拍"——方向是对的。但<strong>"我相信你能调整"不是方法，是期望。</strong>她来面谈就是要具体路径的——上次"继续保持"已经让她失望过一次了。你给了诊断，没给处方。</div>
+        <div class="finding-alt"><strong>如果这样说：</strong>"我注意到三个流失客户都在价格谈判最后阶段流失。下次谈判前，<strong>先跟我预演一遍。你来说，我扮客户。试三次，肌肉记忆就有了。</strong>" → 诊断+期望=问题还是她的。事例+方法=她手里有东西。</div>
+        <div class="reflect">💬 <strong>想一想：</strong>她走的时候，脑子里装的是"我要调整"——还是"我下周三先跟经理预演一次"？哪一个更可能真的发生？</div>
+      </div>
+
+      <!-- Finding 3: Closing -->
+      <div class="finding">
+        <div class="finding-head"><span class="finding-badge" style="background:#FEE2E2;color:#DC2626">可以更好的</span><span class="finding-round">第 8 轮 · 收尾</span></div>
+        <div class="finding-quote">"你回去好好调整，有什么需要随时找我。"</div>
+        <div class="finding-note">"随时找我"——上次面谈你是不是也这样结尾的？话是暖的，但没有一个她能把控的约定。<strong>"随时"等于"没时间"——她不知道什么时候合适，所以不会来。</strong></div>
+        <div class="finding-alt"><strong>如果这样说：</strong>"我们定两件事。下周三下午你带三个流失客户复盘来找我。接下来两次价格谈判前花十分钟跟我预演。<strong>我已经把下周三下午3点锁在日历上了。</strong>" → "随时找我"=她不知道什么时候。"下周三3点"=她知道你会等她。</div>
+        <div class="reflect">💬 <strong>想一想：</strong>你的团队成员里，有多少人真的"随时找过你"？如果很少——是不是因为"随时"对她们来说不是一个可用的入口？</div>
+      </div>
+
+      <!-- Fork -->
+      <div class="fork-box">
+        <div class="fork-label">第 5 轮是一个岔路口</div>
+        <div class="fork-path fork-actual"><strong>你走了：</strong>"我相信你能调整" → 她点头，笔记本没再翻开。</div>
+        <div class="fork-path fork-alt"><strong>可以走：</strong>"我们拆一下——上次'缩'是什么时候？怎么弹回来的？"→ 她自己找规律。</div>
+      </div>
+
+      <!-- Pattern -->
+      <div class="pattern-box">
+        <strong>这可能是一个模式：</strong>面对高绩效下属时，你习惯用"肯定+信任"来回应他们的困惑。当对方主动来要方法，"我相信你"就不再是支持——是<strong>回避了给方向的难度</strong>。这个模式可能不只在这个场景里出现——在其他需要你给具体反馈的时刻，你是不是也倾向用信任替代观察？
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- ====== PART 3: 承诺 — 系统建议 + 你确认 ====== -->
+  <div class="part">
+    <div class="commit-card">
+      <div class="commit-title">📋 基于上面的发现，我们建议你试这个</div>
+      <div class="commit-sub">你可以直接用，也可以改成你自己的方式。这不是作业——是你给自己的一个约定。</div>
+
+      <div class="proposal">
+        <div class="proposal-label">建议的承诺</div>
+        <p class="proposal-text">
+          下次对话中，当高绩效下属说<strong>"我知道我有这个问题"</strong>时——不要停在"我相信你能改"。追问一句：<strong>"你上次出现这个问题是什么时候？当时你是怎么反应过来的？"</strong>
+        </p>
+      </div>
+
+      <div class="adj-field" style="margin-bottom:10px">
+        <div class="adj-label">如果这个建议不完全适合你，改成你会说的话</div>
+        <input class="adj-input" placeholder="写你自己的版本..." id="adjBehavior">
+      </div>
+
+      <div class="adj-row">
+        <div class="adj-field"><div class="adj-label">在谁身上试</div><input class="adj-input" placeholder="真实团队里的一个人" id="adjWho"></div>
+        <div class="adj-field"><div class="adj-label">什么时候</div><input class="adj-input" placeholder="具体日期或场合" id="adjWhen"></div>
+      </div>
+      <div class="adj-field" style="margin-bottom:10px">
+        <div class="adj-label">你怎么知道做对了</div>
+        <input class="adj-input" placeholder="一个你能看到或听到的信号" id="adjSignal">
+      </div>
+
+      <div class="commit-foot">
+        <button class="btn-commit" onclick="save()">确认，这是我的承诺</button>
+        <span class="btn-skip" onclick="skip()">这次先跳过</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- ====== PART 4: 带回团队 ====== -->
+  <div class="part">
+    <div class="card">
+      <div class="bridge-title">🔗 把这个带回你的真实团队</div>
+      <p class="bridge-text">你的团队里有像小张这样的人吗——业绩不错、态度积极、但有一个自己也知道却不知道怎么改的短板？</p>
+      <div class="bridge-highlight">
+        <strong>这周你可以做的一件事：</strong>下次一对一，不要只问"最近怎么样"。拿一个具体的项目案例，问她：<br><br>
+        <strong>"你回想一下——有没有哪个时刻你觉得'卡住了'？当时你是怎么反应过来的？"</strong><br><br>
+        这个动作只需要你比她多问一层。她回答过无数次"我哪里需要改进"——但"上次卡住时发生了什么"这一层，她可能从来没想过。
+      </div>
+      <p style="font-size:12px;color:#78716C;margin-top:8px">下次回到平台时，系统会问你：试了吗？她的反应和小张有什么不同？——这是闭环开始的地方。</p>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- ====== PART 5: 下次 ====== -->
+  <div class="part">
+    <div class="next-card">
+      <p class="next-text">下次练习时，我们会加载你今天的承诺作为对比锚点。<br>上次你说了<strong>"我相信你能调整"</strong>——下次看看，你说了什么。</p>
+      <div class="btn-row">
+        <button class="btn btn-dark">带着承诺，再练一次</button>
+        <button class="btn btn-light">换个场景试试</button>
+      </div>
+      <p style="font-size:11px;color:#D6D3D1;margin-top:14px">建议 3-7 天内回来。大脑还在消化这次体验。</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function save(){
+  const b=document.getElementById('adjBehavior').value.trim();
+  const w=document.getElementById('adjWho').value.trim();
+  const wh=document.getElementById('adjWhen').value.trim();
+  const s=document.getElementById('adjSignal').value.trim();
+  const hasAny=b||w||wh||s;
+  if(!hasAny){alert('至少确认系统建议的承诺。如果你想用自己的方式，在第一个输入框里写下来。');return;}
+  alert('承诺已保存。下次练习时系统会加载——我们对比你上次说了什么，这次说了什么。');
+}
+function skip(){alert('已跳过。直接进入再练习。');}
+</script>
+</body>
+</html>

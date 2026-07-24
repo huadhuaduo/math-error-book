@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反馈 · NPC-周 · 管理陪练版</title>
+<style>
+:root {
+  --bg: #F8F6F2; --card: rgba(255,255,255,.5); --text: #1C1917;
+  --muted: #A8A29E; --border: rgba(0,0,0,.04);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: linear-gradient(165deg,#F8F6F2,#EDE8E0,#F5F2ED,#EAE4DC); min-height: 100vh; -webkit-font-smoothing: antialiased; color: var(--text); }
+.amb { position:fixed; border-radius:50%; filter:blur(110px); pointer-events:none; z-index:0; opacity:.08; }
+.amb-1 { width:300px; height:300px; background:#FEE2E2; top:-60px; right:-40px; }
+.amb-2 { width:240px; height:240px; background:#FEF3C7; bottom:-40px; left:-20px; }
+.layout { position:relative; z-index:10; max-width:680px; margin:0 auto; padding:28px 16px 60px; display:flex; flex-direction:column; gap:16px; }
+.card { background:var(--card); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.5); border-radius:18px; padding:22px; box-shadow:0 3px 16px rgba(0,0,0,.03); }
+
+/* ── 模块标签 ── */
+.module-tag { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:2px 10px; border-radius:100px; margin-bottom:12px; }
+.module-tag.mgmt { background:rgba(124,58,237,.08); color:#7C3AED; }
+.module-tag.mtp  { background:rgba(16,185,129,.08); color:#065F46; }
+
+/* ── 决策步骤 ── */
+.step-row {
+  display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:12px;
+  border:1px solid var(--border); margin-bottom:6px; cursor:pointer; transition:all .15s;
+  font-size:13px; user-select:none;
+}
+.step-row:hover { border-color:rgba(0,0,0,.1); }
+.step-good { background:rgba(220,252,231,.25); }
+.step-bad  { background:rgba(254,226,226,.2); }
+.step-skip { background:rgba(243,244,246,.2); }
+.step-num {
+  width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; flex-shrink:0;
+}
+.step-num.good { background:rgba(16,185,129,.12); color:#065F46; }
+.step-num.bad  { background:rgba(220,38,38,.1); color:#991B1B; }
+.step-num.skip { background:rgba(0,0,0,.05); color:#6B7280; }
+.step-label { flex:1; font-weight:500; color:#1C1917; line-height:1.4; }
+.step-tag { font-size:9px; font-weight:700; padding:2px 8px; border-radius:100px; flex-shrink:0; }
+.step-tag.good { background:rgba(16,185,129,.1); color:#065F46; }
+.step-tag.bad  { background:rgba(220,38,38,.08); color:#991B1B; }
+.step-tag.skip { background:rgba(0,0,0,.04); color:#6B7280; }
+.step-expand { font-size:10px; color:var(--muted); flex-shrink:0; min-width:28px; text-align:right; }
+
+/* 展开 */
+.step-detail { display:none; padding:14px 16px; font-size:12px; line-height:1.7; background:rgba(255,255,255,.35); border-radius:0 0 12px 12px; border-top:1px solid var(--border); }
+.step-detail.open { display:block; }
+.step-detail .npc-reaction { color:#44403C; margin-bottom:8px; }
+.step-detail .best-practice { color:#065F46; margin-bottom:8px; }
+.step-detail .why { color:#57534E; margin-bottom:8px; }
+.step-detail .alternative {
+  background:rgba(16,185,129,.04); border:1px solid rgba(16,185,129,.08);
+  border-radius:10px; padding:10px 12px; color:#065F46;
+}
+.detail-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-right:4px; }
+
+/* ── 如果换一条路 ── */
+.narrative { font-size:13px; line-height:1.7; color:#1C1917; }
+.narrative strong { color:#065F46; }
+
+/* ── 下一次 ── */
+.action-section { text-align:center; }
+.btn-primary {
+  display:block; width:100%; padding:14px; border-radius:14px; border:none;
+  font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;
+  background:#1C1917; color:#fff; transition:all .2s;
+}
+.btn-primary:hover { opacity:.9; transform:translateY(-1px); }
+.btn-ghost {
+  display:block; width:100%; padding:11px; border-radius:14px;
+  border:1px solid rgba(0,0,0,.08); font-size:13px; font-weight:500;
+  cursor:pointer; font-family:inherit; background:transparent;
+  color:var(--muted); margin-top:8px; transition:all .2s;
+}
+.btn-ghost:hover { color:#57534E; border-color:rgba(0,0,0,.15); }
+
+/* ── 全部命中 ── */
+.all-good { color:#065F46; }
+
+/* ── MTP 模块 ── */
+.checklist-item {
+  display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border-radius:10px;
+  margin-bottom:6px; font-size:13px; line-height:1.5;
+}
+.checklist-item.done { background:rgba(220,252,231,.25); color:#065F46; }
+.checklist-item.miss { background:rgba(254,226,226,.2); color:#991B1B; }
+.check-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.teacher-signal {
+  background:rgba(59,130,246,.03); border:1px solid rgba(59,130,246,.08);
+  border-radius:12px; padding:14px 16px; font-size:12px; line-height:1.6; color:#3B82F6;
+}
+.teacher-signal strong { color:#1E40AF; }
+
+/* ── 切换 tab ── */
+.tab-bar { display:flex; gap:6px; margin-bottom:20px; }
+.tab-btn {
+  flex:1; padding:10px 16px; border-radius:12px; border:1px solid rgba(0,0,0,.06);
+  font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+  background:#fff; color:var(--muted); transition:all .2s; text-align:center;
+}
+.tab-btn.active { background:#1C1917; color:#fff; border-color:#1C1917; }
+
+.tab-content { display:none; }
+.tab-content.active { display:flex; flex-direction:column; gap:16px; }
+</style>
+</head>
+<body>
+<div class="amb amb-1"></div><div class="amb amb-2"></div>
+
+<div class="layout">
+
+  <!-- ── 切换 Tab ── -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('mgmt')">🎯 管理陪练 · 反馈</button>
+    <button class="tab-btn" onclick="switchTab('mtp')">📚 MTP训后 · 反馈</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- TAB 1: 管理陪练反馈（保留原始结构）                         -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="tab-content active" id="tab-mgmt">
+
+    <!-- ① 综合概览 -->
+    <div class="card">
+      <span class="module-tag mgmt">综合概览</span>
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:2px;">TG-001 · 首开倒计时</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:16px;">这场对话的复盘 · 到岗20天，你走对了几步？</p>
+
+      <!-- 雷达图 + 维度评分 -->
+      <div style="display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
+        <svg width="180" height="180" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(0,0,0,.04)" stroke-width=".5"/>
+          <circle cx="100" cy="100" r="60" fill="none" stroke="rgba(0,0,0,.04)" stroke-width=".5"/>
+          <circle cx="100" cy="100" r="35" fill="none" stroke="rgba(0,0,0,.04)" stroke-width=".5"/>
+          <polygon points="100,15 180,65 150,165 50,165 20,65" fill="rgba(107,114,128,.04)" stroke="rgba(107,114,128,.2)" stroke-width="1"/>
+          <polygon points="100,28 155,72 130,150 70,150 45,72" fill="rgba(107,114,128,.1)" stroke="#6B7280" stroke-width="1.5"/>
+          <circle cx="100" cy="28" r="3" fill="#6B7280"/><circle cx="155" cy="72" r="3" fill="#10B981"/><circle cx="130" cy="150" r="3" fill="#F59E0B"/><circle cx="70" cy="150" r="3" fill="#EF4444"/>
+          <text x="100" y="8" text-anchor="middle" fill="#6B7280" font-size="9">建立信任</text>
+          <text x="168" y="75" fill="#10B981" font-size="9">诊断问题</text>
+          <text x="138" y="165" fill="#F59E0B" font-size="9">示范赋能</text>
+          <text x="50" y="165" fill="#EF4444" font-size="9">做减法</text>
+        </svg>
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:160px;">
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:#6B7280;flex-shrink:0;"></span><span style="font-weight:600;min-width:50px;">建立信任</span><span style="font-weight:700;font-size:13px;">65</span></div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:#10B981;flex-shrink:0;"></span><span style="font-weight:600;min-width:50px;">诊断问题</span><span style="font-weight:700;font-size:13px;">72</span></div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;flex-shrink:0;"></span><span style="font-weight:600;min-width:50px;">示范赋能</span><span style="font-weight:700;font-size:13px;">70</span></div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;"><span style="width:6px;height:6px;border-radius:50%;background:#EF4444;flex-shrink:0;"></span><span style="font-weight:600;min-width:50px;">做减法</span><span style="font-weight:700;font-size:13px;color:#DC2626;">38</span></div>
+        </div>
+      </div>
+
+      <!-- 判词 -->
+      <div style="background:rgba(28,25,23,.03);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;margin-bottom:14px;">
+        <p style="font-size:10px;color:var(--muted);margin-bottom:2px;">核心判词</p>
+        <p style="font-size:14px;font-weight:600;color:#1C1917;line-height:1.6;">面对团队"不信"时，你给了更多工具，而不是替他们做减法。NPC-周接过对比表——没看。之后 8 轮，他再没主动开口。</p>
+      </div>
+
+      <!-- 统计 -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+        <div style="flex:1;min-width:60px;text-align:center;"><div style="font-size:24px;font-weight:700;">2/3</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">行为达标</div></div>
+        <div style="flex:1;min-width:60px;text-align:center;"><div style="font-size:24px;font-weight:700;color:#DC2626;">1</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">陷阱触发</div></div>
+        <div style="flex:1;min-width:60px;text-align:center;"><div style="font-size:24px;font-weight:700;color:#D97706;">67%</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">匹配率</div></div>
+      </div>
+    </div>
+
+    <!-- ② 觉察·你的模式 -->
+    <div class="card">
+      <span class="module-tag mgmt">觉察 · 你的模式</span>
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:2px;">面对新团队时，你的默认策略——先给方案，后问问题</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">不是"你错了"——是让你看到你在压力下的默认反应。这是惯性，不是能力问题。</p>
+      <div style="background:rgba(124,58,237,.02);border:1px solid rgba(124,58,237,.06);border-radius:10px;padding:14px;font-size:12px;line-height:1.7;color:#6B7280;">
+        <strong style="color:#7C3AED;">识别到的管理惯性：</strong><br>
+        <strong>面对不确定性 → 再做一轮分析 → 给更多工具和信息。</strong><br><br>
+        这个惯性在带新人时可能有效（新人缺知识）。但在带NPC-周这种资深团队时是反效果的——他们不缺知识，缺信心。<br><br>
+        你跳过了"问NPC-周怎么看"这一步，直接进入给方案的节奏。效率导向的管理者在面对资深团队时容易踩这个坑：你以为给了方案就是领导力——但对NPC-周来说，没被问到的方案等于没方案。
+      </div>
+    </div>
+
+    <!-- ③ 行为对照 -->
+    <div class="card">
+      <span class="module-tag mgmt">行为对照</span>
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:2px;">每一步：你做了什么 vs 绩优做法</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:14px;">每一步的对照——不是评判，是让你看到另一种可能</p>
+
+      <!-- 第1步 -->
+      <div style="margin-bottom:10px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(220,252,231,.3);font-size:12px;">
+          <span style="width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,.12);color:#065F46;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">1</span>
+          <span style="flex:1;color:#1C1917;">你翻完数据，爬楼看了户型采光</span>
+          <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(16,185,129,.1);color:#065F46;">达标</span>
+        </div>
+        <div style="padding:12px 14px;font-size:11px;line-height:1.6;background:rgba(255,255,255,.3);">
+          <span style="color:#44403C;">NPC-周抬头看了你一眼——今天第一次正眼看你。</span><br>
+          <strong style="color:#065F46;">绩优做法一致：空降者第一张牌不能是"听我的"。</strong>你压住了本能——先闭嘴、先做事。
+        </div>
+      </div>
+
+      <!-- 第2步 -->
+      <div style="margin-bottom:10px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(254,226,226,.3);font-size:12px;">
+          <span style="width:22px;height:22px;border-radius:50%;background:rgba(220,38,38,.1);color:#991B1B;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">2</span>
+          <span style="flex:1;color:#1C1917;">你做了户型对比表，让大家灵活推荐</span>
+          <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(220,38,38,.08);color:#991B1B;">T03 信息幻觉</span>
+        </div>
+        <div style="padding:12px 14px;font-size:11px;line-height:1.6;background:rgba(255,255,255,.3);">
+          <span style="color:#44403C;">NPC-周："你给我一个表，不如你给我一个决定。"接过表——没看。</span><br>
+          <strong style="color:#065F46;">绩优做法：直接砍到2个——"就推B和D，别的先放"。</strong><br>
+          <span style="color:#57534E;">你做了一件管理者直觉上"正确"的事——提供信息。但他们不缺信息——缺的是有人替他们承担"砍错了"的风险。</span>
+        </div>
+      </div>
+
+      <!-- 第3步 -->
+      <div style="margin-bottom:10px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(220,252,231,.3);font-size:12px;">
+          <span style="width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,.12);color:#065F46;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">3</span>
+          <span style="flex:1;color:#1C1917;">你亲自打样——蹲在沙盘区接待客户</span>
+          <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(16,185,129,.1);color:#065F46;">达标</span>
+        </div>
+        <div style="padding:12px 14px;font-size:11px;line-height:1.6;background:rgba(255,255,255,.3);">
+          <span style="color:#44403C;">NPC-周主动来找你咨询客户——"你上次说的那个逼定方法，我真想再看一遍。"</span><br>
+          <strong style="color:#065F46;">绩优做法一致：信心不是传染的——是示范的。</strong>你亲自做成一单，团队从"他说的行吗"变成"他怎么做的"。
+        </div>
+      </div>
+
+      <!-- 第4步 -->
+      <div style="margin-bottom:10px;border-radius:10px;overflow:hidden;border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(243,244,246,.3);font-size:12px;">
+          <span style="width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.05);color:#6B7280;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;">4</span>
+          <span style="flex:1;color:#1C1917;">你约NPC-周一对一复盘整场对话</span>
+          <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(0,0,0,.04);color:#6B7280;">跳过</span>
+        </div>
+        <div style="padding:12px 14px;font-size:11px;line-height:1.6;background:rgba(255,255,255,.3);">
+          <span style="color:#57534E;">这一步没有触发——对话在你决定打样后就进入了自然收尾。这不影响整体效果。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 再次行动 -->
+    <div class="card action-section">
+      <span class="module-tag mgmt">再次行动</span>
+      <p style="font-size:14px;font-weight:700;color:#1C1917;margin-bottom:4px;">这次最需要强化：替团队做减法</p>
+      <p style="font-size:12px;color:#57534E;line-height:1.6;margin-bottom:14px;">下次遇到NPC-周这样的资深员工说"我们不知道怎么做"——他不是在等你给他工具。他在等你替他做决定。</p>
+      <div style="background:rgba(245,158,11,.03);border:1px solid rgba(245,158,11,.08);border-radius:10px;padding:12px;font-size:11px;line-height:1.6;text-align:left;margin-bottom:14px;color:#92400E;">
+        <strong>5 分钟微练习：</strong>打开你团队的任务清单，找出 3 件可以砍掉的事。发一条消息给团队："这三件事从今天起不做了。我们聚焦。"
+      </div>
+      <button class="btn-primary">再练一次 TG-001</button>
+      <button class="btn-ghost">试试 TG-002 大户型攻坚（同一能力维度）</button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- TAB 2: MTP训后反馈                                        -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="tab-content" id="tab-mtp">
+
+    <!-- 模块 1: 培训要点掌握 -->
+    <div class="card">
+      <span class="module-tag mtp">培训要点掌握</span>
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:2px;">《团队激励》第 3 讲 · TG001 空降者 20 天</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:16px;">
+        2026-07-17 · 掌握 2/3 个要点 · <span style="color:#D97706;">薄弱点: 要点 2</span>
+      </p>
+
+      <!-- 要点 1: 掌握 -->
+      <div class="checklist-item done">
+        <span class="check-icon">✓</span>
+        <div>
+          <strong>要点 1 · 空降者先用行动建立信任</strong><br>
+          <span style="font-size:11px;opacity:.7;">你的决策: 先翻数据、爬楼看户型、没开会——完全匹配绩优路径。</span>
+        </div>
+      </div>
+
+      <!-- 要点 2: 未掌握 -->
+      <div class="checklist-item miss">
+        <span class="check-icon">✗</span>
+        <div>
+          <strong>要点 2 · 替团队做减法——承担"砍错了"的风险</strong><br>
+          <span style="font-size:11px;opacity:.7;">你的决策: 给对比表让大家自己判断。陷阱 T03-信息幻觉。</span><br>
+          <span style="font-size:11px;opacity:.7;"><strong>绩优做法:</strong> 直接说"就推 B 和 D，别的先放"——替团队承担决策风险。</span>
+        </div>
+      </div>
+
+      <!-- 要点 3: 掌握 -->
+      <div class="checklist-item done">
+        <span class="check-icon">✓</span>
+        <div>
+          <strong>要点 3 · 亲自打样——信心是示范出来的</strong><br>
+          <span style="font-size:11px;opacity:.7;">你的决策: 亲自蹲沙盘带客户——完全匹配绩优路径。</span>
+        </div>
+      </div>
+
+      <!-- 薄弱点总结 -->
+      <div style="background:rgba(220,38,38,.03);border:1px solid rgba(220,38,38,.08);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:12px;line-height:1.6;color:#991B1B;">
+        <strong>你的薄弱点: 要点 2「替团队做减法」</strong><br>
+        问题不在你不知道"应该做减法"——在于你选择了"给更多信息"而不是"替团队承担风险"。这是从"知道"到"做到"的关键一步。
+      </div>
+    </div>
+
+    <!-- 模块 2: 对比你同期的其他同学 (MTP 特有) -->
+    <div class="card">
+      <span class="module-tag mtp">同班对比</span>
+      <div style="font-size:13px;line-height:1.6;color:#57534E;margin-bottom:14px;">
+        本期 MTP《团队激励》课程共 <strong>27 人</strong> 完成 TG001 练习。<br>
+        要点 2「替团队做减法」是<strong style="color:#DC2626;">全班最集中的薄弱点</strong>——<strong>16 人（59%）</strong>在这里触发了 T03 信息幻觉或 T08 跳过诊断。
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.5;">
+        你不是一个人卡在这里。这个要点需要从"知道"到"做到"的跨越——具体来说，是"在压力下敢于做减法而不是做加法"的心理转变。
+      </div>
+    </div>
+
+    <!-- 模块 3: 下一步 + 老师会收到 -->
+    <div class="card action-section">
+      <span class="module-tag mtp">下一步行动</span>
+      <p style="font-size:14px;font-weight:700;color:#1C1917;margin-bottom:4px;">针对薄弱点再练一次</p>
+      <p style="font-size:12px;color:#57534E;line-height:1.6;margin-bottom:14px;">这次聚焦「做减法」——当NPC-周说"6个户型我们不知道主推哪个"，直接给他一个决定。</p>
+      <button class="btn-primary">重练 TG-001（聚焦要点 2）</button>
+
+      <p style="font-size:12px;color:var(--muted);margin-top:14px;margin-bottom:10px;">或者——你的薄弱点已被老师标记，下节课会专门讲解这个要点</p>
+      <div style="text-align:left;">
+        <div class="teacher-signal">
+          <strong>📊 给老师的信号：</strong><br>
+          本期 27 人中，16 人（59%）在《团队激励》第 3 讲要点 2「替团队做减法」上未达标。<br>
+          陷阱集中在 T03-信息幻觉（给更多工具而不是替团队承担风险）和 T08-跳过诊断。<br>
+          建议：下节课花 10-15 分钟做"信息幻觉 vs 做减法"的案例对比讨论。
+        </div>
+      </div>
+    </div>
+
+    <!-- 模块 4: 你已掌握的要点 -->
+    <div class="card">
+      <span class="module-tag mtp">你已成功掌握的</span>
+      <div style="font-size:12px;line-height:1.6;color:#065F46;">
+        ✅ <strong>要点 1 · 空降者先用行动建立信任</strong> —— 你选择了闭嘴、爬楼、看数据。NPC-周抬头看了你一眼。第一笔信任拿到了。<br><br>
+        ✅ <strong>要点 3 · 亲自打样</strong> —— 你蹲沙盘带了一组客户。NPC-周主动来找你咨询。这不是服从，是认可。
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function toggleDetail(id) {
+  var detail = document.getElementById(id + '-detail');
+  var arrow = document.getElementById(id + '-arrow');
+  if (detail.classList.contains('open')) {
+    detail.classList.remove('open');
+    arrow.textContent = '展开 ▼';
+  } else {
+    detail.classList.add('open');
+    arrow.textContent = '收起 ▲';
+  }
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelector('.tab-btn[onclick*="'+tab+'"]').classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+</script>
+</body>
+</html>

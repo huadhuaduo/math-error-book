@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课题经验资产库 · 本地工具 v2（收集阶段版）</title>
+<style>
+  /* ===== Apple HIG for web ===== */
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --separator: rgba(0,0,0,0.08);
+    --blue: #0071e3;
+    --blue-tint: rgba(0,113,227,0.10);
+    --green: #34c759;
+    --orange: #ff9500;
+    --red: #ff3b30;
+    --purple: #af52de;
+    --indigo: #5856d6;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro SC", "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 980px; margin: 0 auto; padding: 32px 24px 96px; }
+
+  /* ===== 顶部 ===== */
+  .app-header { margin-bottom: 24px; }
+  .app-eyebrow { font-size: 13px; font-weight: 600; color: var(--blue); letter-spacing: 0.5px; }
+  h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.4px; margin: 4px 0 6px; }
+  .app-sub { font-size: 14px; color: var(--text-secondary); }
+  .privacy-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 5px 12px; border-radius: 100px;
+    background: rgba(52,199,89,0.12); color: #1d8a3e;
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* ===== Tab 导航 ===== */
+  .tabs {
+    display: flex; gap: 4px; background: rgba(0,0,0,0.05);
+    border-radius: var(--radius-md); padding: 4px; margin-bottom: 28px;
+    max-width: 560px;
+  }
+  .tab-btn {
+    flex: 1; border: none; background: transparent; cursor: pointer;
+    padding: 9px 0; border-radius: 9px; font-size: 14px; font-weight: 600;
+    color: var(--text-secondary); font-family: inherit;
+    transition: all 0.2s ease;
+  }
+  .tab-btn.active { background: var(--surface); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ===== 卡片 & 表单 ===== */
+  .card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    margin-bottom: 20px;
+  }
+  .card h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+  .card .hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .form-grid .span-3 { grid-column: span 3; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); margin-bottom: 6px; letter-spacing: 0.2px;
+  }
+  .field label .req { color: var(--red); }
+  input[type="text"], input[type="date"], select, textarea {
+    width: 100%; padding: 10px 12px; font-size: 14px; font-family: inherit;
+    border: 1px solid var(--separator); border-radius: var(--radius-sm);
+    background: var(--bg); color: var(--text-primary); outline: none;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    -webkit-appearance: none; appearance: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--blue); background: var(--surface); }
+  textarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+  select { background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236e6e73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
+
+  .form-actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+  .btn {
+    border: none; cursor: pointer; font-family: inherit; font-weight: 600;
+    font-size: 14px; padding: 10px 22px; border-radius: 100px;
+    transition: all 0.15s ease;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: #0077ed; }
+  .btn-secondary { background: rgba(0,0,0,0.05); color: var(--text-primary); }
+  .btn-secondary:hover { background: rgba(0,0,0,0.09); }
+  .btn-danger-ghost { background: transparent; color: var(--red); }
+  .btn-danger-ghost:hover { background: rgba(255,59,48,0.08); }
+  .btn-sm { padding: 6px 14px; font-size: 13px; }
+
+  /* ===== 筛选栏 ===== */
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .filter-bar select, .filter-bar input { width: auto; min-width: 130px; flex: 0 0 auto; }
+  .filter-bar input[type="text"] { flex: 1 1 180px; }
+
+  /* ===== 条目卡 ===== */
+  .lesson-card {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 22px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .lesson-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+  .tag { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 100px; letter-spacing: 0.2px; }
+  .tag-exp   { background: rgba(52,199,89,0.12);  color: #1d8a3e; }
+  .tag-les   { background: rgba(255,59,48,0.10);  color: #c92a20; }
+  .tag-line  { background: var(--blue-tint);      color: var(--blue); }
+  .tag-layer { background: rgba(88,86,214,0.10);  color: var(--indigo); }
+  .tag-ev-data { background: rgba(255,149,0,0.12); color: #b26a00; }
+  .tag-ev-desc { background: rgba(0,0,0,0.05);    color: var(--text-secondary); }
+  .tag-status  { background: rgba(0,0,0,0.05);    color: var(--text-secondary); }
+  .tag-focus   { background: rgba(175,82,222,0.12); color: #8e3fb5; }
+
+  .lesson-quote {
+    font-size: 15px; line-height: 1.65; padding: 12px 16px;
+    border-left: 3px solid var(--blue); background: rgba(0,113,227,0.04);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: 12px;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .lesson-source {
+    font-size: 12.5px; color: var(--text-secondary);
+    display: flex; flex-wrap: wrap; gap: 4px 18px;
+    padding-top: 10px; border-top: 1px solid var(--separator);
+  }
+  .lesson-expert {
+    margin-top: 10px; padding: 10px 14px; background: rgba(175,82,222,0.06);
+    border-radius: var(--radius-sm); font-size: 13px; color: #7d3caf;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .lesson-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+  .empty-state {
+    text-align: center; padding: 56px 20px; color: var(--text-tertiary); font-size: 14px;
+    background: var(--surface); border-radius: var(--radius-lg);
+  }
+
+  /* ===== 报告区 ===== */
+  .report-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 20px; }
+  .report-toolbar .field { flex: 0 0 auto; }
+  .report-toolbar input[type="text"] { width: 300px; }
+
+  #reportArea { background: var(--surface); border-radius: var(--radius-lg); padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  #reportArea .report-eyebrow { font-size: 13px; font-weight: 600; color: var(--blue); letter-spacing: 0.5px; margin-bottom: 6px; }
+  #reportArea h2.report-title { font-size: 30px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 8px; }
+  #reportArea .report-meta { font-size: 13px; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 4px 18px; margin-bottom: 26px; }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 30px; }
+  .summary-card { background: var(--bg); border-radius: var(--radius-md); padding: 16px; }
+  .summary-num { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .summary-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  .anchor-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .anchor-nav a {
+    font-size: 12.5px; font-weight: 600; text-decoration: none;
+    color: var(--blue); background: var(--blue-tint);
+    padding: 5px 12px; border-radius: 100px;
+  }
+
+  .notice-card {
+    background: #fff8e6; border: 1px solid rgba(255,149,0,0.35);
+    border-radius: var(--radius-md); padding: 12px 16px;
+    font-size: 13px; color: #8a5a00; margin-bottom: 24px;
+  }
+  .focus-section {
+    background: rgba(175,82,222,0.05); border: 1px solid rgba(175,82,222,0.2);
+    border-radius: var(--radius-md); padding: 20px; margin-bottom: 28px;
+  }
+  .focus-section h3 { font-size: 16px; font-weight: 700; color: #7d3caf; margin-bottom: 12px; }
+  .focus-item { font-size: 14px; margin-bottom: 10px; padding-left: 14px; border-left: 3px solid var(--purple); }
+  .focus-item .focus-why { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
+
+  .report-section { margin-bottom: 32px; }
+  .report-section h3.line-title { font-size: 19px; font-weight: 700; letter-spacing: -0.2px; margin-bottom: 4px; padding-top: 6px; }
+  .report-section .line-count { font-size: 12.5px; color: var(--text-tertiary); margin-bottom: 14px; }
+  .report-entry { border: 1px solid var(--separator); border-radius: var(--radius-md); padding: 18px; margin-bottom: 12px; }
+  .quote-mark { display: block; font-size: 10.5px; font-weight: 600; color: var(--text-tertiary); margin-top: 8px; letter-spacing: 0.3px; }
+
+  .integrity-card { background: var(--bg); border-radius: var(--radius-md); padding: 22px; margin-top: 8px; }
+  .integrity-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .integrity-card ol { padding-left: 20px; font-size: 13px; color: var(--text-secondary); }
+  .integrity-card li { margin-bottom: 6px; }
+  .integrity-card li b { color: var(--text-primary); }
+  .report-footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--separator); font-size: 11.5px; color: var(--text-tertiary); text-align: center; }
+
+  /* ===== 备份 ===== */
+  .backup-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .file-label {
+    display: inline-block; cursor: pointer; font-weight: 600; font-size: 14px;
+    padding: 10px 22px; border-radius: 100px; background: rgba(0,0,0,0.05);
+  }
+  .file-label:hover { background: rgba(0,0,0,0.09); }
+  #importFile { display: none; }
+
+  /* ===== Toast（非阻塞）===== */
+  #toastWrap { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .toast {
+    background: rgba(29,29,31,0.92); color: #fff; font-size: 13.5px; font-weight: 500;
+    padding: 10px 20px; border-radius: 100px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    animation: toastIn 0.25s ease; backdrop-filter: blur(10px);
+  }
+  .toast.warn { background: rgba(255,59,48,0.94); }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 760px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .span-3 { grid-column: span 1; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 26px; }
+    #reportArea { padding: 24px; }
+  }
+
+  /* ===== 打印：只打印报告 ===== */
+  @media print {
+    body { background: #fff; }
+    .app-header, .tabs, .report-toolbar, #toastWrap, .privacy-pill { display: none !important; }
+    .tab-panel { display: none !important; }
+    #panel-report { display: block !important; }
+    .container { padding: 0; max-width: none; }
+    #reportArea { box-shadow: none; padding: 0; }
+    .report-entry { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="app-header">
+    <div class="app-eyebrow">2026 彩虹+计划 · 行动学习课题</div>
+    <h1>课题经验资产库</h1>
+    <div class="app-sub">经验教训录入 · 分类 · 一键生成领导汇总报告（收集阶段版）</div>
+    <div class="privacy-pill">🔒 所有数据仅存于本机浏览器（localStorage），无任何网络请求</div>
+  </header>
+
+  <nav class="tabs" id="tabNav">
+    <button class="tab-btn active" data-tab="entry">录入</button>
+    <button class="tab-btn" data-tab="library">条目库 <span id="countBadge"></span></button>
+    <button class="tab-btn" data-tab="report">生成报告</button>
+    <button class="tab-btn" data-tab="backup">备份</button>
+  </nav>
+
+  <!-- ============ 录入 ============ -->
+  <section class="tab-panel active" id="panel-entry">
+    <div class="card">
+      <h2 id="entryFormTitle">录入经验条目</h2>
+      <p class="hint">从学员报告"💡 经验教训（可复制）"章节<b>原文粘贴</b>，一字不改（只摘不写）。分类确认人 = 人工核对分类是否准确的人。</p>
+      <div class="form-grid">
+        <div class="field span-3">
+          <label>学员原文引用 <span class="req">*</span>（一字不改地粘贴）</label>
+          <textarea id="f_quote" placeholder="粘贴学员报告中的经验/教训原文……"></textarea>
+        </div>
+        <div class="field">
+          <label>类型 <span class="req">*</span></label>
+          <select id="f_type"><option>经验</option><option>教训</option></select>
+        </div>
+        <div class="field">
+          <label>专业条线 <span class="req">*</span></label>
+          <select id="f_line"></select>
+        </div>
+        <div class="field">
+          <label>成果层面</label>
+          <select id="f_layer"><option>机制层面</option><option>组织层面</option><option>流程层面</option><option>制度层面</option><option>未归层</option></select>
+        </div>
+        <div class="field">
+          <label>证据等级</label>
+          <select id="f_evidence"><option>有量化数据</option><option>仅定性描述</option></select>
+        </div>
+        <div class="field">
+          <label>所属阶段 <span class="req">*</span></label>
+          <select id="f_stage"><option>中期复盘</option><option>结题</option></select>
+        </div>
+        <div class="field">
+          <label>提交日期</label>
+          <input type="date" id="f_date">
+        </div>
+        <div class="field">
+          <label>课题名称 <span class="req">*</span></label>
+          <input type="text" id="f_project" placeholder="如：经营视角下成本适配能力提升">
+        </div>
+        <div class="field">
+          <label>单位</label>
+          <input type="text" id="f_unit" placeholder="如：XX城市公司 / 项目群 / 片区">
+        </div>
+        <div class="field">
+          <label>提交人</label>
+          <input type="text" id="f_submitter" placeholder="学员姓名">
+        </div>
+        <div class="field">
+          <label>报告出处（章节）</label>
+          <input type="text" id="f_chapter" placeholder="如：中期复盘报告 · 经验教训 2">
+        </div>
+        <div class="field">
+          <label>分类确认人</label>
+          <input type="text" id="f_classifier" placeholder="人工确认分类的人">
+        </div>
+        <div class="field">
+          <label>列入"本季值得关注"</label>
+          <select id="f_focus"><option value="no">否</option><option value="yes">是</option></select>
+        </div>
+        <div class="field span-3" id="focusReasonWrap" style="display:none">
+          <label>入选理由</label>
+          <input type="text" id="f_focusReason" placeholder="为什么这条值得领导本季关注？">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="saveBtn">保存条目</button>
+        <button class="btn btn-secondary" id="resetBtn">清空表单</button>
+        <span id="editingHint" style="font-size:13px;color:var(--orange);font-weight:600;display:none">正在编辑既有条目，保存将覆盖原条目</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 条目库 ============ -->
+  <section class="tab-panel" id="panel-library">
+    <div class="filter-bar">
+      <select id="filterLine"><option value="">全部条线</option></select>
+      <select id="filterType"><option value="">全部类型</option><option>经验</option><option>教训</option></select>
+      <select id="filterStage"><option value="">全部阶段</option><option>中期复盘</option><option>结题</option></select>
+      <input type="text" id="filterKeyword" placeholder="搜索原文 / 课题 / 提交人…">
+    </div>
+    <div id="libraryList"></div>
+  </section>
+
+  <!-- ============ 生成报告 ============ -->
+  <section class="tab-panel" id="panel-report">
+    <div class="report-toolbar">
+      <div class="field">
+        <label>报告阶段</label>
+        <select id="reportStage"><option>中期复盘</option><option>结题</option><option value="全部">全部阶段</option></select>
+      </div>
+      <div class="field">
+        <label>报告期间标题</label>
+        <input type="text" id="reportPeriod" value="2026年4月—7月（第二次作业·中期复盘）">
+      </div>
+      <button class="btn btn-primary" id="genReportBtn">生成报告</button>
+      <button class="btn btn-secondary" id="printBtn">打印 / 存 PDF</button>
+    </div>
+    <div id="reportArea"><div class="empty-state" style="box-shadow:none">点击"生成报告"，将按当前条目库数据生成领导汇总报告</div></div>
+  </section>
+
+  <!-- ============ 备份 ============ -->
+  <section class="tab-panel" id="panel-backup">
+    <div class="card">
+      <h2>数据备份与恢复</h2>
+      <p class="hint">数据存于本机浏览器 localStorage。<b>清理浏览器数据会导致丢失</b>——每次录入结束后请导出一份 JSON 存到本地文件夹（IP 资产同步铁律：本地文件是唯一可信版本）。</p>
+      <div class="backup-row">
+        <button class="btn btn-primary" id="exportBtn">导出 JSON 备份</button>
+        <label class="file-label" for="importFile">导入 JSON 恢复</label>
+        <input type="file" id="importFile" accept=".json,application/json">
+        <button class="btn btn-danger-ghost" id="clearBtn">清空全部数据</button>
+      </div>
+      <p class="hint" style="margin-top:16px;margin-bottom:0" id="backupInfo"></p>
+    </div>
+  </section>
+
+</div>
+<div id="toastWrap"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORE_KEY = 'lessonBank_v1';
+  var LINES = ['投资拓展', '成本管理', '招采与供应链', '设计管理', '工程管理', '营销与客研', '交付与客服', '运营与综合'];
+  var LINE_ICONS = { '投资拓展':'🏗️', '成本管理':'💰', '招采与供应链':'🔗', '设计管理':'📐', '工程管理':'🏢', '营销与客研':'📣', '交付与客服':'🤝', '运营与综合':'⚙️' };
+
+  var entries = [];
+  var editingId = null;
+  var clearArmed = false;
+
+  /* ---------- 工具 ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function toast(msg, warn) {
+    var wrap = document.getElementById('toastWrap');
+    var el = document.createElement('div');
+    el.className = 'toast' + (warn ? ' warn' : '');
+    el.textContent = msg;               // textContent，永不 innerHTML 用户输入
+    wrap.appendChild(el);
+    setTimeout(function () { el.remove(); }, 2600);
+  }
+  function uid() {
+    return 'e' + new Date().getTime().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
+  }
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      entries = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(entries)) entries = [];
+    } catch (e) { entries = []; }
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(entries)); }
+    catch (e) { toast('保存失败：浏览器存储不可用', true); }
+    updateBadge();
+  }
+  function updateBadge() {
+    document.getElementById('countBadge').textContent = entries.length ? '(' + entries.length + ')' : '';
+    document.getElementById('backupInfo').textContent = '当前共 ' + entries.length + ' 条条目。';
+  }
+
+  /* ---------- Tab ---------- */
+  document.getElementById('tabNav').addEventListener('click', function (e) {
+    var btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'library') renderLibrary();
+  });
+
+  /* ---------- 下拉初始化 ---------- */
+  function fillLineSelects() {
+    var sel = document.getElementById('f_line');
+    var fil = document.getElementById('filterLine');
+    LINES.forEach(function (l) {
+      var o1 = document.createElement('option'); o1.textContent = l; sel.appendChild(o1);
+      var o2 = document.createElement('option'); o2.textContent = l; fil.appendChild(o2);
+    });
+  }
+
+  /* ---------- 录入表单 ---------- */
+  var FIELDS = ['quote','type','line','layer','evidence','stage','date','project','unit','submitter','chapter','classifier','focusReason'];
+  function getField(name) { return document.getElementById('f_' + name); }
+
+  document.getElementById('f_focus').addEventListener('change', function () {
+    document.getElementById('focusReasonWrap').style.display = this.value === 'yes' ? '' : 'none';
+  });
+
+  function resetForm() {
+    FIELDS.forEach(function (f) {
+      var el = getField(f);
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
+    });
+    getField('date').value = todayStr();
+    document.getElementById('f_focus').value = 'no';
+    document.getElementById('focusReasonWrap').style.display = 'none';
+    editingId = null;
+    document.getElementById('editingHint').style.display = 'none';
+    document.getElementById('entryFormTitle').textContent = '录入经验条目';
+    document.getElementById('saveBtn').textContent = '保存条目';
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+  document.getElementById('saveBtn').addEventListener('click', function () {
+    var quote = getField('quote').value.trim();
+    var project = getField('project').value.trim();
+    if (!quote) { toast('请粘贴学员原文（必填）', true); return; }
+    if (!project) { toast('请填写课题名称（必填）', true); return; }
+
+    var data = {
+      id: editingId || uid(),
+      quote: quote,
+      type: getField('type').value,
+      line: getField('line').value,
+      layer: getField('layer').value,
+      evidence: getField('evidence').value,
+      stage: getField('stage').value,
+      date: getField('date').value,
+      project: project,
+      unit: getField('unit').value.trim(),
+      submitter: getField('submitter').value.trim(),
+      chapter: getField('chapter').value.trim(),
+      classifier: getField('classifier').value.trim(),
+      focus: document.getElementById('f_focus').value === 'yes',
+      focusReason: getField('focusReason').value.trim()
+    };
+
+    if (editingId) {
+      var idx = entries.findIndex(function (e) { return e.id === editingId; });
+      if (idx >= 0) entries[idx] = data; else entries.push(data);
+      toast('条目已更新');
+    } else {
+      entries.push(data);
+      toast('条目已保存（共 ' + entries.length + ' 条）');
+    }
+    save();
+    resetForm();
+  });
+
+  /* ---------- 条目库 ---------- */
+  ['filterLine','filterType','filterStage'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', renderLibrary);
+  });
+  document.getElementById('filterKeyword').addEventListener('input', renderLibrary);
+
+  function tagHtml(en) {
+    var t = [];
+    t.push('<span class="tag ' + (en.type === '教训' ? 'tag-les' : 'tag-exp') + '">' + esc(en.type) + '</span>');
+    t.push('<span class="tag tag-line">' + esc(en.line) + '</span>');
+    if (en.layer && en.layer !== '未归层') t.push('<span class="tag tag-layer">' + esc(en.layer) + '</span>');
+    t.push('<span class="tag ' + (en.evidence === '有量化数据' ? 'tag-ev-data' : 'tag-ev-desc') + '">' + esc(en.evidence) + '</span>');
+    t.push('<span class="tag tag-status">' + esc(en.stage) + '</span>');
+    if (en.focus) t.push('<span class="tag tag-focus">★ 本季关注</span>');
+    return t.join('');
+  }
+  function sourceHtml(en) {
+    var parts = [];
+    parts.push('课题：<b>' + esc(en.project) + '</b>');
+    if (en.unit) parts.push('单位：' + esc(en.unit));
+    if (en.submitter) parts.push('提交人：' + esc(en.submitter));
+    var src = [en.chapter, en.date].filter(Boolean).map(esc).join(' · ');
+    if (src) parts.push('出处：' + src);
+    if (en.classifier) parts.push('分类确认人：' + esc(en.classifier));
+    return parts.map(function (p) { return '<span>' + p + '</span>'; }).join('');
+  }
+
+  function renderLibrary() {
+    var line = document.getElementById('filterLine').value;
+    var type = document.getElementById('filterType').value;
+    var stage = document.getElementById('filterStage').value;
+    var kw = document.getElementById('filterKeyword').value.trim().toLowerCase();
+
+    var list = entries.filter(function (en) {
+      if (line && en.line !== line) return false;
+      if (type && en.type !== type) return false;
+      if (stage && en.stage !== stage) return false;
+      if (kw) {
+        var hay = (en.quote + ' ' + en.project + ' ' + en.submitter + ' ' + en.unit).toLowerCase();
+        if (hay.indexOf(kw) < 0) return false;
+      }
+      return true;
+    });
+
+    var box = document.getElementById('libraryList');
+    if (!list.length) {
+      box.innerHTML = '<div class="empty-state">' + (entries.length ? '没有匹配的条目，调整筛选条件试试' : '还没有条目，去"录入"页添加第一条') + '</div>';
+      return;
+    }
+    box.innerHTML = list.map(function (en) {
+      return '<div class="lesson-card" data-id="' + esc(en.id) + '">' +
+        '<div class="lesson-tags">' + tagHtml(en) + '</div>' +
+        '<div class="lesson-quote">' + esc(en.quote) + '<span class="quote-mark">▎学员原文，一字未改</span></div>' +
+        '<div class="lesson-source">' + sourceHtml(en) + '</div>' +
+        '<div class="lesson-actions">' +
+          '<button class="btn btn-secondary btn-sm" data-act="edit">编辑</button>' +
+          '<button class="btn btn-danger-ghost btn-sm" data-act="del">删除</button>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  document.getElementById('libraryList').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    var card = btn.closest('.lesson-card');
+    var id = card.getAttribute('data-id');
+    var en = entries.find(function (x) { return x.id === id; });
+    if (!en) return;
+
+    if (btn.dataset.act === 'edit') {
+      FIELDS.forEach(function (f) { getField(f).value = en[f] || ''; });
+      document.getElementById('f_focus').value = en.focus ? 'yes' : 'no';
+      document.getElementById('focusReasonWrap').style.display = en.focus ? '' : 'none';
+      editingId = id;
+      document.getElementById('editingHint').style.display = '';
+      document.getElementById('entryFormTitle').textContent = '编辑条目';
+      document.getElementById('saveBtn').textContent = '保存修改';
+      document.querySelector('.tab-btn[data-tab="entry"]').click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (btn.dataset.act === 'del') {
+      // 非阻塞二次确认：按钮先变文案，3 秒内再点才真删
+      if (btn.dataset.armed === '1') {
+        entries = entries.filter(function (x) { return x.id !== id; });
+        save();
+        renderLibrary();
+        toast('条目已删除');
+      } else {
+        btn.dataset.armed = '1';
+        btn.textContent = '再点一次确认删除';
+        setTimeout(function () { btn.dataset.armed = ''; btn.textContent = '删除'; }, 3000);
+      }
+    }
+  });
+
+  /* ---------- 报告生成 ---------- */
+  document.getElementById('reportStage').addEventListener('change', function () {
+    var v = this.value;
+    var input = document.getElementById('reportPeriod');
+    if (v === '中期复盘') input.value = '2026年4月—7月（第二次作业·中期复盘）';
+    else if (v === '结题') input.value = '2026年（第三次作业·结题成果）';
+    else input.value = '2026年度（全阶段）';
+  });
+
+  document.getElementById('genReportBtn').addEventListener('click', renderReport);
+  document.getElementById('printBtn').addEventListener('click', function () {
+    if (!document.querySelector('#reportArea .report-title')) renderReport();
+    window.print();
+  });
+
+  function renderReport() {
+    var stage = document.getElementById('reportStage').value;
+    var period = document.getElementById('reportPeriod').value.trim();
+    var list = entries.filter(function (en) { return stage === '全部' || en.stage === stage; });
+
+    var area = document.getElementById('reportArea');
+    if (!list.length) {
+      area.innerHTML = '<div class="empty-state" style="box-shadow:none">当前阶段（' + esc(stage) + '）没有条目，先去录入</div>';
+      return;
+    }
+
+    var projects = {};
+    list.forEach(function (en) { projects[en.project] = 1; });
+    var nProjects = Object.keys(projects).length;
+    var nExp = list.filter(function (en) { return en.type === '经验'; }).length;
+    var nLes = list.filter(function (en) { return en.type === '教训'; }).length;
+    var nData = list.filter(function (en) { return en.evidence === '有量化数据'; }).length;
+    var lesRatio = list.length ? nLes / list.length : 0;
+
+    var html = '';
+    html += '<div class="report-eyebrow">2026 彩虹+计划 · 行动学习课题</div>';
+    html += '<h2 class="report-title">' + esc(stage === '全部' ? '全阶段' : stage) + ' · 经验教训汇总报告</h2>';
+    html += '<div class="report-meta">' +
+      '<span>报告期间：' + esc(period) + '</span>' +
+      '<span>数据来源：学员报告"经验教训"章节原文</span>' +
+      '<span>生成日期：' + esc(todayStr()) + '</span></div>';
+
+    html += '<div class="summary-grid">' +
+      '<div class="summary-card"><div class="summary-num">' + nProjects + '</div><div class="summary-label">覆盖课题</div></div>' +
+      '<div class="summary-card"><div class="summary-num" style="color:#1d8a3e">' + nExp + '</div><div class="summary-label">经验条目</div></div>' +
+      '<div class="summary-card"><div class="summary-num" style="color:#c92a20">' + nLes + '</div><div class="summary-label">教训条目</div></div>' +
+      '<div class="summary-card"><div class="summary-num" style="color:#b26a00">' + nData + '</div><div class="summary-label">含量化数据条目</div></div></div>';
+
+    // 教训占比过低：如实标注，不美化
+    if (list.length >= 5 && lesRatio < 0.2) {
+      html += '<div class="notice-card">⚠️ <b>教训收集不足提示</b>：本期教训条目仅占 ' + Math.round(lesRatio * 100) + '%（' + nLes + '/' + list.length + '）。教训是最有学习价值的材料，建议在工作坊中主动补充挖掘，此提示如实保留、不做美化。</div>';
+    }
+
+    // 本季值得关注
+    var focus = list.filter(function (en) { return en.focus; });
+    if (focus.length) {
+      html += '<div class="focus-section"><h3>★ 本季值得关注（' + focus.length + ' 条）</h3>';
+      focus.forEach(function (en) {
+        html += '<div class="focus-item">' + esc(en.quote) +
+          '<div class="focus-why">— ' + esc(en.project) + (en.focusReason ? '｜入选理由：' + esc(en.focusReason) : '') + '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    // 条线锚点导航 + 分组
+    var groups = LINES.map(function (line) {
+      return { line: line, items: list.filter(function (en) { return en.line === line; }) };
+    }).filter(function (g) { return g.items.length; });
+
+    if (groups.length > 1) {
+      html += '<div class="anchor-nav">' + groups.map(function (g, i) {
+        return '<a href="#rpt-sec-' + i + '">' + (LINE_ICONS[g.line] || '') + ' ' + esc(g.line) + ' (' + g.items.length + ')</a>';
+      }).join('') + '</div>';
+    }
+
+    groups.forEach(function (g, i) {
+      var ge = g.items.filter(function (en) { return en.type === '经验'; }).length;
+      var gl = g.items.length - ge;
+      html += '<div class="report-section" id="rpt-sec-' + i + '">';
+      html += '<h3 class="line-title">' + (LINE_ICONS[g.line] || '') + ' ' + esc(g.line) + '</h3>';
+      html += '<div class="line-count">经验 ' + ge + ' · 教训 ' + gl + '</div>';
+      g.items.forEach(function (en) {
+        html += '<div class="report-entry">' +
+          '<div class="lesson-tags">' + tagHtml(en) + '</div>' +
+          '<div class="lesson-quote">' + esc(en.quote) + '<span class="quote-mark">▎学员原文，一字未改</span></div>' +
+          '<div class="lesson-source">' + sourceHtml(en) + '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+    });
+
+    html += '<div class="integrity-card"><h3>客观性与可查性说明（每期报告固定附带）</h3><ol>' +
+      '<li><b>只摘不写</b>——所有条目均为学员报告原文引用，汇总过程不改写、不评价、不补充。</li>' +
+      '<li><b>条条可溯</b>——每条注明来源课题、单位、提交人、报告章节与提交日期，可回查原始报告对应段落。</li>' +
+      '<li><b>分类留痕</b>——按公开的"专业条线 × 成果层面"体系分类，每条记录分类确认人，异议可复核改判。</li></ol></div>';
+
+    html += '<div class="report-footer">2026 彩虹+计划 · 课题经验资产库 · 数据仅存于本地，不经任何外部服务</div>';
+
+    area.innerHTML = html;   // html 中所有用户内容均已 esc()
+    toast('报告已生成（' + list.length + ' 条）');
+  }
+
+  /* ---------- 备份 ---------- */
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify({ version: 1, exportedAt: todayStr(), entries: entries }, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '课题经验资产库_备份_' + todayStr() + '.json';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    toast('已导出 JSON 备份，请存入本地项目文件夹');
+  });
+
+  document.getElementById('importFile').addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    this.value = '';
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        var arr = Array.isArray(data) ? data : data.entries;
+        if (!Array.isArray(arr)) throw new Error('bad');
+        // 合并：同 id 覆盖，新 id 追加
+        var map = {};
+        entries.forEach(function (en) { map[en.id] = en; });
+        arr.forEach(function (en) { if (en && en.id && en.quote) map[en.id] = en; });
+        entries = Object.keys(map).map(function (k) { return map[k]; });
+        save();
+        renderLibrary();
+        toast('导入成功，当前共 ' + entries.length + ' 条');
+      } catch (e) {
+        toast('导入失败：文件不是有效的备份 JSON', true);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function () {
+    var btn = this;
+    if (clearArmed) {
+      entries = [];
+      save();
+      renderLibrary();
+      clearArmed = false;
+      btn.textContent = '清空全部数据';
+      toast('已清空全部数据');
+    } else {
+      clearArmed = true;
+      btn.textContent = '再点一次确认清空（不可恢复，请先导出）';
+      setTimeout(function () { clearArmed = false; btn.textContent = '清空全部数据'; }, 4000);
+    }
+  });
+
+  /* ---------- 启动 ---------- */
+  fillLineSelects();
+  load();
+  updateBadge();
+  getField('date').value = todayStr();
+})();
+</script>
+</body>
+</html>
