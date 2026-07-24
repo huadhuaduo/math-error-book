@@ -403,29 +403,35 @@ img{max-width:100%;display:block}
   </div>
   <!-- Manual Entry -->
   <div id="add-manual">
-    <div class="form-group"><label class="form-label">题目内容 *</label><textarea id="add-problem-text" placeholder="请输入或粘贴题目内容..." oninput="M.autoClassify()"></textarea><div class="form-hint" id="add-auto-tip" style="color:var(--blue)"></div></div>
+    <div class="form-group"><label class="form-label">题目内容</label><textarea id="add-problem-text" placeholder="请输入或粘贴题目内容...&#10;&#10;💡 也可以直接拍照上传，系统会自动识别文字和知识点" oninput="M.autoClassify()"></textarea><div class="form-hint" id="add-auto-tip" style="color:var(--blue)"></div></div>
     <div class="form-group"><label class="form-label">我的答案（错的）</label><input type="text" id="add-your-answer" placeholder="你当时写的答案"></div>
-    <div class="form-group"><label class="form-label">正确答案 *</label><input type="text" id="add-correct-answer" placeholder="正确的答案是什么"></div>
-    <div class="form-group"><label class="form-label">错因反思</label><input type="text" id="add-error-reason" placeholder="为什么会做错？（可选）"></div>
+    <div class="form-group"><label class="form-label">正确答案</label><input type="text" id="add-correct-answer" placeholder="正确的答案是什么"></div>
+    <div class="form-group"><label class="form-label">错因反思（可选）</label><input type="text" id="add-error-reason" placeholder="为什么会做错？"></div>
   </div>
   <!-- Camera -->
   <div id="add-camera" style="display:none">
-    <div style="text-align:center;padding:var(--space-lg)">
+    <div style="text-align:center;padding:var(--space-lg)" id="add-camera-btns">
       <input type="file" accept="image/*" capture="environment" id="add-camera-input" style="display:none" onchange="M.handleCameraCapture(event)">
       <button class="btn btn-primary btn-lg" onclick="document.getElementById('add-camera-input').click()">📷 拍照</button>
       <button class="btn btn-outline btn-lg" style="margin-left:8px" onclick="document.getElementById('add-gallery-input').click()">🖼️ 从相册选</button>
       <input type="file" accept="image/*" id="add-gallery-input" style="display:none" onchange="M.handleCameraCapture(event)">
     </div>
     <div id="add-camera-preview" style="display:none">
-      <img id="add-camera-img" style="max-height:300px;margin:0 auto;border-radius:var(--radius-md)">
-      <div style="text-align:center;margin-top:var(--space-md)">
-        <button class="btn btn-primary" onclick="M.runOCR()" id="btn-ocr">🔍 OCR 文字识别</button>
+      <img id="add-camera-img" style="max-height:240px;margin:0 auto;border-radius:var(--radius-md)">
+      <div style="text-align:center;margin-top:12px">
+        <button class="btn btn-primary" onclick="M.runOCR()" id="btn-ocr">🔍 智能识别文字和知识点</button>
         <div id="ocr-progress" style="display:none;margin-top:8px;font-size:13px;color:var(--text-secondary)"></div>
       </div>
-      <textarea id="add-ocr-result" style="margin-top:var(--space-md);display:none" placeholder="OCR 识别结果，请检查修正..."></textarea>
-      <div style="margin-top:var(--space-md)" id="add-ocr-actions" style="display:none">
-        <button class="btn btn-primary btn-sm" onclick="M.confirmOCR()">✓ 确认，填入表单</button>
-        <button class="btn btn-outline btn-sm" onclick="M.retakePhoto()">↺ 重新拍照</button>
+      <div id="ocr-result-box" style="display:none;margin-top:12px">
+        <div class="card" style="background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.15)">
+          <div style="font-weight:600;font-size:14px;margin-bottom:8px">📋 识别结果</div>
+          <textarea id="add-ocr-result" style="min-height:60px" placeholder="OCR 识别结果，请检查修正..."></textarea>
+          <div style="margin-top:8px;font-size:13px" id="ocr-tags-summary"></div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="M.confirmOCR()">✓ 确认并自动分类</button>
+            <button class="btn btn-outline btn-sm" onclick="M.retakePhoto()">↺ 重拍</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -456,19 +462,23 @@ img{max-width:100%;display:block}
       <span class="tag-chip" data-et="application" onclick="M.selectErrorType('application')">不会应用</span>
     </div>
   </div>
-  <div class="form-group"><label class="form-label">知识点标签（可多选）</label>
-    <div style="margin-bottom:8px">
-      <select id="add-semester" onchange="M.renderTagPicker()" style="width:auto;display:inline-block">
-        <option value="1">六年级上册</option>
-        <option value="2">六年级下册</option>
-      </select>
+  <div class="form-group">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <label class="form-label" style="margin-bottom:0">🏷️ 知识点分类</label>
+      <span style="font-size:12px;color:var(--blue);cursor:pointer" id="btn-show-tags" onclick="M.showTagEditor()">修改 ▸</span>
     </div>
-    <div class="tag-grid" id="add-tag-picker"></div>
-    <div class="form-hint" id="add-tag-suggest" style="margin-top:8px"></div>
-  </div>
-  <div class="form-group"><label class="form-label">错题图片（可选）</label>
-    <input type="file" accept="image/*" id="add-image-input" onchange="M.handleImageUpload(event)">
-    <img id="add-image-preview" style="max-height:200px;margin-top:8px;border-radius:var(--radius-sm);display:none">
+    <div id="add-tags-summary" style="font-size:13px;color:var(--text-secondary);padding:4px 0">等待输入题目或拍照后自动识别...</div>
+    <div id="add-tag-editor" style="display:none">
+      <div style="margin-bottom:8px">
+        <select id="add-semester" onchange="M.renderTagPicker()" style="width:auto;display:inline-block">
+          <option value="1">六年级上册</option>
+          <option value="2">六年级下册</option>
+        </select>
+      </div>
+      <div class="tag-grid" id="add-tag-picker"></div>
+      <div class="form-hint" id="add-tag-suggest" style="margin-top:8px"></div>
+      <button class="btn btn-outline btn-sm" style="margin-top:6px" onclick="M.hideTagEditor()">收起</button>
+    </div>
   </div>
   <div style="display:flex;gap:8px;margin-top:var(--space-lg)">
     <button class="btn btn-primary btn-block" onclick="M.saveProblem()">💾 保存错题</button>
@@ -984,6 +994,30 @@ M.renderTagPicker = () => {
   container.innerHTML = html;
 };
 
+M.showTagEditor = () => {
+  M.$('add-tag-editor').style.display = 'block';
+  M.$('btn-show-tags').style.display = 'none';
+  M.renderTagPicker();
+};
+
+M.hideTagEditor = () => {
+  M.$('add-tag-editor').style.display = 'none';
+  M.$('btn-show-tags').style.display = 'inline';
+  M.updateTagsSummary();
+};
+
+M.updateTagsSummary = () => {
+  const kps = M._addState.knowledgePoints;
+  const el = M.$('add-tags-summary');
+  if (kps.length === 0) {
+    el.innerHTML = '<span style="color:var(--text-tertiary)">等待输入题目或拍照后自动识别...</span>';
+    el.style.color = 'var(--text-tertiary)';
+  } else {
+    el.innerHTML = '✅ <strong>已识别：</strong>' + kps.map(k => M.getKPName(k)).join(' · ');
+    el.style.color = 'var(--green)';
+  }
+};
+
 M.toggleAllTags = () => {
   const panel = M.$('all-tags-panel');
   const toggle = M.$('toggle-all-tags');
@@ -1072,10 +1106,18 @@ M.runOCR = async () => {
       .trim();
 
     M._addState.ocrText = cleaned;
-    M.$('add-ocr-result').style.display = 'block';
+    M.$('ocr-result-box').style.display = 'block';
     M.$('add-ocr-result').value = cleaned;
-    M.$('add-ocr-actions').style.display = 'block';
-    M.$('ocr-progress').textContent = '✅ 识别完成，请检查修正';
+    // Auto-classify immediately after OCR
+    M._autoSuggestKP(cleaned);
+    M._addState._hasClassified = true;
+    M.updateTagsSummary();
+    if (M._addState.knowledgePoints.length > 0) {
+      M.$('ocr-tags-summary').innerHTML = '🏷️ 自动识别知识点：<strong>' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join(' · ') + '</strong>';
+    } else {
+      M.$('ocr-tags-summary').innerHTML = '⚠️ 未能自动识别知识点，可手动修正文字后重试';
+    }
+    M.$('ocr-progress').textContent = '✅ 识别完成，请核对修正后点确认';
   } catch(e) {
     M.$('ocr-progress').textContent = '识别失败: ' + e.message;
     M.showToast('OCR识别失败，请尝试手动输入', 'error');
@@ -1087,9 +1129,18 @@ M.confirmOCR = () => {
   const text = M.$('add-ocr-result').value.trim();
   if (!text) { M.showToast('识别结果为空','error'); return; }
   M.$('add-problem-text').value = text;
-  // Auto-suggest knowledge points
+  // Auto classify
   M._autoSuggestKP(text);
-  M.showToast('已填入题目，请补充答案和知识点', 'success');
+  M._addState._hasClassified = true;
+  M.updateTagsSummary();
+  // Show tags in OCR box
+  if (M._addState.knowledgePoints.length > 0) {
+    M.$('ocr-tags-summary').innerHTML = '🏷️ 自动识别知识点：<strong>' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join(' · ') + '</strong>';
+  } else {
+    M.$('ocr-tags-summary').innerHTML = '⚠️ 未能自动识别知识点，可点击右上角「修改」手动选择';
+  }
+  M.$('add-auto-tip').textContent = '✅ 文字已填入，知识点已自动分类。请核对并填写答案后保存';
+  M.showToast('文字和知识点已自动识别，请核对', 'success');
 };
 
 M.autoClassify = () => {
@@ -1097,16 +1148,16 @@ M.autoClassify = () => {
   if (text.length < 5) {
     M.$('add-auto-tip').textContent = '';
     M._addState._hasClassified = false;
-    M.renderTagPicker();
+    M.updateTagsSummary();
     return;
   }
   M._autoSuggestKP(text);
   M._addState._hasClassified = true;
-  M.renderTagPicker();
+  M.updateTagsSummary();
   if (M._addState.knowledgePoints.length > 0) {
-    M.$('add-auto-tip').textContent = '🤖 AI 识别到 ' + M._addState.knowledgePoints.length + ' 个知识点：' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join('、');
+    M.$('add-auto-tip').textContent = '🤖 已自动识别 ' + M._addState.knowledgePoints.length + ' 个知识点';
   } else {
-    M.$('add-auto-tip').textContent = '🤖 未能自动识别，请点击「展开全部知识点」手动选择，或在题目中补充关键词（如"圆柱的体积""分配律"等）';
+    M.$('add-auto-tip').textContent = '🤖 未能自动识别，可点击右上角「修改」手动选择';
   }
 };
 
@@ -1166,22 +1217,28 @@ M._autoSuggestKP = (text) => {
 
 M.retakePhoto = () => {
   M.$('add-camera-preview').style.display = 'none';
-  M.$('add-ocr-result').style.display = 'none';
-  M.$('add-ocr-actions').style.display = 'none';
+  M.$('ocr-result-box').style.display = 'none';
+  M.$('add-camera-btns').style.display = 'block';
   M._addState.imageBlob = null;
   M._addState.ocrText = '';
+  M._addState._hasClassified = false;
+  M._addState.knowledgePoints = [];
+  M.updateTagsSummary();
+  M.$('btn-ocr').disabled = false;
+  M.$('btn-ocr').textContent = '🔍 智能识别文字和知识点';
 };
 
 M.handleCameraCapture = (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  // Compress and preview
   M._addState.imageBlob = file;
   const url = URL.createObjectURL(file);
   M.$('add-camera-img').src = url;
   M.$('add-camera-preview').style.display = 'block';
-  M.$('add-ocr-result').style.display = 'none';
-  M.$('add-ocr-actions').style.display = 'none';
+  M.$('add-camera-btns').style.display = 'none';
+  M.$('ocr-result-box').style.display = 'none';
+  M.$('btn-ocr').disabled = false;
+  M.$('btn-ocr').textContent = '🔍 智能识别文字和知识点';
 };
 
 M.handleFileUpload = (e) => {
@@ -1681,8 +1738,14 @@ M.handleImageUpload = (e) => {
 M.saveProblem = async () => {
   const problemText = M.$('add-problem-text').value.trim();
   const correctAnswer = M.$('add-correct-answer').value.trim();
-  if (!problemText) { M.showToast('请输入题目内容', 'error'); return; }
+  const hasImage = !!M._addState.imageBlob;
+  if (!problemText && !hasImage) { M.showToast('请输入题目内容或拍照上传', 'error'); return; }
   if (!correctAnswer) { M.showToast('请输入正确答案', 'error'); return; }
+  // Auto-classify if not done yet and text exists
+  if (!M._addState._hasClassified && problemText.length >= 5) {
+    M._autoSuggestKP(problemText);
+    M._addState._hasClassified = true;
+  }
 
   const data = {
     problemText,
@@ -1713,12 +1776,20 @@ M.saveProblem = async () => {
     M._addState.imageThumb = null;
     M._addState.errorType = null;
     M._addState.ocrText = '';
+    M._addState._hasClassified = false;
     M.$('add-image-preview').style.display = 'none';
     M.$('add-camera-preview').style.display = 'none';
     M.$('add-ocr-result').style.display = 'none';
-    M.$('add-ocr-actions').style.display = 'none';
+    M.$('ocr-result-box').style.display = 'none';
+    M.$('add-camera-btns').style.display = 'block';
     M.$('add-file-info').style.display = 'none';
-    M.renderTagPicker();
+    M.$('add-auto-tip').textContent = '';
+    M.$('ocr-tags-summary').innerHTML = '';
+    M.$('btn-ocr').disabled = false;
+    M.$('btn-ocr').textContent = '🔍 智能识别文字和知识点';
+    M.updateTagsSummary();
+    M.$('add-tag-editor').style.display = 'none';
+    M.$('btn-show-tags').style.display = 'inline';
     M.$('add-error-type').querySelectorAll('.tag-chip').forEach(ch => ch.classList.remove('selected'));
     M.switchScreen('dashboard');
   } catch(e) {
