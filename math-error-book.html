@@ -1246,66 +1246,42 @@ M.handleFileUpload = (e) => {
   if (!file) return;
   M.$('add-file-info').style.display = 'block';
   const info = M.$('add-file-info');
+  const isImage = file.type.startsWith('image/');
+  const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
+  const isWord = file.name.endsWith('.docx') || file.name.endsWith('.doc');
+  const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
 
-  // Image files: process directly like camera
-  if (file.type.startsWith('image/')) {
-    M._addState.imageBlob = file;
-    const url = URL.createObjectURL(file);
+  // Always store the file so save works
+  M._addState.imageBlob = file;
+  const url = isImage ? URL.createObjectURL(file) : null;
+
+  if (isImage) {
     info.innerHTML = `<div class="card" style="text-align:center">
       <img src="${url}" style="max-height:220px;margin:0 auto;border-radius:var(--radius-sm)">
       <div style="margin-top:8px;font-weight:500">📷 ${M.escapeHTML(file.name)}</div>
-      <div style="font-size:12px;color:var(--text-secondary)">${(file.size/1024).toFixed(0)}KB · 点击下方 OCR 识别</div>
+      <div style="font-size:12px;color:var(--text-secondary)">${(file.size/1024).toFixed(0)}KB · 点击上方「智能识别」按钮提取文字和知识点</div>
     </div>`;
     M.$('add-camera-img').src = url;
     M.$('add-camera-preview').style.display = 'block';
-    M.$('add-ocr-result').style.display = 'none';
-    M.$('add-ocr-actions').style.display = 'none';
+    M.$('add-camera-btns').style.display = 'none';
+    M.$('ocr-result-box').style.display = 'none';
     return;
   }
 
-  // PDF
-  if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-    info.innerHTML = `<div class="card" style="border-left:3px solid var(--orange)">
-      <strong>📄 PDF 文件：${M.escapeHTML(file.name)}</strong>
-      <div style="margin-top:8px;font-size:13px;color:var(--text-secondary)">
-        PDF 支持即将上线。建议：<br>
-        1. 截图 PDF 页面 → 在「📷 拍照识别」中上传图片<br>
-        2. 复制 PDF 文字 → 在「✏️ 手动录入」中粘贴
-      </div>
-    </div>`;
-    return;
-  }
-
-  // Word
-  if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
-    info.innerHTML = `<div class="card" style="border-left:3px solid var(--orange)">
-      <strong>📝 Word 文件：${M.escapeHTML(file.name)}</strong>
-      <div style="margin-top:8px;font-size:13px;color:var(--text-secondary)">
-        Word 支持即将上线。建议：<br>
-        复制 Word 中的题目文字 → 在「✏️ 手动录入」中粘贴
-      </div>
-    </div>`;
-    return;
-  }
-
-  // Excel
-  if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
-    info.innerHTML = `<div class="card" style="border-left:3px solid var(--orange)">
-      <strong>📊 Excel 文件：${M.escapeHTML(file.name)}</strong>
-      <div style="margin-top:8px;font-size:13px;color:var(--text-secondary)">
-        Excel 支持即将上线。建议：<br>
-        复制表格中的题目文字 → 在「✏️ 手动录入」中粘贴
-      </div>
-    </div>`;
-    return;
-  }
-
-  // Unknown
-  info.innerHTML = `<div class="card" style="border-left:3px solid var(--red)">
-    <strong>❌ 不支持的文件格式</strong>
-    <div style="margin-top:4px;font-size:13px;color:var(--text-secondary)">${M.escapeHTML(file.type || file.name)}</div>
-    <div style="margin-top:4px;font-size:12px">支持的格式：图片 (JPG/PNG)、PDF、Word、Excel</div>
+  // Non-image files: store as attachment, hint user
+  const typeLabel = isPDF ? '📄 PDF' : isWord ? '📝 Word' : isExcel ? '📊 Excel' : '📎 文件';
+  info.innerHTML = `<div class="card" style="text-align:center;border-left:3px solid var(--blue)">
+    <div style="font-size:40px;margin-bottom:8px">${isPDF ? '📄' : isWord ? '📝' : isExcel ? '📊' : '📎'}</div>
+    <strong>${M.escapeHTML(file.name)}</strong>
+    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">${(file.size/1024).toFixed(0)}KB · ${typeLabel}</div>
+    <div style="margin-top:8px;font-size:13px;color:var(--blue)">✅ 文件已附加，可直接保存</div>
+    <div style="margin-top:4px;font-size:12px;color:var(--text-secondary)">⚠️ 当前仅支持单题录入。多题文档请：<br>截图每道题 → 在「📷 拍照识别」中逐题上传</div>
   </div>`;
+  // Auto-fill a placeholder so classification can work
+  if (!M.$('add-problem-text').value.trim()) {
+    M.$('add-problem-text').value = '[' + file.name + ']';
+    M.autoClassify();
+  }
 };
 
 /* ============================================================
