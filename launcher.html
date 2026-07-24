@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>数学错题本</title>
+<style>
+:root{--bg:#f5f5f7;--text:#1d1d1f;--sec:#6e6e73;--blue:#0071e3}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;-webkit-font-smoothing:antialiased;
+}
+.card{
+  background:#fff;border-radius:24px;padding:32px 24px;
+  max-width:420px;width:100%;text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,0.08);
+}
+h1{font-size:26px;font-weight:700;letter-spacing:-0.02em}
+.sub{font-size:14px;color:var(--sec);margin:4px 0 20px}
+.qr-wrap{display:inline-block;border-radius:16px;padding:12px;background:#fff;border:1px solid rgba(0,0,0,0.08);margin-bottom:16px}
+.qr-wrap img{display:block;width:220px;height:220px}
+.url-box{
+  background:rgba(0,0,0,0.04);border-radius:12px;padding:12px 16px;
+  font-size:14px;word-break:break-all;color:var(--sec);
+  margin-bottom:16px;user-select:all;cursor:pointer;
+  font-family:"SF Mono",Menlo,Consolas,monospace;
+}
+.btn{
+  display:block;width:100%;padding:14px;border-radius:14px;
+  font-size:16px;font-weight:600;border:none;cursor:pointer;
+  background:var(--blue);color:#fff;margin-bottom:8px;
+}
+.btn:active{opacity:0.8}
+.steps{text-align:left;margin:16px 0}
+.step{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:13px;color:var(--sec)}
+.step b{display:inline-flex;min-width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.tip{font-size:12px;color:var(--sec);background:rgba(255,149,0,0.08);border-radius:10px;padding:10px;text-align:left;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>📐 数学错题本</h1>
+  <div class="sub">六年级 · 人教版</div>
+
+  <div class="qr-wrap" id="qr"></div>
+  <div class="url-box" id="urlbox" onclick="copyURL()"></div>
+
+  <button class="btn" id="btn-open">🔗 直接打开错题本</button>
+
+  <div class="steps">
+    <div class="step"><b>1</b><span>手机相机扫上方二维码 → 浏览器打开</span></div>
+    <div class="step"><b>2</b><span>浏览器点「分享」→「添加到主屏幕」📌</span></div>
+  </div>
+  <div class="tip">💡 手机和电脑须连同一 WiFi。IP 地址自动检测，不用担心变。</div>
+</div>
+
+<script>
+// Dynamically build URL from current location
+const HOST = window.location.host; // e.g. "192.168.2.239:8888" or "10.77.6.216:8888"
+const APP_URL = 'http://' + HOST + '/math-error-book.html';
+const QR_API  = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(APP_URL);
+
+// Render QR code
+document.getElementById('qr').innerHTML = '<img src="' + QR_API + '" width="220" height="220" alt="QR">';
+
+// Display URL
+document.getElementById('urlbox').textContent = APP_URL;
+
+// Open button
+document.getElementById('btn-open').onclick = function(){ location.href = APP_URL; };
+
+// Copy on click
+function copyURL(){
+  navigator.clipboard.writeText(APP_URL).then(function(){
+    var b = document.getElementById('urlbox');
+    b.style.background = 'rgba(52,199,89,0.12)';
+    b.textContent = '✅ 已复制！发给手机或在手机浏览器打开';
+    setTimeout(function(){ b.style.background = 'rgba(0,0,0,0.04)'; b.textContent = APP_URL; }, 2000);
+  }).catch(function(){});
+}
+</script>
+</body>
+</html>
