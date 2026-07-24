@@ -546,11 +546,18 @@ img{max-width:100%;display:block}
     <div class="screen-title" style="font-size:22px">📊 薄弱点分析</div>
   </div>
   <div class="card" style="margin-bottom:var(--space-md)">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">知识点掌握热力图</div>
+    <div style="font-weight:600;margin-bottom:var(--space-sm);display:flex;justify-content:space-between">
+      <span>🎯 知识点掌握雷达图</span>
+      <span style="font-size:12px;color:var(--text-tertiary)">对标 Foliage Knowledge Radar</span>
+    </div>
+    <div id="analysis-radar" style="text-align:center"></div>
+  </div>
+  <div class="card" style="margin-bottom:var(--space-md)">
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">📊 知识点掌握度</div>
     <div id="analysis-heatmap"></div>
   </div>
   <div class="card" style="margin-bottom:var(--space-md)">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">🔍 检测到的错因模式</div>
+    <div style="font-weight:600;margin-bottom:var(--space-sm)">🔍 错因模式分析 <span style="font-size:11px;color:var(--text-tertiary);font-weight:400">对标 Misconcepts</span></div>
     <div id="analysis-patterns"></div>
   </div>
   <div class="card" style="margin-bottom:var(--space-md)">
@@ -1462,9 +1469,67 @@ M.analysis = {
     return patterns;
   },
 
+  // Deep pattern detection (对标 Misconcepts - WHY, not just WHAT)
+  async detectErrorPatternsDeep() {
+    const patterns = await this.detectErrorPatterns();
+    // Add misconception layer
+    const misconceptionMap = {
+      'forget_cone_one_third': '学生对"等底等高圆柱与圆锥体积关系"的理解停留在记忆层面，未建立空间想象。建议用实物（沙漏/量杯）演示3次关系。',
+      'distributive_second_term': '学生对"乘法对加法的分配"理解不完整，可能源于对括号作用的认识不足。建议先用具体数字验证(a+b)×c与a×c+b×c的等价性。',
+      'composite_shape_weak': '学生对"转化思想"掌握不够——不知道如何将不规则图形变为规则图形。核心是空间想象力不足，建议多用剪纸、画辅助线的方法。',
+    };
+    // Add unit conversion pattern
+    const problems = await DB.getAllProblems();
+    const active = problems.filter(p => p.status !== 'mastered');
+    const unitErrs = active.filter(p => (p.errorReason||'').includes('单位') || (p.errorReason||'').includes('换算') || (p.problemText||'').includes('升') && (p.problemText||'').includes('毫升'));
+    if (unitErrs.length >= 2) {
+      patterns.push({
+        id:'unit_conversion_error', name:'单位换算错误', count: unitErrs.length,
+        suggestion:'背熟常见单位进率：1m²=10000cm²（面积单位进率100），1m³=1000000cm³（体积单位进率1000），1L=1000mL。做题前先统一单位。',
+        misconception:'学生混淆了长度、面积、体积单位的进率。根本原因是"量纲"概念缺失——不清楚为什么要用不同进率。',
+        recommendedMode:'pattern'
+      });
+    }
+    // Add calculation pattern
+    const calcErrs = active.filter(p => p.errorType === 'calculation');
+    if (calcErrs.length >= 4) {
+      patterns.push({
+        id:'frequent_calc_error', name:'频繁计算错误（非概念问题）', count: calcErrs.length,
+        suggestion:'建议：①做题时在草稿纸上写清楚每一步 ②做完后反向验算 ③特别检查小数点位置和进位借位。',
+        misconception:'计算能力属于"自动化"技能，需要足够练习量才能形成肌肉记忆。当前错误量说明练习量不足或计算习惯不好。',
+        recommendedMode:'targeted'
+      });
+    }
+    return patterns;
+  },
+
+  // Repeated mistake detection (对标 Foliage)
+  async detectRepeats() {
+    const problems = await DB.getAllProblems();
+    const repeats = [];
+    const kpCounts = {};
+    for (const p of problems) {
+      for (const kp of (p.knowledgePoints||[])) {
+        if (!kpCounts[kp]) kpCounts[kp] = { total: 0, active: 0, names: [] };
+        kpCounts[kp].total++;
+        if (p.status !== 'mastered') kpCounts[kp].active++;
+        if (p.problemText) kpCounts[kp].names.push(p.problemText.substring(0, 30));
+      }
+    }
+    for (const [key, data] of Object.entries(kpCounts)) {
+      if (data.total >= 3 && data.active >= 2) {
+        repeats.push({
+          key, name: M.getKPName(key), count: data.active, total: data.total,
+          detail: '共' + data.total + '道，仍有' + data.active + '道未掌握'
+        });
+      }
+    }
+    return repeats.sort((a,b) => b.count - a.count).slice(0, 5);
+  },
+
   async getRecommendation() {
     const mastery = await this.computeMastery();
-    const patterns = await this.detectErrorPatterns();
+    const patterns = await this.detectErrorPatternsDeep();
     const weak = mastery.filter(m => m.needsAttention);
     let bestMode = 'targeted';
     if (patterns.length > 0) bestMode = patterns[0].recommendedMode || 'targeted';
@@ -2162,31 +2227,49 @@ M.practiceSimilar = async (id) => {
 // --- Analysis ---
 M.renderAnalysis = async () => {
   const rec = await M.analysis.getRecommendation();
-
-  // Heatmap
   const mastery = await M.analysis.computeMastery();
-  M.$('analysis-heatmap').innerHTML = mastery.length > 0 ? mastery.slice(0,12).map(m => `
+  const patterns = await M.analysis.detectErrorPatternsDeep();
+  const repeats = await M.analysis.detectRepeats();
+  const sessions = await DB.getAllSessions();
+
+  // Radar chart (top 6 knowledge points)
+  M._renderRadarChart(mastery.slice(0, 6));
+
+  // Heatmap with priority badges
+  M.$('analysis-heatmap').innerHTML = mastery.length > 0 ? mastery.slice(0,10).map((m, i) => `
     <div style="margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">
-        <span>${M.escapeHTML(m.name)}</span>
-        <span style="color:${m.errorRate>=0.5?'var(--red)':m.errorRate>=0.3?'var(--orange)':'var(--green)'}">${Math.round(m.errorRate*100)}%</span>
+        <span>${i < 3 ? '🔴' : i < 6 ? '🟠' : '🟢'} ${M.escapeHTML(m.name)}</span>
+        <span style="color:${m.errorRate>=0.5?'var(--red)':m.errorRate>=0.3?'var(--orange)':'var(--green)'}">${Math.round(m.errorRate*100)}% · ${m.totalProblems}题</span>
       </div>
       <div class="progress-bar"><div class="progress-fill ${m.errorRate>=0.5?'red':m.errorRate>=0.3?'orange':'green'}" style="width:${Math.max(5, m.errorRate*100)}%"></div></div>
     </div>
-  `).join('') : '<div class="empty-state"><div>还没有足够的数据来分析</div></div>';
+  `).join('') : '<div class="empty-state"><div>还没有足够的数据</div></div>';
 
-  // Patterns
-  const patterns = rec.errorPatterns;
+  // Patterns - enhanced with misconception analysis
   M.$('analysis-patterns').innerHTML = patterns.length > 0 ? patterns.map(pp => `
     <div class="card" style="margin-bottom:8px;border-left:3px solid var(--red)">
-      <div style="font-weight:600">⚠️ ${M.escapeHTML(pp.name)} (出现${pp.count}次)</div>
-      <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">${M.escapeHTML(pp.suggestion)}</div>
+      <div style="font-weight:600;display:flex;justify-content:space-between">
+        <span>⚠️ ${M.escapeHTML(pp.name)}</span>
+        <span class="badge badge-red">出现${pp.count}次</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">💡 ${M.escapeHTML(pp.suggestion)}</div>
+      ${pp.misconception ? '<div style="font-size:11px;color:var(--orange);margin-top:2px">🎓 深层原因：' + M.escapeHTML(pp.misconception) + '</div>' : ''}
     </div>
-  `).join('') : '<div style="color:var(--text-tertiary);text-align:center;padding:12px">未检测到明显错因模式，继续积累错题后系统将自动分析</div>';
+  `).join('') : '<div style="color:var(--text-tertiary);text-align:center;padding:12px">未检测到明显错因模式，继续积累错题后自动分析</div>';
 
-  // Trend (simplified)
-  const sessions = await DB.getAllSessions();
-  const recentSessions = [...sessions].sort((a,b) => b.createdAt - a.createdAt).slice(0,10).reverse();
+  // Repeated mistakes warning (对标 Foliage)
+  if (repeats.length > 0) {
+    M.$('analysis-patterns').innerHTML += '<div style="margin-top:12px;font-weight:600;font-size:14px;margin-bottom:6px">🔄 重复错题警告 <span style="font-size:11px;color:var(--text-tertiary);font-weight:400">对标 Foliage</span></div>' +
+      repeats.map(r => `<div class="card" style="margin-bottom:6px;border-left:3px solid var(--orange);font-size:13px">
+        <strong>${M.escapeHTML(r.name)}</strong> — 已重复<strong>${r.count}</strong>次
+        <span style="color:var(--text-secondary)">（${M.escapeHTML(r.detail)}）</span>
+        <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="M.focusPracticeOn('${r.key}')">重点攻克 →</button>
+      </div>`).join('');
+  }
+
+  // Trend
+  const recentSessions = [...sessions].sort((a,b) => b.createdAt - a.createdAt).slice(0,8).reverse();
   M.$('analysis-trend').innerHTML = recentSessions.length > 0 ? recentSessions.map(s => {
     const rate = s.totalQuestions > 0 ? Math.round(s.correctCount/s.totalQuestions*100) : 0;
     return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:13px">
@@ -2196,12 +2279,93 @@ M.renderAnalysis = async () => {
     </div>`;
   }).join('') : '<div style="color:var(--text-tertiary);text-align:center;padding:12px">还没有练习记录</div>';
 
-  // Recommendation
+  // Smart recommendation + 一键组卷
+  const weakKPs = mastery.filter(m => m.needsAttention).map(m => m.key);
   M.$('analysis-recommend').innerHTML = `
-    <p style="margin-bottom:8px">🎯 <strong>推荐练习模式：</strong>${rec.recommendedMode==='targeted'?'针对性练习':rec.recommendedMode==='multi_solution'?'一题多解':'变式训练'}</p>
-    ${rec.weakestTopics.length > 0 ? `<p>📌 <strong>最需关注：</strong>${rec.weakestTopics.map(t => M.escapeHTML(t.name)).join('、')}</p>` : ''}
-    <button class="btn btn-primary" style="margin-top:8px" onclick="M.switchScreen('practice')">开始智能练习 →</button>
+    <p style="margin-bottom:6px">🎯 <strong>最需攻克：</strong>${rec.weakestTopics.length > 0 ? rec.weakestTopics.map(t => M.escapeHTML(t.name)).join('、') : '暂无'}</p>
+    ${patterns.length > 0 ? '<p style="margin-bottom:6px;font-size:13px">🔍 <strong>核心错因：</strong>' + M.escapeHTML(patterns[0].name) + '</p>' : ''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="M.switchScreen('practice')">🎯 针对性练习</button>
+      ${weakKPs.length > 0 ? '<button class="btn btn-outline" onclick="M.autoGeneratePaper()">📋 一键生成巩固卷</button>' : ''}
+    </div>
   `;
+};
+
+// --- Radar Chart (SVG) ---
+M._renderRadarChart = (items) => {
+  if (items.length < 3) { M.$('analysis-radar').innerHTML = '<div style="color:var(--text-tertiary);padding:20px">需要至少3个知识点才有雷达图</div>'; return; }
+  const W = 300, H = 280, CX = W/2, CY = H/2, R = 110;
+  const n = items.length;
+  const angleStep = (2 * Math.PI) / n;
+  const levels = [0.25, 0.5, 0.75, 1.0]; // mastery ratio (inverted errorRate)
+  let svg = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">';
+
+  // Background grid
+  for (const lv of levels) {
+    const r = R * lv;
+    let pts = '';
+    for (let i = 0; i < n; i++) {
+      const a = -Math.PI/2 + i * angleStep;
+      pts += (CX + r * Math.cos(a)) + ',' + (CY + r * Math.sin(a)) + ' ';
+    }
+    svg += '<polygon points="' + pts + '" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>';
+  }
+
+  // Axis lines
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI/2 + i * angleStep;
+    svg += '<line x1="' + CX + '" y1="' + CY + '" x2="' + (CX + R * Math.cos(a)) + '" y2="' + (CY + R * Math.sin(a)) + '" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>';
+  }
+
+  // Data polygon (mastery = 1 - errorRate)
+  let dataPts = '';
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI/2 + i * angleStep;
+    const mastery = Math.max(0.05, 1 - items[i].errorRate);
+    const r = R * mastery;
+    dataPts += (CX + r * Math.cos(a)) + ',' + (CY + r * Math.sin(a)) + ' ';
+  }
+  svg += '<polygon points="' + dataPts + '" fill="rgba(0,113,227,0.15)" stroke="var(--blue)" stroke-width="2"/>';
+
+  // Data points
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI/2 + i * angleStep;
+    const mastery = Math.max(0.05, 1 - items[i].errorRate);
+    const r = R * mastery;
+    svg += '<circle cx="' + (CX + r * Math.cos(a)) + '" cy="' + (CY + r * Math.sin(a)) + '" r="4" fill="var(--blue)"/>';
+  }
+
+  // Labels
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI/2 + i * angleStep;
+    const lr = R + 30;
+    const x = CX + lr * Math.cos(a), y = CY + lr * Math.sin(a);
+    const name = items[i].name.length > 5 ? items[i].name.substring(0,5)+'..' : items[i].name;
+    svg += '<text x="' + x + '" y="' + y + '" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="var(--text-secondary)" font-family="sans-serif">' + M.escapeHTML(name) + '</text>';
+    // Mastery %
+    const mr = R * Math.max(0.05, 1 - items[i].errorRate) + 14;
+    const mx = CX + mr * Math.cos(a), my = CY + mr * Math.sin(a);
+    svg += '<text x="' + mx + '" y="' + my + '" text-anchor="middle" font-size="10" fill="var(--blue)" font-weight="600">' + Math.round((1-items[i].errorRate)*100) + '%</text>';
+  }
+
+  svg += '</svg>';
+  M.$('analysis-radar').innerHTML = svg;
+};
+
+// Auto paper generation (对标试卷宝)
+M.autoGeneratePaper = async () => {
+  const mastery = await M.analysis.computeMastery();
+  const weak = mastery.filter(m => m.needsAttention);
+  if (weak.length === 0) { M.showToast('暂无薄弱知识点，继续加油！', 'success'); return; }
+  const kps = weak.slice(0, 3).map(w => w.key);
+  const count = Math.min(10, weak.length * 3);
+  M.switchScreen('practice');
+  M._practiceState.targetKPs = kps;
+  M._practiceState.count = count;
+  M._practiceState.mode = 'targeted';
+  M.renderPracticeModes();
+  M.renderPracticeConfig();
+  M.startPractice('targeted');
 };
 
 // --- Practice ---
