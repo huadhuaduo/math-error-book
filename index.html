@@ -7,2096 +7,775 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="数学错题本">
 <meta name="theme-color" content="#f5f5f7">
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi5pWw5a2m6ZSZ6aKY5pysIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmNWY1ZjciLCJ0aGVtZV9jb2xvciI6IiNmNWY1ZjciLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsInNjb3BlIjoiLi8iLCJzdGFydF91cmwiOiIuLyJ9">
-<title>数学错题本 — 六年级</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi5pWw5a2m6ZSZ6aKY5pysIiwiZGlzcGxheSI6InN0YW5kYWxvbmUifQ==">
+<title>数学错题本 · 六年级</title>
 <style>
-/* ============================================================
-   SECTION A: CSS Custom Properties (Apple HIG Tokens)
-   ============================================================ */
-:root {
-  --blue: #0071e3; --blue-light: #409cff; --blue-bg: rgba(0,113,227,0.08);
-  --green: #34c759; --green-bg: rgba(52,199,89,0.08);
-  --red: #ff3b30; --red-bg: rgba(255,59,48,0.08);
-  --orange: #ff9500; --orange-bg: rgba(255,149,0,0.08);
-  --yellow: #ffcc00;
-  --purple: #af52de; --purple-bg: rgba(175,82,222,0.08);
-  --teal: #5ac8fa;
-
-  --bg-primary: #f5f5f7;
-  --bg-card: rgba(255,255,255,0.72);
-  --bg-card-solid: #ffffff;
-  --bg-nav: rgba(255,255,255,0.72);
-
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-tertiary: #86868b;
-
-  --border: #d2d2d7;
-  --border-light: rgba(0,0,0,0.08);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
-
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --radius-xl: 24px;
-
-  --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
-  --touch-min: 44px;
-
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
-  --transition-slow: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
-
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+:root{
+  --blue:#0071e3;--green:#34c759;--red:#ff3b30;--orange:#ff9500;
+  --bg:#f5f5f7;--card:rgba(255,255,255,0.72);--card-solid:#fff;
+  --text:#1d1d1f;--text2:#6e6e73;--text3:#86868b;
+  --border:rgba(0,0,0,0.08);--shadow:0 4px 16px rgba(0,0,0,0.06);
+  --radius:16px;--radius-sm:10px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;
 }
-
-/* ============================================================
-   SECTION B: Reset & Base
-   ============================================================ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+html{font-size:16px}
 body{
-  font-family:var(--font-stack);
-  color:var(--text-primary);
-  background:var(--bg-primary);
-  line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overflow:hidden;
-  height:100dvh;
-  position:relative;
-  user-select:none;
+  font-family:var(--font);color:var(--text);background:var(--bg);
+  -webkit-font-smoothing:antialiased;overflow:hidden;height:100dvh;
 }
-input,textarea,select,button{font-family:inherit;font-size:inherit}
-input[type="text"],input[type="number"],textarea,select{
-  -webkit-appearance:none;appearance:none;
-  width:100%;padding:12px 16px;border:1px solid var(--border);
-  border-radius:var(--radius-sm);background:var(--bg-card-solid);
-  color:var(--text-primary);outline:none;transition:border var(--transition-fast);
-  font-size:16px; /* prevent iOS zoom on focus */
+input,textarea,button{font-family:inherit;font-size:16px}
+input[type="text"],textarea{
+  width:100%;padding:12px 14px;border:1px solid #d2d2d7;border-radius:var(--radius-sm);
+  background:var(--card-solid);outline:none;transition:border .15s;
 }
-input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,113,227,0.12)}
-textarea{resize:vertical;min-height:80px;line-height:1.6}
+input:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,113,227,0.1)}
+textarea{resize:vertical;min-height:72px;line-height:1.5}
 button{
-  -webkit-appearance:none;appearance:none;
-  border:none;cursor:pointer;font-weight:500;
-  transition:all var(--transition-fast);
-  display:inline-flex;align-items:center;justify-content:center;
-  gap:6px;min-height:var(--touch-min);
+  border:none;cursor:pointer;font-weight:500;border-radius:20px;
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  min-height:44px;transition:all .15s;padding:10px 20px;font-size:15px;
 }
-button:active{transform:scale(0.97)}
-a{color:var(--blue);text-decoration:none}
-img{max-width:100%;display:block}
+button:active{transform:scale(.97)}
+button.primary{background:var(--blue);color:#fff}
+button.outline{background:rgba(0,0,0,0.04);color:var(--text)}
+button.danger{background:var(--red);color:#fff}
+button.sm{padding:6px 14px;font-size:13px;min-height:36px}
+button.lg{padding:14px 28px;font-size:17px}
+button.block{width:100%}
+button:disabled{opacity:.4;pointer-events:none}
 
-/* ============================================================
-   SECTION C: Ambient Background
-   ============================================================ */
-.amb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;opacity:0.5}
-.amb-1{width:300px;height:300px;background:radial-gradient(circle,rgba(0,113,227,0.15),transparent 70%);top:-80px;right:-60px}
-.amb-2{width:250px;height:250px;background:radial-gradient(circle,rgba(52,199,89,0.12),transparent 70%);bottom:15%;left:-80px}
-.amb-3{width:200px;height:200px;background:radial-gradient(circle,rgba(255,149,0,0.1),transparent 70%);bottom:-60px;right:20%}
+.amb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;opacity:.5}
+.amb1{width:300px;height:300px;background:radial-gradient(circle,rgba(0,113,227,.12),transparent 70%);top:-80px;right:-60px}
+.amb2{width:250px;height:250px;background:radial-gradient(circle,rgba(52,199,89,.08),transparent 70%);bottom:20%;left:-80px}
 
-/* ============================================================
-   SECTION D: Navigation Bar
-   ============================================================ */
-.nav-bar{
+nav{
   position:fixed;bottom:0;left:0;right:0;z-index:100;
-  background:var(--bg-nav);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid var(--border-light);
-  display:flex;justify-content:space-around;
-  padding:6px 0 calc(6px + var(--safe-bottom));
+  background:rgba(255,255,255,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);display:flex;justify-content:space-around;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));
 }
-.nav-item{
+nav a{
   display:flex;flex-direction:column;align-items:center;gap:2px;
-  padding:4px 12px;border-radius:var(--radius-sm);
-  cursor:pointer;transition:all var(--transition-fast);
-  color:var(--text-tertiary);font-size:11px;font-weight:500;
-  min-width:56px;min-height:var(--touch-min);
-  justify-content:center;
+  padding:6px 12px;border-radius:var(--radius-sm);text-decoration:none;
+  color:var(--text3);font-size:11px;font-weight:500;min-width:48px;min-height:44px;justify-content:center;
 }
-.nav-item.active{color:var(--blue)}
-.nav-item svg{width:22px;height:22px}
-.nav-item.active svg{color:var(--blue)}
+nav a.active{color:var(--blue)}
+nav a svg{width:22px;height:22px}
 
-/* Desktop: top nav */
-@media(min-width:768px){
-  .nav-bar{
-    top:0;bottom:auto;padding:0 var(--space-lg);
-    height:52px;align-items:center;justify-content:flex-start;gap:0;
-  }
-  .nav-item{flex-direction:row;font-size:14px;gap:6px;padding:8px 16px}
-  .nav-item svg{width:18px;height:18px}
-  body{padding-top:52px}
-  .nav-bar .nav-brand{margin-right:auto;font-weight:600;font-size:16px;color:var(--text-primary)}
+.screen{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:10;
+  overflow-y:auto;padding:20px 16px;padding-bottom:90px;
+  display:none;-webkit-overflow-scrolling:touch;
 }
+.screen.active{display:block}
+h2{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}
+h3{font-size:17px;font-weight:600;margin-bottom:8px}
 
-/* ============================================================
-   SECTION E: Screen Layouts
-   ============================================================ */
-.screen-container{
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  overflow-y:auto;overflow-x:hidden;
-  z-index:10;padding:var(--space-lg) var(--space-md);
-  padding-bottom: calc(80px + var(--safe-bottom));
-  display:none;
-  -webkit-overflow-scrolling:touch;
-}
-.screen-container.active{display:block}
-@media(min-width:768px){
-  .screen-container{top:52px;padding-bottom:var(--space-xl)}
-}
-
-.screen-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:var(--space-lg);gap:var(--space-md);
-}
-.screen-title{font-size:28px;font-weight:700;letter-spacing:-0.02em}
-.screen-subtitle{font-size:15px;color:var(--text-secondary);margin-top:2px}
-
-/* ============================================================
-   SECTION F: Component Library
-   ============================================================ */
-
-/* Cards */
 .card{
-  background:var(--bg-card);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-radius:var(--radius-md);padding:var(--space-md);
-  border:1px solid var(--border-light);
-  box-shadow:var(--shadow-sm);
+  background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:var(--radius);padding:16px;border:1px solid var(--border);box-shadow:var(--shadow);
+  margin-bottom:10px;
 }
 
-/* Stat Cards */
-.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-sm)}
-.stat-card{
-  background:var(--bg-card-solid);
-  border-radius:var(--radius-md);padding:var(--space-md);
-  border:1px solid var(--border-light);
-  text-align:center;
+.tag{
+  display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500;
+  background:rgba(0,113,227,0.08);color:var(--blue);margin:2px 4px 2px 0;
 }
-.stat-value{font-size:32px;font-weight:700;letter-spacing:-0.02em}
-.stat-label{font-size:13px;color:var(--text-secondary);margin-top:2px}
+.tag.red{background:rgba(255,59,48,0.08);color:var(--red)}
+.tag.green{background:rgba(52,199,89,0.08);color:var(--green)}
+.tag.gray{background:rgba(0,0,0,0.05);color:var(--text3)}
 
-/* Practice Mode Grid */
-.practice-mode-grid{display:grid;grid-template-columns:1fr;gap:8px}
-.practice-mode-card{
-  background:var(--bg-card-solid);
-  border-radius:var(--radius-md);padding:14px 16px;
-  border:2px solid transparent;
-  cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;
-  transition:all var(--transition-fast);
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none}
+.toast{
+  background:var(--text);color:#fff;padding:10px 20px;border-radius:20px;
+  font-size:14px;font-weight:500;margin-bottom:6px;
+  animation:in .3s ease,out .3s ease 2s forwards;
+  box-shadow:0 8px 24px rgba(0,0,0,0.15);text-align:center;
 }
-.practice-mode-card:hover{border-color:var(--border);box-shadow:var(--shadow-md)}
-.practice-mode-card.selected{border-color:var(--blue);background:var(--blue-bg)}
-.practice-mode-card .mode-icon{font-size:32px;flex-shrink:0;width:44px;text-align:center}
-.practice-mode-card .mode-info{flex:1;min-width:0}
-.practice-mode-card .mode-name{font-weight:600;font-size:15px}
-.practice-mode-card .mode-desc{font-size:12px;color:var(--text-secondary);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media(min-width:480px){.practice-mode-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:768px){.practice-mode-grid{grid-template-columns:repeat(3,1fr)}.practice-mode-card{flex-direction:column;text-align:center;padding:16px 12px}.practice-mode-card .mode-icon{font-size:36px;width:auto}}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+@keyframes in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes out{from{opacity:1}to{opacity:0}}
 
-/* Badges */
-.badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;
-}
-.badge-red{background:var(--red-bg);color:var(--red)}
-.badge-orange{background:var(--orange-bg);color:var(--orange)}
-.badge-green{background:var(--green-bg);color:var(--green)}
-.badge-blue{background:var(--blue-bg);color:var(--blue)}
-.badge-purple{background:var(--purple-bg);color:var(--purple)}
-.badge-gray{background:rgba(0,0,0,0.05);color:var(--text-tertiary)}
+.bar{height:6px;background:rgba(0,0,0,0.06);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.bar-fill.r{background:var(--red)}.bar-fill.o{background:var(--orange)}.bar-fill.g{background:var(--green)}.bar-fill.b{background:var(--blue)}
 
-/* Buttons */
-.btn{
-  padding:10px 20px;border-radius:var(--radius-xl);
-  font-weight:500;font-size:15px;gap:6px;
-  min-height:var(--touch-min);
-}
-.btn-primary{background:var(--blue);color:#fff}
-.btn-primary:hover{background:#0066cc}
-.btn-secondary{background:rgba(0,0,0,0.05);color:var(--text-primary)}
-.btn-danger{background:var(--red);color:#fff}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-primary)}
-.btn-sm{padding:6px 14px;font-size:13px;min-height:36px;border-radius:var(--radius-xl)}
-.btn-lg{padding:14px 28px;font-size:17px;border-radius:var(--radius-xl)}
-.btn-block{width:100%}
-.btn:disabled{opacity:0.4;pointer-events:none}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
-/* Toast */
-#toast{
-  position:fixed;top:20px;left:50%;transform:translateX(-50%);
-  z-index:9999;pointer-events:none;
-}
-.toast-item{
-  background:var(--text-primary);color:#fff;
-  padding:12px 20px;border-radius:var(--radius-xl);
-  font-size:14px;font-weight:500;margin-bottom:8px;
-  animation:toastIn 0.3s ease,toastOut 0.3s ease 2.2s forwards;
-  box-shadow:var(--shadow-lg);text-align:center;
-  max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.toast-item.success{background:var(--green)}
-.toast-item.error{background:var(--red)}
-
-@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes toastOut{from{opacity:1}to{opacity:0}}
-
-/* Modal */
-.modal-overlay{
-  position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,0.3);
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-  display:none;align-items:center;justify-content:center;
-}
-.modal-overlay.active{display:flex}
-.modal-box{
-  background:var(--bg-card-solid);border-radius:var(--radius-lg);
-  padding:var(--space-lg);max-width:420px;width:90%;
-  max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg);
-}
-
-/* Tabs */
-.tab-bar{
-  display:flex;gap:4px;background:rgba(0,0,0,0.04);
-  border-radius:var(--radius-sm);padding:4px;margin-bottom:var(--space-md);
-}
-.tab-item{
-  flex:1;padding:8px 12px;border-radius:8px;
-  font-size:13px;font-weight:500;text-align:center;
-  cursor:pointer;transition:all var(--transition-fast);
-  color:var(--text-secondary);
-}
-.tab-item.active{background:var(--bg-card-solid);color:var(--text-primary);box-shadow:var(--shadow-sm)}
-
-/* Form */
-.form-group{margin-bottom:var(--space-md)}
-.form-label{display:block;font-size:14px;font-weight:600;margin-bottom:var(--space-xs);color:var(--text-primary)}
-.form-hint{font-size:12px;color:var(--text-tertiary);margin-top:4px}
-
-/* Tag Picker */
-.tag-grid{display:flex;flex-wrap:wrap;gap:6px}
-.tag-chip{
-  padding:6px 14px;border-radius:20px;font-size:13px;
-  background:rgba(0,0,0,0.04);color:var(--text-secondary);
-  cursor:pointer;transition:all var(--transition-fast);
-  border:1.5px solid transparent;
-}
-.tag-chip.selected{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
-.tag-chip:hover:not(.selected){background:rgba(0,0,0,0.08)}
-
-/* Empty State */
-.empty-state{
-  text-align:center;padding:var(--space-xl) var(--space-md);
-  color:var(--text-tertiary);
-}
-.empty-state-icon{font-size:48px;margin-bottom:var(--space-md)}
-
-/* Progress Bar */
-.progress-bar{
-  height:6px;background:rgba(0,0,0,0.06);
-  border-radius:3px;overflow:hidden;
-}
-.progress-fill{
-  height:100%;border-radius:3px;transition:width 0.5s ease;
-}
-.progress-fill.red{background:var(--red)}
-.progress-fill.orange{background:var(--orange)}
-.progress-fill.green{background:var(--green)}
-.progress-fill.blue{background:var(--blue)}
-
-/* Search Bar */
-.search-bar{
-  display:flex;align-items:center;gap:var(--space-sm);
-  background:rgba(0,0,0,0.04);border-radius:var(--radius-sm);
-  padding:10px 14px;margin-bottom:var(--space-md);
-}
-.search-bar svg{width:18px;height:18px;color:var(--text-tertiary);flex-shrink:0}
-.search-bar input{
-  border:none;background:none;outline:none;flex:1;
-  padding:0;font-size:15px;color:var(--text-primary);
-}
-
-/* ============================================================
-   SECTION G: Print Styles
-   ============================================================ */
 @media print{
   body{background:#fff!important;overflow:visible!important}
-  .nav-bar,.amb,.toast-container,.modal-overlay,.btn,.screen-header button,
-  .tab-bar,.search-bar,#toast{display:none!important}
-  .screen-container{position:static!important;display:block!important;overflow:visible!important;padding:0!important}
-  .screen-container:not(.print-active){display:none!important}
-  .print-only{display:block!important}
-  .print-sheet{page-break-after:always;padding:15mm}
-  .print-problem{border:1px solid #ccc;border-radius:4px;padding:12px;margin-bottom:8px;page-break-inside:avoid}
-  .print-problem img{max-width:100%;max-height:50mm;object-fit:contain}
-  .print-answer-blank{width:100%;height:40px;border-bottom:2px solid #000;margin:8px 0}
+  nav,.amb,#toast,button{display:none!important}
+  .screen{position:static!important;display:block!important;overflow:visible!important;padding:0!important}
+  .screen:not(.pt){display:none!important}
+  .pp{padding:12mm;page-break-after:always}
+  .pp h2{font-size:18pt;margin-bottom:12pt}
+  .pq{border:1px solid #ccc;border-radius:4px;padding:10px;margin-bottom:6px;page-break-inside:avoid}
+  .pq .ans{width:100%;height:36px;border-bottom:2px solid #000;margin:8px 0}
 }
-.print-only{display:none}
 
-/* ============================================================
-   SECTION H: Responsive Breakpoints
-   ============================================================ */
 @media(min-width:768px){
-  .stat-grid{grid-template-columns:repeat(4,1fr)}
+  nav{top:0;bottom:auto;padding:0 20px;height:52px;align-items:center;justify-content:flex-start;gap:0}
+  nav a{flex-direction:row;font-size:14px;gap:6px;padding:8px 16px}
+  nav a svg{width:18px;height:18px}
+  body{padding-top:52px}
+  .screen{top:52px}
 }
-@media(min-width:1024px){
-  .screen-container{max-width:800px;margin:0 auto}
-}
+@media(min-width:1024px){.screen{max-width:720px;margin:0 auto}}
 </style>
 </head>
 <body>
 
-<!-- Ambient Background -->
-<div class="amb amb-1"></div>
-<div class="amb amb-2"></div>
-<div class="amb amb-3"></div>
-
-<!-- Toast Container -->
+<div class="amb amb1"></div><div class="amb amb2"></div>
 <div id="toast"></div>
 
-<!-- ============================================================
-     SCREEN 1: Dashboard (仪表盘)
-     ============================================================ -->
-<div class="screen-container active" id="screen-dashboard">
-  <div class="screen-header">
-    <div><div class="screen-title">数学错题本</div><div class="screen-subtitle">六年级 · 人教版</div></div>
-  </div>
-  <div class="stat-grid" id="dash-stats"></div>
-  <div style="margin-top:var(--space-lg)">
-    <div style="font-weight:600;font-size:17px;margin-bottom:var(--space-sm)">⚠️ 需要关注的薄弱点</div>
-    <div id="dash-weak-alerts"></div>
-  </div>
-  <div style="margin-top:var(--space-lg);display:flex;gap:var(--space-sm)">
-    <button class="btn btn-primary btn-block" onclick="M.switchScreen('add')">＋ 添加错题</button>
-    <button class="btn btn-secondary" onclick="M.switchScreen('practice')">🎯 开始练习</button>
-  </div>
-  <div style="margin-top:var(--space-lg)">
-    <div style="font-weight:600;font-size:17px;margin-bottom:var(--space-sm)">📝 最近错题</div>
-    <div id="dash-recent"></div>
-  </div>
-</div>
+<!-- ============ SCREEN: ADD (简单化) ============ -->
+<div class="screen active" id="sc-add">
+  <h2>添加错题</h2>
 
-<!-- ============================================================
-     SCREEN 2: Add Problem (添加错题)
-     ============================================================ -->
-<div class="screen-container" id="screen-add">
-  <div class="screen-header">
-    <button class="btn btn-outline btn-sm" onclick="M.switchScreen('dashboard')">← 返回</button>
-    <div class="screen-title" style="font-size:22px">添加错题</div>
-    <div><a href="javascript:M.toggleBatchImport()" style="font-size:13px;color:var(--blue)">📋 批量导入</a></div>
-  </div>
-
-  <!-- Unified photo + text area -->
-  <div class="card" style="margin-bottom:12px;text-align:center;padding:16px" id="add-photo-area">
-    <input type="file" accept="image/*" capture="environment" id="add-camera-input" style="display:none" onchange="M.handlePhoto(event)">
-    <input type="file" accept="image/*" id="add-gallery-input" style="display:none" onchange="M.handlePhoto(event)">
-    <div id="add-photo-empty">
-      <div style="font-size:36px;margin-bottom:4px">📷</div>
-      <button class="btn btn-primary" onclick="document.getElementById('add-camera-input').click()">拍照</button>
-      <button class="btn btn-outline" style="margin-left:6px" onclick="document.getElementById('add-gallery-input').click()">相册</button>
-      <div style="font-size:12px;color:var(--text-tertiary);margin-top:6px">拍照自动识别，或直接在下方粘贴题目</div>
+  <div class="card" style="text-align:center">
+    <input type="file" accept="image/*" capture="environment" id="cam" style="display:none" onchange="A.handlePhoto(event)">
+    <input type="file" accept="image/*" id="gal" style="display:none" onchange="A.handlePhoto(event)">
+    <div id="photo-empty">
+      <div style="font-size:40px;margin-bottom:4px">📷</div>
+      <button class="primary lg" onclick="document.getElementById('cam').click()">拍照上传错题</button>
+      <button class="outline" style="margin-left:6px" onclick="document.getElementById('gal').click()">从相册选</button>
     </div>
-    <div id="add-photo-preview" style="display:none">
-      <img id="add-photo-img" style="max-height:180px;margin:0 auto;border-radius:var(--radius-sm)">
-      <div style="margin-top:8px;display:flex;gap:6px;justify-content:center">
-        <button class="btn btn-primary btn-sm" onclick="M.runOCR()" id="btn-ocr">🔍 识别文字</button>
-        <button class="btn btn-outline btn-sm" onclick="M.clearPhoto()">✕ 清除</button>
+    <div id="photo-preview" style="display:none">
+      <img id="photo-img" style="max-height:200px;margin:0 auto;border-radius:var(--radius-sm)">
+      <div style="margin-top:10px;display:flex;gap:6px;justify-content:center">
+        <button class="primary sm" onclick="A.doOCR()" id="btn-ocr">🔍 识别文字</button>
+        <button class="outline sm" onclick="A.clearPhoto()">✕ 清除</button>
       </div>
-      <div id="ocr-progress" style="display:none;margin-top:6px;font-size:12px;color:var(--text-secondary)"></div>
+      <div id="ocr-msg" style="margin-top:6px;font-size:12px;color:var(--text2)"></div>
     </div>
   </div>
 
-  <!-- Problem text -->
-  <div class="form-group" style="margin-bottom:8px">
-    <textarea id="add-problem-text" placeholder="题目内容（拍照识别或直接粘贴）" oninput="M.onProblemTextChange()" style="min-height:72px"></textarea>
+  <div style="margin-bottom:8px">
+    <textarea id="prob-text" placeholder="题目内容（拍照自动识别，或直接粘贴文字）" oninput="A.onTextChange()"></textarea>
   </div>
 
-  <!-- Auto tags bar -->
-  <div id="add-tags-bar" style="margin-bottom:8px;font-size:12px;color:var(--text-tertiary);min-height:20px">输入文字或拍照后自动识别知识点</div>
-  <div id="add-tags-edit" style="display:none;margin-bottom:8px">
-    <select id="add-semester" onchange="M.renderTagPicker()" style="width:auto;display:inline-block;margin-bottom:4px;font-size:12px">
-      <option value="1">六上</option><option value="2">六下</option>
+  <div id="tags-bar" style="margin-bottom:8px;font-size:12px;min-height:20px">
+    <span style="color:var(--text3)">拍照或输入文字后自动识别知识点</span>
+  </div>
+
+  <div style="margin-bottom:12px">
+    <input type="text" id="prob-ans" placeholder="正确答案（必填）">
+  </div>
+
+  <button class="primary block lg" onclick="A.save()">💾 保存错题</button>
+  <div id="save-msg" style="text-align:center;margin-top:8px;font-size:13px"></div>
+
+  <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
+    <div style="font-size:13px;color:var(--blue);cursor:pointer;margin-bottom:8px" onclick="var e=document.getElementById('batch');e.style.display=e.style.display==='none'?'block':'none'">📋 批量导入（粘贴整段文字，自动拆题）</div>
+    <div id="batch" style="display:none">
+      <textarea id="batch-text" placeholder="粘贴整段错题（按编号1. 2. 3.或空行分隔）" style="min-height:100px"></textarea>
+      <button class="outline block" style="margin-top:8px" onclick="A.splitBatch()">🔍 智能拆分</button>
+      <div id="batch-out"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCREEN: ANALYZE (深入化) ============ -->
+<div class="screen" id="sc-analyze">
+  <h2>薄弱点分析</h2>
+  <div class="card" id="hero" style="border-left:4px solid var(--red)"></div>
+  <div class="card" style="text-align:center">
+    <h3>掌握度雷达图</h3>
+    <div id="radar"></div>
+  </div>
+  <div class="card"><h3>知识点掌握度</h3><div id="topics"></div></div>
+  <div class="card"><h3>错因分析</h3><div id="patterns"></div></div>
+  <div class="card"><h3>进步趋势</h3><div id="trend"></div></div>
+</div>
+
+<!-- ============ SCREEN: PRACTICE (有用化) ============ -->
+<div class="screen" id="sc-practice">
+  <h2>智能练习</h2>
+
+  <div class="g2" style="margin-bottom:12px">
+    <div class="card" style="cursor:pointer;text-align:center" id="mode-solution" onclick="A.setMode('solution')">
+      <div style="font-size:32px">💡</div><div style="font-weight:600">一题多解</div>
+      <div style="font-size:11px;color:var(--text2)">一道题，多种解法</div>
+    </div>
+    <div class="card" style="cursor:pointer;text-align:center" id="mode-pattern" onclick="A.setMode('pattern')">
+      <div style="font-size:32px">🔍</div><div style="font-weight:600">多题找规律</div>
+      <div style="font-size:11px;color:var(--text2)">多道题，一个规律</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📋 错题组卷</h3>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:8px">从错题本抽取薄弱知识点题目，生成可打印练习卷</div>
+    <div class="g2">
+      <button class="outline sm block" onclick="A.genPaper('week')">📅 本周巩固</button>
+      <button class="outline sm block" onclick="A.genPaper('month')">📆 本月复习</button>
+      <button class="outline sm block" onclick="A.genPaper('midterm')">📝 期中冲刺</button>
+      <button class="outline sm block" onclick="A.genPaper('final')">📚 期末总复习</button>
+    </div>
+  </div>
+
+  <div id="practice-area"></div>
+</div>
+
+<!-- ============ SCREEN: LIBRARY ============ -->
+<div class="screen" id="sc-library">
+  <h2>错题本</h2>
+  <div style="display:flex;gap:6px;margin-bottom:12px">
+    <input type="text" id="lib-search" placeholder="搜索错题..." style="flex:1" oninput="A.renderLibrary()">
+    <select id="lib-filter" onchange="A.renderLibrary()" style="width:auto;font-size:14px;padding:8px 12px;border:1px solid #d2d2d7;border-radius:var(--radius-sm)">
+      <option value="all">全部</option><option value="active">待复习</option><option value="mastered">已掌握</option>
     </select>
-    <div class="tag-grid" id="add-tag-picker"></div>
-    <button class="btn btn-outline btn-sm" style="margin-top:4px" onclick="M.hideTagEditor()">完成</button>
   </div>
-
-  <!-- Answer fields -->
-  <div style="display:flex;gap:6px;margin-bottom:10px">
-    <input type="text" id="add-your-answer" placeholder="我写的（错的）" style="flex:1;font-size:14px">
-    <input type="text" id="add-correct-answer" placeholder="正确答案" style="flex:1;font-size:14px">
-  </div>
-
-  <button class="btn btn-primary btn-block btn-lg" onclick="M.saveProblem()">💾 保存错题</button>
-  <div id="add-save-msg" style="text-align:center;margin-top:8px;font-size:13px"></div>
-
-  <!-- Batch import (collapsed) -->
-  <div id="add-batch" style="display:none;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-light)">
-    <div style="font-weight:600;margin-bottom:8px">📋 批量导入</div>
-    <textarea id="batch-text" placeholder="粘贴整段错题（按编号或空行分隔）" style="min-height:100px" oninput="M.previewBatch()"></textarea>
-    <button class="btn btn-outline btn-block" style="margin-top:6px" onclick="M.splitBatch()">🔍 智能拆分</button>
-    <div id="batch-preview" style="margin-top:8px"></div>
-  </div>
+  <div id="lib-list"></div>
 </div>
 
-<div class="screen-container" id="screen-library">
-  <div class="screen-header">
-    <div class="screen-title" style="font-size:22px">📚 错题本</div>
-    <button class="btn btn-outline btn-sm" onclick="M.exportBackup()">📤 导出备份</button>
-  </div>
-  <div class="search-bar">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="lib-search" placeholder="搜索错题..." oninput="M.renderLibrary()">
-  </div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--space-md)" id="lib-filters"></div>
-  <div class="tab-bar" id="lib-status-filter">
-    <div class="tab-item active" data-status="all" onclick="M.setLibFilter('all')">全部</div>
-    <div class="tab-item" data-status="active" onclick="M.setLibFilter('active')">待复习</div>
-    <div class="tab-item" data-status="mastered" onclick="M.setLibFilter('mastered')">已掌握</div>
-  </div>
-  <div id="lib-problems"></div>
-  <div class="empty-state" id="lib-empty" style="display:none">
-    <div class="empty-state-icon">📭</div>
-    <div>还没有错题，去添加第一道吧！</div>
-    <button class="btn btn-primary" style="margin-top:12px" onclick="M.switchScreen('add')">＋ 添加错题</button>
-  </div>
-</div>
-
-<!-- ============================================================
-     SCREEN 4: Problem Detail (错题详情)
-     ============================================================ -->
-<div class="screen-container" id="screen-detail">
-  <div class="screen-header">
-    <button class="btn btn-outline btn-sm" onclick="M.switchScreen('library')">← 返回错题本</button>
-    <div></div>
-  </div>
-  <div id="detail-content"></div>
-</div>
-
-<!-- ============================================================
-     SCREEN 5: Analysis (薄弱点分析)
-     ============================================================ -->
-<div class="screen-container" id="screen-analysis">
-  <div class="screen-header">
-    <div class="screen-title" style="font-size:22px">📊 薄弱点分析</div>
-  </div>
-  <div class="card" style="margin-bottom:var(--space-md)">
-    <div style="font-weight:600;margin-bottom:var(--space-sm);display:flex;justify-content:space-between">
-      <span>🎯 知识点掌握雷达图</span>
-      <span style="font-size:12px;color:var(--text-tertiary)">对标 Foliage Knowledge Radar</span>
-    </div>
-    <div id="analysis-radar" style="text-align:center"></div>
-  </div>
-  <div class="card" style="margin-bottom:var(--space-md)">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">📊 知识点掌握度</div>
-    <div id="analysis-heatmap"></div>
-  </div>
-  <div class="card" style="margin-bottom:var(--space-md)">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">🔍 错因模式分析 <span style="font-size:11px;color:var(--text-tertiary);font-weight:400">对标 Misconcepts</span></div>
-    <div id="analysis-patterns"></div>
-  </div>
-  <div class="card" style="margin-bottom:var(--space-md)">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">📈 掌握度趋势</div>
-    <div id="analysis-trend"></div>
-  </div>
-  <div class="card">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">💡 智能推荐</div>
-    <div id="analysis-recommend"></div>
-  </div>
-</div>
-
-<!-- ============================================================
-     SCREEN 6: Practice Generator (智能出题)
-     ============================================================ -->
-<div class="screen-container" id="screen-practice">
-  <div class="screen-header">
-    <div class="screen-title" style="font-size:22px">🎯 智能出题</div>
-  </div>
-  <div style="margin-bottom:var(--space-md);font-weight:500">选择练习模式</div>
-  <div class="stat-grid" id="practice-modes"></div>
-  <div style="margin-top:var(--space-lg)" id="practice-config"></div>
-  <div style="margin-top:var(--space-lg)" id="practice-questions"></div>
-  <div style="margin-top:var(--space-lg)" id="practice-actions"></div>
-  <div style="margin-top:var(--space-lg)" id="practice-results"></div>
-</div>
-
-<!-- ============================================================
-     SCREEN 7: Settings (设置)
-     ============================================================ -->
-<div class="screen-container" id="screen-settings">
-  <div class="screen-header">
-    <div class="screen-title" style="font-size:22px">⚙️ 设置</div>
-  </div>
-  <div class="card" style="margin-bottom:var(--space-md)">
-    <div class="form-group"><label class="form-label">学生姓名</label><input type="text" id="set-name" placeholder="输入姓名"></div>
-    <div class="form-group"><label class="form-label">每周目标（题数）</label><input type="number" id="set-weekly-goal" value="10" min="1" max="50"></div>
-    <button class="btn btn-primary btn-block" onclick="M.saveSettings()">保存设置</button>
-  </div>
-  <div class="card" style="margin-bottom:var(--space-md)">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">数据管理</div>
-    <button class="btn btn-outline btn-block" style="margin-bottom:8px" onclick="M.exportBackup()">📤 导出 JSON 备份</button>
-    <button class="btn btn-outline btn-block" style="margin-bottom:8px" onclick="document.getElementById('import-backup-input').click()">📥 导入 JSON 备份</button>
-    <input type="file" accept=".json" id="import-backup-input" style="display:none" onchange="M.importBackup(event)">
-    <button class="btn btn-danger btn-block" onclick="M.confirmClearData()">🗑️ 清除所有数据</button>
-  </div>
-  <div class="card">
-    <div style="font-weight:600;margin-bottom:var(--space-sm)">关于</div>
-    <p style="font-size:13px;color:var(--text-secondary)">数学错题本 v1.0<br>专为六年级（人教版）设计<br>所有数据存储在本地浏览器，不上传任何服务器</p>
-  </div>
-</div>
-
-<!-- ============================================================
-     MODALS
-     ============================================================ -->
-<div class="modal-overlay" id="modal-confirm">
-  <div class="modal-box">
-    <div style="font-weight:600;font-size:17px;margin-bottom:var(--space-sm)" id="modal-confirm-title">确认操作</div>
-    <div style="color:var(--text-secondary);margin-bottom:var(--space-md)" id="modal-confirm-msg"></div>
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn btn-outline btn-sm" onclick="M.closeModal('modal-confirm')">取消</button>
-      <button class="btn btn-danger btn-sm" id="modal-confirm-btn">确认</button>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================
-     NAVIGATION BAR
-     ============================================================ -->
-<nav class="nav-bar" id="nav-bar">
-  <span class="nav-brand" style="display:none">数学错题本</span>
-  <div class="nav-item active" data-screen="dashboard" onclick="M.switchScreen('dashboard')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-    <span>首页</span>
-  </div>
-  <div class="nav-item" data-screen="add" onclick="M.switchScreen('add')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    <span>加错题</span>
-  </div>
-  <div class="nav-item" data-screen="library" onclick="M.switchScreen('library')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-    <span>错题本</span>
-  </div>
-  <div class="nav-item" data-screen="analysis" onclick="M.switchScreen('analysis')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    <span>分析</span>
-  </div>
-  <div class="nav-item" data-screen="practice" onclick="M.switchScreen('practice')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-    <span>出题</span>
-  </div>
-  <div class="nav-item" data-screen="settings" onclick="M.switchScreen('settings')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-    <span>设置</span>
-  </div>
+<!-- ============ NAVIGATION ============ -->
+<nav>
+  <a href="javascript:A.nav('add')" class="active" data-nav="add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>加错题</span>
+  </a>
+  <a href="javascript:A.nav('analyze')" data-nav="analyze">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>分析</span>
+  </a>
+  <a href="javascript:A.nav('practice')" data-nav="practice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>练习</span>
+  </a>
+  <a href="javascript:A.nav('library')" data-nav="library">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span>错题本</span>
+  </a>
 </nav>
 
 <script>
 /* ============================================================
-   SECTION I: Namespace & Utilities
+   APP — 简单化·深入化·有用化
    ============================================================ */
-const M = {
-  _currentScreen: 'dashboard',
-  _db: null,
-  _addState: { tab:'manual', difficulty:3, errorType:null, knowledgePoints:[], imageBlob:null, imageThumb:null, ocrText:'' },
-  _libFilter: 'all',
-  _libKpFilter: null,
-  _practiceState: { mode:null, questions:[], answers:{}, startTime:0 },
+const A = {
+  _img: null, _kps: [], _mode: null, _state: {},
+
+  $(id){ return document.getElementById(id); },
+
+  toast(msg, t){
+    const el = document.createElement('div');
+    el.className = 'toast ' + (t||'');
+    el.textContent = msg;
+    this.$('toast').appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  },
+
+  nav(name){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    this.$('sc-' + name).classList.add('active');
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    const navEl = document.querySelector('nav a[data-nav="' + name + '"]');
+    if (navEl) navEl.classList.add('active');
+    if (name === 'analyze') this.renderAnalyze();
+    if (name === 'practice') this.renderPractice();
+    if (name === 'library') this.renderLibrary();
+  },
+
+  esc(s){ const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; },
+
+  /* ============ KNOWLEDGE POINTS ============ */
+  KP: {
+    composite_shape_area:'组合图形面积',cone_volume:'圆锥体积',cyl_volume:'圆柱体积',
+    cyl_surface:'圆柱表面积',composite_solid_volume:'组合体体积',distributive_property:'乘法分配律',
+    frac_mul_word:'分数乘法应用',frac_div_word:'分数除法应用',frac_div_eng:'工程问题',
+    prop_scale:'比例尺',prop_direct:'正比例',prop_inverse:'反比例',
+    pct_discount:'折扣问题',pct_interest:'利率问题',circle_area:'圆的面积',
+    circle_pi:'圆的周长',circle_ring:'圆环面积',circle_sector:'扇形面积',
+    ratio_distribute:'按比例分配',ratio_simplify:'化简比',negative_numbers:'负数',
+    frac_mul_rules:'分数乘法',frac_div_rule:'分数除法',pct_convert:'百分数转化',
+    num_pattern_seq:'数列规律',pigeonhole_basic:'鸽巢问题',unit_conversion:'单位换算',
+    equation_method:'方程方法',transform_thinking:'转化思想',
+  },
+  kpName(k){ return this.KP[k] || k; },
+
+  classify(text){
+    const map = {
+      composite_shape_area:[/组合图形|阴影面积|阴影部分|半圆.*三角|外方内圆|外圆内方|花瓣|环形|圆环|割补|分割|添补/],
+      cone_volume:[/圆锥|锥.*体积|沙堆|沙漏|漏斗|粮仓.*锥/],
+      cyl_volume:[/圆柱.*体积|圆柱.*容积|水桶.*装|柱子|管道.*体积|圆钢|钢管/],
+      cyl_surface:[/表面积|侧面积|铁皮|围成.*圆柱|无盖.*圆柱|通风管|烟囱|水桶.*铁皮/],
+      composite_solid_volume:[/组合体|粮仓|圆柱.*上面.*圆锥|组合.*体积/],
+      distributive_property:[/简便.*算|简便计算|分配律|提取.*公因数|乘法.*律|简算|能简算/],
+      frac_mul_word:[/几分之几|一个数的.*分之|求.*分之.*是多少|的.*分之几/],
+      frac_div_word:[/已知.*的.*分之|求.*这个数|单位.*未知|一袋.*吃了.*还剩|一桶.*用了.*还剩/],
+      frac_div_eng:[/工程|合作.*天|单独.*天|甲.*乙.*完成|工作效率|修路.*天/],
+      prop_scale:[/比例尺|图上距离|实际距离|千米.*厘米|地图/],
+      pct_discount:[/打折|折扣|几折|原价|现价|促销|满.*减|折上折|八折|七折|六折|五折|九折/],
+      pct_interest:[/利息|本金|利率|存.*年|定期|国债|理财.*收益|取回.*钱/],
+      circle_area:[/圆的面积|圆面|半径.*求面积|直径.*求面积|周长.*求面积|圆.*面积/],
+      circle_pi:[/周长|一圈|围.*圆|绕.*圈|栅栏.*圆|花坛.*周长/],
+      circle_ring:[/环形|圆环|环宽|外圆.*内圆|小路.*圆形/],
+      circle_sector:[/扇形|圆心角|扇.*面积|圆弧|钟面.*指针/],
+      ratio_distribute:[/按.*分|分配.*比|配比|甲乙.*比|搅拌.*比|混凝土|药粉.*水/],
+      negative_numbers:[/负数|零下|低于.*0|亏本|亏损|海平面|海拔.*以下/],
+      frac_mul_rules:[/分数.*乘|乘以.*分数|约分.*再乘|分数.*乘法/],
+      frac_div_rule:[/分数.*除|除以.*分数|倒数.*乘|÷.*分数|除.*几分之几/],
+      pct_convert:[/百分数|百分之|小数.*百分|分数.*百分|互化/],
+      prop_direct:[/正比例|成正比例|比值.*一定|单价.*一定|速度.*一定/],
+      prop_inverse:[/反比例|成反比例|乘积.*一定/],
+      num_pattern_seq:[/规律|找规律|按规律|数列|第n项|第.*个.*数|观察.*算式/],
+      pigeonhole_basic:[/至少|保证|抽屉|鸽巢|最坏.*情况|总有.*至少|保证.*同色/],
+      unit_conversion:[/单位.*换算|千米.*米|平方米|升.*毫升|吨.*千克|小时.*分钟|厘米.*毫米|换算/],
+      equation_method:[/方程|解方程|设.*x|列方程|未知数|解.*=.*x/],
+      transform_thinking:[/转化|割补|分割|平移|旋转|等积|添补|辅助线/],
+      ratio_simplify:[/化简比|求比值|最简单的整数比|化成.*比/],
+    };
+    const found = [];
+    for (const [k, pats] of Object.entries(map)) {
+      if (pats.some(p => p.test(text))) found.push(k);
+    }
+    return found;
+  },
 };
 
-M.$ = (id) => document.getElementById(id);
-M.escapeHTML = (str) => { const d=document.createElement('div'); d.textContent=str; return d.innerHTML; };
-
-M.showToast = (msg, type='') => {
-  const el = document.createElement('div');
-  el.className = 'toast-item ' + type;
-  el.textContent = msg;
-  M.$('toast').appendChild(el);
-  setTimeout(() => el.remove(), 2600);
-};
-
-M.switchScreen = (name) => {
-  document.querySelectorAll('.screen-container').forEach(s => s.classList.remove('active'));
-  const screen = M.$('screen-' + name);
-  if (screen) screen.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const navItem = document.querySelector(`.nav-item[data-screen="${name}"]`);
-  if (navItem) navItem.classList.add('active');
-  M._currentScreen = name;
-  // Reset library filters when navigating to library
-  if (name === 'library') {
-    M._libFilter = 'all';
-    M._libKpFilter = null;
-    M.$('lib-search').value = '';
-    M.$('lib-status-filter').querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.status === 'all'));
-    M.renderLibrary();
-  }
-  if (name === 'dashboard') M.renderDashboard();
-  if (name === 'analysis') M.renderAnalysis();
-  if (name === 'practice') M.renderPracticeModes();
-  if (name === 'add') M.renderTagPicker();
-  if (name === 'settings') M.loadSettings();
-};
-
-M.closeModal = (id) => M.$(id).classList.remove('active');
-
-M.confirmDialog = (title, msg, onConfirm) => {
-  M.$('modal-confirm-title').textContent = title;
-  M.$('modal-confirm-msg').textContent = msg;
-  const btn = M.$('modal-confirm-btn');
-  btn.onclick = () => { M.closeModal('modal-confirm'); onConfirm(); };
-  M.$('modal-confirm').classList.add('active');
-};
-
-/* ============================================================
-   SECTION II: IndexedDB Layer
-   ============================================================ */
+/* ============ INDEXEDDB ============ */
 const DB = {
   _db: null,
-  NAME: 'MathErrorBookDB',
-  VERSION: 2,
-
-  open() {
+  async open(){
     return new Promise((resolve, reject) => {
-      const req = indexedDB.open(this.NAME, this.VERSION);
-      req.onupgradeneeded = (e) => {
+      const r = indexedDB.open('MathErrorBookV2', 1);
+      r.onupgradeneeded = (e) => {
         const db = e.target.result;
-        // Store 1: problems
-        if (!db.objectStoreNames.contains('problems')) {
-          const problems = db.createObjectStore('problems', { keyPath: 'id', autoIncrement: true });
-          problems.createIndex('kp', 'knowledgePoints', { multiEntry: true });
-          problems.createIndex('semester', 'semester');
-          problems.createIndex('status', 'status');
-          problems.createIndex('nextReviewAt', 'nextReviewAt');
-          problems.createIndex('createdAt', 'createdAt');
+        if (!db.objectStoreNames.contains('problems')){
+          const s = db.createObjectStore('problems', {keyPath:'id',autoIncrement:true});
+          s.createIndex('kp','knowledgePoints',{multiEntry:true});
+          s.createIndex('status','status');
+          s.createIndex('createdAt','createdAt');
         }
-        // Store 2: knowledgeMastery
-        if (!db.objectStoreNames.contains('knowledgeMastery')) {
-          const mastery = db.createObjectStore('knowledgeMastery', { keyPath: 'knowledgePointKey' });
-          mastery.createIndex('parentKey', 'parentKey');
-          mastery.createIndex('semester', 'semester');
-          mastery.createIndex('masteryLevel', 'masteryLevel');
+        if (!db.objectStoreNames.contains('sessions')){
+          db.createObjectStore('sessions',{keyPath:'id',autoIncrement:true});
         }
-        // Store 3: practiceSessions
-        if (!db.objectStoreNames.contains('practiceSessions')) {
-          const sessions = db.createObjectStore('practiceSessions', { keyPath: 'id', autoIncrement: true });
-          sessions.createIndex('mode', 'mode');
-          sessions.createIndex('createdAt', 'createdAt');
-        }
-        // Store 4: settings
-        if (!db.objectStoreNames.contains('settings')) {
-          db.createObjectStore('settings', { keyPath: 'id' });
-        }
-        // Store 5: questionBank
-        if (!db.objectStoreNames.contains('questionBank')) {
-          const qb = db.createObjectStore('questionBank', { keyPath: 'id', autoIncrement: true });
-          qb.createIndex('knowledgePointKey', 'knowledgePointKey');
-          qb.createIndex('source', 'source');
+        if (!db.objectStoreNames.contains('bank')){
+          const b = db.createObjectStore('bank',{keyPath:'id',autoIncrement:true});
+          b.createIndex('kpk','knowledgePointKey');
         }
       };
-      req.onsuccess = (e) => { this._db = e.target.result; M._db = this._db; resolve(this._db); };
-      req.onerror = () => reject(req.error);
+      r.onsuccess = (e) => { this._db = e.target.result; resolve(); };
+      r.onerror = () => reject(r.error);
     });
   },
-
-  _tx(store, mode='readonly') {
-    const tx = this._db.transaction(store, mode);
-    return tx.objectStore(store);
-  },
-
-  _promisify(req) { return new Promise((resolve, reject) => { req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error); }); },
-
-  // Problem CRUD
-  async addProblem(data) {
-    const store = this._tx('problems','readwrite');
-    data.createdAt = Date.now();
-    data.updatedAt = Date.now();
-    data.status = 'active';
-    data.reviewCount = 0;
-    data.nextReviewAt = Date.now() + 24*60*60*1000; // review tomorrow
-    const id = await this._promisify(store.add(data));
-    await this._updateMasteryForProblem(data);
-    return id;
-  },
-
-  async updateProblem(id, data) {
-    const store = this._tx('problems','readwrite');
-    const existing = await this._promisify(store.get(id));
-    if (!existing) return;
-    Object.assign(existing, data, { updatedAt: Date.now() });
-    await this._promisify(store.put(existing));
-    await this._updateMasteryForProblem(existing);
-  },
-
-  async getProblem(id) {
-    return this._promisify(this._tx('problems').get(id));
-  },
-
-  async getAllProblems() {
-    return this._promisify(this._tx('problems').getAll());
-  },
-
-  async getProblemsByStatus(status) {
-    const idx = this._tx('problems').index('status');
-    return this._promisify(idx.getAll(status));
-  },
-
-  async getProblemsByKP(knowledgePointKey) {
-    const idx = this._tx('problems').index('kp');
-    return this._promisify(idx.getAll(knowledgePointKey));
-  },
-
-  async deleteProblem(id) {
-    const store = this._tx('problems','readwrite');
-    const p = await this._promisify(store.get(id));
-    await this._promisify(store.delete(id));
-    if (p) await this._updateMasteryForProblem(p);
-  },
-
-  // Mastery
-  async getAllMastery() {
-    return this._promisify(this._tx('knowledgeMastery').getAll());
-  },
-
-  async _updateMasteryForProblem(problem) {
-    if (!problem.knowledgePoints || !problem.knowledgePoints.length) return;
-    const store = this._tx('knowledgeMastery','readwrite');
-    for (const kp of problem.knowledgePoints) {
-      let m = await this._promisify(store.get(kp));
-      if (!m) {
-        m = { knowledgePointKey: kp, knowledgePointName: M.getKPName(kp), parentKey: M.getKPParent(kp), semester: M.getKPSemester(kp), totalAttempts:0, totalErrors:0, errorRate:0, recentErrorRate:0, masteryLevel:0, lastPracticedAt:0, updatedAt:Date.now() };
-      }
-      m.totalAttempts++;
-      if (problem.status !== 'mastered') m.totalErrors++;
-      m.errorRate = m.totalErrors / m.totalAttempts;
-      m.recentErrorRate = m.errorRate; /* simplified */
-      m.masteryLevel = m.errorRate > 0.5 ? 0 : m.errorRate > 0.3 ? 1 : m.errorRate > 0.1 ? 2 : m.errorRate === 0 ? 4 : 3;
-      m.lastPracticedAt = Date.now();
-      m.updatedAt = Date.now();
-      await this._promisify(store.put(m));
-    }
-  },
-
-  // Settings
-  async getSettings() { const r = await this._promisify(this._tx('settings').get('app_settings')); return r || { id:'app_settings', studentName:'', weeklyGoal:10 }; },
-  async saveSettings(s) { s.id='app_settings'; s.updatedAt=Date.now(); await this._promisify(this._tx('settings','readwrite').put(s)); },
-
-  // Sessions
-  async addSession(data) {
-    data.createdAt = Date.now();
-    return this._promisify(this._tx('practiceSessions','readwrite').add(data));
-  },
-  async getAllSessions() { return this._promisify(this._tx('practiceSessions').getAll()); },
-
-  // Question Bank
-  async getQuestionsByKP(kp) {
-    const idx = this._tx('questionBank').index('knowledgePointKey');
-    return this._promisify(idx.getAll(kp));
-  },
-  async getAllQuestions() { return this._promisify(this._tx('questionBank').getAll()); },
-  async addQuestion(q) { return this._promisify(this._tx('questionBank','readwrite').add(q)); },
-  async countQuestions() { return this._promisify(this._tx('questionBank').count()); },
-
-  // Full export
-  async exportAll() {
-    return {
-      version: 2,
-      exportedAt: Date.now(),
-      problems: await this.getAllProblems(),
-      mastery: await this.getAllMastery(),
-      settings: await this.getSettings(),
-      sessions: await this.getAllSessions()
-    };
-  },
-
-  async importAll(data) {
-    if (!data.version || !data.problems) throw new Error('无效备份文件');
-    const pStore = this._tx('problems','readwrite');
-    for (const p of data.problems) { await this._promisify(pStore.put(p)); }
-    if (data.mastery) {
-      const mStore = this._tx('knowledgeMastery','readwrite');
-      for (const m of data.mastery) { await this._promisify(mStore.put(m)); }
-    }
-    if (data.settings) { await this.saveSettings(data.settings); }
-    if (data.sessions) {
-      const sStore = this._tx('practiceSessions','readwrite');
-      for (const s of data.sessions) { await this._promisify(sStore.put(s)); }
-    }
-  },
-
-  async clearAll() {
-    for (const store of ['problems','knowledgeMastery','practiceSessions','settings']) {
-      await this._promisify(this._tx(store,'readwrite').clear());
-    }
-  }
+  tx(s, m){ return this._db.transaction(s, m).objectStore(s); },
+  p(req){ return new Promise((res,rej)=>{ req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error); }); },
+  async addProblem(d){ d.createdAt = Date.now(); d.status = 'active'; return this.p(this.tx('problems','readwrite').add(d)); },
+  async getAllProblems(){ return this.p(this.tx('problems').getAll()); },
+  async getProblem(id){ return this.p(this.tx('problems').get(id)); },
+  async updateProblem(id, d){ const s=this.tx('problems','readwrite'); const p=await this.p(s.get(id)); if(!p)return; Object.assign(p,d); return this.p(s.put(p)); },
+  async deleteProblem(id){ return this.p(this.tx('problems','readwrite').delete(id)); },
+  async addSession(d){ d.createdAt=Date.now(); return this.p(this.tx('sessions','readwrite').add(d)); },
+  async getAllSessions(){ return this.p(this.tx('sessions').getAll()); },
+  async seedBank(qs){ const s=this.tx('bank','readwrite'); for(const q of qs){await this.p(s.add(q));} },
+  async getBankCount(){ return this.p(this.tx('bank').count()); },
+  async getAllBank(){ return this.p(this.tx('bank').getAll()); },
+  async getBankByKP(kp){ return this.p(this.tx('bank').index('kpk').getAll(kp)); },
 };
 
-/* ============================================================
-   SECTION III: Knowledge Point Tree (人教版六年级完整体系)
-   ============================================================ */
-M.KNOWLEDGE_TREE = {
-  semester1: { name:'六年级上册', chapters: [
-    { key:'fraction_multiplication', name:'分数乘法', points:[
-      {key:'frac_mul_meaning',name:'分数乘整数/分数的意义'},{key:'frac_mul_rules',name:'分数乘法计算法则（先约分再乘）'},{key:'frac_mul_mixed',name:'分数混合运算（运算顺序）'},{key:'frac_mul_reciprocal',name:'倒数的概念（乘积为1）'},{key:'frac_mul_word',name:'分数乘法应用题（求一个数的几分之几）'}
-    ]},
-    { key:'position_direction', name:'位置与方向(二)', points:[
-      {key:'pos_dir_angle',name:'用方向和距离确定位置'},{key:'pos_dir_route',name:'路线图（描述和绘制）'}
-    ]},
-    { key:'fraction_division', name:'分数除法', points:[
-      {key:'frac_div_rule',name:'分数除法计算法则（除以一个数=乘它的倒数）'},{key:'frac_div_mixed',name:'分数乘除混合运算'},{key:'frac_div_word',name:'分数除法应用题（已知一个数的几分之几，求这个数）'},{key:'frac_div_eng',name:'工程问题（工作效率×时间=工作量）'}
-    ]},
-    { key:'ratio', name:'比', points:[
-      {key:'ratio_meaning',name:'比的意义（两个数相除）'},{key:'ratio_properties',name:'比的基本性质（同时乘除相同数）'},{key:'ratio_simplify',name:'化简比（整数比/分数比/小数比）'},{key:'ratio_distribute',name:'按比例分配'}
-    ]},
-    { key:'circle', name:'圆', points:[
-      {key:'circle_pi',name:'圆周率与圆的周长（C=πd=2πr）'},{key:'circle_area',name:'圆的面积公式（S=πr²）'},{key:'circle_sector',name:'扇形（S=πr²×n/360）'},{key:'circle_ring',name:'圆环面积（S=π(R²-r²)）'},{key:'composite_shape_area',name:'组合图形面积（割补法/分割法/添补法）'},{key:'circle_irregular',name:'不规则图形面积（转化思想）'}
-    ]},
-    { key:'percent_one', name:'百分数(一)', points:[
-      {key:'pct_meaning',name:'百分数的意义和读写'},{key:'pct_convert',name:'百分数/小数/分数互化'},{key:'pct_discount',name:'折扣问题'},{key:'pct_tax_rate',name:'税率/利率问题'}
-    ]},
-    { key:'pie_chart', name:'扇形统计图', points:[
-      {key:'pie_read',name:'扇形统计图的解读'},{key:'pie_calc',name:'根据统计图计算'}
-    ]},
-    { key:'number_shape', name:'数学广角——数与形', points:[
-      {key:'num_pattern_seq',name:'数列规律（连续奇数和=n²）'},{key:'shape_pattern',name:'图形规律'},{key:'induction',name:'归纳推理'}
-    ]}
-  ]},
-  semester2: { name:'六年级下册', chapters: [
-    { key:'negative_numbers', name:'负数', points:[
-      {key:'neg_meaning',name:'负数的意义（<0）'},{key:'neg_numberline',name:'数轴上的负数'},{key:'neg_calc',name:'负数简单计算'}
-    ]},
-    { key:'percent_two', name:'百分数(二)', points:[
-      {key:'pct_discount_adv',name:'折扣进阶（满减/折上折）'},{key:'pct_tax_adv',name:'税率进阶'},{key:'pct_interest',name:'利率（本金×利率×时间）'}
-    ]},
-    { key:'cylinder_cone', name:'圆柱与圆锥', points:[
-      {key:'cyl_surface',name:'圆柱表面积（S=2πrh+2πr²）'},{key:'cyl_volume',name:'圆柱体积（V=Sh=πr²h）'},{key:'cone_volume',name:'圆锥体积（V=⅓Sh⚠️牢记1/3）'},{key:'composite_solid_volume',name:'组合体体积（圆柱+圆锥）'}
-    ]},
-    { key:'proportion', name:'比例', points:[
-      {key:'prop_direct',name:'正比例（y/x=k）'},{key:'prop_inverse',name:'反比例（xy=k）'},{key:'prop_scale',name:'比例尺（图上距离:实际距离）'},{key:'prop_graph',name:'比例关系图像'}
-    ]},
-    { key:'pigeonhole', name:'数学广角——鸽巢问题', points:[
-      {key:'pigeonhole_basic',name:'鸽巢原理（n+1放入n，至少一个≥2）'}
-    ]},
-    { key:'review', name:'整理与复习', points:[
-      {key:'num_algebra_review',name:'数与代数综合复习'},{key:'geometry_review',name:'图形与几何综合复习'},{key:'stats_prob_review',name:'统计与概率综合复习'}
-    ]}
-  ]},
-  crossSkills: {
-    distributive_property: { name:'乘法分配律', desc:'(a+b)×c=a×c+b×c，在分数/小数/百分数中灵活运用', errorPatterns:['forget_second_term','sign_error','reverse_extract_error'] },
-    transform_thinking: { name:'转化思想', desc:'将不规则/组合图形通过割补、平移、旋转转化为规则图形', errorPatterns:['miss_overlap','wrong_method','incomplete_decomp'] },
-    equation_method: { name:'方程方法', desc:'设未知数列方程 vs 算术反向推导', errorPatterns:['wrong_variable','equation_unbalanced'] },
-    unit_conversion: { name:'单位换算', desc:'长度/面积/体积/时间/货币单位换算', errorPatterns:['area_unit_10000','volume_unit_1000','time_base60'] }
-  }
+/* ============ SEED BANK ============ */
+const SEED = [
+  {knowledgePointKey:'composite_shape_area',text:'正方形边长4cm，以每条边为直径向正方形内画半圆，求四个半圆重叠部分的面积。',answer:'阴影 = 4×(半圆 - 三角形) = 4×(π×2²/2 - 2×2/2) = 8π-8 ≈ 17.12 cm²',solution:'连接正方形各边中点。四个半圆的四块重叠部分 = 4×(半圆-三角形)。',solutions:['分割法：分成4块相等的部分，每块=半圆-直角三角形','整体法：四个半圆总面积-正方形面积=4×(2π)-16=8π-16']},
+  {knowledgePointKey:'composite_shape_area',text:'直径10cm的圆内画最大正方形，求圆内正方形以外的阴影面积。',answer:'正方形对角线=10cm，面积=10²/2=50cm²。圆面积=π×5²≈78.5cm²。阴影≈28.5cm²',solution:'圆内最大正方形对角线=直径。正方形面积=对角线²÷2。',solutions:['对角线法：正方形面积=10²/2=50','三角形法：正方形=4个等腰直角三角形']},
+  {knowledgePointKey:'composite_shape_area',text:'操场由长方形(100m×60m)和两个半圆(直径=宽)组成，求总面积。',answer:'长方形=6000m²。两个半圆=整圆=π×30²≈2826m²。总面积≈8826m²',solution:'两个半圆拼成整圆。总面积=长方形+整圆。',solutions:['分割法：分别算再加','补全法：两个半圆拼成整圆']},
+  {knowledgePointKey:'composite_shape_area',text:'正方形边长6cm，四个顶点为圆心、边长一半为半径各画1/4圆，求中间空白面积。',answer:'四个1/4圆=整圆=π×3²≈28.26cm²。空白=36-28.26=7.74cm²',solution:'四个1/4圆刚好拼成完整圆。空白=正方形-整圆。',solutions:['拼接法：四个1/4圆=一个完整圆','直接算：正方形面积-整圆面积']},
+  {knowledgePointKey:'composite_shape_area',text:'环形铁片外圆直径20cm内圆直径12cm，求面积。',answer:'R=10,r=6。S=π(100-36)=64π≈200.96cm²',solution:'圆环=π(R²-r²)。',solutions:['公式法：直接用S=π(R²-r²)','分步法：分别算两个圆面积再相减']},
+  {knowledgePointKey:'distributive_property',text:'简便计算：25×(40+4)',answer:'=25×40+25×4=1000+100=1100',solution:'展开：(a+b)×c=a×c+b×c',solutions:['展开法：分别乘再相加','凑整法：25×44=1100']},
+  {knowledgePointKey:'distributive_property',text:'计算：3/7×5/6+3/7×1/6',answer:'=3/7×(5/6+1/6)=3/7×1=3/7',solution:'逆向提取公因数3/7',solutions:['提取公因数法','直接算验证']},
+  {knowledgePointKey:'distributive_property',text:'计算：99×7/8',answer:'=(100-1)×7/8=700/8-7/8=693/8=86.625',solution:'99=100-1，拆分后用分配律',solutions:['拆分法：99=100-1','直接算验证']},
+  {knowledgePointKey:'distributive_property',text:'计算：36×(1/4+1/6-1/9)',answer:'=36/4+36/6-36/9=9+6-4=11',solution:'三项都要分配，注意符号',solutions:['逐项分配','先通分再乘']},
+  {knowledgePointKey:'distributive_property',text:'计算：73×64+27×64',answer:'=(73+27)×64=100×64=6400',solution:'提取公因数64。73+27=100刚好凑整',solutions:['提取公因数','分别算验证']},
+  {knowledgePointKey:'cone_volume',text:'圆锥形沙堆底面周长12.56m高1.5m，每立方米沙重1.7吨，共重多少？',answer:'r=2m。V=πr²h/3=3.14×4×1.5/3=6.28m³。重=6.28×1.7≈10.68吨',solution:'⚠️圆锥体积=底面积×高÷3！',solutions:['标准法：r→V÷3→重量','验证法：先算圆柱体积再÷3']},
+  {knowledgePointKey:'cone_volume',text:'圆柱体积60cm³，等底等高圆锥体积多少？',answer:'60÷3=20cm³',solution:'等底等高：V锥=V柱/3。最核心的倍数关系。',solutions:['直接法','实验法：3个圆锥=1个圆柱']},
+  {knowledgePointKey:'cyl_volume',text:'圆柱形水桶底面半径20cm高50cm，能装多少升水？',answer:'V=πr²h=3.14×400×50=62800cm³=62.8L',solution:'1升=1000cm³。注意单位换算。',solutions:['公式法：V=Sh=πr²h','单位法：cm³转L']},
+  {knowledgePointKey:'pct_discount',text:'上衣原价280元打八五折，现价多少？',answer:'280×0.85=238元',solution:'八五折=85%=0.85。原价×折扣=现价。',solutions:['直接乘：280×0.85','拆分：280×(80%+5%)']},
+  {knowledgePointKey:'pct_interest',text:'5000元存3年，年利率2.75%，到期取回多少？',answer:'利息=5000×2.75%×3=412.5元。合计=5412.5元',solution:'利息=本金×利率×年。本息=本金+利息。',solutions:['分步法：先利息再本息','公式法：5000×(1+2.75%×3)']},
+  {knowledgePointKey:'frac_div_word',text:'一袋大米吃了3/5后剩24kg，原来多少kg？',answer:'剩2/5→24÷(2/5)=24×5/2=60kg',solution:'已知部分求整体用除法。剩2/5是24kg→整体=24÷(2/5)',solutions:['算术法：24÷(2/5)=60','方程法：x-3x/5=24→x=60']},
+  {knowledgePointKey:'prop_scale',text:'比例尺1:5000000地图上两地4.8cm，实际多少km？',answer:'4.8×5000000÷100000=240km',solution:'图上×比例尺分母=实际(cm)。÷100000=km。',solutions:['直接法：乘比例尺再换算','分步法：先cm再km']},
+  {knowledgePointKey:'frac_div_eng',text:'甲12天乙18天单独完成。合作4天后乙单独做剩余需几天？',answer:'4天完成5/9，剩4/9。乙需4/9÷1/18=8天',solution:'①效率 ②合作量 ③剩余 ④乙单独时间',solutions:['效率法：分步算','方程法：设剩余x天']},
+  {knowledgePointKey:'num_pattern_seq',text:'1=1²，1+3=2²，1+3+5=3²。求1+3+5+…+17',answer:'共9个奇数(1~17)，和=9²=81',solution:'从1开始的n个连续奇数和=n²',solutions:['规律法：n=9→81','验证法：逐项累加']},
+  {knowledgePointKey:'pigeonhole_basic',text:'红黄蓝球各10个，至少摸几个保证2个同色？',answer:'最坏3个各一色，第4个必有同色。至少4个',solution:'鸽巢原理：n个鸽巢，保证至少2个→n+1个',solutions:['最坏分析法','公式法：颜色数+1']},
+];
+
+/* ============ ADD SCREEN ============ */
+A.handlePhoto = function(e){
+  const f = e.target.files[0]; if (!f) return;
+  A._img = f;
+  A.$('photo-img').src = URL.createObjectURL(f);
+  A.$('photo-empty').style.display = 'none';
+  A.$('photo-preview').style.display = 'block';
+  A.$('btn-ocr').disabled = false;
+  A.$('btn-ocr').textContent = '🔍 识别文字';
+  A.$('ocr-msg').textContent = '';
 };
 
-M._kpFlat = {};
-(function buildFlat() {
-  for (const sem of ['semester1','semester2']) {
-    for (const ch of M.KNOWLEDGE_TREE[sem].chapters) {
-      for (const pt of ch.points) {
-        M._kpFlat[pt.key] = { name:pt.name, chapter:ch.name, chapterKey:ch.key, semester: sem==='semester1'?1:2 };
-      }
-    }
-  }
-  for (const [k,v] of Object.entries(M.KNOWLEDGE_TREE.crossSkills)) {
-    M._kpFlat[k] = { name:v.name, chapter:'跨章技能', chapterKey:'cross', semester:0 };
-  }
-})();
-
-M.getKPName = (key) => M._kpFlat[key]?.name || key;
-M.getKPParent = (key) => M._kpFlat[key]?.chapterKey || '';
-M.getKPSemester = (key) => M._kpFlat[key]?.semester || 0;
-
-M.renderTagPicker = () => {
-  const sem = M.$('add-semester').value;
-  const treeKey = sem === '1' ? 'semester1' : 'semester2';
-  const container = M.$('add-tag-picker');
-  const selected = M._addState.knowledgePoints;
-  const hasAutoClassified = M._addState._hasClassified;
-
-  // If auto-classified, show smart layout: recommended tags first, rest collapsed
-  if (hasAutoClassified && selected.length > 0) {
-    let html = '<div style="font-weight:600;font-size:14px;margin-bottom:4px;color:var(--blue)">🤖 AI 智能识别（点击可取消）</div>';
-    html += '<div class="tag-grid" style="margin-bottom:8px">';
-    for (const kp of selected) {
-      html += `<span class="tag-chip selected" data-kp="${kp}" onclick="M.toggleKPTag(this,'${kp}')">${M.getKPName(kp)}</span>`;
-    }
-    html += '</div>';
-    html += '<div style="font-size:12px;color:var(--text-tertiary);cursor:pointer;user-select:none" id="toggle-all-tags" onclick="M.toggleAllTags()">📂 展开全部知识点（' + Object.keys(M._kpFlat).length + '个） ▸</div>';
-    html += '<div id="all-tags-panel" style="display:none;margin-top:8px">';
-    for (const ch of M.KNOWLEDGE_TREE[treeKey].chapters) {
-      html += `<div style="font-size:11px;color:var(--text-tertiary);margin:6px 0 2px">${ch.name}</div>`;
-      html += '<div class="tag-grid">';
-      for (const pt of ch.points) {
-        const sel = selected.includes(pt.key) ? ' selected' : '';
-        html += `<span class="tag-chip${sel}" data-kp="${pt.key}" onclick="M.toggleKPTag(this,'${pt.key}')">${pt.name}</span>`;
-      }
-      html += '</div>';
-    }
-    html += '<div style="font-size:11px;color:var(--text-tertiary);margin:6px 0 2px">跨章技能</div><div class="tag-grid">';
-    for (const [k,v] of Object.entries(M.KNOWLEDGE_TREE.crossSkills)) {
-      const sel = selected.includes(k) ? ' selected' : '';
-      html += `<span class="tag-chip${sel}" data-kp="${k}" onclick="M.toggleKPTag(this,'${k}')">${v.name}</span>`;
-    }
-    html += '</div></div>';
-    container.innerHTML = html;
-    return;
-  }
-
-  // Default full view
-  let html = '';
-  for (const ch of M.KNOWLEDGE_TREE[treeKey].chapters) {
-    html += `<div style="font-size:12px;color:var(--text-tertiary);margin:8px 0 4px;width:100%">${ch.name}</div>`;
-    for (const pt of ch.points) {
-      const sel = selected.includes(pt.key) ? ' selected' : '';
-      html += `<span class="tag-chip${sel}" data-kp="${pt.key}" onclick="M.toggleKPTag(this,'${pt.key}')">${pt.name}</span>`;
-    }
-  }
-  html += `<div style="font-size:12px;color:var(--text-tertiary);margin:8px 0 4px;width:100%">跨章技能</div>`;
-  for (const [k,v] of Object.entries(M.KNOWLEDGE_TREE.crossSkills)) {
-    const sel = selected.includes(k) ? ' selected' : '';
-    html += `<span class="tag-chip${sel}" data-kp="${k}" onclick="M.toggleKPTag(this,'${k}')">${v.name}</span>`;
-  }
-  container.innerHTML = html;
+A.clearPhoto = function(){
+  A._img = null;
+  A.$('photo-empty').style.display = 'block';
+  A.$('photo-preview').style.display = 'none';
+  A.$('ocr-msg').textContent = '';
 };
 
-M.showTagEditor = () => {
-  M.$('add-tag-editor').style.display = 'block';
-  M.$('btn-show-tags').style.display = 'none';
-  M.renderTagPicker();
-};
-
-M.hideTagEditor = () => {
-  M.$('add-tag-editor').style.display = 'none';
-  M.$('btn-show-tags').style.display = 'inline';
-  M.updateTagsBar();
-};
-
-M.updateTagsSummary = () => {
-  const kps = M._addState.knowledgePoints;
-  const el = M.$('add-tags-summary');
-  if (kps.length === 0) {
-    el.innerHTML = '<span style="color:var(--text-tertiary)">等待输入题目或拍照后自动识别...</span>';
-    el.style.color = 'var(--text-tertiary)';
-  } else {
-    el.innerHTML = '✅ <strong>已识别：</strong>' + kps.map(k => M.getKPName(k)).join(' · ');
-    el.style.color = 'var(--green)';
-  }
-};
-
-M.toggleAllTags = () => {
-  const panel = M.$('all-tags-panel');
-  const toggle = M.$('toggle-all-tags');
-  if (!panel || !toggle) return;
-  if (panel.style.display === 'none') {
-    panel.style.display = 'block';
-    toggle.innerHTML = '📂 收起全部知识点 ▾';
-  } else {
-    panel.style.display = 'none';
-    toggle.innerHTML = '📂 展开全部知识点（' + Object.keys(M._kpFlat).length + '个） ▸';
-  }
-};
-
-M.toggleKPTag = (el, key) => {
-  if (M._addState.knowledgePoints.includes(key)) {
-    M._addState.knowledgePoints = M._addState.knowledgePoints.filter(k => k!==key);
-    el.classList.remove('selected');
-  } else {
-    M._addState.knowledgePoints.push(key);
-    el.classList.add('selected');
-  }
-};
-
-/* ============================================================
-   SECTION IV: OCR Engine (Tesseract.js lazy load)
-   ============================================================ */
-M._ocrWorker = null;
-M._ocrLoading = false;
-
-M.initOCR = async () => {
-  if (M._ocrWorker) return;
-  if (M._ocrLoading) return;
-  M._ocrLoading = true;
-  M.$('btn-ocr').disabled = true;
-  M.$('btn-ocr').textContent = '⏳ 正在加载OCR引擎...';
+A.doOCR = async function(){
+  if (!A._img) return;
+  A.$('btn-ocr').disabled = true;
+  A.$('ocr-msg').textContent = '⏳ 加载OCR引擎...';
   try {
-    if (!window.Tesseract) {
-      await new Promise((resolve, reject) => {
+    if (!window.Tesseract){
+      await new Promise((res, rej) => {
         const s = document.createElement('script');
         s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-        s.onload = resolve;
-        s.onerror = () => reject(new Error('OCR引擎加载失败'));
+        s.onload = res; s.onerror = rej;
         document.head.appendChild(s);
       });
     }
-    M._ocrWorker = await Tesseract.createWorker('chi_sim', 1);
-    M.$('btn-ocr').textContent = '🔍 OCR 文字识别';
-    M.$('btn-ocr').disabled = false;
-    M._ocrLoading = false;
-    M.showToast('OCR 引擎就绪', 'success');
-  } catch(e) {
-    M._ocrLoading = false;
-    M.$('btn-ocr').disabled = false;
-    M.$('btn-ocr').textContent = '🔍 OCR 文字识别';
-    M.showToast('OCR引擎加载失败，请检查网络后重试', 'error');
-    console.error('OCR init error:', e);
-  }
-};
-
-M.runOCR = async () => {
-  await M.initOCR();
-  if (!M._ocrWorker || !M._addState.imageBlob) return;
-  M.$('ocr-progress').style.display = 'block';
-  M.$('ocr-progress').textContent = '正在识别中...';
-  M.$('btn-ocr').disabled = true;
-  try {
-    // Preprocess: resize + grayscale + contrast
-    const img = await createImageBitmap(M._addState.imageBlob);
+    const worker = await Tesseract.createWorker('chi_sim', 1);
+    const img = await createImageBitmap(A._img);
     const scale = Math.min(1, 1500 / Math.max(img.width, img.height));
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width * scale;
-    canvas.height = img.height * scale;
-    const ctx = canvas.getContext('2d');
+    const c = document.createElement('canvas');
+    c.width = img.width * scale; c.height = img.height * scale;
+    const ctx = c.getContext('2d');
     ctx.filter = 'contrast(1.2) grayscale(1)';
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.8));
-
-    const { data: { text } } = await M._ocrWorker.recognize(blob);
-    // Post-process
-    let cleaned = text
-      .replace(/(\d)\s*x\s*(\d)/gi, '$1×$2')
-      .replace(/X(?=\d)/g, '×')
-      .replace(/(\d)十(\d)/g, '$1+$2')
-      .replace(/\b几\b/g, '?')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    M._addState.ocrText = cleaned;
-    M.$('add-problem-text').value = cleaned;
-    M._autoSuggestKP(cleaned);
-    M._addState._hasClassified = true;
-    M.updateTagsBar();
-
-  } catch(e) {
-    M.$('ocr-progress').textContent = '识别失败: ' + e.message;
-    M.showToast('OCR识别失败，请尝试手动输入', 'error');
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.8));
+    const { data: { text } } = await worker.recognize(blob);
+    const cleaned = text.replace(/(\d)\s*x\s*(\d)/gi, '$1×$2').replace(/X(?=\d)/g, '×').replace(/\s+/g, ' ').trim();
+    A.$('prob-text').value = cleaned;
+    A._kps = A.classify(cleaned);
+    A.updateTagsBar();
+    A.$('ocr-msg').textContent = '✅ 识别完成，文字和知识点已自动填入';
+    await worker.terminate();
+  } catch(e){
+    A.$('ocr-msg').textContent = '❌ 识别失败，请手动粘贴题目';
   }
-  M.$('btn-ocr').disabled = false;
+  A.$('btn-ocr').disabled = false;
+  A.$('btn-ocr').textContent = '🔍 识别文字';
 };
 
-// OCR now auto-fills problem text directly - confirmOCR kept for backward compat
-M.confirmOCR = () => { M.showToast('文字已自动填入，请核对后保存', 'success'); };
+A.onTextChange = function(){
+  const t = A.$('prob-text').value.trim();
+  if (t.length >= 5) A._kps = A.classify(t);
+  A.updateTagsBar();
+};
 
-M.autoClassify = () => {
-  const text = M.$('add-problem-text').value.trim();
-  if (text.length < 5) {
-    M.updateTagsBar();
-    M._addState._hasClassified = false;
-    M.updateTagsBar();
+A.updateTagsBar = function(){
+  const b = A.$('tags-bar');
+  if (A._kps.length > 0) b.innerHTML = '🏷️ <strong style="color:var(--blue)">自动识别：</strong>' + A._kps.map(k => A.kpName(k)).join(' · ');
+  else b.innerHTML = '<span style="color:var(--text3)">拍照或输入文字后自动识别知识点</span>';
+};
+
+A.save = async function(){
+  const text = A.$('prob-text').value.trim();
+  const ans = A.$('prob-ans').value.trim();
+  if (!text && !A._img) { A.toast('请拍照或输入题目', 'err'); return; }
+  if (!ans) { A.toast('请输入正确答案', 'err'); return; }
+  if (A._kps.length === 0 && text.length >= 5) A._kps = A.classify(text);
+  try {
+    await DB.addProblem({ problemText:text, yourAnswer:'', correctAnswer:ans, errorReason:'', knowledgePoints:A._kps, semester:1, difficulty:3, errorType:'unknown', hasImage:!!A._img, imageData:A._img, sourceFileType:A._img?'image':'manual' });
+    A.toast('✅ 已保存', 'ok');
+    A.$('prob-text').value = ''; A.$('prob-ans').value = '';
+    A._kps = []; A._img = null;
+    A.clearPhoto(); A.updateTagsBar();
+    A.$('save-msg').innerHTML = '<span style="color:var(--green)">✅ 已保存</span> — <a href="javascript:A.nav(\'library\')" style="color:var(--blue)">查看错题本</a>';
+  } catch(e){ A.toast('保存失败', 'err'); }
+};
+
+/* ============ BATCH IMPORT ============ */
+A._batch = [];
+A.splitBatch = function(){
+  const text = A.$('batch-text').value.trim();
+  if (!text) { A.toast('请粘贴错题', 'err'); return; }
+  let parts = text.split(/(?:^|\n)\s*\d+[\.\、\)）]\s*/m).filter(s => s.trim().length > 3);
+  if (parts.length < 2) parts = text.split(/\n\s*\n/).filter(s => s.trim().length > 3);
+  if (parts.length < 2) { A.toast('未识别到多道题', 'err'); return; }
+  A._batch = parts.map(p => ({ text: p.trim(), kps: A.classify(p.trim()), ans: '' }));
+  A.$('batch-out').innerHTML = A._batch.map((p, i) =>
+    '<div class="card" style="margin-bottom:6px"><strong>第'+(i+1)+'题</strong> ' +
+    (p.kps.length>0 ? p.kps.map(k => '<span class="tag">'+A.kpName(k)+'</span>').join('') : '<span style="color:var(--orange);font-size:11px">未识别</span>') +
+    '<div style="font-size:13px;margin:4px 0">'+A.esc(p.text)+'</div>' +
+    '<input type="text" placeholder="正确答案" id="ba-'+i+'" style="font-size:13px"></div>'
+  ).join('') + '<button class="primary block" style="margin-top:8px" onclick="A.saveBatch()">💾 保存全部 '+A._batch.length+' 道错题</button>';
+};
+
+A.saveBatch = async function(){
+  let n = 0;
+  for (let i = 0; i < A._batch.length; i++){
+    const ans = A.$('ba-' + i).value.trim();
+    if (!ans) continue;
+    await DB.addProblem({ problemText:A._batch[i].text, yourAnswer:'', correctAnswer:ans, errorReason:'', knowledgePoints:A._batch[i].kps, semester:1, difficulty:3, errorType:'unknown', hasImage:false, sourceFileType:'batch' });
+    n++;
+  }
+  A.toast('✅ 已保存 '+n+' 道', 'ok');
+  A._batch = []; A.$('batch-out').innerHTML = ''; A.$('batch-text').value = '';
+};
+
+/* ============ ANALYZE SCREEN ============ */
+A.renderAnalyze = async function(){
+  const problems = await DB.getAllProblems();
+  if (problems.length === 0){
+    A.$('hero').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text2)">还没有错题，去添加第一道吧</div>';
+    A.$('radar').innerHTML = A.$('topics').innerHTML = A.$('patterns').innerHTML = A.$('trend').innerHTML = '';
     return;
   }
-  M._autoSuggestKP(text);
-  M._addState._hasClassified = true;
-  M.updateTagsBar();
-  if (M._addState.knowledgePoints.length > 0) {
-    M.updateTagsBar();
-  } else {
-    M.updateTagsBar();
+  const mastery = {};
+  for (const p of problems) for (const kp of (p.knowledgePoints||[])){
+    if (!mastery[kp]) mastery[kp] = {total:0,errors:0};
+    mastery[kp].total++;
+    if (p.status !== 'mastered') mastery[kp].errors++;
   }
-};
+  const sorted = Object.entries(mastery).map(([k,v]) => ({key:k,name:A.kpName(k),total:v.total,errorRate:v.errors/v.total})).sort((a,b) => b.errorRate - a.errorRate);
 
-M._autoSuggestKP = (text) => {
-  const map = {
-    'composite_shape_area': [/组合图形|求阴影|阴影部分|阴影面积|半圆.*三角|拼接|圆.*方.*面积|方.*圆.*面积|外方内圆|外圆内方|花瓣|环形|圆环/],
-    'cone_volume': [/圆锥|锥.*体积|沙堆.*体积|粮仓.*锥|沙漏|漏斗/],
-    'cyl_volume': [/圆柱.*体积|圆柱.*容积|水桶.*装|柱子|管道.*体积|圆钢|钢管/],
-    'cyl_surface': [/表面积|侧面积|铁皮|围成.*圆柱|水桶.*铁皮|无盖.*圆柱|通风管|烟囱/],
-    'composite_solid_volume': [/组合体|粮仓.*圆柱.*圆锥|圆柱.*上面.*圆锥|组合.*体积/],
-    'distributive_property': [/简便.*算|简便计算|怎样.*简便|脱式.*简便|分配律|提取|乘法.*律|用.*方法.*计算|简算|能简算/],
-    'frac_mul_word': [/几分之几|一个数的.*分之|求.*分之.*是多少|一半.*的|的.*分之几/],
-    'frac_div_word': [/已知.*的.*分之|求.*这个数|单位.{0,2}1.{0,2}未知|一袋.*吃了.*还剩|一桶.*用了.*还剩/],
-    'frac_div_eng': [/工程|合作.*天|单独.*天|甲.*乙.*完成|工作效率|修路.*天/],
-    'prop_scale': [/比例尺|图上距离|实际距离|千米.*厘米|缩放|放大.*缩小|地图/],
-    'prop_direct': [/正比例|成正比例|y\/x|比值.*一定|单价.*一定|速度.*一定/],
-    'prop_inverse': [/反比例|成反比例|xy|乘积.*一定|反比/],
-    'pct_discount': [/打折|折扣|几折|原价|现价|促销|满.*减|折上折|八折|七折|六折|五折|九折/],
-    'pct_interest': [/利息|本金|利率|存.*年|定期|国债|理财.*收益|取回.*钱/],
-    'pct_tax_rate': [/税率|纳税|营业税|增值税|个人所得税|发票/],
-    'circle_area': [/圆的面积|圆面|半径.*求面积|直径.*求面积|周长.*求面积/],
-    'circle_pi': [/周长|一圈|围.*圆|绕.*圈|栅栏.*圆|花坛.*周长/],
-    'circle_ring': [/环形|圆环|环宽|外圆.*内圆|小路.*圆形|环形.*面积/],
-    'circle_sector': [/扇形|圆心角|扇.*面积|圆弧|钟面.*指针/],
-    'ratio_distribute': [/按.*分|分配.*比|配比|甲乙.*比|搅拌.*比|混凝土|药粉.*水/],
-    'ratio_simplify': [/化简比|求比值|最简单的整数比|化成.*比|:.*:/],
-    'negative_numbers': [/负数|零下|低于.*0|亏本|亏损|海平面|海拔.*以下|支出.*元/],
-    'frac_mul_rules': [/分数.*乘|乘以.*分数|约分.*再乘|分数.*乘法/],
-    'frac_div_rule': [/分数.*除|除以.*分数|倒数.*乘|÷.*分数|除.*几分之几/],
-    'pct_convert': [/百分数|百分之|小数.*百分|分数.*百分|互化|转化.*百分/],
-    'pie_chart': [/扇形统计图|饼图|占比|统计.*比例|百分比.*图|调查.*统计/],
-    'num_pattern_seq': [/规律|找规律|按规律|数列|第n项|第.*个.*数|观察.*算式/],
-    'pigeonhole_basic': [/至少|保证|抽屉|鸽巢|最坏.*情况|总有.*至少|保证.*同色/],
-    'unit_conversion': [/单位.*换算|千米.*米|平方米.*平方分米|升.*毫升|吨.*千克|小时.*分钟|厘米.*毫米|换算/],
-    'equation_method': [/方程|解方程|设.*x|列方程|未知数|解.*=.*x/],
-    'neg_numberline': [/数轴|数.*线|正数.*负数|原点|大于.*0|小于.*0|比较.*大小/],
-    'transform_thinking': [/转化|割补|分割|平移|旋转|等积|添补|辅助线/],
-  };
-  // Preserve manually selected tags
-  const manual = M._addState.knowledgePoints.filter(k => {
-    for (const [, patterns] of Object.entries(map)) {
-      if (patterns.some(p => p.test(text))) return false;
+  if (sorted.length > 0){
+    const w = sorted[0], w2 = sorted.length>1?sorted[1]:null;
+    let rc = '';
+    if (w.key.includes('composite')||w.key.includes('circle')) rc = '空间想象不足，不会将不规则图形转化为规则图形';
+    else if (w.key.includes('cone')) rc = '公式记忆不牢，经常忘记圆锥体积÷3';
+    else if (w.key.includes('distributive')) rc = '对分配律理解停留在记忆层面，不会灵活运用';
+    else if (w.key.includes('frac')) rc = '分数运算基础不扎实';
+    else rc = '基础知识掌握不牢固';
+    A.$('hero').innerHTML =
+      '<div style="font-weight:700;font-size:18px;margin-bottom:4px">🔴 最需要攻克：<span style="color:var(--red)">'+A.esc(w.name)+'</span></div>' +
+      '<div style="font-size:14px;color:var(--text2)">'+w.total+'道错题 · 错误率'+Math.round(w.errorRate*100)+'% · '+rc+'</div>' +
+      (w2?'<div style="font-size:13px;color:var(--text2);margin-top:2px">其次是「'+A.esc(w2.name)+'」——'+w2.total+'道错题，错误率'+Math.round(w2.errorRate*100)+'%</div>':'') +
+      '<button class="primary sm" style="margin-top:8px" onclick="A.nav(&apos;practice&apos;);A.setMode(&apos;solution&apos;)">🎯 针对性攻克 →</button>';
+  }
+
+  const top6 = sorted.slice(0,6);
+  if (top6.length >= 3){
+    const W=280,H=260,CX=W/2,CY=H/2,R=100,n=top6.length,step=2*Math.PI/n;
+    let svg = '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">';
+    for (const lv of [0.25,0.5,0.75,1]){
+      let pts = '';
+      for (let i=0;i<n;i++){ const a=-Math.PI/2+i*step; pts+=((CX+R*lv*Math.cos(a))).toFixed(1)+','+((CY+R*lv*Math.sin(a))).toFixed(1)+' '; }
+      svg += '<polygon points="'+pts+'" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>';
     }
-    return true; // keep if not auto-matched
-  });
-  M._addState.knowledgePoints = [...manual];
-  for (const [key, patterns] of Object.entries(map)) {
-    if (patterns.some(p => p.test(text))) {
-      if (!M._addState.knowledgePoints.includes(key)) M._addState.knowledgePoints.push(key);
-    }
-  }
-  M.renderTagPicker();
-  if (M._addState.knowledgePoints.length > 0) {
-    M.$('add-tag-suggest').textContent = '💡 已根据题目内容自动推荐 ' + M._addState.knowledgePoints.length + ' 个知识点标签，请确认';
-  }
-};
+    for (let i=0;i<n;i++){ const a=-Math.PI/2+i*step; svg+='<line x1="'+CX+'" y1="'+CY+'" x2="'+(CX+R*Math.cos(a)).toFixed(1)+'" y2="'+(CY+R*Math.sin(a)).toFixed(1)+'" stroke="rgba(0,0,0,0.06)"/>'; }
+    let pts = '';
+    for (let i=0;i<n;i++){ const a=-Math.PI/2+i*step; const v=Math.max(0.05,1-top6[i].errorRate); pts+=((CX+R*v*Math.cos(a))).toFixed(1)+','+((CY+R*v*Math.sin(a))).toFixed(1)+' '; }
+    svg += '<polygon points="'+pts+'" fill="rgba(0,113,227,0.12)" stroke="var(--blue)" stroke-width="2"/>';
+    for (let i=0;i<n;i++){ const a=-Math.PI/2+i*step; const v=Math.max(0.05,1-top6[i].errorRate); svg+='<circle cx="'+(CX+R*v*Math.cos(a)).toFixed(1)+'" cy="'+(CY+R*v*Math.sin(a)).toFixed(1)+'" r="4" fill="var(--blue)"/>'; }
+    for (let i=0;i<n;i++){ const a=-Math.PI/2+i*step; const lx=CX+(R+28)*Math.cos(a),ly=CY+(R+28)*Math.sin(a); const n2=top6[i].name.length>4?top6[i].name.substring(0,4)+'..':top6[i].name; svg+='<text x="'+lx+'" y="'+ly+'" text-anchor="middle" font-size="11" fill="var(--text2)">'+A.esc(n2)+'</text>'; }
+    svg += '</svg>';
+    A.$('radar').innerHTML = svg;
+  } else { A.$('radar').innerHTML = '<div style="color:var(--text3);padding:20px">需要至少3个知识点</div>'; }
 
-// Unified photo handler
-M.handlePhoto = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  M._addState.imageBlob = file;
-  M.$('add-photo-img').src = URL.createObjectURL(file);
-  M.$('add-photo-empty').style.display = 'none';
-  M.$('add-photo-preview').style.display = 'block';
-  M.$('btn-ocr').disabled = false;
-  M.$('btn-ocr').textContent = '🔍 识别文字';
-};
-
-M.clearPhoto = () => {
-  M._addState.imageBlob = null;
-  M._addState.ocrText = '';
-  M.$('add-photo-empty').style.display = 'block';
-  M.$('add-photo-preview').style.display = 'none';
-  M.$('ocr-progress').style.display = 'none';
-  M.$('btn-ocr').disabled = false;
-  M.$('btn-ocr').textContent = '🔍 识别文字';
-};
-
-M.toggleBatchImport = () => {
-  const el = M.$('add-batch');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-};
-
-M.onProblemTextChange = () => {
-  const text = M.$('add-problem-text').value.trim();
-  if (text.length >= 5) {
-    M._autoSuggestKP(text);
-    M._addState._hasClassified = true;
-    M.updateTagsBar();
-  } else {
-    M._addState._hasClassified = false;
-    M._addState.knowledgePoints = [];
-    M.updateTagsBar();
-  }
-};
-
-M.updateTagsBar = () => {
-  const kps = M._addState.knowledgePoints;
-  const bar = M.$('add-tags-bar');
-  if (!bar) return;
-  if (kps.length > 0) {
-    bar.innerHTML = '🏷️ <strong style="color:var(--blue)">已识别：</strong>' + kps.map(function(k){return M.getKPName(k);}).join(' · ') + ' <a href="javascript:M.showTagEditor()" style="font-size:11px;color:var(--text-tertiary)">修改</a>';
-  } else {
-    bar.innerHTML = '<span style="color:var(--text-tertiary)">输入文字或拍照后自动识别知识点</span> <a href="javascript:M.showTagEditor()" style="font-size:11px;color:var(--text-tertiary)">手动选</a>';
-  }
-};
-
-M.showTagEditor = () => {
-  M.$('add-tags-edit').style.display = 'block';
-  M.$('add-tags-bar').style.display = 'none';
-  M.renderTagPicker();
-};
-
-M.hideTagEditor = () => {
-  M.$('add-tags-edit').style.display = 'none';
-  M.$('add-tags-bar').style.display = 'block';
-  M.updateTagsBar();
-};
-
-// File upload merged into unified photo handler
-// --- Batch Import ---
-M._batchProblems = [];
-
-M.previewBatch = () => {
-  const text = M.$('batch-text').value.trim();
-  if (text.length < 10) { M.$('batch-preview').innerHTML = ''; return; }
-  const count = M._smartSplit(text).length;
-  M.$('batch-preview').innerHTML = '<div class="card" style="text-align:center;color:var(--blue)">📋 预计拆分为 <strong>' + count + '</strong> 道题目，点击下方按钮预览确认</div>';
-};
-
-M._smartSplit = (text) => {
-  // Split by common numbering patterns
-  // Pattern 1: "1. 2. 3." or "1、2、3、" or "1) 2) 3)"
-  // Pattern 2: "①②③④⑤"
-  // Pattern 3: double newlines
-  let parts = [];
-  // Try numbered split first
-  const numbered = text.split(/(?:^|\n)\s*(?:\d+[\.\、\)）]\s*)/gm).filter(s => s.trim().length > 3);
-  if (numbered.length >= 2) {
-    parts = numbered;
-  } else {
-    // Try circled numbers
-    const circled = text.split(/[①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳]/).filter(s => s.trim().length > 3);
-    if (circled.length >= 2) parts = circled;
-    else {
-      // Fallback: split by double newlines
-      parts = text.split(/\n\s*\n/).filter(s => s.trim().length > 3);
-    }
-  }
-  return parts.map(p => p.trim()).filter(p => p.length > 3);
-};
-
-M.splitBatch = () => {
-  const text = M.$('batch-text').value.trim();
-  if (!text) { M.showToast('请先粘贴错题文字', 'error'); return; }
-  const parts = M._smartSplit(text);
-  if (parts.length === 0) { M.showToast('未能识别题目分隔，请确保题目之间有编号或空行', 'error'); return; }
-
-  M._batchProblems = parts.map((text, i) => {
-    const kps = [];
-    // Auto-classify each problem
-    const map = M._autoSuggestKP_internal(text);
-    return { text, knowledgePoints: map, yourAnswer: '', correctAnswer: '', errorReason: '', difficulty: 3, errorType: 'unknown' };
-  });
-
-  M._renderBatchReview();
-};
-
-M._autoSuggestKP_internal = (text) => {
-  // Same logic as _autoSuggestKP but returns array instead of modifying state
-  const map = {
-    'composite_shape_area': [/组合图形|求阴影|阴影部分|阴影面积|半圆.*三角|拼接|圆.*方.*面积|方.*圆.*面积|外方内圆|外圆内方|花瓣|环形|圆环|求.*阴影/],
-    'cone_volume': [/圆锥|锥.*体积|沙堆.*体积|粮仓.*锥|沙漏|漏斗/],
-    'cyl_volume': [/圆柱.*体积|圆柱.*容积|水桶.*装|柱子|管道.*体积|圆钢|钢管/],
-    'cyl_surface': [/表面积|侧面积|铁皮|围成.*圆柱|水桶.*铁皮|无盖.*圆柱|通风管|烟囱/],
-    'composite_solid_volume': [/组合体|粮仓.*圆柱.*圆锥|圆柱.*上面.*圆锥|组合.*体积/],
-    'distributive_property': [/简便.*算|简便计算|怎样.*简便|脱式.*简便|分配律|提取|乘法.*律|用.*方法.*计算|简算|能简算/],
-    'frac_mul_word': [/几分之几|一个数的.*分之|求.*分之.*是多少|一半.*的|的.*分之几/],
-    'frac_div_word': [/已知.*的.*分之|求.*这个数|单位.{0,2}1.{0,2}未知|一袋.*吃了.*还剩|一桶.*用了.*还剩/],
-    'frac_div_eng': [/工程|合作.*天|单独.*天|甲.*乙.*完成|工作效率|修路.*天/],
-    'prop_scale': [/比例尺|图上距离|实际距离|千米.*厘米|缩放|放大.*缩小|地图/],
-    'pct_discount': [/打折|折扣|几折|原价|现价|促销|满.*减|折上折|八折|七折|六折|五折|九折/],
-    'pct_interest': [/利息|本金|利率|存.*年|定期|国债|理财.*收益|取回.*钱/],
-    'circle_area': [/圆的面积|圆面|半径.*求面积|直径.*求面积|周长.*求面积|圆.*面积/],
-    'circle_pi': [/周长|一圈|围.*圆|绕.*圈|栅栏.*圆|花坛.*周长/],
-    'circle_ring': [/环形|圆环|环宽|外圆.*内圆|小路.*圆形|环形.*面积/],
-    'circle_sector': [/扇形|圆心角|扇.*面积|圆弧|钟面.*指针/],
-    'ratio_distribute': [/按.*分|分配.*比|配比|甲乙.*比|搅拌.*比|混凝土|药粉.*水/],
-    'ratio_simplify': [/化简比|求比值|最简单的整数比|化成.*比|:.*:/],
-    'negative_numbers': [/负数|零下|低于.*0|亏本|亏损|海平面|海拔.*以下/],
-    'frac_mul_rules': [/分数.*乘|乘以.*分数|约分.*再乘|分数.*乘法/],
-    'frac_div_rule': [/分数.*除|除以.*分数|倒数.*乘|÷.*分数|除.*几分之几/],
-    'pct_convert': [/百分数|百分之|小数.*百分|分数.*百分|互化|转化.*百分/],
-    'pie_chart': [/扇形统计图|饼图|占比|统计.*比例|百分比.*图/],
-    'num_pattern_seq': [/规律|找规律|按规律|数列|第n项|第.*个.*数|观察.*算式/],
-    'pigeonhole_basic': [/至少|保证|抽屉|鸽巢|最坏.*情况|总有.*至少|保证.*同色/],
-    'unit_conversion': [/单位.*换算|千米.*米|平方米|升.*毫升|吨.*千克|小时.*分钟|厘米.*毫米|换算/],
-    'equation_method': [/方程|解方程|设.*x|列方程|未知数|解.*=.*x/],
-    'transform_thinking': [/转化|割补|分割|平移|旋转|等积|添补|辅助线/],
-  };
-  const kps = [];
-  for (const [key, patterns] of Object.entries(map)) {
-    if (patterns.some(p => p.test(text))) kps.push(key);
-  }
-  return kps;
-};
-
-M._renderBatchReview = () => {
-  const problems = M._batchProblems;
-  if (problems.length === 0) { M.$('batch-preview').innerHTML = ''; return; }
-
-  M.$('batch-preview').innerHTML = `
-    <div class="card" style="margin-bottom:8px">
-      <div style="font-weight:600;margin-bottom:4px">📋 已拆分为 <strong>${problems.length}</strong> 道题目</div>
-      <div style="font-size:12px;color:var(--text-secondary)">请逐题核对文字和知识点，填写正确答案后保存</div>
-    </div>
-    ${problems.map((p, i) => `
-      <div class="card" style="margin-bottom:8px">
-        <div style="font-weight:600;font-size:14px;margin-bottom:4px;display:flex;justify-content:space-between">
-          <span>📝 第${i+1}题</span>
-          <span style="font-size:11px;color:var(--text-tertiary)">${p.knowledgePoints.length > 0 ? p.knowledgePoints.map(k => M.getKPName(k)).join(' · ') : '未识别'}</span>
-        </div>
-        <textarea style="min-height:50px;font-size:13px;margin-bottom:4px" onchange="M._batchProblems[${i}].text=this.value">${M.escapeHTML(p.text)}</textarea>
-        <div style="display:flex;gap:6px">
-          <input type="text" placeholder="正确答案" style="flex:1;font-size:13px" onchange="M._batchProblems[${i}].correctAnswer=this.value" value="${M.escapeHTML(p.correctAnswer)}">
-          <input type="text" placeholder="错因(可选)" style="flex:1;font-size:13px" onchange="M._batchProblems[${i}].errorReason=this.value">
-        </div>
-        ${p.knowledgePoints.length === 0 ? '<div style="font-size:11px;color:var(--orange);margin-top:4px">⚠️ 未识别知识点，可在题目文字中补充关键词（如"圆柱的体积""分配律"）</div>' : ''}
-      </div>
-    `).join('')}
-    <button class="btn btn-primary btn-block btn-lg" onclick="M.saveBatch()">💾 一键保存全部 ${problems.length} 道错题</button>
-    <button class="btn btn-outline btn-block" style="margin-top:6px" onclick="M._batchProblems=[];M.$('batch-preview').innerHTML='';M.$('batch-text').value=''">🗑️ 清除重来</button>
-  `;
-};
-
-M.saveBatch = async () => {
-  const problems = M._batchProblems;
-  if (problems.length === 0) { M.showToast('没有题目可保存','error'); return; }
-  let saved = 0, skipped = 0;
-  for (const p of problems) {
-    if (!p.text || p.text.length < 3) { skipped++; continue; }
-    if (!p.correctAnswer) { skipped++; continue; }
-    try {
-      await DB.addProblem({
-        problemText: p.text,
-        yourAnswer: '',
-        correctAnswer: p.correctAnswer,
-        errorReason: p.errorReason || '',
-        knowledgePoints: p.knowledgePoints,
-        semester: parseInt(M.$('add-semester').value),
-        difficulty: p.difficulty || 3,
-        errorType: p.errorType || 'unknown',
-        hasImage: false,
-        sourceFileType: 'batch'
-      });
-      saved++;
-    } catch(e) { skipped++; }
-  }
-  M.showToast('✅ 已保存 ' + saved + ' 道错题' + (skipped > 0 ? '，跳过 ' + skipped + ' 道（缺少文字或答案）' : ''), 'success');
-  M._batchProblems = [];
-  M.$('batch-preview').innerHTML = '';
-  M.$('batch-text').value = '';
-  M.switchScreen('dashboard');
-};
-
-// --- OCR Multi-Problem (整卷识别) ---
-M._ocrWrongMap = {};
-
-M._renderOCRMultiReview = (parts) => {
-  M._ocrWrongMap = {};
-  // ocr result shown inline
-  M.$('ocr-result-box').innerHTML = `
-    <div class="card" style="background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.15);margin-bottom:8px">
-      <div style="font-weight:600;font-size:15px">📋 整卷识别 — 共 ${parts.length} 道题目</div>
-      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">逐题核对，<b>点击「❌ 做错了」</b>标记错题，填写正确答案后保存</div>
-    </div>
-    ${parts.map((text, i) => {
-      const kps = M._autoSuggestKP_internal(text);
-      return '<div class="card" style="margin-bottom:6px" id="ocr-card-' + i + '">' +
-        '<div style="font-weight:600;font-size:13px;margin-bottom:4px">📝 第' + (i+1) + '题' + (kps.length > 0 ? ' <span style="font-size:11px;color:var(--blue);font-weight:400">' + kps.map(function(k){return M.getKPName(k);}).join(' · ') + '</span>' : '') + '</div>' +
-        '<textarea style="min-height:36px;font-size:13px;margin-bottom:6px" onchange="M._updateOCRPart(' + i + ',\'text\',this.value)">' + M.escapeHTML(text) + '</textarea>' +
-        '<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">' +
-          '<span class="tag-chip" id="ocr-btn-right-' + i + '" style="cursor:pointer" onclick="M._markOCRProblem(' + i + ',false)">✅ 做对了</span>' +
-          '<span class="tag-chip" id="ocr-btn-wrong-' + i + '" style="cursor:pointer" onclick="M._markOCRProblem(' + i + ',true)">❌ 做错了</span>' +
-        '</div>' +
-        '<div id="ocr-wrong-fields-' + i + '" style="display:none">' +
-          '<div style="display:flex;gap:4px"><input type="text" placeholder="我的答案(错的)" style="flex:1;font-size:12px" id="ocr-wrong-ans-' + i + '"><input type="text" placeholder="正确答案" style="flex:1;font-size:12px" id="ocr-correct-ans-' + i + '"></div>' +
-          '<input type="text" placeholder="错因(可选)" style="width:100%;font-size:12px;margin-top:4px" id="ocr-reason-' + i + '">' +
-        '</div>' +
-      '</div>';
-    }).join('')}
-    <div style="margin:12px 0;font-size:14px;font-weight:600" id="ocr-wrong-count">👆 请逐题点击「❌ 做错了」标记错题</div>
-    <button class="btn btn-primary btn-block btn-lg" onclick="M._saveOCRWrongProblems()">💾 保存所有错题</button>
-    <button class="btn btn-outline btn-block btn-sm" style="margin-top:6px" onclick="M.retakePhoto()">↺ 重拍</button>
-  `;
-};
-
-M._markOCRProblem = (i, isWrong) => {
-  if (!M._ocrWrongMap[i]) M._ocrWrongMap[i] = {};
-  M._ocrWrongMap[i].isWrong = isWrong;
-  const btnR = M.$('ocr-btn-right-' + i);
-  const btnW = M.$('ocr-btn-wrong-' + i);
-  const fields = M.$('ocr-wrong-fields-' + i);
-  const card = M.$('ocr-card-' + i);
-  if (!btnR || !btnW || !fields || !card) return;
-  if (isWrong) {
-    btnR.classList.remove('selected'); btnR.style.background=''; btnR.style.color=''; btnR.style.borderColor='';
-    btnW.classList.add('selected'); btnW.style.background='var(--red-bg)'; btnW.style.color='var(--red)'; btnW.style.borderColor='var(--red)';
-    fields.style.display = 'block'; card.style.borderLeft = '3px solid var(--red)';
-  } else {
-    btnW.classList.remove('selected'); btnW.style.background=''; btnW.style.color=''; btnW.style.borderColor='';
-    btnR.classList.add('selected'); btnR.style.background='var(--green-bg)'; btnR.style.color='var(--green)'; btnR.style.borderColor='var(--green)';
-    fields.style.display = 'none'; card.style.borderLeft = '3px solid var(--green)';
-  }
-  const cnt = Object.values(M._ocrWrongMap).filter(function(v){return v.isWrong;}).length;
-  var cntEl = M.$('ocr-wrong-count');
-  if (cntEl) cntEl.innerHTML = cnt > 0 ? '🔴 已标记 <strong>' + cnt + '</strong> 道错题' : '👆 请逐题点击「❌ 做错了」标记错题';
-};
-
-M._updateOCRPart = (i, field, value) => {
-  if (!M._ocrWrongMap[i]) M._ocrWrongMap[i] = {};
-  M._ocrWrongMap[i][field] = value;
-};
-
-M._saveOCRWrongProblems = async () => {
-  const parts = M._addState._ocrParts || [];
-  const wrongList = [];
-  for (let i = 0; i < parts.length; i++) {
-    if (M._ocrWrongMap[i] && M._ocrWrongMap[i].isWrong) {
-      var wa = M.$('ocr-wrong-ans-' + i); var ca = M.$('ocr-correct-ans-' + i); var re = M.$('ocr-reason-' + i);
-      var wrongAns = wa ? wa.value.trim() : ''; var correctAns = ca ? ca.value.trim() : ''; var reason = re ? re.value.trim() : '';
-      var text = M._ocrWrongMap[i].text || parts[i];
-      if (correctAns) wrongList.push({ text: text, wrongAnswer: wrongAns, correctAnswer: correctAns, errorReason: reason, knowledgePoints: M._autoSuggestKP_internal(text) });
-    }
-  }
-  if (wrongList.length === 0) { M.showToast('请先标记错题并填写正确答案', 'error'); return; }
-  var saved = 0;
-  for (var w of wrongList) {
-    try {
-      await DB.addProblem({ problemText: w.text, yourAnswer: w.wrongAnswer, correctAnswer: w.correctAnswer, errorReason: w.errorReason, knowledgePoints: w.knowledgePoints, semester: parseInt(M.$('add-semester').value), difficulty: 3, errorType: 'unknown', hasImage: false, sourceFileType: 'ocr_paper' });
-      saved++;
-    } catch(e) {}
-  }
-  M.showToast('✅ 已保存 ' + saved + ' 道错题', 'success');
-  M._ocrWrongMap = {}; M._addState._ocrParts = null; M._addState._ocrIsMulti = false;
-  M.retakePhoto();
-  M.switchScreen('dashboard');
-};
-
-// Difficulty and error type selectors removed — auto-handled by classification engine
-
-// --- Image Upload ---
-M.handleImageUpload = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  // Compress
-  const reader = new FileReader();
-  reader.onload = async (ev) => {
-    const img = await createImageBitmap(await fetch(ev.target.result).then(r=>r.blob()));
-    const scale = Math.min(1, 800 / Math.max(img.width, img.height));
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width * scale;
-    canvas.height = img.height * scale;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.7));
-    M._addState.imageBlob = blob;
-    // Thumbnail
-    const thumbCanvas = document.createElement('canvas');
-    const thumbScale = Math.min(1, 200 / Math.max(img.width, img.height));
-    thumbCanvas.width = img.width * thumbScale;
-    thumbCanvas.height = img.height * thumbScale;
-    const thumbCtx = thumbCanvas.getContext('2d');
-    thumbCtx.drawImage(img, 0, 0, thumbCanvas.width, thumbCanvas.height);
-    M._addState.imageThumb = await new Promise(r => thumbCanvas.toBlob(r, 'image/jpeg', 0.6));
-    // Preview
-    const url = URL.createObjectURL(blob);
-    M.$('add-image-preview').src = url;
-    M.$('add-image-preview').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-};
-
-// --- Save Problem ---
-M.saveProblem = async () => {
-  const problemText = M.$('add-problem-text').value.trim();
-  const correctAnswer = M.$('add-correct-answer').value.trim();
-  const hasImage = !!M._addState.imageBlob;
-  if (!problemText && !hasImage) { M.showToast('请输入题目或拍照', 'error'); return; }
-  if (!correctAnswer) { M.showToast('请输入正确答案', 'error'); return; }
-  // Auto-classify
-  if (M._addState.knowledgePoints.length === 0 && problemText.length >= 5) {
-    M._autoSuggestKP(problemText);
-  }
-
-  var data = {
-    problemText: problemText,
-    yourAnswer: M.$('add-your-answer').value.trim(),
-    correctAnswer: correctAnswer,
-    errorReason: '',
-    knowledgePoints: M._addState.knowledgePoints,
-    semester: parseInt(M.$('add-semester').value) || 1,
-    difficulty: 3,
-    errorType: 'unknown',
-    hasImage: !!M._addState.imageBlob,
-    imageData: M._addState.imageBlob,
-    imageThumbnail: null,
-    sourceFileName: '',
-    sourceFileType: hasImage ? 'image' : 'manual'
-  };
-
-  try {
-    var id = await DB.addProblem(data);
-    M.showToast('✅ 已保存', 'success');
-
-    // Reset form
-    M.$('add-problem-text').value = '';
-    M.$('add-your-answer').value = '';
-    M.$('add-correct-answer').value = '';
-    M._addState.knowledgePoints = [];
-    M._addState.imageBlob = null;
-    M._addState._hasClassified = false;
-    M.clearPhoto();
-    M.updateTagsBar();
-    M.$('add-tags-edit').style.display = 'none';
-    M.$('add-tags-bar').style.display = 'block';
-
-    M.$('add-save-msg').innerHTML = '<span style="color:var(--green)">✅ 已保存</span> — <a href="javascript:M.switchScreen(\"dashboard\")">回首页</a> | <a href="javascript:M.switchScreen(\"library\")">错题本</a>';
-  } catch(e) {
-    M.showToast('保存失败，请重试', 'error');
-    console.error('Save error:', e);
-  }
-};
-
-// --- Library ---
-M.renderLibrary = async () => {
-  let problems = await DB.getAllProblems();
-  // Status filter
-  if (M._libFilter === 'active') problems = problems.filter(p => p.status !== 'mastered');
-  else if (M._libFilter === 'mastered') problems = problems.filter(p => p.status === 'mastered');
-  // KP filter
-  if (M._libKpFilter) problems = problems.filter(p => (p.knowledgePoints||[]).includes(M._libKpFilter));
-  // Search
-  const search = M.$('lib-search').value.trim().toLowerCase();
-  if (search) problems = problems.filter(p => p.problemText && p.problemText.toLowerCase().includes(search));
-  // Sort by date desc
-  problems.sort((a,b) => b.createdAt - a.createdAt);
-
-  // Render KP filter chips
-  const allKPs = {};
-  for (const p of await DB.getAllProblems()) {
-    for (const kp of (p.knowledgePoints||[])) {
-      allKPs[kp] = (allKPs[kp]||0) + 1;
-    }
-  }
-  M.$('lib-filters').innerHTML = Object.entries(allKPs).sort((a,b) => b[1]-a[1]).slice(0,8).map(([k,v]) =>
-    `<span class="tag-chip${M._libKpFilter===k?' selected':''}" onclick="M.setLibKPFilter('${k}')">${M.getKPName(k)} (${v})</span>`
+  A.$('topics').innerHTML = sorted.slice(0,8).map((m,i) =>
+    '<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">' +
+    '<span>'+(i<3?'🔴':i<6?'🟠':'🟢')+' '+A.esc(m.name)+'</span>' +
+    '<span style="color:'+(m.errorRate>=0.5?'var(--red)':m.errorRate>=0.3?'var(--orange)':'var(--green)')+'">'+Math.round(m.errorRate*100)+'%</span></div>' +
+    '<div class="bar"><div class="bar-fill '+(m.errorRate>=0.5?'r':m.errorRate>=0.3?'o':'g')+'" style="width:'+Math.max(5,m.errorRate*100)+'%"></div></div></div>'
   ).join('');
 
-  if (problems.length === 0) {
-    M.$('lib-problems').innerHTML = '';
-    M.$('lib-empty').style.display = 'block';
-  } else {
-    M.$('lib-empty').style.display = 'none';
-    M.$('lib-problems').innerHTML = problems.map(p => `
-      <div class="card" style="margin-bottom:8px;cursor:pointer" onclick="M.viewProblem(${p.id})">
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          ${p.imageThumbnail ? `<img src="${URL.createObjectURL(p.imageThumbnail)}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0">` : ''}
-          <div style="flex:1;min-width:0">
-            <div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px">${M.escapeHTML(p.problemText||'(无题目文字)')}</div>
-            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-              ${(p.knowledgePoints||[]).slice(0,3).map(k => `<span class="badge badge-blue">${M.getKPName(k)}</span>`).join('')}
-              <span class="badge ${p.status==='mastered'?'badge-green':'badge-orange'}">${p.status==='mastered'?'✓已掌握':'待复习'}</span>
-              ${p.difficulty ? `<span class="badge badge-gray">${'⭐'.repeat(p.difficulty)}</span>` : ''}
-              <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto">${new Date(p.createdAt).toLocaleDateString('zh-CN')}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-};
+  const pats = [];
+  const coneP = problems.filter(p => (p.knowledgePoints||[]).includes('cone_volume') && p.status !== 'mastered');
+  if (coneP.length>=2) pats.push({name:'圆锥体积忘乘1/3',count:coneP.length,detail:'写V锥前先在草稿纸上写"1/3×"',misconception:'未建立圆柱与圆锥3倍关系的空间直觉'});
+  const distP = problems.filter(p => (p.knowledgePoints||[]).includes('distributive_property') && p.status !== 'mastered');
+  if (distP.length>=2) pats.push({name:'分配律使用不当',count:distP.length,detail:'括号里每一项都要乘，逐项检查',misconception:'把分配律和结合律混淆'});
+  const compP = problems.filter(p => (p.knowledgePoints||[]).includes('composite_shape_area') && p.status !== 'mastered');
+  if (compP.length>=2) pats.push({name:'组合图形分割策略错误',count:compP.length,detail:'先问：能切成几个规则图形？画辅助线',misconception:'转化思想未形成——看到不规则图形不知如何下手'});
+  A.$('patterns').innerHTML = pats.length>0 ? pats.map(pp =>
+    '<div class="card" style="border-left:3px solid var(--red);margin-bottom:6px"><div style="font-weight:600">⚠️ '+A.esc(pp.name)+' <span class="tag red">出现'+pp.count+'次</span></div>' +
+    '<div style="font-size:13px;color:var(--text2);margin-top:4px">💡 '+A.esc(pp.detail)+'</div>' +
+    '<div style="font-size:12px;color:var(--orange);margin-top:2px">🎓 深层原因：'+A.esc(pp.misconception)+'</div></div>'
+  ).join('') : '<div style="color:var(--text3);text-align:center;padding:12px">数据积累中，继续添加错题后自动分析</div>';
 
-M.setLibFilter = (status) => {
-  M._libFilter = status;
-  M.$('lib-status-filter').querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.status === status));
-  M.renderLibrary();
-};
-
-M.setLibKPFilter = (kp) => {
-  M._libKpFilter = M._libKpFilter === kp ? null : kp;
-  M.renderLibrary();
-};
-
-// --- Problem Detail ---
-M.viewProblem = async (id) => {
-  const p = await DB.getProblem(id);
-  if (!p) { M.showToast('找不到该错题','error'); return; }
-  M.switchScreen('detail');
-  M.$('detail-content').innerHTML = `
-    <div class="card" style="margin-bottom:12px">
-      <div style="font-weight:600;font-size:17px;margin-bottom:8px">📝 题目</div>
-      <div style="font-size:15px;line-height:1.6;white-space:pre-wrap">${M.escapeHTML(p.problemText||'(无题目文字)')}</div>
-      ${p.hasImage && p.imageData ? `<img src="${URL.createObjectURL(p.imageData)}" style="max-height:300px;margin-top:12px;border-radius:var(--radius-sm)">` : ''}
-    </div>
-    <div class="card" style="margin-bottom:12px">
-      <div style="display:flex;gap:16px">
-        <div style="flex:1"><span style="font-size:12px;color:var(--text-tertiary)">我的答案（错）</span><div style="font-weight:500;color:var(--red)">${M.escapeHTML(p.yourAnswer||'-')}</div></div>
-        <div style="flex:1"><span style="font-size:12px;color:var(--text-tertiary)">正确答案</span><div style="font-weight:500;color:var(--green)">${M.escapeHTML(p.correctAnswer||'-')}</div></div>
-      </div>
-      ${p.errorReason ? `<div style="margin-top:8px"><span style="font-size:12px;color:var(--text-tertiary)">反思</span><div>${M.escapeHTML(p.errorReason)}</div></div>` : ''}
-    </div>
-    <div class="card" style="margin-bottom:12px">
-      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
-        ${(p.knowledgePoints||[]).map(k => `<span class="badge badge-blue">${M.getKPName(k)}</span>`).join('')}
-        ${p.errorType ? `<span class="badge badge-orange">${p.errorType==='calculation'?'计算错误':p.errorType==='concept'?'概念不清':p.errorType==='careless'?'粗心大意':p.errorType==='application'?'不会应用':'其他'}</span>` : ''}
-        <span class="badge badge-gray">${p.semester===1?'上册':'下册'}</span>
-        <span class="badge ${p.status==='mastered'?'badge-green':'badge-orange'}">${p.status==='mastered'?'已掌握':'待复习'}</span>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      ${p.status !== 'mastered'
-        ? `<button class="btn btn-green btn-block" style="background:var(--green);color:#fff" onclick="M.markMastered(${p.id})">✅ 标记为已掌握</button>`
-        : `<button class="btn btn-outline btn-block" onclick="M.markReviewing(${p.id})">🔄 重新开始复习</button>`
-      }
-      <button class="btn btn-primary btn-block" onclick="M.practiceSimilar(${p.id})">🎯 练习同类题</button>
-      <button class="btn btn-outline btn-block" onclick="M.deleteProblemConfirm(${p.id})">🗑️ 删除</button>
-    </div>
-  `;
-};
-
-M.markMastered = async (id) => {
-  await DB.updateProblem(id, { status:'mastered', masteredAt:Date.now() });
-  M.showToast('已标记为掌握！👍', 'success');
-  M.viewProblem(id);
-};
-
-M.markReviewing = async (id) => {
-  await DB.updateProblem(id, { status:'active' });
-  M.showToast('已恢复到待复习', 'success');
-  M.viewProblem(id);
-};
-
-M.deleteProblemConfirm = (id) => {
-  M.confirmDialog('删除错题', '删除后不可恢复，确认删除？', async () => {
-    await DB.deleteProblem(id);
-    M.showToast('已删除');
-    M.switchScreen('library');
-  });
-};
-
-M.practiceSimilar = async (id) => {
-  const p = await DB.getProblem(id);
-  if (!p || !p.knowledgePoints || !p.knowledgePoints.length) {
-    M.showToast('该错题没有知识点标签，无法推荐同类题','error');
-    return;
-  }
-  M.switchScreen('practice');
-  M._practiceState.targetKPs = p.knowledgePoints;
-  M.startPractice('targeted');
-};
-
-// --- Analysis ---
-M.renderAnalysis = async () => {
-  const rec = await M.analysis.getRecommendation();
-  const mastery = await M.analysis.computeMastery();
-  const patterns = await M.analysis.detectErrorPatternsDeep();
-  const repeats = await M.analysis.detectRepeats();
   const sessions = await DB.getAllSessions();
-
-  // Radar chart (top 6 knowledge points)
-  M._renderRadarChart(mastery.slice(0, 6));
-
-  // Heatmap with priority badges
-  M.$('analysis-heatmap').innerHTML = mastery.length > 0 ? mastery.slice(0,10).map((m, i) => `
-    <div style="margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">
-        <span>${i < 3 ? '🔴' : i < 6 ? '🟠' : '🟢'} ${M.escapeHTML(m.name)}</span>
-        <span style="color:${m.errorRate>=0.5?'var(--red)':m.errorRate>=0.3?'var(--orange)':'var(--green)'}">${Math.round(m.errorRate*100)}% · ${m.totalProblems}题</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill ${m.errorRate>=0.5?'red':m.errorRate>=0.3?'orange':'green'}" style="width:${Math.max(5, m.errorRate*100)}%"></div></div>
-    </div>
-  `).join('') : '<div class="empty-state"><div>还没有足够的数据</div></div>';
-
-  // Patterns - enhanced with misconception analysis
-  M.$('analysis-patterns').innerHTML = patterns.length > 0 ? patterns.map(pp => `
-    <div class="card" style="margin-bottom:8px;border-left:3px solid var(--red)">
-      <div style="font-weight:600;display:flex;justify-content:space-between">
-        <span>⚠️ ${M.escapeHTML(pp.name)}</span>
-        <span class="badge badge-red">出现${pp.count}次</span>
-      </div>
-      <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">💡 ${M.escapeHTML(pp.suggestion)}</div>
-      ${pp.misconception ? '<div style="font-size:11px;color:var(--orange);margin-top:2px">🎓 深层原因：' + M.escapeHTML(pp.misconception) + '</div>' : ''}
-    </div>
-  `).join('') : '<div style="color:var(--text-tertiary);text-align:center;padding:12px">未检测到明显错因模式，继续积累错题后自动分析</div>';
-
-  // Repeated mistakes warning (对标 Foliage)
-  if (repeats.length > 0) {
-    M.$('analysis-patterns').innerHTML += '<div style="margin-top:12px;font-weight:600;font-size:14px;margin-bottom:6px">🔄 重复错题警告 <span style="font-size:11px;color:var(--text-tertiary);font-weight:400">对标 Foliage</span></div>' +
-      repeats.map(r => `<div class="card" style="margin-bottom:6px;border-left:3px solid var(--orange);font-size:13px">
-        <strong>${M.escapeHTML(r.name)}</strong> — 已重复<strong>${r.count}</strong>次
-        <span style="color:var(--text-secondary)">（${M.escapeHTML(r.detail)}）</span>
-        <button class="btn btn-primary btn-sm" style="margin-left:8px" onclick="M.focusPracticeOn('${r.key}')">重点攻克 →</button>
-      </div>`).join('');
-  }
-
-  // Trend
-  const recentSessions = [...sessions].sort((a,b) => b.createdAt - a.createdAt).slice(0,8).reverse();
-  M.$('analysis-trend').innerHTML = recentSessions.length > 0 ? recentSessions.map(s => {
-    const rate = s.totalQuestions > 0 ? Math.round(s.correctCount/s.totalQuestions*100) : 0;
-    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:13px">
-      <span style="min-width:80px;color:var(--text-tertiary)">${new Date(s.createdAt).toLocaleDateString('zh-CN')}</span>
-      <div class="progress-bar" style="flex:1"><div class="progress-fill ${rate>=80?'green':rate>=60?'blue':'orange'}" style="width:${rate}%"></div></div>
-      <span style="min-width:36px;text-align:right">${rate}%</span>
-    </div>`;
-  }).join('') : '<div style="color:var(--text-tertiary);text-align:center;padding:12px">还没有练习记录</div>';
-
-  // Smart recommendation + 一键组卷
-  const weakKPs = mastery.filter(m => m.needsAttention).map(m => m.key);
-  M.$('analysis-recommend').innerHTML = `
-    <p style="margin-bottom:6px">🎯 <strong>最需攻克：</strong>${rec.weakestTopics.length > 0 ? rec.weakestTopics.map(t => M.escapeHTML(t.name)).join('、') : '暂无'}</p>
-    ${patterns.length > 0 ? '<p style="margin-bottom:6px;font-size:13px">🔍 <strong>核心错因：</strong>' + M.escapeHTML(patterns[0].name) + '</p>' : ''}
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-primary" onclick="M.switchScreen('practice')">🎯 针对性练习</button>
-      ${weakKPs.length > 0 ? '<button class="btn btn-outline" onclick="M.autoGeneratePaper()">📋 一键生成巩固卷</button>' : ''}
-    </div>
-  `;
+  const recent = [...sessions].sort((a,b) => b.createdAt - a.createdAt).slice(0,6).reverse();
+  A.$('trend').innerHTML = recent.length>0 ? recent.map(s => {
+    const rate = s.totalQuestions>0 ? Math.round(s.correctCount/s.totalQuestions*100) : 0;
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:13px">' +
+      '<span style="min-width:70px;color:var(--text3);font-size:12px">'+new Date(s.createdAt).toLocaleDateString('zh-CN')+'</span>' +
+      '<div class="bar" style="flex:1"><div class="bar-fill '+(rate>=80?'g':rate>=60?'b':'o')+'" style="width:'+(rate||5)+'%"></div></div>' +
+      '<span style="min-width:32px;text-align:right;font-weight:600">'+rate+'%</span></div>';
+  }).join('') : '<div style="color:var(--text3);text-align:center;padding:12px">完成练习后显示进步趋势</div>';
 };
 
-// --- Radar Chart (SVG) ---
-M._renderRadarChart = (items) => {
-  if (items.length < 3) { M.$('analysis-radar').innerHTML = '<div style="color:var(--text-tertiary);padding:20px">需要至少3个知识点才有雷达图</div>'; return; }
-  const W = 300, H = 280, CX = W/2, CY = H/2, R = 110;
-  const n = items.length;
-  const angleStep = (2 * Math.PI) / n;
-  const levels = [0.25, 0.5, 0.75, 1.0]; // mastery ratio (inverted errorRate)
-  let svg = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">';
+/* ============ PRACTICE SCREEN ============ */
+A.setMode = function(m){ A._mode = (A._mode === m) ? null : m; A.renderPractice(); };
 
-  // Background grid
-  for (const lv of levels) {
-    const r = R * lv;
-    let pts = '';
-    for (let i = 0; i < n; i++) {
-      const a = -Math.PI/2 + i * angleStep;
-      pts += (CX + r * Math.cos(a)) + ',' + (CY + r * Math.sin(a)) + ' ';
-    }
-    svg += '<polygon points="' + pts + '" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>';
-  }
-
-  // Axis lines
-  for (let i = 0; i < n; i++) {
-    const a = -Math.PI/2 + i * angleStep;
-    svg += '<line x1="' + CX + '" y1="' + CY + '" x2="' + (CX + R * Math.cos(a)) + '" y2="' + (CY + R * Math.sin(a)) + '" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>';
-  }
-
-  // Data polygon (mastery = 1 - errorRate)
-  let dataPts = '';
-  for (let i = 0; i < n; i++) {
-    const a = -Math.PI/2 + i * angleStep;
-    const mastery = Math.max(0.05, 1 - items[i].errorRate);
-    const r = R * mastery;
-    dataPts += (CX + r * Math.cos(a)) + ',' + (CY + r * Math.sin(a)) + ' ';
-  }
-  svg += '<polygon points="' + dataPts + '" fill="rgba(0,113,227,0.15)" stroke="var(--blue)" stroke-width="2"/>';
-
-  // Data points
-  for (let i = 0; i < n; i++) {
-    const a = -Math.PI/2 + i * angleStep;
-    const mastery = Math.max(0.05, 1 - items[i].errorRate);
-    const r = R * mastery;
-    svg += '<circle cx="' + (CX + r * Math.cos(a)) + '" cy="' + (CY + r * Math.sin(a)) + '" r="4" fill="var(--blue)"/>';
-  }
-
-  // Labels
-  for (let i = 0; i < n; i++) {
-    const a = -Math.PI/2 + i * angleStep;
-    const lr = R + 30;
-    const x = CX + lr * Math.cos(a), y = CY + lr * Math.sin(a);
-    const name = items[i].name.length > 5 ? items[i].name.substring(0,5)+'..' : items[i].name;
-    svg += '<text x="' + x + '" y="' + y + '" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="var(--text-secondary)" font-family="sans-serif">' + M.escapeHTML(name) + '</text>';
-    // Mastery %
-    const mr = R * Math.max(0.05, 1 - items[i].errorRate) + 14;
-    const mx = CX + mr * Math.cos(a), my = CY + mr * Math.sin(a);
-    svg += '<text x="' + mx + '" y="' + my + '" text-anchor="middle" font-size="10" fill="var(--blue)" font-weight="600">' + Math.round((1-items[i].errorRate)*100) + '%</text>';
-  }
-
-  svg += '</svg>';
-  M.$('analysis-radar').innerHTML = svg;
-};
-
-// Auto paper generation (对标试卷宝)
-M.autoGeneratePaper = async () => {
-  const mastery = await M.analysis.computeMastery();
-  const weak = mastery.filter(m => m.needsAttention);
-  if (weak.length === 0) { M.showToast('暂无薄弱知识点，继续加油！', 'success'); return; }
-  const kps = weak.slice(0, 3).map(w => w.key);
-  const count = Math.min(10, weak.length * 3);
-  M.switchScreen('practice');
-  M._practiceState.targetKPs = kps;
-  M._practiceState.count = count;
-  M._practiceState.mode = 'targeted';
-  M.renderPracticeModes();
-  M.renderPracticeConfig();
-  M.startPractice('targeted');
-};
-
-// --- Practice ---
-M.renderPracticeModes = () => {
-  M.$('practice-modes').innerHTML = '<div class="practice-mode-grid">' + M.practice.MODES.map(m => `
-    <div class="practice-mode-card${M._practiceState.mode===m.key?' selected':''}" onclick="M.selectPracticeMode('${m.key}')">
-      <div class="mode-icon">${m.icon}</div>
-      <div class="mode-info">
-        <div class="mode-name">${m.name}</div>
-        <div class="mode-desc">${m.desc}</div>
-      </div>
-    </div>
-  `).join('') + '</div>';
-  if (M._practiceState.mode) {
-    M.renderPracticeConfig();
-  } else {
-    M.$('practice-config').innerHTML = '<div class="empty-state"><div>👆 请先选择一种练习模式</div></div>';
-    M.$('practice-questions').innerHTML = '';
-    M.$('practice-actions').innerHTML = '';
-    M.$('practice-results').innerHTML = '';
-  }
-};
-
-M.selectPracticeMode = (mode) => {
-  M._practiceState.mode = mode;
-  M._practiceState.questions = [];
-  M._practiceState.answers = {};
-  M._practiceState.startTime = 0;
-  M.renderPracticeModes();
-};
-
-M.renderPracticeConfig = () => {
-  const mode = M._practiceState.mode;
-  M.$('practice-config').innerHTML = `
-    <div class="card">
-      <div style="font-weight:600;margin-bottom:8px">${M.practice.MODES.find(m=>m.key===mode)?.icon} ${M.practice.MODES.find(m=>m.key===mode)?.name} — 设置</div>
-      <div class="form-group"><label class="form-label">目标知识点</label>
-        <div class="tag-grid" id="practice-kp-selector">
-          ${Object.entries(M._kpFlat).slice(0,20).map(([k,v]) =>
-            `<span class="tag-chip${(M._practiceState.targetKPs||[]).includes(k)?' selected':''}" data-kp="${k}" onclick="M.togglePracticeKP('${k}',this)">${v.name}</span>`
-          ).join('')}
-        </div>
-      </div>
-      <div class="form-group"><label class="form-label">题目数量</label>
-        <div style="display:flex;gap:6px">
-          ${[3,5,10,15,20].map(n => `<span class="tag-chip${M._practiceState.count===n?' selected':''}" onclick="M.setPracticeCount(${n})">${n}题</span>`).join('')}
-        </div>
-      </div>
-      <button class="btn btn-primary btn-block" onclick="M.startPractice()">🚀 开始练习</button>
-    </div>
-  `;
-  if (!M._practiceState.count) M._practiceState.count = 5;
-  if (!M._practiceState.targetKPs) M._practiceState.targetKPs = [];
-};
-
-M.togglePracticeKP = (kp, el) => {
-  if (!M._practiceState.targetKPs) M._practiceState.targetKPs = [];
-  if (M._practiceState.targetKPs.includes(kp)) {
-    M._practiceState.targetKPs = M._practiceState.targetKPs.filter(k => k!==kp);
-    el.classList.remove('selected');
-  } else {
-    M._practiceState.targetKPs.push(kp);
-    el.classList.add('selected');
-  }
-};
-
-M.setPracticeCount = (n) => {
-  M._practiceState.count = n;
-  M.renderPracticeConfig();
-};
-
-M.focusPracticeOn = (kp) => {
-  M._practiceState.targetKPs = [kp];
-  M._practiceState.mode = 'targeted';
-  M.renderPracticeModes();
-  M.renderPracticeConfig();
-};
-
-M.startPractice = async (forceMode) => {
-  if (forceMode) M._practiceState.mode = forceMode;
-  const mode = M._practiceState.mode;
-  if (!mode) { M.showToast('请先选择练习模式','error'); return; }
-  const kps = M._practiceState.targetKPs || [];
-  const count = M._practiceState.count || 5;
-
-  const questions = await M.practice.generate(mode, kps, count);
-  if (questions.length === 0) { M.showToast('题库中没有匹配的题目，请扩充知识点范围','error'); return; }
-
-  M._practiceState.questions = questions;
-  M._practiceState.answers = {};
-  M._practiceState.startTime = Date.now();
-  M.renderPracticeQuestions();
-};
-
-M.renderPracticeQuestions = () => {
-  const qs = M._practiceState.questions;
-  M.$('practice-config').innerHTML = '';
-  M.$('practice-questions').innerHTML = `
-    <div class="card" style="margin-bottom:12px">
-      <div style="font-weight:600;margin-bottom:8px">📝 练习中 (共${qs.length}题)</div>
-      <div class="progress-bar" style="margin-bottom:16px">
-        <div class="progress-fill blue" style="width:${Object.keys(M._practiceState.answers).length/qs.length*100}%"></div>
-      </div>
-      ${qs.map((q,i) => {
-        const answered = M._practiceState.answers[i] !== undefined;
-        const isCorrect = M._practiceState.answers[i];
-        return `<div class="card" style="margin-bottom:8px;border-left:3px solid ${answered?(isCorrect?'var(--green)':'var(--red)'):'var(--border)'}">
-          <div style="font-weight:600;margin-bottom:4px">第${i+1}题</div>
-          <div style="font-size:14px;margin-bottom:8px;white-space:pre-wrap">${M.escapeHTML(q.problemText)}</div>
-          ${answered
-            ? `<div style="font-size:13px;color:${isCorrect?'var(--green)':'var(--red)'}">${isCorrect ? '✅ 正确！' : '❌ 错误'} 正确答案: ${M.escapeHTML(q.answer||'')}</div>`
-            : `<input type="text" placeholder="输入你的答案..." id="practice-answer-${i}" style="margin-bottom:4px">
-               <button class="btn btn-primary btn-sm" onclick="M.submitAnswer(${i})">提交</button>`
-          }
-          ${q.solution && answered ? `<div style="font-size:12px;color:var(--text-tertiary);margin-top:4px">💡 ${M.escapeHTML(q.solution)}</div>` : ''}
-        </div>`;
-      }).join('')}
-    </div>
-  `;
-  M.$('practice-actions').innerHTML = `
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-outline btn-block" onclick="M.cancelPractice()">退出练习</button>
-      ${Object.keys(M._practiceState.answers).length === qs.length
-        ? `<button class="btn btn-primary btn-block" onclick="M.finishPractice()">📊 查看结果</button>`
-        : `<span style="color:var(--text-tertiary);font-size:13px;align-self:center">还剩 ${qs.length - Object.keys(M._practiceState.answers).length} 题</span>`
-      }
-    </div>
-  `;
-};
-
-M.submitAnswer = (i) => {
-  const input = M.$('practice-answer-' + i);
-  if (!input) return;
-  const userAnswer = input.value.trim();
-  if (!userAnswer) { M.showToast('请输入答案','error'); return; }
-  const q = M._practiceState.questions[i];
-  // Simple correctness check (case-insensitive contains)
-  const correct = q.answer && (q.answer.includes(userAnswer) || userAnswer.includes(q.answer.replace(/[≈\s]/g,'')) || userAnswer === q.answer);
-  M._practiceState.answers[i] = correct;
-  M.renderPracticeQuestions();
-};
-
-M.cancelPractice = () => {
-  M.confirmDialog('退出练习', '当前练习进度将丢失，确认退出？', () => {
-    M._practiceState.questions = [];
-    M._practiceState.answers = {};
-    M.renderPracticeModes();
+A.renderPractice = function(){
+  ['solution','pattern'].forEach(m => {
+    const el = A.$('mode-'+m);
+    if (el) el.style.border = A._mode === m ? '2px solid var(--blue)' : '2px solid transparent';
   });
+  const area = A.$('practice-area');
+  if (!A._mode) { area.innerHTML = '<div style="text-align:center;color:var(--text3);padding:20px">👆 选择一种练习模式</div>'; return; }
+  if (A._mode === 'solution') A.renderMultiSolution();
+  if (A._mode === 'pattern') A.renderPatternMode();
 };
 
-M.finishPractice = async () => {
-  const qs = M._practiceState.questions;
-  const answers = M._practiceState.answers;
-  const totalQuestions = qs.length;
-  const correctCount = Object.values(answers).filter(Boolean).length;
-  const wrongProblems = [];
-  for (let i = 0; i < qs.length; i++) {
-    if (answers[i] === false) {
-      wrongProblems.push({ problemText: qs[i].problemText, correctAnswer: qs[i].answer, knowledgePointKey: qs[i].knowledgePointKey });
+A.renderMultiSolution = async function(){
+  const problems = await DB.getAllProblems();
+  const active = problems.filter(p => p.status !== 'mastered');
+  if (active.length === 0) { A.$('practice-area').innerHTML = '<div class="card" style="text-align:center;color:var(--text3)">没有待复习的错题</div>'; return; }
+  const p = active[Math.floor(Math.random() * active.length)];
+  const bank = await DB.getAllBank();
+  const matches = bank.filter(q => (p.knowledgePoints||[]).includes(q.knowledgePointKey));
+  const q = matches.length > 0 ? matches[Math.floor(Math.random() * matches.length)] : (bank.length > 0 ? bank[Math.floor(Math.random() * bank.length)] : null);
+
+  A.$('practice-area').innerHTML =
+    '<div class="card"><h3>💡 一题多解</h3>' +
+    '<div style="font-size:14px;margin-bottom:8px"><strong>题目：</strong>'+A.esc(q&&q.text||p&&p.problemText||'暂无')+'</div>' +
+    '<div style="font-size:14px;color:var(--green);margin-bottom:12px"><strong>答案：</strong>'+A.esc(q&&q.answer||p&&p.correctAnswer||'')+'</div>' +
+    (q&&q.solutions ? q.solutions.map((s,i) => '<div class="card" style="margin-bottom:4px;background:rgba(0,113,227,0.03)"><div style="font-weight:600;font-size:13px">解法'+(i+1)+'</div><div style="font-size:13px;color:var(--text2)">'+A.esc(s)+'</div></div>').join('') : '<div style="color:var(--text3)">暂无多种解法数据</div>') +
+    (q&&q.solution ? '<div style="margin-top:8px;font-size:13px;color:var(--blue)">📐 <strong>通用思路：</strong>'+A.esc(q.solution)+'</div>' : '') +
+    '<button class="outline sm" style="margin-top:8px" onclick="A.renderMultiSolution()">🔄 换一题</button></div>';
+};
+
+A.renderPatternMode = async function(){
+  const problems = await DB.getAllProblems();
+  const mastery = {};
+  for (const p of problems) for (const kp of (p.knowledgePoints||[])){
+    if (!mastery[kp]) mastery[kp] = [];
+    mastery[kp].push(p);
+  }
+  const groups = Object.entries(mastery).filter(([,v]) => v.length >= 3).sort((a,b) => b[1].length - a[1].length);
+  if (groups.length === 0) { A.$('practice-area').innerHTML = '<div class="card" style="text-align:center;color:var(--text3)">需要同一知识点至少3道错题</div>'; return; }
+  const [kp, probs] = groups[0];
+  const patDesc = {
+    composite_shape_area:'这些题都在考同一个核心：<strong>把不规则图形变成规则图形</strong>。分割、添补、割补，本质都是"转化"。',
+    distributive_property:'这些题都在考<strong>乘法对加法的分配</strong>。核心规律：(a+b)×c=a×c+b×c。正着展开和反着提取是同一个公式。',
+    cone_volume:'这些题都涉及<strong>圆锥体积V=Sh/3</strong>。最容易错的地方永远是"除以3"。',
+    frac_div_word:'这些题都在考<strong>已知部分求整体</strong>。规律：已知一个数的几分之几是多少→用除法。',
+    pct_discount:'这些题都在考<strong>原价×折扣=现价</strong>。几折就是百分之几十。',
+  };
+  const pat = patDesc[kp] || '这些题属于同一知识点，<strong>解题方法和步骤高度相似</strong>。掌握一道，其他只是换数字。';
+  A.$('practice-area').innerHTML =
+    '<div class="card"><h3>🔍 多题一规律 — '+A.esc(A.kpName(kp))+'</h3>' +
+    '<div class="card" style="background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.2);margin-bottom:10px"><div style="font-weight:600;font-size:14px;margin-bottom:4px">📐 发现的规律</div><div style="font-size:13px;line-height:1.6">'+pat+'</div></div>' +
+    '<div style="font-weight:600;font-size:13px;margin-bottom:6px">对比以下 '+Math.min(probs.length,5)+' 道同类题：</div>' +
+    probs.slice(0,5).map((p,i) => '<div class="card" style="margin-bottom:4px"><strong>题'+(i+1)+'：</strong>'+A.esc((p.problemText||'').substring(0,60))+'<div style="font-size:12px;color:var(--green);margin-top:2px">答案：'+A.esc((p.correctAnswer||'').substring(0,40))+'</div></div>').join('') +
+    '<button class="primary sm" style="margin-top:8px" onclick="A.genTargeted(&apos;'+kp+'&apos;)">🎯 生成同类题练习 →</button>' +
+    '<button class="outline sm" style="margin-left:6px" onclick="A.renderPatternMode()">🔄 换一组</button></div>';
+};
+
+A.genTargeted = async function(kp){
+  const bank = await DB.getAllBank();
+  const qs = bank.filter(q => q.knowledgePointKey === kp);
+  if (qs.length === 0) { A.toast('该知识点暂无题库', 'err'); return; }
+  A.renderQuiz(qs.sort(() => Math.random() - 0.5).slice(0, 5), A.kpName(kp)+' 针对性练习');
+};
+
+A.genPaper = async function(period){
+  const problems = await DB.getAllProblems();
+  const active = problems.filter(p => p.status !== 'mastered');
+  if (active.length === 0) { A.toast('没有待复习的错题', 'err'); return; }
+  const now = Date.now(), day = 24*60*60*1000;
+  let title = '', count = 0;
+  if (period === 'week'){ const wa = now - 7*day; const r = active.filter(p => p.createdAt > wa); if (r.length>0){ A.renderQuiz(r.slice(0,10), '本周错题巩固卷', '最近7天错题回顾'); return; } }
+  if (period === 'month'){ const ma = now - 30*day; const r = active.filter(p => p.createdAt > ma); if (r.length>0){ A.renderQuiz(r.slice(0,10), '本月错题复习卷', '最近30天错题综合复习'); return; } }
+  if (period === 'midterm'){ title = '期中冲刺卷'; count = 15; }
+  if (period === 'final'){ title = '期末总复习卷'; count = 20; }
+  const mastery = {};
+  for (const p of active) for (const kp of (p.knowledgePoints||[])){ if (!mastery[kp]) mastery[kp] = []; mastery[kp].push(p); }
+  let pool = [];
+  for (const [,probs] of Object.entries(mastery).sort((a,b) => b[1].length - a[1].length)) pool = pool.concat(probs);
+  pool = [...new Set(pool)].slice(0, count || 10);
+  A.renderQuiz(pool, title, '覆盖薄弱知识点，查漏补缺');
+};
+
+A.renderQuiz = function(problems, title, desc){
+  A._state = { problems, title, desc };
+  A.$('practice-area').innerHTML =
+    '<div class="card"><h3>📋 '+A.esc(title)+'</h3>' +
+    (desc ? '<div style="font-size:13px;color:var(--text2);margin-bottom:8px">'+A.esc(desc)+'</div>' : '') +
+    '<div style="margin-bottom:8px;font-size:13px;color:var(--text2)">共 '+problems.length+' 题</div>' +
+    problems.map((p,i) =>
+      '<div class="card" style="margin-bottom:6px"><strong>第'+(i+1)+'题</strong> '+(p.knowledgePoints||[]).map(k => '<span class="tag">'+A.kpName(k)+'</span>').join('')+
+      '<div style="font-size:14px;margin:6px 0">'+A.esc(p.problemText||'(无题目文字)')+'</div>'+
+      '<input type="text" placeholder="你的答案" id="qz-a-'+i+'" style="font-size:13px"><div id="qz-f-'+i+'" style="margin-top:4px"></div></div>'
+    ).join('') +
+    '<div style="display:flex;gap:6px"><button class="primary block" onclick="A.checkQuiz()">✅ 提交验证</button><button class="outline sm" onclick="A.printQuiz()">🖨️ 打印</button></div>' +
+    '<div id="qz-result" style="margin-top:12px;font-size:15px;font-weight:600;text-align:center"></div></div>';
+};
+
+A.checkQuiz = function(){
+  const { problems } = A._state;
+  let correct = 0;
+  for (let i = 0; i < problems.length; i++){
+    const ua = A.$('qz-a-' + i).value.trim();
+    const fb = A.$('qz-f-' + i);
+    if (!ua) { fb.innerHTML = '<span style="color:var(--text3);font-size:12px">未作答</span>'; continue; }
+    const exp = (problems[i].correctAnswer || '').replace(/[≈\s]/g, '');
+    if (exp && (ua.includes(exp) || exp.includes(ua) || ua === exp)){
+      fb.innerHTML = '<span style="color:var(--green);font-size:12px">✅ 正确</span>'; correct++;
+    } else {
+      fb.innerHTML = '<span style="color:var(--red);font-size:12px">❌ 正确答案：'+A.esc(problems[i].correctAnswer||'')+'</span>';
     }
   }
-  const durationMs = Date.now() - M._practiceState.startTime;
-  const durationMin = Math.round(durationMs / 60000 * 10) / 10;
-
-  // Save session
-  const modeName = M.practice.MODES.find(m=>m.key===M._practiceState.mode)?.name || '练习';
-  await DB.addSession({
-    mode: M._practiceState.mode,
-    knowledgePoints: M._practiceState.targetKPs || [],
-    totalQuestions, correctCount, wrongProblems, durationMs
-  });
-
-  // Auto-save wrong problems
-  let savedCount = 0;
-  for (const wp of wrongProblems) {
-    await DB.addProblem({
-      problemText: wp.problemText,
-      yourAnswer: '',
-      correctAnswer: wp.correctAnswer,
-      errorReason: '练习中做错',
-      knowledgePoints: [wp.knowledgePointKey].filter(Boolean),
-      semester: 1,
-      difficulty: 3,
-      errorType: 'unknown',
-      status: 'active',
-      hasImage: false,
-      sourceFileType: 'practice'
-    });
-    savedCount++;
+  const rate = problems.length>0 ? Math.round(correct/problems.length*100) : 0;
+  A.$('qz-result').innerHTML = '得分：<span style="font-size:24px;color:'+(rate>=80?'var(--green)':rate>=60?'var(--orange)':'var(--red)')+'">'+rate+'%</span>（'+correct+'/'+problems.length+'）';
+  DB.addSession({ mode:'quiz', knowledgePoints:[], totalQuestions:problems.length, correctCount:correct, wrongProblems:[], durationMs:0 });
+  for (let i=0;i<problems.length;i++){
+    const ua = A.$('qz-a-'+i).value.trim();
+    const exp = (problems[i].correctAnswer||'').replace(/[≈\\s]/g,'');
+    if (ua && !(exp && (ua.includes(exp)||exp.includes(ua)))) DB.addProblem({ problemText:problems[i].problemText, yourAnswer:ua, correctAnswer:problems[i].correctAnswer||'', errorReason:'组卷练习中做错', knowledgePoints:problems[i].knowledgePoints||[], semester:1, difficulty:3, errorType:'unknown', hasImage:false, sourceFileType:'quiz' });
   }
-
-  // Render results
-  M.$('practice-questions').innerHTML = '';
-  M.$('practice-actions').innerHTML = '';
-  const score = Math.round(correctCount / totalQuestions * 100);
-  M.$('practice-results').innerHTML = `
-    <div class="card" style="text-align:center">
-      <div style="font-size:48px">${score >= 80 ? '🎉' : score >= 60 ? '💪' : '📚'}</div>
-      <div style="font-size:36px;font-weight:700;color:${score>=80?'var(--green)':score>=60?'var(--orange)':'var(--red)'}">${score}分</div>
-      <div style="color:var(--text-secondary)">${correctCount}/${totalQuestions} 正确 · 用时${durationMin}分钟</div>
-      ${savedCount > 0 ? `<div style="margin-top:8px;font-size:13px;color:var(--text-tertiary)">📌 ${savedCount}道错题已自动加入错题本</div>` : ''}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn btn-outline btn-block" onclick="M.renderPracticeModes();M.$('practice-results').innerHTML=''">🔄 再练一次</button>
-      ${wrongProblems.length > 0 ? `<button class="btn btn-primary btn-block" onclick="M.reviewWrongProblems()">🔍 复习错题</button>` : ''}
-      <button class="btn btn-outline btn-block" onclick="M.printProblems(qs, '练习卷')">🖨️ 打印</button>
-    </div>
-  `;
 };
 
-M.reviewWrongProblems = () => {
-  M._practiceState.mode = 'targeted';
-  // Re-generate similar
-  M.startPractice('targeted');
+A.printQuiz = function(){
+  const { problems, title } = A._state;
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('pt'));
+  const el = document.createElement('div');
+  el.className = 'pp';
+  el.innerHTML = '<h2>'+A.esc(title)+'</h2><p style="margin-bottom:12px">姓名：________ 日期：'+new Date().toLocaleDateString('zh-CN')+'</p>' +
+    problems.map((p,i) => '<div class="pq"><strong>'+(i+1)+'.</strong> '+A.esc(p.problemText||'')+'<div class="ans"></div></div>').join('');
+  document.body.appendChild(el);
+  window.print();
+  setTimeout(() => { el.remove(); document.querySelectorAll('.screen').forEach(s => s.classList.remove('pt')); }, 500);
 };
 
-// --- Settings ---
-M.loadSettings = async () => {
-  const s = await DB.getSettings();
-  M.$('set-name').value = s.studentName || '';
-  M.$('set-weekly-goal').value = s.weeklyGoal || 10;
+/* ============ LIBRARY SCREEN ============ */
+A.renderLibrary = async function(){
+  let problems = await DB.getAllProblems();
+  const filter = A.$('lib-filter').value;
+  if (filter === 'active') problems = problems.filter(p => p.status !== 'mastered');
+  else if (filter === 'mastered') problems = problems.filter(p => p.status === 'mastered');
+  const search = A.$('lib-search').value.trim().toLowerCase();
+  if (search) problems = problems.filter(p => (p.problemText||'').toLowerCase().includes(search));
+  problems.sort((a,b) => b.createdAt - a.createdAt);
+  if (problems.length === 0){ A.$('lib-list').innerHTML = '<div style="text-align:center;color:var(--text3);padding:30px">📭 没有错题</div>'; return; }
+  A.$('lib-list').innerHTML = problems.map(p =>
+    '<div class="card" style="margin-bottom:6px;cursor:pointer" onclick="A.viewProblem('+p.id+')">' +
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">' +
+    '<div style="flex:1;min-width:0"><div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+A.esc(p.problemText||'(拍照题目)')+'</div>' +
+    '<div style="margin-top:4px">'+(p.knowledgePoints||[]).map(k => '<span class="tag">'+A.kpName(k)+'</span>').join('') +
+    '<span class="tag '+(p.status==='mastered'?'green':'red')+'">'+(p.status==='mastered'?'已掌握':'待复习')+'</span></div></div>' +
+    '<span style="font-size:11px;color:var(--text3);white-space:nowrap">'+new Date(p.createdAt).toLocaleDateString('zh-CN')+'</span></div></div>'
+  ).join('');
 };
 
-M.saveSettings = async () => {
-  await DB.saveSettings({
-    studentName: M.$('set-name').value.trim(),
-    weeklyGoal: parseInt(M.$('set-weekly-goal').value) || 10,
-  });
-  M.showToast('设置已保存', 'success');
+A.viewProblem = async function(id){
+  const p = await DB.getProblem(id); if (!p) return;
+  A.nav('library');
+  A.$('lib-list').innerHTML =
+    '<div class="card"><button class="outline sm" onclick="A.renderLibrary()">← 返回列表</button></div>' +
+    '<div class="card"><h3>题目</h3><div style="font-size:14px;line-height:1.6;white-space:pre-wrap">'+A.esc(p.problemText||'(拍照题目)')+'</div>'+
+    (p.imageData?'<img src="'+URL.createObjectURL(p.imageData)+'" style="max-height:250px;margin-top:8px;border-radius:var(--radius-sm)">':'')+'</div>' +
+    '<div class="card"><h3>答案对比</h3><div style="display:flex;gap:12px">'+
+    '<div style="flex:1"><span style="font-size:11px;color:var(--text3)">错误答案</span><div style="color:var(--red);font-weight:500">'+A.esc(p.yourAnswer||'未记录')+'</div></div>'+
+    '<div style="flex:1"><span style="font-size:11px;color:var(--text3)">正确答案</span><div style="color:var(--green);font-weight:500">'+A.esc(p.correctAnswer||'')+'</div></div></div></div>'+
+    '<div class="card">'+(p.knowledgePoints||[]).map(k => '<span class="tag">'+A.kpName(k)+'</span>').join('')+'</div>'+
+    '<div style="display:flex;gap:6px;margin-top:8px">'+
+    (p.status!=='mastered'?'<button class="primary block" onclick="A.markMastered('+p.id+')">✅ 标记已掌握</button>':'<button class="outline block" onclick="A.markActive('+p.id+')">🔄 恢复复习</button>')+
+    '<button class="outline block" onclick="A.deleteProblem('+p.id+')">🗑️ 删除</button></div>';
 };
 
-/* ============================================================
-   SECTION X: Init & Seed Data
-   ============================================================ */
-M.init = async () => {
+A.markMastered = async function(id){ await DB.updateProblem(id, {status:'mastered'}); A.toast('已掌握 👍', 'ok'); A.viewProblem(id); };
+A.markActive = async function(id){ await DB.updateProblem(id, {status:'active'}); A.toast('已恢复', 'ok'); A.viewProblem(id); };
+A.deleteProblem = async function(id){ if(!confirm('确认删除？'))return; await DB.deleteProblem(id); A.toast('已删除'); A.renderLibrary(); };
+
+/* ============ INIT ============ */
+(async function(){
   try {
     await DB.open();
-    // Seed question bank if empty
-    const count = await DB.countQuestions();
-    if (count === 0) {
-      for (const q of M.SEED_QUESTIONS) {
-        await DB.addQuestion(q);
-      }
-      console.log('✅ 种子题库已初始化: ' + M.SEED_QUESTIONS.length + ' 题');
+    if (await DB.getBankCount() === 0) await DB.seedBank(SEED);
+    if ('serviceWorker' in navigator){
+      const sw = 'self.addEventListener("install",e=>{e.waitUntil(caches.open("meb").then(c=>c.addAll([self.location.href])))});self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});';
+      navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});
     }
-    // Load settings
-    await M.loadSettings();
-    // Render initial screen
-    M.renderDashboard();
-    M.renderTagPicker();
-    console.log('✅ 数学错题本初始化完成');
-
-    // Register PWA service worker
-    if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE = 'math-error-book-v1';
-        const URLS = [self.location.href, 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'];
-        self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).catch(()=>{})); });
-        self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
-      `;
-      const blob = new Blob([swCode], {type:'application/javascript'});
-      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-    }
-  } catch(e) {
-    console.error('初始化失败:', e);
-    M.showToast('初始化失败，请刷新页面重试', 'error');
-  }
-};
-
-// Start when DOM ready
-document.addEventListener('DOMContentLoaded', M.init);
-
-// Settings loading is handled in the main switchScreen function above
-
-// Global error handler for IndexedDB
-window.addEventListener('unhandledrejection', (e) => {
-  if (e.reason && e.reason.name === 'QuotaExceededError') {
-    M.showToast('存储空间不足！请导出备份后清理旧数据', 'error');
-  }
-});
+  } catch(e){ console.error('Init:', e); }
+})();
 </script>
 </body>
 </html>
