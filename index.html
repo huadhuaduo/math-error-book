@@ -396,10 +396,10 @@ img{max-width:100%;display:block}
     <div class="screen-title" style="font-size:22px">添加错题</div>
     <div></div>
   </div>
-  <div class="tab-bar">
-    <div class="tab-item active" data-tab="manual" onclick="M.switchAddTab('manual')">✏️ 手动录入</div>
+  <div class="tab-bar" style="flex-wrap:wrap">
+    <div class="tab-item active" data-tab="manual" onclick="M.switchAddTab('manual')">✏️ 单题录入</div>
     <div class="tab-item" data-tab="camera" onclick="M.switchAddTab('camera')">📷 拍照识别</div>
-    <div class="tab-item" data-tab="file" onclick="M.switchAddTab('file')">📁 上传文件</div>
+    <div class="tab-item" data-tab="batch" onclick="M.switchAddTab('batch')">📋 批量导入</div>
   </div>
   <!-- Manual Entry -->
   <div id="add-manual">
@@ -443,6 +443,22 @@ img{max-width:100%;display:block}
       <div class="form-hint">支持图片、PDF、Word、Excel</div>
     </div>
     <div id="add-file-info" style="display:none"></div>
+  </div>
+  <!-- Batch Import -->
+  <div id="add-batch" style="display:none">
+    <div class="card" style="margin-bottom:12px;background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.15)">
+      <div style="font-weight:600;font-size:14px;margin-bottom:4px">💡 使用说明</div>
+      <div style="font-size:13px;color:var(--text-secondary)">
+        将整张卷子/文档的错题文字粘贴到下方，系统会自动拆分成多道题。<br>
+        题目之间用 <b>数字编号</b>（1. 2. 3.）或 <b>空行</b> 分隔即可。
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">粘贴所有错题文字</label>
+      <textarea id="batch-text" placeholder="粘贴整段错题文字，例如：&#10;&#10;1. 一个圆柱形水桶底面半径20cm高50cm，能装多少升水？&#10;2. 计算：3/7×5/6+3/7×1/6&#10;3. 求阴影面积：正方形边长6cm，内切一个圆...&#10;&#10;系统会自动按编号拆分成3道题" style="min-height:160px" oninput="M.previewBatch()"></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="M.splitBatch()" id="btn-split">🔍 智能拆分题目</button>
+    <div id="batch-preview" style="margin-top:12px"></div>
   </div>
   <!-- Shared fields for all tabs -->
   <div class="form-group"><label class="form-label">难度自评</label>
@@ -1660,6 +1676,152 @@ M.switchAddTab = (tab) => {
   M.$('add-manual').style.display = tab==='manual'?'block':'none';
   M.$('add-camera').style.display = tab==='camera'?'block':'none';
   M.$('add-file').style.display = tab==='file'?'block':'none';
+  M.$('add-batch').style.display = tab==='batch'?'block':'none';
+};
+
+// --- Batch Import ---
+M._batchProblems = [];
+
+M.previewBatch = () => {
+  const text = M.$('batch-text').value.trim();
+  if (text.length < 10) { M.$('batch-preview').innerHTML = ''; return; }
+  const count = M._smartSplit(text).length;
+  M.$('batch-preview').innerHTML = '<div class="card" style="text-align:center;color:var(--blue)">📋 预计拆分为 <strong>' + count + '</strong> 道题目，点击下方按钮预览确认</div>';
+};
+
+M._smartSplit = (text) => {
+  // Split by common numbering patterns
+  // Pattern 1: "1. 2. 3." or "1、2、3、" or "1) 2) 3)"
+  // Pattern 2: "①②③④⑤"
+  // Pattern 3: double newlines
+  let parts = [];
+  // Try numbered split first
+  const numbered = text.split(/(?:^|\n)\s*(?:\d+[\.\、\)）]\s*)/gm).filter(s => s.trim().length > 3);
+  if (numbered.length >= 2) {
+    parts = numbered;
+  } else {
+    // Try circled numbers
+    const circled = text.split(/[①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳]/).filter(s => s.trim().length > 3);
+    if (circled.length >= 2) parts = circled;
+    else {
+      // Fallback: split by double newlines
+      parts = text.split(/\n\s*\n/).filter(s => s.trim().length > 3);
+    }
+  }
+  return parts.map(p => p.trim()).filter(p => p.length > 3);
+};
+
+M.splitBatch = () => {
+  const text = M.$('batch-text').value.trim();
+  if (!text) { M.showToast('请先粘贴错题文字', 'error'); return; }
+  const parts = M._smartSplit(text);
+  if (parts.length === 0) { M.showToast('未能识别题目分隔，请确保题目之间有编号或空行', 'error'); return; }
+
+  M._batchProblems = parts.map((text, i) => {
+    const kps = [];
+    // Auto-classify each problem
+    const map = M._autoSuggestKP_internal(text);
+    return { text, knowledgePoints: map, yourAnswer: '', correctAnswer: '', errorReason: '', difficulty: 3, errorType: 'unknown' };
+  });
+
+  M._renderBatchReview();
+};
+
+M._autoSuggestKP_internal = (text) => {
+  // Same logic as _autoSuggestKP but returns array instead of modifying state
+  const map = {
+    'composite_shape_area': [/组合图形|求阴影|阴影部分|阴影面积|半圆.*三角|拼接|圆.*方.*面积|方.*圆.*面积|外方内圆|外圆内方|花瓣|环形|圆环|求.*阴影/],
+    'cone_volume': [/圆锥|锥.*体积|沙堆.*体积|粮仓.*锥|沙漏|漏斗/],
+    'cyl_volume': [/圆柱.*体积|圆柱.*容积|水桶.*装|柱子|管道.*体积|圆钢|钢管/],
+    'cyl_surface': [/表面积|侧面积|铁皮|围成.*圆柱|水桶.*铁皮|无盖.*圆柱|通风管|烟囱/],
+    'composite_solid_volume': [/组合体|粮仓.*圆柱.*圆锥|圆柱.*上面.*圆锥|组合.*体积/],
+    'distributive_property': [/简便.*算|简便计算|怎样.*简便|脱式.*简便|分配律|提取|乘法.*律|用.*方法.*计算|简算|能简算/],
+    'frac_mul_word': [/几分之几|一个数的.*分之|求.*分之.*是多少|一半.*的|的.*分之几/],
+    'frac_div_word': [/已知.*的.*分之|求.*这个数|单位.{0,2}1.{0,2}未知|一袋.*吃了.*还剩|一桶.*用了.*还剩/],
+    'frac_div_eng': [/工程|合作.*天|单独.*天|甲.*乙.*完成|工作效率|修路.*天/],
+    'prop_scale': [/比例尺|图上距离|实际距离|千米.*厘米|缩放|放大.*缩小|地图/],
+    'pct_discount': [/打折|折扣|几折|原价|现价|促销|满.*减|折上折|八折|七折|六折|五折|九折/],
+    'pct_interest': [/利息|本金|利率|存.*年|定期|国债|理财.*收益|取回.*钱/],
+    'circle_area': [/圆的面积|圆面|半径.*求面积|直径.*求面积|周长.*求面积|圆.*面积/],
+    'circle_pi': [/周长|一圈|围.*圆|绕.*圈|栅栏.*圆|花坛.*周长/],
+    'circle_ring': [/环形|圆环|环宽|外圆.*内圆|小路.*圆形|环形.*面积/],
+    'circle_sector': [/扇形|圆心角|扇.*面积|圆弧|钟面.*指针/],
+    'ratio_distribute': [/按.*分|分配.*比|配比|甲乙.*比|搅拌.*比|混凝土|药粉.*水/],
+    'ratio_simplify': [/化简比|求比值|最简单的整数比|化成.*比|:.*:/],
+    'negative_numbers': [/负数|零下|低于.*0|亏本|亏损|海平面|海拔.*以下/],
+    'frac_mul_rules': [/分数.*乘|乘以.*分数|约分.*再乘|分数.*乘法/],
+    'frac_div_rule': [/分数.*除|除以.*分数|倒数.*乘|÷.*分数|除.*几分之几/],
+    'pct_convert': [/百分数|百分之|小数.*百分|分数.*百分|互化|转化.*百分/],
+    'pie_chart': [/扇形统计图|饼图|占比|统计.*比例|百分比.*图/],
+    'num_pattern_seq': [/规律|找规律|按规律|数列|第n项|第.*个.*数|观察.*算式/],
+    'pigeonhole_basic': [/至少|保证|抽屉|鸽巢|最坏.*情况|总有.*至少|保证.*同色/],
+    'unit_conversion': [/单位.*换算|千米.*米|平方米|升.*毫升|吨.*千克|小时.*分钟|厘米.*毫米|换算/],
+    'equation_method': [/方程|解方程|设.*x|列方程|未知数|解.*=.*x/],
+    'transform_thinking': [/转化|割补|分割|平移|旋转|等积|添补|辅助线/],
+  };
+  const kps = [];
+  for (const [key, patterns] of Object.entries(map)) {
+    if (patterns.some(p => p.test(text))) kps.push(key);
+  }
+  return kps;
+};
+
+M._renderBatchReview = () => {
+  const problems = M._batchProblems;
+  if (problems.length === 0) { M.$('batch-preview').innerHTML = ''; return; }
+
+  M.$('batch-preview').innerHTML = `
+    <div class="card" style="margin-bottom:8px">
+      <div style="font-weight:600;margin-bottom:4px">📋 已拆分为 <strong>${problems.length}</strong> 道题目</div>
+      <div style="font-size:12px;color:var(--text-secondary)">请逐题核对文字和知识点，填写正确答案后保存</div>
+    </div>
+    ${problems.map((p, i) => `
+      <div class="card" style="margin-bottom:8px">
+        <div style="font-weight:600;font-size:14px;margin-bottom:4px;display:flex;justify-content:space-between">
+          <span>📝 第${i+1}题</span>
+          <span style="font-size:11px;color:var(--text-tertiary)">${p.knowledgePoints.length > 0 ? p.knowledgePoints.map(k => M.getKPName(k)).join(' · ') : '未识别'}</span>
+        </div>
+        <textarea style="min-height:50px;font-size:13px;margin-bottom:4px" onchange="M._batchProblems[${i}].text=this.value">${M.escapeHTML(p.text)}</textarea>
+        <div style="display:flex;gap:6px">
+          <input type="text" placeholder="正确答案" style="flex:1;font-size:13px" onchange="M._batchProblems[${i}].correctAnswer=this.value" value="${M.escapeHTML(p.correctAnswer)}">
+          <input type="text" placeholder="错因(可选)" style="flex:1;font-size:13px" onchange="M._batchProblems[${i}].errorReason=this.value">
+        </div>
+        ${p.knowledgePoints.length === 0 ? '<div style="font-size:11px;color:var(--orange);margin-top:4px">⚠️ 未识别知识点，可在题目文字中补充关键词（如"圆柱的体积""分配律"）</div>' : ''}
+      </div>
+    `).join('')}
+    <button class="btn btn-primary btn-block btn-lg" onclick="M.saveBatch()">💾 一键保存全部 ${problems.length} 道错题</button>
+    <button class="btn btn-outline btn-block" style="margin-top:6px" onclick="M._batchProblems=[];M.$('batch-preview').innerHTML='';M.$('batch-text').value=''">🗑️ 清除重来</button>
+  `;
+};
+
+M.saveBatch = async () => {
+  const problems = M._batchProblems;
+  if (problems.length === 0) { M.showToast('没有题目可保存','error'); return; }
+  let saved = 0, skipped = 0;
+  for (const p of problems) {
+    if (!p.text || p.text.length < 3) { skipped++; continue; }
+    if (!p.correctAnswer) { skipped++; continue; }
+    try {
+      await DB.addProblem({
+        problemText: p.text,
+        yourAnswer: '',
+        correctAnswer: p.correctAnswer,
+        errorReason: p.errorReason || '',
+        knowledgePoints: p.knowledgePoints,
+        semester: parseInt(M.$('add-semester').value),
+        difficulty: p.difficulty || 3,
+        errorType: p.errorType || 'unknown',
+        hasImage: false,
+        sourceFileType: 'batch'
+      });
+      saved++;
+    } catch(e) { skipped++; }
+  }
+  M.showToast('✅ 已保存 ' + saved + ' 道错题' + (skipped > 0 ? '，跳过 ' + skipped + ' 道（缺少文字或答案）' : ''), 'success');
+  M._batchProblems = [];
+  M.$('batch-preview').innerHTML = '';
+  M.$('batch-text').value = '';
+  M.switchScreen('dashboard');
 };
 
 // --- Difficulty Selection ---
