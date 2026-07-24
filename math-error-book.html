@@ -188,21 +188,22 @@ img{max-width:100%;display:block}
 .stat-label{font-size:13px;color:var(--text-secondary);margin-top:2px}
 
 /* Practice Mode Grid */
-.practice-mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-sm)}
+.practice-mode-grid{display:grid;grid-template-columns:1fr;gap:8px}
 .practice-mode-card{
   background:var(--bg-card-solid);
-  border-radius:var(--radius-md);padding:var(--space-md);
+  border-radius:var(--radius-md);padding:14px 16px;
   border:2px solid transparent;
-  cursor:pointer;text-align:center;
+  cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;
   transition:all var(--transition-fast);
 }
 .practice-mode-card:hover{border-color:var(--border);box-shadow:var(--shadow-md)}
 .practice-mode-card.selected{border-color:var(--blue);background:var(--blue-bg)}
-.practice-mode-card .mode-icon{font-size:36px;margin-bottom:4px}
+.practice-mode-card .mode-icon{font-size:32px;flex-shrink:0;width:44px;text-align:center}
+.practice-mode-card .mode-info{flex:1;min-width:0}
 .practice-mode-card .mode-name{font-weight:600;font-size:15px}
-.practice-mode-card .mode-desc{font-size:12px;color:var(--text-secondary);margin-top:2px}
-@media(min-width:480px){.practice-mode-grid{grid-template-columns:repeat(3,1fr)}}
-@media(min-width:768px){.practice-mode-grid{grid-template-columns:repeat(5,1fr)}}
+.practice-mode-card .mode-desc{font-size:12px;color:var(--text-secondary);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:480px){.practice-mode-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:768px){.practice-mode-grid{grid-template-columns:repeat(3,1fr)}.practice-mode-card{flex-direction:column;text-align:center;padding:16px 12px}.practice-mode-card .mode-icon{font-size:36px;width:auto}}
 
 /* Badges */
 .badge{
@@ -402,7 +403,7 @@ img{max-width:100%;display:block}
   </div>
   <!-- Manual Entry -->
   <div id="add-manual">
-    <div class="form-group"><label class="form-label">题目内容 *</label><textarea id="add-problem-text" placeholder="请输入或粘贴题目内容..."></textarea></div>
+    <div class="form-group"><label class="form-label">题目内容 *</label><textarea id="add-problem-text" placeholder="请输入或粘贴题目内容..." oninput="M.autoClassify()"></textarea><div class="form-hint" id="add-auto-tip" style="color:var(--blue)"></div></div>
     <div class="form-group"><label class="form-label">我的答案（错的）</label><input type="text" id="add-your-answer" placeholder="你当时写的答案"></div>
     <div class="form-group"><label class="form-label">正确答案 *</label><input type="text" id="add-correct-answer" placeholder="正确的答案是什么"></div>
     <div class="form-group"><label class="form-label">错因反思</label><input type="text" id="add-error-reason" placeholder="为什么会做错？（可选）"></div>
@@ -1045,29 +1046,63 @@ M.confirmOCR = () => {
   M.showToast('已填入题目，请补充答案和知识点', 'success');
 };
 
+M.autoClassify = () => {
+  const text = M.$('add-problem-text').value.trim();
+  if (text.length < 5) { M.$('add-auto-tip').textContent = ''; return; }
+  M._autoSuggestKP(text);
+  if (M._addState.knowledgePoints.length > 0) {
+    M.$('add-auto-tip').textContent = '🤖 已自动识别 ' + M._addState.knowledgePoints.length + ' 个知识点（上方标签已高亮），请核对';
+  } else {
+    M.$('add-auto-tip').textContent = '🤖 未能自动识别知识点，请手动选择下方标签';
+  }
+};
+
 M._autoSuggestKP = (text) => {
   const map = {
-    'composite_shape_area': [/组合|阴影|圆.*方|方.*圆|半圆.*三角|拼接|环形/],
-    'cone_volume': [/圆锥|锥|沙堆/],
-    'cyl_volume': [/圆柱|水桶|柱子|管道/],
-    'cyl_surface': [/表面积|侧面积|铁皮|围成/],
-    'distributive_property': [/简便|分配律|提取|×\s*\(.*\+.*\)|\(.*\+.*\)\s*×/],
-    'frac_mul_word': [/几分之几|的.*分之/],
-    'frac_div_word': [/已知.*几分之几|求.*单位/],
-    'prop_scale': [/比例尺|图上距离|实际距离|千米.*厘米/],
-    'pct_discount': [/打折|折扣|几折|原价|现价/],
-    'circle_area': [/圆的面积|半径.*面积|直径.*面积/],
-    'circle_ring': [/环形|圆环|外圆|内圆/],
-    'ratio_distribute': [/按.*分|分配/],
-    'pct_interest': [/利息|本金|利率|存.*年/],
-    'negative_numbers': [/负数|零下|低于|亏/],
-    'frac_mul_rules': [/分数.*乘|约分/],
-    'frac_div_rule': [/分数.*除|除以.*分数/],
+    'composite_shape_area': [/组合图形|求阴影|阴影部分|阴影面积|半圆.*三角|拼接|圆.*方.*面积|方.*圆.*面积|外方内圆|外圆内方|花瓣|环形|圆环/],
+    'cone_volume': [/圆锥|锥.*体积|沙堆.*体积|粮仓.*锥|沙漏|漏斗/],
+    'cyl_volume': [/圆柱.*体积|圆柱.*容积|水桶.*装|柱子|管道.*体积|圆钢|钢管/],
+    'cyl_surface': [/表面积|侧面积|铁皮|围成.*圆柱|水桶.*铁皮|无盖.*圆柱|通风管|烟囱/],
+    'composite_solid_volume': [/组合体|粮仓.*圆柱.*圆锥|圆柱.*上面.*圆锥|组合.*体积/],
+    'distributive_property': [/简便.*算|简便计算|怎样.*简便|脱式.*简便|分配律|提取|乘法.*律|用.*方法.*计算|简算|能简算/],
+    'frac_mul_word': [/几分之几|一个数的.*分之|求.*分之.*是多少|一半.*的|的.*分之几/],
+    'frac_div_word': [/已知.*的.*分之|求.*这个数|单位.{0,2}1.{0,2}未知|一袋.*吃了.*还剩|一桶.*用了.*还剩/],
+    'frac_div_eng': [/工程|合作.*天|单独.*天|甲.*乙.*完成|工作效率|修路.*天/],
+    'prop_scale': [/比例尺|图上距离|实际距离|千米.*厘米|缩放|放大.*缩小|地图/],
+    'prop_direct': [/正比例|成正比例|y\/x|比值.*一定|单价.*一定|速度.*一定/],
+    'prop_inverse': [/反比例|成反比例|xy|乘积.*一定|反比/],
+    'pct_discount': [/打折|折扣|几折|原价|现价|促销|满.*减|折上折|八折|七折|六折|五折|九折/],
+    'pct_interest': [/利息|本金|利率|存.*年|定期|国债|理财.*收益|取回.*钱/],
+    'pct_tax_rate': [/税率|纳税|营业税|增值税|个人所得税|发票/],
+    'circle_area': [/圆的面积|圆面|半径.*求面积|直径.*求面积|周长.*求面积/],
+    'circle_pi': [/周长|一圈|围.*圆|绕.*圈|栅栏.*圆|花坛.*周长/],
+    'circle_ring': [/环形|圆环|环宽|外圆.*内圆|小路.*圆形|环形.*面积/],
+    'circle_sector': [/扇形|圆心角|扇.*面积|圆弧|钟面.*指针/],
+    'ratio_distribute': [/按.*分|分配.*比|配比|甲乙.*比|搅拌.*比|混凝土|药粉.*水/],
+    'ratio_simplify': [/化简比|求比值|最简单的整数比|化成.*比|:.*:/],
+    'negative_numbers': [/负数|零下|低于.*0|亏本|亏损|海平面|海拔.*以下|支出.*元/],
+    'frac_mul_rules': [/分数.*乘|乘以.*分数|约分.*再乘|分数.*乘法/],
+    'frac_div_rule': [/分数.*除|除以.*分数|倒数.*乘|÷.*分数|除.*几分之几/],
+    'pct_convert': [/百分数|百分之|小数.*百分|分数.*百分|互化|转化.*百分/],
+    'pie_chart': [/扇形统计图|饼图|占比|统计.*比例|百分比.*图|调查.*统计/],
+    'num_pattern_seq': [/规律|找规律|按规律|数列|第n项|第.*个.*数|观察.*算式/],
+    'pigeonhole_basic': [/至少|保证|抽屉|鸽巢|最坏.*情况|总有.*至少|保证.*同色/],
+    'unit_conversion': [/单位.*换算|千米.*米|平方米.*平方分米|升.*毫升|吨.*千克|小时.*分钟|厘米.*毫米|换算/],
+    'equation_method': [/方程|解方程|设.*x|列方程|未知数|解.*=.*x/],
+    'neg_numberline': [/数轴|数.*线|正数.*负数|原点|大于.*0|小于.*0|比较.*大小/],
+    'transform_thinking': [/转化|割补|分割|平移|旋转|等积|添补|辅助线/],
   };
-  M._addState.knowledgePoints = [];
+  // Preserve manually selected tags
+  const manual = M._addState.knowledgePoints.filter(k => {
+    for (const [, patterns] of Object.entries(map)) {
+      if (patterns.some(p => p.test(text))) return false;
+    }
+    return true; // keep if not auto-matched
+  });
+  M._addState.knowledgePoints = [...manual];
   for (const [key, patterns] of Object.entries(map)) {
     if (patterns.some(p => p.test(text))) {
-      M._addState.knowledgePoints.push(key);
+      if (!M._addState.knowledgePoints.includes(key)) M._addState.knowledgePoints.push(key);
     }
   }
   M.renderTagPicker();
@@ -1101,16 +1136,66 @@ M.handleFileUpload = (e) => {
   if (!file) return;
   M.$('add-file-info').style.display = 'block';
   const info = M.$('add-file-info');
-  info.innerHTML = `<div class="card"><strong>已选择:</strong> ${M.escapeHTML(file.name)} (${(file.size/1024).toFixed(1)}KB)<br><span class="form-hint">${file.type}</span></div>`;
-  // For images: process like camera
+
+  // Image files: process directly like camera
   if (file.type.startsWith('image/')) {
     M._addState.imageBlob = file;
     const url = URL.createObjectURL(file);
+    info.innerHTML = `<div class="card" style="text-align:center">
+      <img src="${url}" style="max-height:220px;margin:0 auto;border-radius:var(--radius-sm)">
+      <div style="margin-top:8px;font-weight:500">📷 ${M.escapeHTML(file.name)}</div>
+      <div style="font-size:12px;color:var(--text-secondary)">${(file.size/1024).toFixed(0)}KB · 点击下方 OCR 识别</div>
+    </div>`;
     M.$('add-camera-img').src = url;
     M.$('add-camera-preview').style.display = 'block';
-  } else {
-    M.showToast('PDF/Word/Excel 支持将在后续版本添加，请先使用图片或手动录入', 'error');
+    M.$('add-ocr-result').style.display = 'none';
+    M.$('add-ocr-actions').style.display = 'none';
+    return;
   }
+
+  // PDF
+  if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+    info.innerHTML = `<div class="card" style="border-left:3px solid var(--orange)">
+      <strong>📄 PDF 文件：${M.escapeHTML(file.name)}</strong>
+      <div style="margin-top:8px;font-size:13px;color:var(--text-secondary)">
+        PDF 支持即将上线。建议：<br>
+        1. 截图 PDF 页面 → 在「📷 拍照识别」中上传图片<br>
+        2. 复制 PDF 文字 → 在「✏️ 手动录入」中粘贴
+      </div>
+    </div>`;
+    return;
+  }
+
+  // Word
+  if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+    info.innerHTML = `<div class="card" style="border-left:3px solid var(--orange)">
+      <strong>📝 Word 文件：${M.escapeHTML(file.name)}</strong>
+      <div style="margin-top:8px;font-size:13px;color:var(--text-secondary)">
+        Word 支持即将上线。建议：<br>
+        复制 Word 中的题目文字 → 在「✏️ 手动录入」中粘贴
+      </div>
+    </div>`;
+    return;
+  }
+
+  // Excel
+  if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+    info.innerHTML = `<div class="card" style="border-left:3px solid var(--orange)">
+      <strong>📊 Excel 文件：${M.escapeHTML(file.name)}</strong>
+      <div style="margin-top:8px;font-size:13px;color:var(--text-secondary)">
+        Excel 支持即将上线。建议：<br>
+        复制表格中的题目文字 → 在「✏️ 手动录入」中粘贴
+      </div>
+    </div>`;
+    return;
+  }
+
+  // Unknown
+  info.innerHTML = `<div class="card" style="border-left:3px solid var(--red)">
+    <strong>❌ 不支持的文件格式</strong>
+    <div style="margin-top:4px;font-size:13px;color:var(--text-secondary)">${M.escapeHTML(file.type || file.name)}</div>
+    <div style="margin-top:4px;font-size:12px">支持的格式：图片 (JPG/PNG)、PDF、Word、Excel</div>
+  </div>`;
 };
 
 /* ============================================================
@@ -1766,8 +1851,10 @@ M.renderPracticeModes = () => {
   M.$('practice-modes').innerHTML = '<div class="practice-mode-grid">' + M.practice.MODES.map(m => `
     <div class="practice-mode-card${M._practiceState.mode===m.key?' selected':''}" onclick="M.selectPracticeMode('${m.key}')">
       <div class="mode-icon">${m.icon}</div>
-      <div class="mode-name">${m.name}</div>
-      <div class="mode-desc">${m.desc}</div>
+      <div class="mode-info">
+        <div class="mode-name">${m.name}</div>
+        <div class="mode-desc">${m.desc}</div>
+      </div>
     </div>
   `).join('') + '</div>';
   if (M._practiceState.mode) {
