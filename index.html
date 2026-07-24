@@ -935,20 +935,66 @@ M.renderTagPicker = () => {
   const sem = M.$('add-semester').value;
   const treeKey = sem === '1' ? 'semester1' : 'semester2';
   const container = M.$('add-tag-picker');
+  const selected = M._addState.knowledgePoints;
+  const hasAutoClassified = M._addState._hasClassified;
+
+  // If auto-classified, show smart layout: recommended tags first, rest collapsed
+  if (hasAutoClassified && selected.length > 0) {
+    let html = '<div style="font-weight:600;font-size:14px;margin-bottom:4px;color:var(--blue)">🤖 AI 智能识别（点击可取消）</div>';
+    html += '<div class="tag-grid" style="margin-bottom:8px">';
+    for (const kp of selected) {
+      html += `<span class="tag-chip selected" data-kp="${kp}" onclick="M.toggleKPTag(this,'${kp}')">${M.getKPName(kp)}</span>`;
+    }
+    html += '</div>';
+    html += '<div style="font-size:12px;color:var(--text-tertiary);cursor:pointer;user-select:none" id="toggle-all-tags" onclick="M.toggleAllTags()">📂 展开全部知识点（' + Object.keys(M._kpFlat).length + '个） ▸</div>';
+    html += '<div id="all-tags-panel" style="display:none;margin-top:8px">';
+    for (const ch of M.KNOWLEDGE_TREE[treeKey].chapters) {
+      html += `<div style="font-size:11px;color:var(--text-tertiary);margin:6px 0 2px">${ch.name}</div>`;
+      html += '<div class="tag-grid">';
+      for (const pt of ch.points) {
+        const sel = selected.includes(pt.key) ? ' selected' : '';
+        html += `<span class="tag-chip${sel}" data-kp="${pt.key}" onclick="M.toggleKPTag(this,'${pt.key}')">${pt.name}</span>`;
+      }
+      html += '</div>';
+    }
+    html += '<div style="font-size:11px;color:var(--text-tertiary);margin:6px 0 2px">跨章技能</div><div class="tag-grid">';
+    for (const [k,v] of Object.entries(M.KNOWLEDGE_TREE.crossSkills)) {
+      const sel = selected.includes(k) ? ' selected' : '';
+      html += `<span class="tag-chip${sel}" data-kp="${k}" onclick="M.toggleKPTag(this,'${k}')">${v.name}</span>`;
+    }
+    html += '</div></div>';
+    container.innerHTML = html;
+    return;
+  }
+
+  // Default full view
   let html = '';
   for (const ch of M.KNOWLEDGE_TREE[treeKey].chapters) {
     html += `<div style="font-size:12px;color:var(--text-tertiary);margin:8px 0 4px;width:100%">${ch.name}</div>`;
     for (const pt of ch.points) {
-      const sel = M._addState.knowledgePoints.includes(pt.key) ? ' selected' : '';
+      const sel = selected.includes(pt.key) ? ' selected' : '';
       html += `<span class="tag-chip${sel}" data-kp="${pt.key}" onclick="M.toggleKPTag(this,'${pt.key}')">${pt.name}</span>`;
     }
   }
   html += `<div style="font-size:12px;color:var(--text-tertiary);margin:8px 0 4px;width:100%">跨章技能</div>`;
   for (const [k,v] of Object.entries(M.KNOWLEDGE_TREE.crossSkills)) {
-    const sel = M._addState.knowledgePoints.includes(k) ? ' selected' : '';
+    const sel = selected.includes(k) ? ' selected' : '';
     html += `<span class="tag-chip${sel}" data-kp="${k}" onclick="M.toggleKPTag(this,'${k}')">${v.name}</span>`;
   }
   container.innerHTML = html;
+};
+
+M.toggleAllTags = () => {
+  const panel = M.$('all-tags-panel');
+  const toggle = M.$('toggle-all-tags');
+  if (!panel || !toggle) return;
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    toggle.innerHTML = '📂 收起全部知识点 ▾';
+  } else {
+    panel.style.display = 'none';
+    toggle.innerHTML = '📂 展开全部知识点（' + Object.keys(M._kpFlat).length + '个） ▸';
+  }
 };
 
 M.toggleKPTag = (el, key) => {
@@ -1048,12 +1094,19 @@ M.confirmOCR = () => {
 
 M.autoClassify = () => {
   const text = M.$('add-problem-text').value.trim();
-  if (text.length < 5) { M.$('add-auto-tip').textContent = ''; return; }
+  if (text.length < 5) {
+    M.$('add-auto-tip').textContent = '';
+    M._addState._hasClassified = false;
+    M.renderTagPicker();
+    return;
+  }
   M._autoSuggestKP(text);
+  M._addState._hasClassified = true;
+  M.renderTagPicker();
   if (M._addState.knowledgePoints.length > 0) {
-    M.$('add-auto-tip').textContent = '🤖 已自动识别 ' + M._addState.knowledgePoints.length + ' 个知识点（上方标签已高亮），请核对';
+    M.$('add-auto-tip').textContent = '🤖 AI 识别到 ' + M._addState.knowledgePoints.length + ' 个知识点：' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join('、');
   } else {
-    M.$('add-auto-tip').textContent = '🤖 未能自动识别知识点，请手动选择下方标签';
+    M.$('add-auto-tip').textContent = '🤖 未能自动识别，请点击「展开全部知识点」手动选择，或在题目中补充关键词（如"圆柱的体积""分配律"等）';
   }
 };
 
