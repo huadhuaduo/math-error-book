@@ -1124,16 +1124,28 @@ M.runOCR = async () => {
     M._addState.ocrText = cleaned;
     M.$('ocr-result-box').style.display = 'block';
     M.$('add-ocr-result').value = cleaned;
-    // Auto-classify immediately after OCR
-    M._autoSuggestKP(cleaned);
-    M._addState._hasClassified = true;
-    M.updateTagsSummary();
-    if (M._addState.knowledgePoints.length > 0) {
-      M.$('ocr-tags-summary').innerHTML = '🏷️ 自动识别知识点：<strong>' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join(' · ') + '</strong>';
+
+    // Check if this looks like a multi-problem paper
+    const parts = M._smartSplit(cleaned);
+    if (parts.length >= 2) {
+      // Multi-problem mode: show batch review
+      M._addState._ocrIsMulti = true;
+      M._addState._ocrParts = parts;
+      M._renderOCRMultiReview(parts);
+      M.$('ocr-progress').textContent = '✅ 识别到整卷 ' + parts.length + ' 道题目，请勾选错题';
     } else {
-      M.$('ocr-tags-summary').innerHTML = '⚠️ 未能自动识别知识点，可手动修正文字后重试';
+      // Single problem mode
+      M._addState._ocrIsMulti = false;
+      M._autoSuggestKP(cleaned);
+      M._addState._hasClassified = true;
+      M.updateTagsSummary();
+      if (M._addState.knowledgePoints.length > 0) {
+        M.$('ocr-tags-summary').innerHTML = '🏷️ 自动识别知识点：<strong>' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join(' · ') + '</strong>';
+      } else {
+        M.$('ocr-tags-summary').innerHTML = '⚠️ 未能自动识别知识点，可手动修正文字后重试';
+      }
+      M.$('ocr-progress').textContent = '✅ 识别完成，单题模式。核对修正后点确认';
     }
-    M.$('ocr-progress').textContent = '✅ 识别完成，请核对修正后点确认';
   } catch(e) {
     M.$('ocr-progress').textContent = '识别失败: ' + e.message;
     M.showToast('OCR识别失败，请尝试手动输入', 'error');
@@ -1821,6 +1833,90 @@ M.saveBatch = async () => {
   M._batchProblems = [];
   M.$('batch-preview').innerHTML = '';
   M.$('batch-text').value = '';
+  M.switchScreen('dashboard');
+};
+
+// --- OCR Multi-Problem (整卷识别) ---
+M._ocrWrongMap = {};
+
+M._renderOCRMultiReview = (parts) => {
+  M._ocrWrongMap = {};
+  M.$('ocr-result-box').style.display = 'block';
+  M.$('ocr-result-box').innerHTML = `
+    <div class="card" style="background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.15);margin-bottom:8px">
+      <div style="font-weight:600;font-size:15px">📋 整卷识别 — 共 ${parts.length} 道题目</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">逐题核对，<b>点击「❌ 做错了」</b>标记错题，填写正确答案后保存</div>
+    </div>
+    ${parts.map((text, i) => {
+      const kps = M._autoSuggestKP_internal(text);
+      return '<div class="card" style="margin-bottom:6px" id="ocr-card-' + i + '">' +
+        '<div style="font-weight:600;font-size:13px;margin-bottom:4px">📝 第' + (i+1) + '题' + (kps.length > 0 ? ' <span style="font-size:11px;color:var(--blue);font-weight:400">' + kps.map(function(k){return M.getKPName(k);}).join(' · ') + '</span>' : '') + '</div>' +
+        '<textarea style="min-height:36px;font-size:13px;margin-bottom:6px" onchange="M._updateOCRPart(' + i + ',\'text\',this.value)">' + M.escapeHTML(text) + '</textarea>' +
+        '<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">' +
+          '<span class="tag-chip" id="ocr-btn-right-' + i + '" style="cursor:pointer" onclick="M._markOCRProblem(' + i + ',false)">✅ 做对了</span>' +
+          '<span class="tag-chip" id="ocr-btn-wrong-' + i + '" style="cursor:pointer" onclick="M._markOCRProblem(' + i + ',true)">❌ 做错了</span>' +
+        '</div>' +
+        '<div id="ocr-wrong-fields-' + i + '" style="display:none">' +
+          '<div style="display:flex;gap:4px"><input type="text" placeholder="我的答案(错的)" style="flex:1;font-size:12px" id="ocr-wrong-ans-' + i + '"><input type="text" placeholder="正确答案" style="flex:1;font-size:12px" id="ocr-correct-ans-' + i + '"></div>' +
+          '<input type="text" placeholder="错因(可选)" style="width:100%;font-size:12px;margin-top:4px" id="ocr-reason-' + i + '">' +
+        '</div>' +
+      '</div>';
+    }).join('')}
+    <div style="margin:12px 0;font-size:14px;font-weight:600" id="ocr-wrong-count">👆 请逐题点击「❌ 做错了」标记错题</div>
+    <button class="btn btn-primary btn-block btn-lg" onclick="M._saveOCRWrongProblems()">💾 保存所有错题</button>
+    <button class="btn btn-outline btn-block btn-sm" style="margin-top:6px" onclick="M.retakePhoto()">↺ 重拍</button>
+  `;
+};
+
+M._markOCRProblem = (i, isWrong) => {
+  if (!M._ocrWrongMap[i]) M._ocrWrongMap[i] = {};
+  M._ocrWrongMap[i].isWrong = isWrong;
+  const btnR = M.$('ocr-btn-right-' + i);
+  const btnW = M.$('ocr-btn-wrong-' + i);
+  const fields = M.$('ocr-wrong-fields-' + i);
+  const card = M.$('ocr-card-' + i);
+  if (!btnR || !btnW || !fields || !card) return;
+  if (isWrong) {
+    btnR.classList.remove('selected'); btnR.style.background=''; btnR.style.color=''; btnR.style.borderColor='';
+    btnW.classList.add('selected'); btnW.style.background='var(--red-bg)'; btnW.style.color='var(--red)'; btnW.style.borderColor='var(--red)';
+    fields.style.display = 'block'; card.style.borderLeft = '3px solid var(--red)';
+  } else {
+    btnW.classList.remove('selected'); btnW.style.background=''; btnW.style.color=''; btnW.style.borderColor='';
+    btnR.classList.add('selected'); btnR.style.background='var(--green-bg)'; btnR.style.color='var(--green)'; btnR.style.borderColor='var(--green)';
+    fields.style.display = 'none'; card.style.borderLeft = '3px solid var(--green)';
+  }
+  const cnt = Object.values(M._ocrWrongMap).filter(function(v){return v.isWrong;}).length;
+  var cntEl = M.$('ocr-wrong-count');
+  if (cntEl) cntEl.innerHTML = cnt > 0 ? '🔴 已标记 <strong>' + cnt + '</strong> 道错题' : '👆 请逐题点击「❌ 做错了」标记错题';
+};
+
+M._updateOCRPart = (i, field, value) => {
+  if (!M._ocrWrongMap[i]) M._ocrWrongMap[i] = {};
+  M._ocrWrongMap[i][field] = value;
+};
+
+M._saveOCRWrongProblems = async () => {
+  const parts = M._addState._ocrParts || [];
+  const wrongList = [];
+  for (let i = 0; i < parts.length; i++) {
+    if (M._ocrWrongMap[i] && M._ocrWrongMap[i].isWrong) {
+      var wa = M.$('ocr-wrong-ans-' + i); var ca = M.$('ocr-correct-ans-' + i); var re = M.$('ocr-reason-' + i);
+      var wrongAns = wa ? wa.value.trim() : ''; var correctAns = ca ? ca.value.trim() : ''; var reason = re ? re.value.trim() : '';
+      var text = M._ocrWrongMap[i].text || parts[i];
+      if (correctAns) wrongList.push({ text: text, wrongAnswer: wrongAns, correctAnswer: correctAns, errorReason: reason, knowledgePoints: M._autoSuggestKP_internal(text) });
+    }
+  }
+  if (wrongList.length === 0) { M.showToast('请先标记错题并填写正确答案', 'error'); return; }
+  var saved = 0;
+  for (var w of wrongList) {
+    try {
+      await DB.addProblem({ problemText: w.text, yourAnswer: w.wrongAnswer, correctAnswer: w.correctAnswer, errorReason: w.errorReason, knowledgePoints: w.knowledgePoints, semester: parseInt(M.$('add-semester').value), difficulty: 3, errorType: 'unknown', hasImage: false, sourceFileType: 'ocr_paper' });
+      saved++;
+    } catch(e) {}
+  }
+  M.showToast('✅ 已保存 ' + saved + ' 道错题', 'success');
+  M._ocrWrongMap = {}; M._addState._ocrParts = null; M._addState._ocrIsMulti = false;
+  M.retakePhoto();
   M.switchScreen('dashboard');
 };
 
