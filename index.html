@@ -394,116 +394,62 @@ img{max-width:100%;display:block}
   <div class="screen-header">
     <button class="btn btn-outline btn-sm" onclick="M.switchScreen('dashboard')">← 返回</button>
     <div class="screen-title" style="font-size:22px">添加错题</div>
-    <div></div>
+    <div><a href="javascript:M.toggleBatchImport()" style="font-size:13px;color:var(--blue)">📋 批量导入</a></div>
   </div>
-  <div class="tab-bar" style="flex-wrap:wrap">
-    <div class="tab-item active" data-tab="manual" onclick="M.switchAddTab('manual')">✏️ 单题录入</div>
-    <div class="tab-item" data-tab="camera" onclick="M.switchAddTab('camera')">📷 拍照识别</div>
-    <div class="tab-item" data-tab="batch" onclick="M.switchAddTab('batch')">📋 批量导入</div>
-  </div>
-  <!-- Manual Entry -->
-  <div id="add-manual">
-    <div class="form-group"><label class="form-label">题目内容</label><textarea id="add-problem-text" placeholder="请输入或粘贴题目内容...&#10;&#10;💡 也可以直接拍照上传，系统会自动识别文字和知识点" oninput="M.autoClassify()"></textarea><div class="form-hint" id="add-auto-tip" style="color:var(--blue)"></div></div>
-    <div class="form-group"><label class="form-label">我的答案（错的）</label><input type="text" id="add-your-answer" placeholder="你当时写的答案"></div>
-    <div class="form-group"><label class="form-label">正确答案</label><input type="text" id="add-correct-answer" placeholder="正确的答案是什么"></div>
-    <div class="form-group"><label class="form-label">错因反思（可选）</label><input type="text" id="add-error-reason" placeholder="为什么会做错？"></div>
-  </div>
-  <!-- Camera -->
-  <div id="add-camera" style="display:none">
-    <div style="text-align:center;padding:var(--space-lg)" id="add-camera-btns">
-      <input type="file" accept="image/*" capture="environment" id="add-camera-input" style="display:none" onchange="M.handleCameraCapture(event)">
-      <button class="btn btn-primary btn-lg" onclick="document.getElementById('add-camera-input').click()">📷 拍照</button>
-      <button class="btn btn-outline btn-lg" style="margin-left:8px" onclick="document.getElementById('add-gallery-input').click()">🖼️ 从相册选</button>
-      <input type="file" accept="image/*" id="add-gallery-input" style="display:none" onchange="M.handleCameraCapture(event)">
+
+  <!-- Unified photo + text area -->
+  <div class="card" style="margin-bottom:12px;text-align:center;padding:16px" id="add-photo-area">
+    <input type="file" accept="image/*" capture="environment" id="add-camera-input" style="display:none" onchange="M.handlePhoto(event)">
+    <input type="file" accept="image/*" id="add-gallery-input" style="display:none" onchange="M.handlePhoto(event)">
+    <div id="add-photo-empty">
+      <div style="font-size:36px;margin-bottom:4px">📷</div>
+      <button class="btn btn-primary" onclick="document.getElementById('add-camera-input').click()">拍照</button>
+      <button class="btn btn-outline" style="margin-left:6px" onclick="document.getElementById('add-gallery-input').click()">相册</button>
+      <div style="font-size:12px;color:var(--text-tertiary);margin-top:6px">拍照自动识别，或直接在下方粘贴题目</div>
     </div>
-    <div id="add-camera-preview" style="display:none">
-      <img id="add-camera-img" style="max-height:240px;margin:0 auto;border-radius:var(--radius-md)">
-      <div style="text-align:center;margin-top:12px">
-        <button class="btn btn-primary" onclick="M.runOCR()" id="btn-ocr">🔍 智能识别文字和知识点</button>
-        <div id="ocr-progress" style="display:none;margin-top:8px;font-size:13px;color:var(--text-secondary)"></div>
+    <div id="add-photo-preview" style="display:none">
+      <img id="add-photo-img" style="max-height:180px;margin:0 auto;border-radius:var(--radius-sm)">
+      <div style="margin-top:8px;display:flex;gap:6px;justify-content:center">
+        <button class="btn btn-primary btn-sm" onclick="M.runOCR()" id="btn-ocr">🔍 识别文字</button>
+        <button class="btn btn-outline btn-sm" onclick="M.clearPhoto()">✕ 清除</button>
       </div>
-      <div id="ocr-result-box" style="display:none;margin-top:12px">
-        <div class="card" style="background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.15)">
-          <div style="font-weight:600;font-size:14px;margin-bottom:8px">📋 识别结果</div>
-          <textarea id="add-ocr-result" style="min-height:60px" placeholder="OCR 识别结果，请检查修正..."></textarea>
-          <div style="margin-top:8px;font-size:13px" id="ocr-tags-summary"></div>
-          <div style="margin-top:10px;display:flex;gap:8px">
-            <button class="btn btn-primary btn-sm" onclick="M.confirmOCR()">✓ 确认并自动分类</button>
-            <button class="btn btn-outline btn-sm" onclick="M.retakePhoto()">↺ 重拍</button>
-          </div>
-        </div>
-      </div>
+      <div id="ocr-progress" style="display:none;margin-top:6px;font-size:12px;color:var(--text-secondary)"></div>
     </div>
   </div>
-  <!-- File Upload -->
-  <div id="add-file" style="display:none">
-    <div style="text-align:center;padding:var(--space-lg)">
-      <input type="file" accept="image/*,.pdf,.docx,.xlsx,.xls" id="add-file-input" style="display:none" onchange="M.handleFileUpload(event)">
-      <button class="btn btn-outline btn-lg" onclick="document.getElementById('add-file-input').click()">📁 选择文件</button>
-      <div class="form-hint">支持图片、PDF、Word、Excel</div>
-    </div>
-    <div id="add-file-info" style="display:none"></div>
+
+  <!-- Problem text -->
+  <div class="form-group" style="margin-bottom:8px">
+    <textarea id="add-problem-text" placeholder="题目内容（拍照识别或直接粘贴）" oninput="M.onProblemTextChange()" style="min-height:72px"></textarea>
   </div>
-  <!-- Batch Import -->
-  <div id="add-batch" style="display:none">
-    <div class="card" style="margin-bottom:12px;background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.15)">
-      <div style="font-weight:600;font-size:14px;margin-bottom:4px">💡 使用说明</div>
-      <div style="font-size:13px;color:var(--text-secondary)">
-        将整张卷子/文档的错题文字粘贴到下方，系统会自动拆分成多道题。<br>
-        题目之间用 <b>数字编号</b>（1. 2. 3.）或 <b>空行</b> 分隔即可。
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">粘贴所有错题文字</label>
-      <textarea id="batch-text" placeholder="粘贴整段错题文字，例如：&#10;&#10;1. 一个圆柱形水桶底面半径20cm高50cm，能装多少升水？&#10;2. 计算：3/7×5/6+3/7×1/6&#10;3. 求阴影面积：正方形边长6cm，内切一个圆...&#10;&#10;系统会自动按编号拆分成3道题" style="min-height:160px" oninput="M.previewBatch()"></textarea>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="M.splitBatch()" id="btn-split">🔍 智能拆分题目</button>
-    <div id="batch-preview" style="margin-top:12px"></div>
+
+  <!-- Auto tags bar -->
+  <div id="add-tags-bar" style="margin-bottom:8px;font-size:12px;color:var(--text-tertiary);min-height:20px">输入文字或拍照后自动识别知识点</div>
+  <div id="add-tags-edit" style="display:none;margin-bottom:8px">
+    <select id="add-semester" onchange="M.renderTagPicker()" style="width:auto;display:inline-block;margin-bottom:4px;font-size:12px">
+      <option value="1">六上</option><option value="2">六下</option>
+    </select>
+    <div class="tag-grid" id="add-tag-picker"></div>
+    <button class="btn btn-outline btn-sm" style="margin-top:4px" onclick="M.hideTagEditor()">完成</button>
   </div>
-  <!-- Shared fields for all tabs -->
-  <div class="form-group"><label class="form-label">难度自评</label>
-    <div style="display:flex;gap:6px" id="add-difficulty">
-      <span class="tag-chip" data-d="1" onclick="M.selectDifficulty(1)">⭐ 很简单</span>
-      <span class="tag-chip" data-d="2" onclick="M.selectDifficulty(2)">⭐⭐ 有点难</span>
-      <span class="tag-chip selected" data-d="3" onclick="M.selectDifficulty(3)">⭐⭐⭐ 一般</span>
-      <span class="tag-chip" data-d="4" onclick="M.selectDifficulty(4)">⭐⭐⭐⭐ 比较难</span>
-      <span class="tag-chip" data-d="5" onclick="M.selectDifficulty(5)">⭐⭐⭐⭐⭐ 非常难</span>
-    </div>
+
+  <!-- Answer fields -->
+  <div style="display:flex;gap:6px;margin-bottom:10px">
+    <input type="text" id="add-your-answer" placeholder="我写的（错的）" style="flex:1;font-size:14px">
+    <input type="text" id="add-correct-answer" placeholder="正确答案" style="flex:1;font-size:14px">
   </div>
-  <div class="form-group"><label class="form-label">错因类型</label>
-    <div class="tag-grid" id="add-error-type">
-      <span class="tag-chip" data-et="calculation" onclick="M.selectErrorType('calculation')">计算错误</span>
-      <span class="tag-chip" data-et="concept" onclick="M.selectErrorType('concept')">概念不清</span>
-      <span class="tag-chip" data-et="careless" onclick="M.selectErrorType('careless')">粗心大意</span>
-      <span class="tag-chip" data-et="application" onclick="M.selectErrorType('application')">不会应用</span>
-    </div>
-  </div>
-  <div class="form-group">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-      <label class="form-label" style="margin-bottom:0">🏷️ 知识点分类</label>
-      <span style="font-size:12px;color:var(--blue);cursor:pointer" id="btn-show-tags" onclick="M.showTagEditor()">修改 ▸</span>
-    </div>
-    <div id="add-tags-summary" style="font-size:13px;color:var(--text-secondary);padding:4px 0">等待输入题目或拍照后自动识别...</div>
-    <div id="add-tag-editor" style="display:none">
-      <div style="margin-bottom:8px">
-        <select id="add-semester" onchange="M.renderTagPicker()" style="width:auto;display:inline-block">
-          <option value="1">六年级上册</option>
-          <option value="2">六年级下册</option>
-        </select>
-      </div>
-      <div class="tag-grid" id="add-tag-picker"></div>
-      <div class="form-hint" id="add-tag-suggest" style="margin-top:8px"></div>
-      <button class="btn btn-outline btn-sm" style="margin-top:6px" onclick="M.hideTagEditor()">收起</button>
-    </div>
-  </div>
-  <div style="display:flex;gap:8px;margin-top:var(--space-lg)">
-    <button class="btn btn-primary btn-block" onclick="M.saveProblem()">💾 保存错题</button>
+
+  <button class="btn btn-primary btn-block btn-lg" onclick="M.saveProblem()">💾 保存错题</button>
+  <div id="add-save-msg" style="text-align:center;margin-top:8px;font-size:13px"></div>
+
+  <!-- Batch import (collapsed) -->
+  <div id="add-batch" style="display:none;margin-top:20px;padding-top:16px;border-top:1px solid var(--border-light)">
+    <div style="font-weight:600;margin-bottom:8px">📋 批量导入</div>
+    <textarea id="batch-text" placeholder="粘贴整段错题（按编号或空行分隔）" style="min-height:100px" oninput="M.previewBatch()"></textarea>
+    <button class="btn btn-outline btn-block" style="margin-top:6px" onclick="M.splitBatch()">🔍 智能拆分</button>
+    <div id="batch-preview" style="margin-top:8px"></div>
   </div>
 </div>
 
-<!-- ============================================================
-     SCREEN 3: Problem Library (错题本)
-     ============================================================ -->
 <div class="screen-container" id="screen-library">
   <div class="screen-header">
     <div class="screen-title" style="font-size:22px">📚 错题本</div>
@@ -1033,7 +979,7 @@ M.showTagEditor = () => {
 M.hideTagEditor = () => {
   M.$('add-tag-editor').style.display = 'none';
   M.$('btn-show-tags').style.display = 'inline';
-  M.updateTagsSummary();
+  M.updateTagsBar();
 };
 
 M.updateTagsSummary = () => {
@@ -1136,30 +1082,11 @@ M.runOCR = async () => {
       .trim();
 
     M._addState.ocrText = cleaned;
-    M.$('ocr-result-box').style.display = 'block';
-    M.$('add-ocr-result').value = cleaned;
+    M.$('add-problem-text').value = cleaned;
+    M._autoSuggestKP(cleaned);
+    M._addState._hasClassified = true;
+    M.updateTagsBar();
 
-    // Check if this looks like a multi-problem paper
-    const parts = M._smartSplit(cleaned);
-    if (parts.length >= 2) {
-      // Multi-problem mode: show batch review
-      M._addState._ocrIsMulti = true;
-      M._addState._ocrParts = parts;
-      M._renderOCRMultiReview(parts);
-      M.$('ocr-progress').textContent = '✅ 识别到整卷 ' + parts.length + ' 道题目，请勾选错题';
-    } else {
-      // Single problem mode
-      M._addState._ocrIsMulti = false;
-      M._autoSuggestKP(cleaned);
-      M._addState._hasClassified = true;
-      M.updateTagsSummary();
-      if (M._addState.knowledgePoints.length > 0) {
-        M.$('ocr-tags-summary').innerHTML = '🏷️ 自动识别知识点：<strong>' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join(' · ') + '</strong>';
-      } else {
-        M.$('ocr-tags-summary').innerHTML = '⚠️ 未能自动识别知识点，可手动修正文字后重试';
-      }
-      M.$('ocr-progress').textContent = '✅ 识别完成，单题模式。核对修正后点确认';
-    }
   } catch(e) {
     M.$('ocr-progress').textContent = '识别失败: ' + e.message;
     M.showToast('OCR识别失败，请尝试手动输入', 'error');
@@ -1167,39 +1094,24 @@ M.runOCR = async () => {
   M.$('btn-ocr').disabled = false;
 };
 
-M.confirmOCR = () => {
-  const text = M.$('add-ocr-result').value.trim();
-  if (!text) { M.showToast('识别结果为空','error'); return; }
-  M.$('add-problem-text').value = text;
-  // Auto classify
-  M._autoSuggestKP(text);
-  M._addState._hasClassified = true;
-  M.updateTagsSummary();
-  // Show tags in OCR box
-  if (M._addState.knowledgePoints.length > 0) {
-    M.$('ocr-tags-summary').innerHTML = '🏷️ 自动识别知识点：<strong>' + M._addState.knowledgePoints.map(k => M.getKPName(k)).join(' · ') + '</strong>';
-  } else {
-    M.$('ocr-tags-summary').innerHTML = '⚠️ 未能自动识别知识点，可点击右上角「修改」手动选择';
-  }
-  M.$('add-auto-tip').textContent = '✅ 文字已填入，知识点已自动分类。请核对并填写答案后保存';
-  M.showToast('文字和知识点已自动识别，请核对', 'success');
-};
+// OCR now auto-fills problem text directly - confirmOCR kept for backward compat
+M.confirmOCR = () => { M.showToast('文字已自动填入，请核对后保存', 'success'); };
 
 M.autoClassify = () => {
   const text = M.$('add-problem-text').value.trim();
   if (text.length < 5) {
-    M.$('add-auto-tip').textContent = '';
+    M.updateTagsBar();
     M._addState._hasClassified = false;
-    M.updateTagsSummary();
+    M.updateTagsBar();
     return;
   }
   M._autoSuggestKP(text);
   M._addState._hasClassified = true;
-  M.updateTagsSummary();
+  M.updateTagsBar();
   if (M._addState.knowledgePoints.length > 0) {
-    M.$('add-auto-tip').textContent = '🤖 已自动识别 ' + M._addState.knowledgePoints.length + ' 个知识点';
+    M.updateTagsBar();
   } else {
-    M.$('add-auto-tip').textContent = '🤖 未能自动识别，可点击右上角「修改」手动选择';
+    M.updateTagsBar();
   }
 };
 
@@ -1257,512 +1169,70 @@ M._autoSuggestKP = (text) => {
   }
 };
 
-M.retakePhoto = () => {
-  M.$('add-camera-preview').style.display = 'none';
-  M.$('ocr-result-box').style.display = 'none';
-  M.$('add-camera-btns').style.display = 'block';
+// Unified photo handler
+M.handlePhoto = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  M._addState.imageBlob = file;
+  M.$('add-photo-img').src = URL.createObjectURL(file);
+  M.$('add-photo-empty').style.display = 'none';
+  M.$('add-photo-preview').style.display = 'block';
+  M.$('btn-ocr').disabled = false;
+  M.$('btn-ocr').textContent = '🔍 识别文字';
+};
+
+M.clearPhoto = () => {
   M._addState.imageBlob = null;
   M._addState.ocrText = '';
-  M._addState._hasClassified = false;
-  M._addState.knowledgePoints = [];
-  M.updateTagsSummary();
+  M.$('add-photo-empty').style.display = 'block';
+  M.$('add-photo-preview').style.display = 'none';
+  M.$('ocr-progress').style.display = 'none';
   M.$('btn-ocr').disabled = false;
-  M.$('btn-ocr').textContent = '🔍 智能识别文字和知识点';
+  M.$('btn-ocr').textContent = '🔍 识别文字';
 };
 
-M.handleCameraCapture = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  M._addState.imageBlob = file;
-  const url = URL.createObjectURL(file);
-  M.$('add-camera-img').src = url;
-  M.$('add-camera-preview').style.display = 'block';
-  M.$('add-camera-btns').style.display = 'none';
-  M.$('ocr-result-box').style.display = 'none';
-  M.$('btn-ocr').disabled = false;
-  M.$('btn-ocr').textContent = '🔍 智能识别文字和知识点';
+M.toggleBatchImport = () => {
+  const el = M.$('add-batch');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 };
 
-M.handleFileUpload = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  M.$('add-file-info').style.display = 'block';
-  const info = M.$('add-file-info');
-  const isImage = file.type.startsWith('image/');
-  const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
-  const isWord = file.name.endsWith('.docx') || file.name.endsWith('.doc');
-  const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
-
-  // Always store the file so save works
-  M._addState.imageBlob = file;
-  const url = isImage ? URL.createObjectURL(file) : null;
-
-  if (isImage) {
-    info.innerHTML = `<div class="card" style="text-align:center">
-      <img src="${url}" style="max-height:220px;margin:0 auto;border-radius:var(--radius-sm)">
-      <div style="margin-top:8px;font-weight:500">📷 ${M.escapeHTML(file.name)}</div>
-      <div style="font-size:12px;color:var(--text-secondary)">${(file.size/1024).toFixed(0)}KB · 点击上方「智能识别」按钮提取文字和知识点</div>
-    </div>`;
-    M.$('add-camera-img').src = url;
-    M.$('add-camera-preview').style.display = 'block';
-    M.$('add-camera-btns').style.display = 'none';
-    M.$('ocr-result-box').style.display = 'none';
-    return;
-  }
-
-  // Non-image files: store as attachment, hint user
-  const typeLabel = isPDF ? '📄 PDF' : isWord ? '📝 Word' : isExcel ? '📊 Excel' : '📎 文件';
-  info.innerHTML = `<div class="card" style="text-align:center;border-left:3px solid var(--blue)">
-    <div style="font-size:40px;margin-bottom:8px">${isPDF ? '📄' : isWord ? '📝' : isExcel ? '📊' : '📎'}</div>
-    <strong>${M.escapeHTML(file.name)}</strong>
-    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">${(file.size/1024).toFixed(0)}KB · ${typeLabel}</div>
-    <div style="margin-top:8px;font-size:13px;color:var(--blue)">✅ 文件已附加，可直接保存</div>
-    <div style="margin-top:4px;font-size:12px;color:var(--text-secondary)">⚠️ 当前仅支持单题录入。多题文档请：<br>截图每道题 → 在「📷 拍照识别」中逐题上传</div>
-  </div>`;
-  // Auto-fill a placeholder so classification can work
-  if (!M.$('add-problem-text').value.trim()) {
-    M.$('add-problem-text').value = '[' + file.name + ']';
-    M.autoClassify();
-  }
-};
-
-/* ============================================================
-   SECTION V: Seed Question Bank (~100 problems)
-   ============================================================ */
-M.SEED_QUESTIONS = [
-  // === 组合图形面积 (重点: ~25题) ===
-  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'一个正方形边长4cm，以每条边为直径向正方形内画半圆，求四个半圆重叠部分的面积。', answer:'阴影面积 = 4 × (半圆面积 - 等腰直角三角形面积) = 4 × (π×2²/2 - 2×2/2) = 4 × (2π - 2) = 8π - 8 ≈ 17.12 cm²', solution:'步骤1：连接正方形各边中点\n步骤2：每个半圆的圆心在边的中点\n步骤3：四个半圆的四块重叠部分=4×(半圆-三角形)\n步骤4：代入计算', errorPatterns:['miss_overlap'], year:2023 },
-  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'seed', problemText:'在一个直径为10cm的圆内画一个最大的正方形，求圆内正方形以外的面积（阴影部分）。', answer:'正方形面积=对角线²/2=10²/2=50cm²\n圆的面积=π×5²=25π≈78.5cm²\n阴影=78.5-50=28.5cm²', solution:'思路：圆内最大正方形的对角线=圆的直径\n方法1（对角线法）：正方形面积=对角线²÷2\n方法2（三角形法）：正方形=4个等腰直角三角形', errorPatterns:['wrong_method'], year:2023 },
-  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'如右图，正方形ABCD边长为6cm，以A为圆心、AB为半径画弧；以C为圆心、CB为半径画弧。求两弧之间的阴影面积。', answer:'阴影=正方形面积 - 两个1/4圆面积 = 36 - 2×(π×36/4) = 36 - 18π ≈ 36 - 56.52 = 无法直接减（两弧有重叠）\n正确解法：阴影=2×(正方形-1/4圆)=2×(36-9π)=72-18π≈15.48cm²', solution:'关键：两弧以对角顶点为圆心\n阴影是两弧之间的部分\n= 两弧总面积 - 正方形\n= 2个1/4圆 - 正方形', errorPatterns:['miss_overlap'] },
-  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'seed', problemText:'一个直角三角形的两条直角边分别是6cm和8cm。以三条边为直径分别向三角形外画半圆。求三个半圆的面积之和与三角形面积的关系。', answer:'以6cm为直径的半圆面积=π×3²/2=4.5π\n以8cm为直径的半圆面积=π×4²/2=8π\n斜边=10cm，以10cm为直径的半圆面积=π×5²/2=12.5π\n总面积=25π≈78.5cm²\n三角形面积=6×8/2=24cm²\n两个小半圆面积之和=三角形面积+两个小半圆在三角形外的部分', solution:'这是著名的勾股定理+半圆面积推论\n直角边上两个半圆面积之和=斜边上半圆面积', errorPatterns:['wrong_method'] },
-  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'past_exam', problemText:'下图是一个半圆和一个等腰直角三角形拼成的图形。半圆直径=三角形的底=10cm，三角形高=5cm。求整个组合图形的面积。', answer:'半圆面积=π×5²/2=12.5π≈39.25cm²\n三角形面积=10×5/2=25cm²\n总面积=39.25+25=64.25cm²', solution:'分别计算再相加（分割法）\n注意：半圆直径=三角形底边，两者共用一条边', errorPatterns:['incomplete_decomp'] },
-  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'求下面阴影部分的面积：在一个长8cm、宽6cm的长方形中，减去一个直径为6cm的半圆（半圆直径与宽边重合）。', answer:'长方形面积=8×6=48cm²\n半圆面积=π×3²/2=4.5π≈14.13cm²\n阴影=48-14.13=33.87cm²', solution:'添补法：用长方形减去半圆\n检查半圆是否完全在长方形内: 半圆半径3cm，长方形宽6cm，刚好吻合', errorPatterns:['wrong_method'], year:2022 },
-  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'seed', problemText:'一个环形，外圆半径5cm，内圆半径3cm。在环形中切出一个60°的扇形。求这个扇环的面积。', answer:'环面积=π(R²-r²)=π(25-9)=16π≈50.24cm²\n60°扇环=16π×60/360=16π/6≈8.37cm²', solution:'两步：先求完整圆环面积，再按角度比例\n圆环面积=S大圆-S小圆=π(R²-r²)\n扇环=圆环×圆心角/360°', errorPatterns:['area_unit_10000'] },
-  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'如图所示，大正方形边长为10cm，里面有一个内切圆，圆内又有一个内接小正方形。求小正方形的面积。', answer:'大正方形边长=10，内切圆直径=10，半径=5\n小正方形对角线=圆的直径=10\n小正方形面积=对角线²/2=10²/2=50cm²', solution:'关键：小正方形的对角线就是圆的直径\n同一个圆，外切正方形和内接正方形的面积比=2:1', errorPatterns:['wrong_method'], year:2024 },
-  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'seed', problemText:'四个相同的圆如图排列（两行两列），每个圆半径3cm，四个圆的圆心构成一个正方形。求四个圆之间围成的中间空白区域的面积。', answer:'四个圆心构成正方形边长=直径=6cm\n中间空白=正方形面积-4个1/4圆面积\n=6²-4×(π×3²/4)=36-9π≈36-28.26=7.74cm²', solution:'连接四个圆心形成正方形\n中间空白=正方形-4个1/4圆', errorPatterns:['miss_overlap'] },
-  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'学校操场由一个长方形和两个半圆组成。长方形长100m、宽60m（两个半圆的直径=宽=60m）。求操场面积。', answer:'长方形面积=100×60=6000m²\n两个半圆=一个整圆=π×30²=900π≈2826m²\n总面积=6000+2826=8826m²', solution:'两个半圆正好拼成一个完整的圆！\n总面积=长方形+整圆', errorPatterns:[] },
-  // 更多组合图形题
-  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'seed', problemText:'在一个半径为4cm的圆中，画一个圆心角为90°的扇形。求这个扇形的面积和弧长。', answer:'扇形面积=π×4²×90/360=16π/4=4π≈12.56cm²\n弧长=2π×4×90/360=8π/4=2π≈6.28cm', solution:'扇形面积=圆面积×圆心角/360°\n弧长=圆周长×圆心角/360°', errorPatterns:[] },
-  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'如图，一个边长为8cm的正方形，以四个顶点为圆心，边长为半径各画一个1/4圆，四个1/4圆在正方形内部形成阴影。求阴影面积。', answer:'阴影=正方形-4个空白花瓣\n=正方形-(正方形-一个整圆)\n=一个整圆=π×8²=64π≈200.96cm²\n等等，思考：四个1/4圆正好拼成一个整圆...\n实际阴影=四个1/4圆在正方形内的重叠部分\n=正方形面积-(正方形-整圆)\n=整圆=64π≈200.96\n但200.96>64，不可能！\n正确：四个顶点1/4圆覆盖正方形但不完全重叠\n阴影=四个1/4圆面积之和-正方形×1', answer:'四个1/4圆面积=πr²=64π\n正方形面积=64\n四种重叠=64π-64≈136.96cm²\n这是花瓣形（四个1/4圆的交叠部分）', errorPatterns:['miss_overlap'] },
-  { knowledgePointKey:'composite_shape_area', difficulty:3, source:'seed', problemText:'一个梯形上底4cm、下底10cm、高6cm。以梯形的高为直径在梯形内画一个半圆。求梯形内半圆外的面积。', answer:'梯形面积=(4+10)×6/2=42cm²\n半圆直径=6,半径=3,半圆面积=π×9/2=4.5π≈14.13cm²\n梯形内半圆外=42-14.13=27.87cm²', solution:'确定半圆完全在梯形内：直径6=高，半圆宽度=直径=6\n梯形的下底10>6，所以半圆完全在梯形内\n用分割法：梯形-半圆', errorPatterns:['incomplete_decomp'] },
-  { knowledgePointKey:'composite_shape_area', difficulty:1, source:'seed', problemText:'求阴影面积：一个直径为20cm的半圆，以它的直径为底边，向上画一个等腰直角三角形（顶点在半圆弧上）。求半圆内、三角形外的阴影面积。', answer:'半圆面积=π×10²/2=50π≈157cm²\n三角形底=20cm,高=10cm(半径)\n三角形面积=20×10/2=100cm²\n阴影=157-100=57cm²', solution:'添补法：半圆-三角形\n等腰直角三角形顶点在半圆最高点（圆心正上方）', errorPatterns:[] },
-  { knowledgePointKey:'composite_shape_area', difficulty:2, source:'past_exam', problemText:'一个正方形面积是64cm²，剪去四个角上的四个相同的等腰直角三角形（直角边2cm），求剩余八边形的面积和周长。', answer:'正方形边长=√64=8cm\n四个三角形总面积=4×(2×2/2)=8cm²\n八边形面积=64-8=56cm²\n八边形周长=(8-2×2)×4+4×斜边\n=4×4+4×√(2²+2²)=16+4×2√2=16+8√2≈27.31cm', solution:'先求边长，再减去三角形\n周长=四条原边减去被切部分+四条新斜边', errorPatterns:['incomplete_decomp'], year:2021 },
-  // 乘法分配律 (重点: ~25题)
-  { knowledgePointKey:'distributive_property', difficulty:1, source:'seed', problemText:'用简便方法计算：25×(40+4)', answer:'25×40+25×4=1000+100=1100', solution:'直接展开：a×(b+c)=a×b+a×c', errorPatterns:['forget_second_term'] },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：3/7×5/6+3/7×1/6', answer:'=3/7×(5/6+1/6)=3/7×1=3/7', solution:'逆向使用：提取公因数3/7\nac+bc=(a+b)c', errorPatterns:['reverse_extract_error'] },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'past_exam', problemText:'计算：99×7/8', answer:'=(100-1)×7/8=100×7/8-1×7/8=700/8-7/8=693/8=86.625', solution:'技巧：99=100-1\n(a-b)×c=a×c-b×c', errorPatterns:['sign_error'], year:2023 },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：36×(1/4+1/6-1/9)', answer:'=36×1/4+36×1/6-36×1/9=9+6-4=11', solution:'三个加数都要分配！\n(a+b-c)×d=a×d+b×d-c×d', errorPatterns:['sign_error'] },
-  { knowledgePointKey:'distributive_property', difficulty:3, source:'seed', problemText:'计算：73×64+27×64', answer:'=(73+27)×64=100×64=6400', solution:'观察：64是公共因数\n提取公因数后，括号里正好凑整', errorPatterns:['reverse_extract_error'] },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'past_exam', problemText:'计算：5.6×1.7+0.56×83', answer:'=5.6×1.7+5.6×8.3 （0.56×83=0.56×10×8.3=5.6×8.3）\n=5.6×(1.7+8.3)=5.6×10=56', solution:'关键：0.56×83=5.6×8.3\n先把各项化成含相同因数', errorPatterns:['reverse_extract_error'], year:2024 },
-  { knowledgePointKey:'distributive_property', difficulty:1, source:'seed', problemText:'用简便方法计算：125×88', answer:'=125×(80+8)=125×80+125×8=10000+1000=11000\n或=125×8×11=1000×11=11000', solution:'方法1:拆分88=80+8\n方法2:125×8=1000是关键数', errorPatterns:['forget_second_term'] },
-  { knowledgePointKey:'distributive_property', difficulty:3, source:'seed', problemText:'计算：(1/2+1/3+1/4)×12', answer:'=12/2+12/3+12/4=6+4+3=13', solution:'三个分数分别与12相乘再相加\n先约分后计算更简便', errorPatterns:['sign_error'] },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'past_exam', problemText:'计算：4.7×9.9', answer:'=4.7×(10-0.1)=4.7×10-4.7×0.1=47-0.47=46.53', solution:'9.9=10-0.1\n利用分配律简化小数乘法', errorPatterns:['sign_error'], year:2022 },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：17/25×3/8+8/25×3/8', answer:'=(17/25+8/25)×3/8=25/25×3/8=1×3/8=3/8', solution:'提取公因数3/8\n17/25+8/25=1，刚好凑整', errorPatterns:['reverse_extract_error'] },
-  { knowledgePointKey:'distributive_property', difficulty:1, source:'seed', problemText:'判断对错：25×(4×8)=(25×4)×(25×8)。如果错，请改正。', answer:'错！乘法分配律不适用于连乘。\n25×(4×8)=(25×4)×8=100×8=800\n(25×4)×(25×8)=100×200=20000，显然错误', solution:'警示：分配律适用a×(b+c)，不适用a×(b×c)\n连乘用结合律：a×(b×c)=(a×b)×c', errorPatterns:['reverse_extract_error'] },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'计算：53×46+53×54-53×20', answer:'=53×(46+54-20)=53×80=4240', solution:'三个项都有公因数53\n合并：a×b+a×c-a×d=a×(b+c-d)', errorPatterns:['sign_error'] },
-  { knowledgePointKey:'distributive_property', difficulty:3, source:'past_exam', problemText:'计算：3.6×11.1+2.8×11.1+3.6×11.1', answer:'=11.1×(3.6+2.8+3.6)=11.1×10=111', solution:'公因数11.1\n3.6+2.8+3.6=10', errorPatterns:['reverse_extract_error'], year:2024 },
-  { knowledgePointKey:'distributive_property', difficulty:2, source:'seed', problemText:'用简便方法计算：201×35', answer:'=(200+1)×35=200×35+1×35=7000+35=7035', solution:'拆分接近整百的数\n201=200+1', errorPatterns:['forget_second_term'] },
-  // === 圆 ===
-  { knowledgePointKey:'circle_area', difficulty:1, source:'seed', problemText:'一个圆的周长是31.4cm，求这个圆的面积。（π取3.14）', answer:'C=2πr=31.4 → r=31.4/(2×3.14)=5cm\nS=πr²=3.14×25=78.5cm²', solution:'第一步：由周长求半径 r=C/(2π)\n第二步：代入面积公式 S=πr²', errorPatterns:[] },
-  { knowledgePointKey:'circle_area', difficulty:2, source:'past_exam', problemText:'用一根长12.56m的绳子在草地上围成一个圈，一只羊拴在圈的中心。羊能吃到的最大草地面积是多少？（π取3.14）', answer:'这其实是求圆的面积，绳子围成的圈是圆的周长。\n但羊拴在中心，半径=绳长。等等，题目有歧义。\n如果是绳子围一圈=周长，求围成的面积：\nC=12.56→r=2m→S=12.56m²\n如果是羊绳长=半径，求羊能吃到的面积：\nS=π×12.56²...不对\n\n正确理解：绳子12.56m是周长，围成圆。羊栓在圆心，能吃到的面积就是这个圆的面积。\nC=2πr=12.56→r=2→S=π×4=12.56m²', solution:'周长→半径→面积', errorPatterns:[], year:2022 },
-  { knowledgePointKey:'circle_ring', difficulty:2, source:'seed', problemText:'一个环形铁片，外圆直径20cm，内圆直径12cm。求这个铁片的面积。', answer:'外圆半径=10cm,内圆半径=6cm\n环面积=π(10²-6²)=π(100-36)=64π≈200.96cm²', solution:'圆环面积=π(R²-r²)\n不需要分别算再减，直接用公式', errorPatterns:['area_unit_10000'] },
-  { knowledgePointKey:'circle_sector', difficulty:1, source:'seed', problemText:'一个半径为9cm的圆，圆心角为120°的扇形面积是多少？', answer:'S=π×9²×120/360=81π×1/3=27π≈84.78cm²', solution:'扇形面积=πr²×n/360\n120°正好是360°的1/3', errorPatterns:[] },
-  // === 圆柱与圆锥 ===
-  { knowledgePointKey:'cyl_volume', difficulty:1, source:'seed', problemText:'一个圆柱形水桶，底面半径20cm，高50cm。这个水桶能装多少升水？（π取3.14）', answer:'V=πr²h=3.14×20²×50=3.14×400×50=62800cm³=62.8L', solution:'1升=1000cm³\n注意单位换算：cm³→L', errorPatterns:['volume_unit_1000'] },
-  { knowledgePointKey:'cone_volume', difficulty:2, source:'past_exam', problemText:'一个圆锥形沙堆，底面周长12.56m，高1.5m。每立方米沙重1.7吨，这堆沙重多少吨？（π取3.14）', answer:'r=C/(2π)=12.56/6.28=2m\nV=πr²h/3=3.14×4×1.5/3=18.84/3=6.28m³\n重量=6.28×1.7=10.676吨', solution:'①周长→半径 ②圆锥体积=πr²h/3 ⚠️牢记1/3 ③体积×密度=重量', errorPatterns:['forget_cone_one_third'], year:2023 },
-  { knowledgePointKey:'cone_volume', difficulty:1, source:'seed', problemText:'判断：圆锥的体积等于圆柱体积的1/3。这个说法对吗？', answer:'错！必须加上前提：等底等高。\n正确说法：等底等高的圆锥体积是圆柱体积的1/3。\n如果底或高不同，这个关系不成立。', solution:'V锥=πr²h/3\nV柱=πr²h\n当r和h都相等时，V锥=V柱/3', errorPatterns:['forget_cone_one_third'] },
-  { knowledgePointKey:'cyl_surface', difficulty:2, source:'seed', problemText:'一个无盖的圆柱形铁皮水桶，底面直径40cm，高60cm。做这个水桶至少需要多少铁皮？（π取3.14）', answer:'底面面积=πr²=3.14×20²=1256cm²\n侧面积=πdh=3.14×40×60=7536cm²\n总面积=1256+7536=8792cm²≈0.88m²', solution:'⚠️无盖！只需一个底面+侧面\n有盖的话要加两个底面积', errorPatterns:['incomplete_decomp'] },
-  { knowledgePointKey:'composite_solid_volume', difficulty:3, source:'past_exam', problemText:'一个粮仓，下面是圆柱形（底面直径4m，高3m），上面是圆锥形（高1.5m）。求粮仓的总容积。（π取3.14）', answer:'圆柱V=πr²h=3.14×4×3=37.68m³\n圆锥V=πr²h/3=3.14×4×1.5/3=18.84/3=6.28m³\n总容积=37.68+6.28=43.96m³', solution:'组合体=圆柱+圆锥\n分别计算再相加\n⚠️圆锥记得除以3', errorPatterns:['forget_cone_one_third'], year:2022 },
-  // === 分数运算 ===
-  { knowledgePointKey:'frac_mul_word', difficulty:2, source:'past_exam', problemText:'小明看一本120页的故事书，第一天看了全书的1/4，第二天看了剩下的2/5。第二天看了多少页？', answer:'第一天看:120×1/4=30页\n剩下:120-30=90页\n第二天看:90×2/5=36页', solution:'分步计算：\n①先求第一天看的量\n②再求剩余量\n③对剩余量求几分之几', errorPatterns:[], year:2023 },
-  { knowledgePointKey:'frac_div_word', difficulty:2, source:'seed', problemText:'一袋大米，吃了3/5后还剩24kg。这袋大米原来有多少kg？', answer:'吃了3/5 → 还剩1-3/5=2/5\n设原来x kg：2x/5=24 → x=24×5/2=60kg\n或直接：24÷(2/5)=24×5/2=60kg', solution:'方法1（方程）：设原来x，列方程\n方法2（算术）：已知部分求整体→除法', errorPatterns:[] },
-  { knowledgePointKey:'frac_mul_mixed', difficulty:2, source:'seed', problemText:'计算：(5/6+3/4)×12', answer:'=5/6×12+3/4×12=10+9=19', solution:'用分配律展开，每项约分后都是整数', errorPatterns:['forget_second_term'] },
-  { knowledgePointKey:'frac_div_rule', difficulty:1, source:'seed', problemText:'计算：3/4÷2/5', answer:'=3/4×5/2=15/8=1又7/8', solution:'除以一个分数=乘它的倒数\n倒数：分子分母互换', errorPatterns:[] },
-  // === 比和比例 ===
-  { knowledgePointKey:'ratio_simplify', difficulty:1, source:'seed', problemText:'化简比：0.25:0.75', answer:'=25:75=1:3\n或同时×4 → 1:3', solution:'方法1:化为整数比再化简\n方法2:同时乘4消去小数', errorPatterns:[] },
-  { knowledgePointKey:'ratio_distribute', difficulty:2, source:'past_exam', problemText:'学校把360本图书按4:5分给五、六年级。六年级比五年级多分多少本？', answer:'总份数=4+5=9\n每份=360/9=40本\n五年级=4×40=160本\n六年级=5×40=200本\n六年级多=200-160=40本', solution:'①求总份数 ②求每份量 ③分别计算', errorPatterns:[], year:2022 },
-  { knowledgePointKey:'prop_scale', difficulty:2, source:'seed', problemText:'在比例尺1:5000000的地图上，量得甲乙两城距离为4.8cm。一辆汽车以每小时80km的速度从甲城开往乙城，需要多少小时？', answer:'实际距离=4.8×5000000=24000000cm=240km\n时间=240/80=3小时', solution:'①图上距离×比例尺分母=实际距离（cm）\n②cm→km要除以100000\n③时间=路程÷速度', errorPatterns:['unit_conversion'] },
-  { knowledgePointKey:'prop_direct', difficulty:2, source:'seed', problemText:'判断：正方形的边长和面积成正比例吗？', answer:'不成正比例。\n面积=边长²，是二次关系，不是y/x=k的线性关系。\n边长从1到2：面积从1到4，比值变化（1→2），不是常数。\n正确：正方形边长和周长成正比例（C=4a）', solution:'正比例的判断：y/x=k（常数）\n面积/边长=边长（不是常数）', errorPatterns:[] },
-  // === 百分数 ===
-  { knowledgePointKey:'pct_discount', difficulty:1, source:'seed', problemText:'一件上衣原价280元，打八五折出售，现在的价格是多少元？', answer:'280×85%=280×0.85=238元\n或280×0.8+280×0.05=224+14=238元', solution:'八五折=85%=0.85\n现价=原价×折扣', errorPatterns:[] },
-  { knowledgePointKey:'pct_discount_adv', difficulty:2, source:'past_exam', problemText:'商场促销：满200减40。小丽买了一件原价350元的衣服，相当于打了几折？（精确到百分位）', answer:'350>200，减40\n实付=350-40=310元\n折扣=310/350≈0.8857≈88.6%\n答：相当于打了八八六折', solution:'实际折扣=实付金额÷原价\n注意对比：满减和打折的计算方式不同', errorPatterns:[], year:2024 },
-  { knowledgePointKey:'pct_interest', difficulty:2, source:'seed', problemText:'妈妈把5000元存入银行，定期3年，年利率2.75%。到期后妈妈能取回多少钱？', answer:'利息=5000×2.75%×3=5000×0.0275×3=412.5元\n本息=5000+412.5=5412.5元', solution:'利息=本金×年利率×年数\n本息=本金+利息', errorPatterns:['unit_conversion'] },
-  // === 负数 ===
-  { knowledgePointKey:'neg_calc', difficulty:1, source:'seed', problemText:'某天北京的最低气温是-8°C，最高气温是5°C。这天的温差是多少？', answer:'温差=5-(-8)=5+8=13°C', solution:'温差=最高-最低\n减去负数=加上它的绝对值', errorPatterns:[] },
-  // === 鸽巢 ===
-  { knowledgePointKey:'pigeonhole_basic', difficulty:2, source:'past_exam', problemText:'有红、黄、蓝三种颜色的球各10个，放在一个袋子里。至少摸出几个球，才能保证有2个同色的球？', answer:'最坏情况：先摸3个球，恰好各颜色一个\n再摸第4个球，无论什么颜色，都会有2个同色\n答：至少摸4个', solution:'鸽巢原理：n=3种颜色（鸽巢）\n保证2个同色 → 摸3+1=4个\n公式：m×n+1(m=每种期望数-1)', errorPatterns:[] },
-  // === 位置与方向 ===
-  { knowledgePointKey:'pos_dir_angle', difficulty:1, source:'seed', problemText:'小明从家出发，向东偏北30°方向走400m到学校。放学回家应该怎么走？', answer:'向西偏南30°方向走400m回家。\n或：南偏西60°方向走400m。', solution:'往返方向相反：东↔西，北↔南\n角度不变，方向完全相反', errorPatterns:[] },
-  // === 数与形 ===
-  { knowledgePointKey:'num_pattern_seq', difficulty:2, source:'seed', problemText:'观察规律：1=1²，1+3=2²，1+3+5=3²。利用这个规律求：1+3+5+7+9+11+13+15+17', answer:'共有9个连续奇数（从1开始）\n和=9²=81', solution:'从1开始的n个连续奇数和=n²\n这里的奇数个数：第1个=1，第9个=17\n所以n=9，和=81', errorPatterns:[] },
-  // === 工程问题 ===
-  { knowledgePointKey:'frac_div_eng', difficulty:3, source:'past_exam', problemText:'一项工程，甲队单独做需要12天，乙队单独做需要18天。两队合作4天后，剩下的由乙队单独完成，还需要多少天？', answer:'甲效率=1/12，乙效率=1/18\n合作4天完成：4×(1/12+1/18)=4×(3/36+2/36)=4×5/36=20/36=5/9\n剩下：1-5/9=4/9\n乙单独做还需要：4/9÷1/18=4/9×18=8天', solution:'①求各自工作效率 ②求合作完成量 ③求剩余量 ④求乙单独完成剩余的时间', errorPatterns:[], year:2023 },
-  // === 综合复习 ===
-  { knowledgePointKey:'geometry_review', difficulty:3, source:'past_exam', problemText:'一个长方体容器，从里面量长20cm、宽15cm、高10cm。容器中装有水，水面高6cm。放入一个石头后，水面上升到8cm（石头完全浸没）。求石头的体积。', answer:'石头体积=上升水体积\n=20×15×(8-6)=300×2=600cm³', solution:'排水法：物体体积=升高水的体积\n=底面积×升高高度', errorPatterns:['volume_unit_1000'], year:2023 },
-  { knowledgePointKey:'num_algebra_review', difficulty:2, source:'seed', problemText:'解方程：2/3x-1/2=1/6', answer:'2/3x=1/6+1/2=1/6+3/6=4/6=2/3\nx=2/3÷2/3=1', solution:'①移项（把-1/2移到右边变+1/2）\n②通分计算右边\n③两边同时除以2/3（即乘3/2）', errorPatterns:[] },
-  { knowledgePointKey:'stats_prob_review', difficulty:1, source:'seed', problemText:'六(1)班有男生24人，女生20人。男生人数是女生人数的百分之几？女生人数占全班人数的百分之几？', answer:'男生是女生的：24/20=1.2=120%\n全班=24+20=44人\n女生占全班：20/44≈45.5%', solution:'a是b的百分之几=a/b×100%\n注意区分基数（"比"后面的量）', errorPatterns:[] },
-];
-
-/* ============================================================
-   SECTION VI: Analysis Engine
-   ============================================================ */
-M.analysis = {
-  async computeMastery() {
-    const problems = await DB.getAllProblems();
-    const mastery = {};
-    for (const p of problems) {
-      for (const kp of (p.knowledgePoints || [])) {
-        if (!mastery[kp]) mastery[kp] = { errors:0, total:0 };
-        mastery[kp].total++;
-        if (p.status !== 'mastered') mastery[kp].errors++;
-      }
-    }
-    const report = [];
-    for (const [key, data] of Object.entries(mastery)) {
-      const errRate = data.errors / data.total;
-      report.push({
-        key, name: M.getKPName(key),
-        totalProblems: data.total,
-        errorRate: errRate,
-        masteryLevel: errRate > 0.5 ? 0 : errRate > 0.3 ? 1 : errRate > 0.1 ? 2 : errRate === 0 ? 4 : 3,
-        needsAttention: errRate >= 0.3
-      });
-    }
-    report.sort((a,b) => b.errorRate - a.errorRate);
-    return report;
-  },
-
-  async detectErrorPatterns() {
-    const problems = await DB.getAllProblems();
-    const active = problems.filter(p => p.status !== 'mastered');
-    const patterns = [];
-
-    // Pattern: forget cone 1/3
-    const coneProbs = active.filter(p => (p.knowledgePoints||[]).includes('cone_volume'));
-    if (coneProbs.length >= 2) {
-      let count = 0;
-      for (const p of coneProbs) {
-        if (p.yourAnswer && p.correctAnswer) {
-          const y = parseFloat(p.yourAnswer), c = parseFloat(p.correctAnswer);
-          if (!isNaN(y) && !isNaN(c) && c !== 0 && Math.abs(y/c - 3) < 0.15) count++;
-        }
-      }
-      if (count >= 2) patterns.push({
-        id:'forget_cone_one_third', name:'圆锥体积忘记乘以1/3', count,
-        suggestion:'每次计算圆锥体积前，先在草稿纸上写下 V=1/3×S底×h，然后再代入数字。做3道专项练习巩固。',
-        recommendedMode:'targeted'
-      });
-    }
-
-    // Pattern: distributive second term
-    const distProbs = active.filter(p => (p.knowledgePoints||[]).includes('distributive_property'));
-    if (distProbs.length >= 3) {
-      const withSecondTerm = distProbs.filter(p => p.errorType === 'calculation');
-      if (withSecondTerm.length >= 2) patterns.push({
-        id:'distributive_second_term', name:'乘法分配律使用不当（漏乘项/符号错）', count: distProbs.length,
-        suggestion:'分配律关键：括号里的每一项都要乘外面的数。先用小数字做练习建立感觉，再扩展到分数。',
-        recommendedMode:'pattern'
-      });
-    }
-
-    // Pattern: composite shape
-    const compProbs = active.filter(p => (p.knowledgePoints||[]).includes('composite_shape_area'));
-    if (compProbs.length >= 3) patterns.push({
-      id:'composite_shape_weak', name:'组合图形面积整体偏弱', count: compProbs.length,
-      suggestion:'从最简单的分割法开始，先练长方形+半圆、正方形-圆，再过渡到复杂组合。每次画图标注已知数据。',
-      recommendedMode:'multi_solution'
-    });
-
-    return patterns;
-  },
-
-  // Deep pattern detection (对标 Misconcepts - WHY, not just WHAT)
-  async detectErrorPatternsDeep() {
-    const patterns = await this.detectErrorPatterns();
-    // Add misconception layer
-    const misconceptionMap = {
-      'forget_cone_one_third': '学生对"等底等高圆柱与圆锥体积关系"的理解停留在记忆层面，未建立空间想象。建议用实物（沙漏/量杯）演示3次关系。',
-      'distributive_second_term': '学生对"乘法对加法的分配"理解不完整，可能源于对括号作用的认识不足。建议先用具体数字验证(a+b)×c与a×c+b×c的等价性。',
-      'composite_shape_weak': '学生对"转化思想"掌握不够——不知道如何将不规则图形变为规则图形。核心是空间想象力不足，建议多用剪纸、画辅助线的方法。',
-    };
-    // Add unit conversion pattern
-    const problems = await DB.getAllProblems();
-    const active = problems.filter(p => p.status !== 'mastered');
-    const unitErrs = active.filter(p => (p.errorReason||'').includes('单位') || (p.errorReason||'').includes('换算') || (p.problemText||'').includes('升') && (p.problemText||'').includes('毫升'));
-    if (unitErrs.length >= 2) {
-      patterns.push({
-        id:'unit_conversion_error', name:'单位换算错误', count: unitErrs.length,
-        suggestion:'背熟常见单位进率：1m²=10000cm²（面积单位进率100），1m³=1000000cm³（体积单位进率1000），1L=1000mL。做题前先统一单位。',
-        misconception:'学生混淆了长度、面积、体积单位的进率。根本原因是"量纲"概念缺失——不清楚为什么要用不同进率。',
-        recommendedMode:'pattern'
-      });
-    }
-    // Add calculation pattern
-    const calcErrs = active.filter(p => p.errorType === 'calculation');
-    if (calcErrs.length >= 4) {
-      patterns.push({
-        id:'frequent_calc_error', name:'频繁计算错误（非概念问题）', count: calcErrs.length,
-        suggestion:'建议：①做题时在草稿纸上写清楚每一步 ②做完后反向验算 ③特别检查小数点位置和进位借位。',
-        misconception:'计算能力属于"自动化"技能，需要足够练习量才能形成肌肉记忆。当前错误量说明练习量不足或计算习惯不好。',
-        recommendedMode:'targeted'
-      });
-    }
-    return patterns;
-  },
-
-  // Repeated mistake detection (对标 Foliage)
-  async detectRepeats() {
-    const problems = await DB.getAllProblems();
-    const repeats = [];
-    const kpCounts = {};
-    for (const p of problems) {
-      for (const kp of (p.knowledgePoints||[])) {
-        if (!kpCounts[kp]) kpCounts[kp] = { total: 0, active: 0, names: [] };
-        kpCounts[kp].total++;
-        if (p.status !== 'mastered') kpCounts[kp].active++;
-        if (p.problemText) kpCounts[kp].names.push(p.problemText.substring(0, 30));
-      }
-    }
-    for (const [key, data] of Object.entries(kpCounts)) {
-      if (data.total >= 3 && data.active >= 2) {
-        repeats.push({
-          key, name: M.getKPName(key), count: data.active, total: data.total,
-          detail: '共' + data.total + '道，仍有' + data.active + '道未掌握'
-        });
-      }
-    }
-    return repeats.sort((a,b) => b.count - a.count).slice(0, 5);
-  },
-
-  async getRecommendation() {
-    const mastery = await this.computeMastery();
-    const patterns = await this.detectErrorPatternsDeep();
-    const weak = mastery.filter(m => m.needsAttention);
-    let bestMode = 'targeted';
-    if (patterns.length > 0) bestMode = patterns[0].recommendedMode || 'targeted';
-    else if (weak.length === 1) bestMode = 'multi_solution';
-    else if (weak.length >= 2) bestMode = 'variant';
-    return { weakestTopics: weak.slice(0, 5), errorPatterns: patterns, recommendedMode: bestMode };
-  }
-};
-
-/* ============================================================
-   SECTION VII: Practice Generator (5 modes)
-   ============================================================ */
-M.practice = {
-  MODES: [
-    { key:'targeted', name:'针对性练习', icon:'🎯', desc:'针对薄弱知识点，生成难度递进的练习题' },
-    { key:'multi_solution', name:'一题多解', icon:'💡', desc:'从不同角度解同一道题，理解本质' },
-    { key:'pattern', name:'多题找规律', icon:'🔍', desc:'对比多道同类题，发现共同规律' },
-    { key:'variant', name:'变式训练', icon:'🔄', desc:'同一概念变换数字/形式/情境，举一反三' },
-    { key:'exam', name:'真题演练', icon:'📋', desc:'历年真题模拟，检验真实水平' },
-  ],
-
-  async generate(mode, kpKeys, count) {
-    const allQ = await DB.getAllQuestions();
-    let pool = allQ.filter(q => kpKeys.length===0 || kpKeys.includes(q.knowledgePointKey));
-    if (pool.length === 0) pool = allQ; // fallback
-    // Shuffle and pick
-    const shuffled = pool.sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, Math.min(count, shuffled.length));
-    return selected.map((q,i) => ({ ...q, index:i+1 }));
-  },
-
-  async generateVariants(baseProblem) {
-    // Generate 3 levels of variants
-    const variants = [];
-    const base = baseProblem;
-    // Level 1: same structure, different numbers
-    variants.push({
-      level:1, label:'基础变式（换数字）',
-      problemText: base.problemText.replace(/(\d+)/g, (m) => {
-        const n = parseInt(m);
-        if (n > 1) return Math.round(n * (0.6 + Math.random() * 0.8)) + '';
-        return m;
-      }),
-      answer:'（请自行计算验证）', solution: base.solution
-    });
-    // Level 2: reversed direction
-    variants.push({
-      level:2, label:'进阶变式（反向思考）',
-      problemText: '【逆向】' + base.problemText + ' 如果已知答案是' + base.answer + '，求原来的条件。',
-      answer:'逆向推导验证', solution:'利用答案反推条件，验证理解是否透彻'
-    });
-    // Level 3: add a step
-    variants.push({
-      level:3, label:'挑战变式（增加步骤）',
-      problemText: base.problemText + ' 再回答：如果条件翻倍，答案变化多少？为什么？',
-      answer:'请思考并写出推理过程', solution:'考察对公式中变量关系的理解：是线性关系还是平方/立方关系'
-    });
-    return variants;
-  },
-
-  async findPatterns(kpKey) {
-    const problems = await DB.getProblemsByKP(kpKey);
-    if (problems.length < 3) return null;
-    // Find common structure
-    const commonWords = this._extractCommonWords(problems.map(p => p.problemText));
-    return {
-      knowledgePoint: M.getKPName(kpKey),
-      problemCount: problems.length,
-      commonStructure: commonWords.length > 0 ? `这些题都涉及「${commonWords.join('」「')}」` : '请仔细对比以下题目',
-      goldenRule: this._getGoldenRule(kpKey),
-      sampleProblems: problems.slice(0, 5)
-    };
-  },
-
-  _extractCommonWords(texts) {
-    const keywords = ['面积','周长','半径','直径','半圆','正方形','长方形','三角形',
-      '分配律','简便','提取','公因数','分数','百分数','比例','折扣','体积','圆锥','圆柱'];
-    return keywords.filter(kw => texts.every(t => t.includes(kw)));
-  },
-
-  _getGoldenRule(kpKey) {
-    const rules = {
-      'composite_shape_area': '黄金法则：分割→分别算→加减。看到组合图形先问：能切成几个规则图形？',
-      'cone_volume': '黄金法则：V锥=V柱/3。写出公式先写1/3！',
-      'distributive_property': '黄金法则：括号里每一项都要乘。展开时用手指逐项检查。',
-      'circle_area': '黄金法则：半径是关键。给直径先÷2，给周长先÷π÷2。',
-      'prop_scale': '黄金法则：比例尺=图上:实际。单位统一是第一步（1km=100000cm）。',
-    };
-    return rules[kpKey] || '黄金法则：先确定题目类型，回忆对应公式，分步骤计算。';
-  }
-};
-
-/* ============================================================
-   SECTION VIII: Print/Export Engine
-   ============================================================ */
-M.exportBackup = async () => {
-  try {
-    const data = await DB.exportAll();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
-    M._download(blob, `数学错题备份_${new Date().toISOString().slice(0,10)}.json`);
-    M.showToast('备份导出成功', 'success');
-  } catch(e) { M.showToast('导出失败','error'); }
-};
-
-M.importBackup = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  M.confirmDialog('导入备份', '导入将合并数据（不会覆盖已有错题），确认继续？', async () => {
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      await DB.importAll(data);
-      M.showToast(`导入成功：${data.problems.length} 道错题`, 'success');
-      M.switchScreen('dashboard');
-    } catch(e) { M.showToast('导入失败，请检查文件格式','error'); }
-  });
-};
-
-M.printProblems = (problems, title) => {
-  // Add print elements
-  const existing = document.querySelectorAll('.print-only');
-  existing.forEach(el => el.remove());
-  const container = document.createElement('div');
-  container.className = 'print-only';
-  container.innerHTML = `<div class="print-sheet">
-    <h2>${M.escapeHTML(title)}</h2>
-    <p style="margin-bottom:16px">姓名: ________  日期: ${new Date().toLocaleDateString('zh-CN')}</p>
-    ${problems.map((p,i) => `
-      <div class="print-problem">
-        <strong>${i+1}.</strong> ${M.escapeHTML(p.problemText||'')}
-        ${p.answer ? `<div style="margin-top:4px;color:#999;font-size:12px">答案: ${M.escapeHTML(p.answer)}</div>` : ''}
-      </div>
-    `).join('')}
-  </div>`;
-  document.body.appendChild(container);
-  document.querySelectorAll('.screen-container').forEach(s => s.classList.add('print-active'));
-  window.print();
-  setTimeout(() => {
-    container.remove();
-    document.querySelectorAll('.screen-container').forEach(s => s.classList.remove('print-active'));
-  }, 500);
-};
-
-M._download = (blob, filename) => {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-M.confirmClearData = () => {
-  M.confirmDialog('清除所有数据', '此操作不可撤销！建议先导出备份。确认清除？', async () => {
-    await DB.clearAll();
-    M.showToast('所有数据已清除');
-    M.switchScreen('dashboard');
-  });
-};
-
-/* ============================================================
-   SECTION IX: Screen Controllers
-   ============================================================ */
-
-// --- Dashboard ---
-M.renderDashboard = async () => {
-  const problems = await DB.getAllProblems();
-  const totalProblems = problems.length;
-  const activeProblems = problems.filter(p => p.status === 'active').length;
-  const masteredProblems = problems.filter(p => p.status === 'mastered').length;
-  const mastery = await M.analysis.computeMastery();
-  const weak = mastery.filter(m => m.needsAttention);
-
-  // Stats
-  M.$('dash-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-value">${totalProblems}</div><div class="stat-label">全部错题</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:var(--red)">${activeProblems}</div><div class="stat-label">待复习</div></div>
-    <div class="stat-card"><div class="stat-value" style="color:var(--green)">${masteredProblems}</div><div class="stat-label">已掌握</div></div>
-    <div class="stat-card"><div class="stat-value">${totalProblems ? Math.round(masteredProblems/totalProblems*100) : 0}%</div><div class="stat-label">掌握率</div></div>
-  `;
-
-  // Weak alerts
-  if (weak.length > 0) {
-    M.$('dash-weak-alerts').innerHTML = weak.map(w => `
-      <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-        <div>
-          <span class="badge ${w.errorRate >= 0.5 ? 'badge-red' : 'badge-orange'}">${Math.round(w.errorRate*100)}%错误率</span>
-          <span style="margin-left:8px;font-weight:500">${M.escapeHTML(w.name)}</span>
-          <span style="margin-left:8px;font-size:12px;color:var(--text-tertiary)">${w.totalProblems}道错题</span>
-        </div>
-        <button class="btn btn-primary btn-sm" onclick="M.switchScreen('practice');M.focusPracticeOn('${w.key}')">去练习 →</button>
-      </div>
-    `).join('');
+M.onProblemTextChange = () => {
+  const text = M.$('add-problem-text').value.trim();
+  if (text.length >= 5) {
+    M._autoSuggestKP(text);
+    M._addState._hasClassified = true;
+    M.updateTagsBar();
   } else {
-    M.$('dash-weak-alerts').innerHTML = totalProblems > 0
-      ? '<div class="card" style="text-align:center;color:var(--green)">👍 各知识点掌握良好，继续保持！</div>'
-      : '<div class="card" style="text-align:center;color:var(--text-tertiary)">还没有错题数据，去添加第一道吧</div>';
+    M._addState._hasClassified = false;
+    M._addState.knowledgePoints = [];
+    M.updateTagsBar();
   }
-
-  // Recent problems
-  const recent = [...problems].sort((a,b) => b.createdAt - a.createdAt).slice(0, 5);
-  M.$('dash-recent').innerHTML = recent.length > 0 ? recent.map(p => `
-    <div class="card" style="margin-bottom:6px;cursor:pointer" onclick="M.viewProblem(${p.id})">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-        <div style="flex:1;overflow:hidden">
-          <div style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${M.escapeHTML(p.problemText||'(无题目文字)')}</div>
-          <div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">
-            ${(p.knowledgePoints||[]).map(k => `<span class="badge badge-blue">${M.getKPName(k)}</span>`).join('')}
-          </div>
-        </div>
-        <span class="badge ${p.status==='mastered'?'badge-green':'badge-orange'}">${p.status==='mastered'?'已掌握':'待复习'}</span>
-      </div>
-    </div>
-  `).join('') : '<div class="empty-state"><div>还没有错题</div></div>';
 };
 
-// --- Add Problem Tab Switching ---
-M.switchAddTab = (tab) => {
-  M._addState.tab = tab;
-  document.querySelectorAll('#screen-add .tab-item').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  M.$('add-manual').style.display = tab==='manual'?'block':'none';
-  M.$('add-camera').style.display = tab==='camera'?'block':'none';
-  M.$('add-file').style.display = tab==='file'?'block':'none';
-  M.$('add-batch').style.display = tab==='batch'?'block':'none';
+M.updateTagsBar = () => {
+  const kps = M._addState.knowledgePoints;
+  const bar = M.$('add-tags-bar');
+  if (!bar) return;
+  if (kps.length > 0) {
+    bar.innerHTML = '🏷️ <strong style="color:var(--blue)">已识别：</strong>' + kps.map(function(k){return M.getKPName(k);}).join(' · ') + ' <a href="javascript:M.showTagEditor()" style="font-size:11px;color:var(--text-tertiary)">修改</a>';
+  } else {
+    bar.innerHTML = '<span style="color:var(--text-tertiary)">输入文字或拍照后自动识别知识点</span> <a href="javascript:M.showTagEditor()" style="font-size:11px;color:var(--text-tertiary)">手动选</a>';
+  }
 };
 
+M.showTagEditor = () => {
+  M.$('add-tags-edit').style.display = 'block';
+  M.$('add-tags-bar').style.display = 'none';
+  M.renderTagPicker();
+};
+
+M.hideTagEditor = () => {
+  M.$('add-tags-edit').style.display = 'none';
+  M.$('add-tags-bar').style.display = 'block';
+  M.updateTagsBar();
+};
+
+// File upload merged into unified photo handler
 // --- Batch Import ---
 M._batchProblems = [];
 
@@ -1913,7 +1383,7 @@ M._ocrWrongMap = {};
 
 M._renderOCRMultiReview = (parts) => {
   M._ocrWrongMap = {};
-  M.$('ocr-result-box').style.display = 'block';
+  // ocr result shown inline
   M.$('ocr-result-box').innerHTML = `
     <div class="card" style="background:rgba(0,113,227,0.04);border:1px solid rgba(0,113,227,0.15);margin-bottom:8px">
       <div style="font-weight:600;font-size:15px">📋 整卷识别 — 共 ${parts.length} 道题目</div>
@@ -1992,21 +1462,7 @@ M._saveOCRWrongProblems = async () => {
   M.switchScreen('dashboard');
 };
 
-// --- Difficulty Selection ---
-M.selectDifficulty = (d) => {
-  M._addState.difficulty = d;
-  M.$('add-difficulty').querySelectorAll('.tag-chip').forEach(ch => {
-    ch.classList.toggle('selected', parseInt(ch.dataset.d) === d);
-  });
-};
-
-// --- Error Type Selection ---
-M.selectErrorType = (et) => {
-  M._addState.errorType = M._addState.errorType === et ? null : et;
-  M.$('add-error-type').querySelectorAll('.tag-chip').forEach(ch => {
-    ch.classList.toggle('selected', ch.dataset.et === M._addState.errorType);
-  });
-};
+// Difficulty and error type selectors removed — auto-handled by classification engine
 
 // --- Image Upload ---
 M.handleImageUpload = (e) => {
@@ -2045,68 +1501,49 @@ M.saveProblem = async () => {
   const problemText = M.$('add-problem-text').value.trim();
   const correctAnswer = M.$('add-correct-answer').value.trim();
   const hasImage = !!M._addState.imageBlob;
-  if (!problemText && !hasImage) { M.showToast('请输入题目内容或拍照上传', 'error'); return; }
+  if (!problemText && !hasImage) { M.showToast('请输入题目或拍照', 'error'); return; }
   if (!correctAnswer) { M.showToast('请输入正确答案', 'error'); return; }
-  // Auto-classify if not done yet and text exists
-  if (!M._addState._hasClassified && problemText.length >= 5) {
+  // Auto-classify
+  if (M._addState.knowledgePoints.length === 0 && problemText.length >= 5) {
     M._autoSuggestKP(problemText);
-    M._addState._hasClassified = true;
   }
 
-  const data = {
-    problemText,
+  var data = {
+    problemText: problemText,
     yourAnswer: M.$('add-your-answer').value.trim(),
-    correctAnswer,
-    errorReason: M.$('add-error-reason').value.trim(),
+    correctAnswer: correctAnswer,
+    errorReason: '',
     knowledgePoints: M._addState.knowledgePoints,
-    semester: parseInt(M.$('add-semester').value),
-    difficulty: M._addState.difficulty,
-    errorType: M._addState.errorType || 'unknown',
+    semester: parseInt(M.$('add-semester').value) || 1,
+    difficulty: 3,
+    errorType: 'unknown',
     hasImage: !!M._addState.imageBlob,
     imageData: M._addState.imageBlob,
-    imageThumbnail: M._addState.imageThumb,
+    imageThumbnail: null,
     sourceFileName: '',
-    sourceFileType: M._addState.tab === 'camera' ? 'image' : 'manual'
+    sourceFileType: hasImage ? 'image' : 'manual'
   };
 
   try {
-    const id = await DB.addProblem(data);
-    // Verify data was saved
-    const saved = await DB.getProblem(id);
-    if (!saved) throw new Error('数据保存后无法读取，请重试');
-
-    M.showToast('✅ 错题已保存！(' + (saved.knowledgePoints||[]).length + '个知识点)', 'success');
+    var id = await DB.addProblem(data);
+    M.showToast('✅ 已保存', 'success');
 
     // Reset form
     M.$('add-problem-text').value = '';
     M.$('add-your-answer').value = '';
     M.$('add-correct-answer').value = '';
-    M.$('add-error-reason').value = '';
     M._addState.knowledgePoints = [];
     M._addState.imageBlob = null;
-    M._addState.imageThumb = null;
-    M._addState.errorType = null;
-    M._addState.ocrText = '';
     M._addState._hasClassified = false;
-    M.$('add-image-preview').style.display = 'none';
-    M.$('add-camera-preview').style.display = 'none';
-    M.$('add-ocr-result').style.display = 'none';
-    M.$('ocr-result-box').style.display = 'none';
-    M.$('add-camera-btns').style.display = 'block';
-    M.$('add-file-info').style.display = 'none';
-    M.$('add-auto-tip').textContent = '';
-    M.$('ocr-tags-summary').innerHTML = '';
-    M.$('btn-ocr').disabled = false;
-    M.$('btn-ocr').textContent = '🔍 智能识别文字和知识点';
-    M.updateTagsSummary();
-    M.$('add-tag-editor').style.display = 'none';
-    M.$('btn-show-tags').style.display = 'inline';
-    M.$('add-error-type').querySelectorAll('.tag-chip').forEach(ch => ch.classList.remove('selected'));
+    M.clearPhoto();
+    M.updateTagsBar();
+    M.$('add-tags-edit').style.display = 'none';
+    M.$('add-tags-bar').style.display = 'block';
 
-    // Stay on add screen with clear feedback, let user choose where to go
-    M.$('add-auto-tip').innerHTML = '<span style="color:var(--green)">✅ 已保存！</span> <a href="javascript:M.switchScreen(\'dashboard\')" style="color:var(--blue)">回首页查看</a> | <a href="javascript:M.switchScreen(\'library\')" style="color:var(--blue)">去错题本</a>';
+    M.$('add-save-msg').innerHTML = '<span style="color:var(--green)">✅ 已保存</span> — <a href="javascript:M.switchScreen(\"dashboard\")">回首页</a> | <a href="javascript:M.switchScreen(\"library\")">错题本</a>';
   } catch(e) {
-    M.showToast('保存失败: ' + e.message, 'error');
+    M.showToast('保存失败，请重试', 'error');
+    console.error('Save error:', e);
   }
 };
 
