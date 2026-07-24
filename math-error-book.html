@@ -687,12 +687,19 @@ M.switchScreen = (name) => {
   const navItem = document.querySelector(`.nav-item[data-screen="${name}"]`);
   if (navItem) navItem.classList.add('active');
   M._currentScreen = name;
-  // Refresh screen content
+  // Reset library filters when navigating to library
+  if (name === 'library') {
+    M._libFilter = 'all';
+    M._libKpFilter = null;
+    M.$('lib-search').value = '';
+    M.$('lib-status-filter').querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.status === 'all'));
+    M.renderLibrary();
+  }
   if (name === 'dashboard') M.renderDashboard();
-  if (name === 'library') M.renderLibrary();
   if (name === 'analysis') M.renderAnalysis();
   if (name === 'practice') M.renderPracticeModes();
   if (name === 'add') M.renderTagPicker();
+  if (name === 'settings') M.loadSettings();
 };
 
 M.closeModal = (id) => M.$(id).classList.remove('active');
@@ -2064,7 +2071,12 @@ M.saveProblem = async () => {
 
   try {
     const id = await DB.addProblem(data);
-    M.showToast('错题已保存！', 'success');
+    // Verify data was saved
+    const saved = await DB.getProblem(id);
+    if (!saved) throw new Error('数据保存后无法读取，请重试');
+
+    M.showToast('✅ 错题已保存！(' + (saved.knowledgePoints||[]).length + '个知识点)', 'success');
+
     // Reset form
     M.$('add-problem-text').value = '';
     M.$('add-your-answer').value = '';
@@ -2090,7 +2102,9 @@ M.saveProblem = async () => {
     M.$('add-tag-editor').style.display = 'none';
     M.$('btn-show-tags').style.display = 'inline';
     M.$('add-error-type').querySelectorAll('.tag-chip').forEach(ch => ch.classList.remove('selected'));
-    M.switchScreen('dashboard');
+
+    // Stay on add screen with clear feedback, let user choose where to go
+    M.$('add-auto-tip').innerHTML = '<span style="color:var(--green)">✅ 已保存！</span> <a href="javascript:M.switchScreen(\'dashboard\')" style="color:var(--blue)">回首页查看</a> | <a href="javascript:M.switchScreen(\'library\')" style="color:var(--blue)">去错题本</a>';
   } catch(e) {
     M.showToast('保存失败: ' + e.message, 'error');
   }
@@ -2638,12 +2652,7 @@ M.init = async () => {
 // Start when DOM ready
 document.addEventListener('DOMContentLoaded', M.init);
 
-// Handle settings screen activation
-const origSwitch = M.switchScreen;
-M.switchScreen = function(name) {
-  origSwitch.call(this, name);
-  if (name === 'settings') M.loadSettings();
-};
+// Settings loading is handled in the main switchScreen function above
 
 // Global error handler for IndexedDB
 window.addEventListener('unhandledrejection', (e) => {
