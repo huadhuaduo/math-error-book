@@ -131,7 +131,7 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
 <div id="toast"></div>
 
 <!-- ============ SCREEN: ADD (简单化) ============ -->
-<div class="screen active" id="sc-add">
+<div class="screen" id="sc-add">
   <h2>添加错题</h2>
 
   <div class="card" style="text-align:center">
@@ -174,6 +174,31 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
       <button class="outline block" style="margin-top:8px" onclick="A.splitBatch()">🔍 智能拆分</button>
       <div id="batch-out"></div>
     </div>
+  </div>
+</div>
+
+<!-- ============ SCREEN: SCAN (扫描批改) ============ -->
+<div class="screen active" id="sc-scan">
+  <h2>扫描批改</h2>
+  <div class="card" style="text-align:center;margin-bottom:8px">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:8px">拍一张试卷，标记错题，自动入库分析</div>
+    <input type="file" accept="image/*" capture="environment" id="scan-cam" style="display:none" onchange="S.handlePhoto(event)">
+    <input type="file" accept="image/*" id="scan-gal" style="display:none" onchange="S.handlePhoto(event)">
+    <div id="scan-empty">
+      <div style="font-size:48px;margin-bottom:8px">📋</div>
+      <button class="primary lg" onclick="document.getElementById('scan-cam').click()">📷 拍试卷</button>
+      <button class="outline" style="margin-left:6px" onclick="document.getElementById('scan-gal').click()">从相册选</button>
+    </div>
+    <div id="scan-preview" style="display:none">
+      <img id="scan-img" style="max-height:180px;margin:0 auto;border-radius:var(--radius-sm)">
+      <div id="scan-ocr-msg" style="margin-top:8px;font-size:13px;color:var(--blue)"></div>
+    </div>
+  </div>
+  <div id="scan-review"></div>
+
+  <!-- Quick manual add link -->
+  <div style="text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+    <a href="javascript:A.nav('add')" style="font-size:13px;color:var(--text3)">✏️ 手动录入单道错题</a>
   </div>
 </div>
 
@@ -242,8 +267,11 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
 
 <!-- ============ NAVIGATION ============ -->
 <nav>
-  <a href="javascript:A.nav('add')" class="active" data-nav="add">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>加错题</span>
+  <a href="javascript:A.nav('scan')" class="active" data-nav="scan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg><span>扫描</span>
+  </a>
+  <a href="javascript:A.nav('add')" data-nav="add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span>录入</span>
   </a>
   <a href="javascript:A.nav('analyze')" data-nav="analyze">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>分析</span>
@@ -257,6 +285,135 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
 </nav>
 
 <script>
+/* ============================================================
+   SCAN NAMESPACE — 扫描批改
+   ============================================================ */
+const S = {
+  _img: null, _problems: [], _marks: {},
+
+  handlePhoto(e){
+    const f = e.target.files[0]; if (!f) return;
+    this._img = f;
+    A.$('scan-img').src = URL.createObjectURL(f);
+    A.$('scan-empty').style.display = 'none';
+    A.$('scan-preview').style.display = 'block';
+    A.$('scan-ocr-msg').textContent = '⏳ 正在识别试卷...';
+    setTimeout(() => this.doOCR(), 300);
+  },
+
+  async doOCR(){
+    if (!this._img) return;
+    A.$('scan-ocr-msg').textContent = '⏳ OCR引擎加载中...';
+    try {
+      if (!window.Tesseract){
+        await new Promise((res, rej) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+          s.onload = res; s.onerror = rej;
+          document.head.appendChild(s);
+        });
+      }
+      const worker = await Tesseract.createWorker('chi_sim', 1);
+      const img = await createImageBitmap(this._img);
+      const scale = Math.min(1, 1500 / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = img.width * scale; c.height = img.height * scale;
+      const ctx = c.getContext('2d');
+      ctx.filter = 'contrast(1.2) grayscale(1)';
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.8));
+      const { data: { text } } = await worker.recognize(blob);
+      const cleaned = text.replace(/(\d)\s*x\s*(\d)/gi, '$1×$2').replace(/X(?=\d)/g, '×').replace(/\s+/g, ' ').trim();
+      await worker.terminate();
+
+      // Split into problems
+      let parts = cleaned.split(/(?:^|\n)\s*\d+[\.\、\)）]\s*/m).filter(s => s.trim().length > 5);
+      if (parts.length < 2) parts = cleaned.split(/\n\s*\n/).filter(s => s.trim().length > 5);
+      if (parts.length < 2) parts = [cleaned]; // single problem
+
+      this._problems = parts.map(p => ({ text: p.trim(), kps: A.classify(p.trim()) }));
+      this._marks = {};
+      this._renderReview();
+      A.$('scan-ocr-msg').textContent = '✅ 识别到 ' + this._problems.length + ' 道题，请逐题标记对错';
+    } catch(e){
+      A.$('scan-ocr-msg').textContent = '❌ 识别失败，请重拍或手动录入';
+    }
+  },
+
+  _renderReview(){
+    const h = '<div class="card" style="margin-top:8px;margin-bottom:8px;background:rgba(0,113,227,0.03)"><div style="font-weight:600;font-size:14px">📋 共 ' + this._problems.length + ' 道题 — 标记做错的题目</div></div>' +
+      this._problems.map((p, i) => {
+        const m = this._marks[i];
+        const isWrong = m && m.isWrong;
+        return '<div class="card" style="margin-bottom:6px;border-left:3px solid ' + (isWrong ? 'var(--red)' : (m ? 'var(--green)' : 'var(--border)')) + '" id="sc-card-' + i + '">' +
+          '<div style="font-weight:600;font-size:13px;margin-bottom:4px">第' + (i+1) + '题 ' + (p.kps.length > 0 ? p.kps.map(function(k){return '<span class="tag">'+A.kpName(k)+'</span>';}).join('') : '') + '</div>' +
+          '<div style="font-size:13px;margin-bottom:6px">' + A.esc(p.text.substring(0, 120)) + (p.text.length > 120 ? '...' : '') + '</div>' +
+          '<div style="display:flex;gap:6px;align-items:center">' +
+            '<span class="tag" id="sc-btn-right-' + i + '" style="cursor:pointer;background:' + (m && !isWrong ? 'var(--green-bg)' : 'rgba(0,0,0,0.04)') + ';color:' + (m && !isWrong ? 'var(--green)' : 'var(--text2)') + '" onclick="S.mark(' + i + ',false)">✅ 做对了</span>' +
+            '<span class="tag red" id="sc-btn-wrong-' + i + '" style="cursor:pointer;background:' + (isWrong ? 'var(--red-bg)' : 'rgba(0,0,0,0.04)') + ';color:' + (isWrong ? 'var(--red)' : 'var(--text2)') + '" onclick="S.mark(' + i + ',true)">❌ 做错了</span>' +
+          '</div>' +
+          '<div id="sc-ans-' + i + '" style="display:' + (isWrong ? 'block' : 'none') + ';margin-top:6px">' +
+            '<input type="text" placeholder="正确答案（必填）" id="sc-correct-' + i + '" style="font-size:13px">' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+      '<div style="margin:8px 0;font-size:14px;font-weight:600" id="sc-count">👆 请逐题标记「❌ 做错了」</div>' +
+      '<button class="primary block lg" onclick="S.saveAndAnalyze()">💾 保存错题并查看分析</button>' +
+      '<button class="outline block sm" style="margin-top:6px" onclick="S.reset()">↺ 重新拍照</button>';
+    A.$('scan-review').innerHTML = h;
+  },
+
+  mark(i, isWrong){
+    this._marks[i] = { isWrong };
+    // Update button styles via re-render
+    this._renderReview();
+    // Update count
+    const cnt = Object.values(this._marks).filter(m => m.isWrong).length;
+    A.$('sc-count').innerHTML = cnt > 0 ? '🔴 已标记 <strong>' + cnt + '</strong> 道错题' : '👆 请逐题标记「❌ 做错了」';
+  },
+
+  async saveAndAnalyze(){
+    const wrongList = [];
+    for (let i = 0; i < this._problems.length; i++){
+      if (this._marks[i] && this._marks[i].isWrong){
+        const correctAns = A.$('sc-correct-' + i).value.trim();
+        if (!correctAns) { A.toast('第' + (i+1) + '题未填正确答案', 'err'); return; }
+        wrongList.push({
+          problemText: this._problems[i].text,
+          correctAnswer: correctAns,
+          yourAnswer: '',
+          knowledgePoints: this._problems[i].kps,
+        });
+      }
+    }
+    if (wrongList.length === 0) { A.toast('请先标记错题', 'err'); return; }
+
+    let saved = 0;
+    for (const w of wrongList){
+      await DB.addProblem({
+        problemText: w.problemText, yourAnswer: w.yourAnswer, correctAnswer: w.correctAnswer,
+        errorReason: '', knowledgePoints: w.knowledgePoints, semester: 1, difficulty: 3,
+        errorType: 'unknown', hasImage: false, sourceFileType: 'scan'
+      });
+      saved++;
+    }
+    A.toast('✅ 已保存 ' + saved + ' 道错题', 'ok');
+    this.reset();
+    // 一站式闭环：直接跳到分析页
+    A.nav('analyze');
+    // 然后滚动到练习推荐区
+    setTimeout(function(){ A.$('score-prediction').scrollIntoView({behavior:'smooth'}); }, 500);
+  },
+
+  reset(){
+    this._img = null; this._problems = []; this._marks = {};
+    A.$('scan-empty').style.display = 'block';
+    A.$('scan-preview').style.display = 'none';
+    A.$('scan-review').innerHTML = '';
+    A.$('scan-ocr-msg').textContent = '';
+  }
+};
+
 /* ============================================================
    APP — 简单化·深入化·有用化
    ============================================================ */
@@ -279,6 +436,8 @@ const A = {
     document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
     const navEl = document.querySelector('nav a[data-nav="' + name + '"]');
     if (navEl) navEl.classList.add('active');
+    if (name === 'scan'){}  // scan screen is self-contained
+    if (name === 'add'){}    // add screen is self-contained
     if (name === 'analyze') this.renderAnalyze();
     if (name === 'practice') this.renderPractice();
     if (name === 'library') this.renderLibrary();
