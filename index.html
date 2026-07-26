@@ -196,6 +196,8 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
   </div>
   <div id="scan-review"></div>
 
+  <!-- Motivation Dashboard -->
+  <div id="scan-motivation" style="margin-top:12px"></div>
   <!-- Quick manual add link -->
   <div style="text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
     <a href="javascript:A.nav('add')" style="font-size:13px;color:var(--text3)">✏️ 手动录入单道错题</a>
@@ -218,6 +220,10 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
   <div class="card" style="text-align:center">
     <h3>掌握度雷达图</h3>
     <div id="radar"></div>
+  </div>
+  <div class="card" id="learning-path" style="border-left:4px solid var(--blue)">
+    <h3>📖 学习路径 <span style="font-size:11px;color:var(--text3);font-weight:400">（前序知识 → 当前弱项 → 后续影响）</span></h3>
+    <div id="path-content" style="font-size:13px;color:var(--text2)">添加错题后自动分析知识依赖关系</div>
   </div>
   <div class="card"><h3>知识点掌握度</h3><div id="topics"></div></div>
   <div class="card"><h3>错因分析</h3><div id="patterns"></div></div>
@@ -399,10 +405,22 @@ const S = {
     }
     A.toast('✅ 已保存 ' + saved + ' 道错题', 'ok');
     this.reset();
-    // 一站式闭环：直接跳到分析页
-    A.nav('analyze');
-    // 然后滚动到练习推荐区
-    setTimeout(function(){ A.$('score-prediction').scrollIntoView({behavior:'smooth'}); }, 500);
+    // 引导卡片：给用户清晰的下一步选择
+    var kpSummary = '';
+    var allKPs = [];
+    for (var w of wrongList) { allKPs = allKPs.concat(w.knowledgePoints); }
+    var uniqueKPs = [];
+    for (var k of allKPs) { if (uniqueKPs.indexOf(k) < 0) uniqueKPs.push(k); }
+    var kpNames = uniqueKPs.slice(0,3).map(function(k){return A.kpName(k);});
+    kpSummary = kpNames.join('、') || '已自动分类';
+    A.$('scan-review').innerHTML = 
+      '<div class="card" style="text-align:center;border:2px solid var(--blue);margin-top:12px">' +
+      '<div style="font-size:20px;margin-bottom:4px">🎉</div>' +
+      '<div style="font-weight:700;font-size:16px;margin-bottom:4px">已保存 <span style="color:var(--red)">' + saved + '</span> 道错题</div>' +
+      '<div style="font-size:13px;color:var(--text2);margin-bottom:12px">涉及：' + kpSummary + '</div>' +
+      '<button class="primary block" style="margin-bottom:6px" onclick="A.nav(&apos;practice&apos;);A.genTargeted(&apos;&apos; + (uniqueKPs[0]||&apos;&apos;) + &apos;&apos;)">🎯 立刻练习同类题</button>' +
+      '<button class="outline block sm" onclick="A.nav(&apos;analyze&apos;)">📊 先看看薄弱分析</button>' +
+      '</div>';
   },
 
   reset(){
@@ -436,7 +454,7 @@ const A = {
     document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
     const navEl = document.querySelector('nav a[data-nav="' + name + '"]');
     if (navEl) navEl.classList.add('active');
-    if (name === 'scan'){}  // scan screen is self-contained
+    if (name === 'scan'){ A.renderMotivation(); }  // scan + motivation dashboard
     if (name === 'add'){}    // add screen is self-contained
     if (name === 'analyze') this.renderAnalyze();
     if (name === 'practice') this.renderPractice();
@@ -688,6 +706,58 @@ A.redoWrongProblems = async function(){
   A.nav('practice');
 };
 
+/* ============ MOTIVATION DASHBOARD ============ */
+A.renderMotivation = async function(){
+  var problems = await DB.getAllProblems();
+  var sessions = await DB.getAllSessions();
+  var mastery = {};
+  for (var p of problems) for (var kp of (p.knowledgePoints||[])){
+    if (!mastery[kp]) mastery[kp] = {total:0,errors:0};
+    mastery[kp].total++;
+    if (p.status !== 'mastered') mastery[kp].errors++;
+  }
+  var masteredCount = 0, totalKPs = Object.keys(mastery).length;
+  for (var k in mastery) { if (mastery[k].errors === 0) masteredCount++; }
+
+  // Streak calculation
+  var streak = 0;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var dayMs = 24*60*60*1000;
+  for (var d = 0; d < 30; d++){
+    var checkDay = new Date(today.getTime() - d * dayMs);
+    var hasSession = sessions.some(function(s){
+      var sd = new Date(s.createdAt); sd.setHours(0,0,0,0);
+      return sd.getTime() === checkDay.getTime();
+    });
+    if (hasSession) streak++;
+    else break;
+  }
+
+  // Weekly mastered count
+  var weekAgo = Date.now() - 7*dayMs;
+  var weekMastered = problems.filter(function(p){ return p.status === 'mastered' && p.createdAt > weekAgo; }).length;
+
+  // Total active problems
+  var activeCount = problems.filter(function(p){ return p.status !== 'mastered'; }).length;
+
+  var el = A.$('scan-motivation');
+  if (!el) return;
+  if (problems.length === 0){
+    el.innerHTML = '<div class="card" style="text-align:center;color:var(--text2);font-size:13px">👆 拍第一张试卷开始你的错题消灭之旅</div>';
+    return;
+  }
+  el.innerHTML = 
+    '<div style="display:flex;gap:6px;margin-bottom:6px">' +
+    '<div class="card" style="flex:1;text-align:center;padding:12px"><div style="font-size:22px;font-weight:700;color:'+(streak>=3?'var(--green)':streak>=1?'var(--blue)':'var(--text3)')+'">'+streak+'天</div><div style="font-size:11px;color:var(--text2)">🔥 连续练习</div></div>' +
+    '<div class="card" style="flex:1;text-align:center;padding:12px"><div style="font-size:22px;font-weight:700;color:'+(activeCount>0?'var(--red)':'var(--green)')+'">'+activeCount+'</div><div style="font-size:11px;color:var(--text2)">📝 待攻克</div></div>' +
+    '<div class="card" style="flex:1;text-align:center;padding:12px"><div style="font-size:22px;font-weight:700;color:'+(masteredCount>0?'var(--green)':'var(--text3)')+'">'+masteredCount+'/'+totalKPs+'</div><div style="font-size:11px;color:var(--text2)">🏆 已掌握</div></div>' +
+    '</div>' +
+    (activeCount > 0 ? '<div class="card" style="text-align:center;font-size:13px;color:var(--blue)">' +
+    '💪 还剩 <strong>' + activeCount + '</strong> 道错题等待复习。每消灭一道，离目标更近一步！' +
+    '</div>' : '<div class="card" style="text-align:center;font-size:13px;color:var(--green)">' +
+    '🎉 所有错题已掌握！继续保持！</div>');
+};
+
 /* ============ ANALYZE SCREEN ============ */
 // Score prediction (有效化 — 分数体验)
 A.renderScorePrediction = async function(sorted, totalProblems){
@@ -831,6 +901,37 @@ A.renderAnalyze = async function(){
     svg += '</svg>';
     A.$('radar').innerHTML = svg;
   } else { A.$('radar').innerHTML = '<div style="color:var(--text3);padding:20px">需要至少3个知识点</div>'; }
+
+  // Learning path with prerequisites
+  if (sorted.length > 0){
+    var prereqs = {
+      'frac_div_rule': { need: ['frac_mul_rules'], desc: '分数除法依赖分数乘法基础。先确保分数乘法过关，再练除法。' },
+      'frac_div_word': { need: ['frac_mul_word', 'frac_div_rule'], desc: '分数除法应用题需要乘法应用题+除法计算双重基础。' },
+      'cone_volume': { need: ['cyl_volume', 'circle_area'], desc: '圆锥体积V=Sh/3，必须先掌握圆柱体积和圆面积公式。' },
+      'cyl_surface': { need: ['circle_area', 'circle_pi'], desc: '圆柱表面积=侧面积+两个底面积。需要先掌握圆的周长和面积。' },
+      'composite_shape_area': { need: ['circle_area', 'frac_mul_rules'], desc: '组合图形需要先掌握各基本图形的面积公式，然后学转化思想。' },
+      'composite_solid_volume': { need: ['cyl_volume', 'cone_volume'], desc: '组合体体积需要先分别掌握圆柱和圆锥体积计算。' },
+      'pct_discount': { need: ['frac_mul_word', 'pct_convert'], desc: '折扣=原价×百分比。需要分数乘法和百分数转化基础。' },
+      'distributive_property': { need: ['frac_mul_rules'], desc: '分数分配律需要先掌握分数乘法计算，再扩展到带括号的表达式。' },
+    };
+    var worstKey = sorted[0].key;
+    var pr = prereqs[worstKey];
+    if (pr){
+      var needNames = pr.need.map(function(k){return A.kpName(k);}).join('、');
+      var needStatus = pr.need.map(function(k){
+        var m = sorted.find(function(s){return s.key === k;});
+        return m ? (m.errorRate >= 0.3 ? '⚠️ 也偏弱' : '✅ 已掌握') : '❓ 无数据';
+      }).join(' · ');
+      A.$('path-content').innerHTML = 
+        '<div style="margin-bottom:6px"><strong>「'+A.esc(sorted[0].name)+'」</strong>的薄弱可能源于前置知识不足：</div>' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">' +
+        pr.need.map(function(k,i){return '<span class="tag'+(needStatus.split(' · ')[i].indexOf('⚠')>=0?' red':'')+'">'+A.kpName(k)+' → '+needStatus.split(' · ')[i]+'</span>';}).join('') +
+        '<span class="tag" style="background:var(--red-bg);color:var(--red)">'+A.esc(sorted[0].name)+'</span></div>' +
+        '<div style="font-size:12px;color:var(--blue)">💡 '+A.esc(pr.desc)+'</div>';
+    } else {
+      A.$('path-content').innerHTML = '<div style="color:var(--text2)">「'+A.esc(sorted[0].name)+'」是独立知识点，可以直接攻克。</div>';
+    }
+  }
 
   A.$('topics').innerHTML = sorted.slice(0,8).map((m,i) =>
     '<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">' +
@@ -977,6 +1078,7 @@ A.genPaper = async function(period){
   for (const [,probs] of Object.entries(mastery).sort((a,b) => b[1].length - a[1].length)) pool = pool.concat(probs);
   pool = [...new Set(pool)].slice(0, count || 10);
   A.renderQuiz(pool, title, '覆盖薄弱知识点，查漏补缺');
+A.$('qz-timed').checked = false; A.$('qz-timer').style.display = 'none';
 };
 
 A.renderQuiz = function(problems, title, desc){
@@ -990,7 +1092,7 @@ A.renderQuiz = function(problems, title, desc){
       '<div style="font-size:14px;margin:6px 0">'+A.esc(p.problemText||'(无题目文字)')+'</div>'+
       '<input type="text" placeholder="你的答案" id="qz-a-'+i+'" style="font-size:13px"><div id="qz-f-'+i+'" style="margin-top:4px"></div></div>'
     ).join('') +
-    '<div style="display:flex;gap:6px"><button class="primary block" onclick="A.checkQuiz()">✅ 提交验证</button><button class="outline sm" onclick="A.printQuiz()">🖨️ 打印</button></div>' +
+    '<div style="display:flex;gap:6px"><div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" id="qz-timed" onchange="A.toggleTimed()" style="width:auto"> ⏱️ 限时挑战</label><span id="qz-timer" style="display:none;font-weight:600;color:var(--red);font-size:14px"></span></div><button class="primary block" onclick="A.checkQuiz()">✅ 提交验证</button><button class="outline sm" onclick="A.printQuiz()">🖨️ 打印</button></div>' +
     '<div id="qz-result" style="margin-top:12px;font-size:15px;font-weight:600;text-align:center"></div></div>';
 };
 
@@ -1009,7 +1111,22 @@ A.checkQuiz = function(){
     }
   }
   const rate = problems.length>0 ? Math.round(correct/problems.length*100) : 0;
-  A.$('qz-result').innerHTML = '得分：<span style="font-size:24px;color:'+(rate>=80?'var(--green)':rate>=60?'var(--orange)':'var(--red)')+'">'+rate+'%</span>（'+correct+'/'+problems.length+'）';
+  var trendMsg = '';
+  // Compare with last session
+  DB.getAllSessions().then(function(ss){
+    var prev = ss.filter(function(s){return s.mode==='quiz';}).sort(function(a,b){return b.createdAt-a.createdAt;});
+    if (prev.length >= 2){
+      var lastRate = prev[1].totalQuestions>0 ? Math.round(prev[1].correctCount/prev[1].totalQuestions*100) : 0;
+      var diff = rate - lastRate;
+      if (diff > 5) trendMsg = '<div style="color:var(--green);font-size:13px;margin-top:2px">📈 比上次提高了 ' + diff + '%！你在进步！</div>';
+      else if (diff < -5) trendMsg = '<div style="color:var(--orange);font-size:13px;margin-top:2px">📉 比上次下降了 ' + Math.abs(diff) + '%，继续加油</div>';
+      else trendMsg = '<div style="color:var(--text2);font-size:13px;margin-top:2px">和上次持平，保持稳定</div>';
+    } else {
+      trendMsg = '<div style="color:var(--blue);font-size:13px;margin-top:2px">🌟 这是你的第一次练习，建立基线！</div>';
+    }
+    var el = A.$('qz-trend'); if (el) el.innerHTML = trendMsg;
+  });
+  A.$('qz-result').innerHTML = '得分：<span style="font-size:24px;color:'+(rate>=80?'var(--green)':rate>=60?'var(--orange)':'var(--red)')+'">'+rate+'%</span>（'+correct+'/'+problems.length+'）<div id="qz-trend" style="margin-top:2px"></div>';
   DB.addSession({ mode:'quiz', knowledgePoints:[], totalQuestions:problems.length, correctCount:correct, wrongProblems:[], durationMs:0 });
   for (let i=0;i<problems.length;i++){
     const ua = A.$('qz-a-'+i).value.trim();
@@ -1029,6 +1146,29 @@ A.printQuiz = function(){
   window.print();
   setTimeout(() => { el.remove(); document.querySelectorAll('.screen').forEach(s => s.classList.remove('pt')); }, 500);
 };
+
+A._timerInterval = null;
+A.toggleTimed = function(){
+  var cb = A.$('qz-timed');
+  var timer = A.$('qz-timer');
+  if (!cb || !timer) return;
+  if (cb.checked) {
+    var mins = Math.max(1, Math.ceil(A._state.problems.length / 2));
+    A._state.timeLeft = mins * 60;
+    timer.style.display = 'inline';
+    timer.textContent = A._fmtTime(A._state.timeLeft);
+    A._timerInterval = setInterval(function(){
+      A._state.timeLeft--;
+      timer.textContent = A._fmtTime(A._state.timeLeft);
+      if (A._state.timeLeft <= 60) timer.style.color = 'var(--red)';
+      if (A._state.timeLeft <= 0) { clearInterval(A._timerInterval); A.checkQuiz(); A.toast('⏰ 时间到！自动提交', 'err'); }
+    }, 1000);
+  } else {
+    clearInterval(A._timerInterval);
+    timer.style.display = 'none';
+  }
+};
+A._fmtTime = function(s){ var m=Math.floor(s/60), sec=s%60; return m+':'+(sec<10?'0':'')+sec; };
 
 /* ============ LIBRARY SCREEN ============ */
 A.renderLibrary = async function(){
