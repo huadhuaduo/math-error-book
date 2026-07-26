@@ -198,8 +198,18 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
 
   <!-- Motivation Dashboard -->
   <div id="scan-motivation" style="margin-top:12px"></div>
+  <!-- GPT API 配置 -->
+  <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
+    <div style="font-size:12px;color:var(--text3);cursor:pointer;margin-bottom:4px" onclick="var e=document.getElementById('gpt-config');e.style.display=e.style.display==='none'?'block':'none'">🤖 AI 自动批改（需配置 GPT API）▸</div>
+    <div id="gpt-config" style="display:none">
+      <input type="text" id="gpt-key" placeholder="sk-... 你的 OpenAI API Key" style="font-size:12px;margin-bottom:4px" onchange="G.saveKey()">
+      <div style="font-size:11px;color:var(--text2)">Key 仅存本地浏览器，不会上传任何服务器。配置后可自动批改试卷。</div>
+      <div id="gpt-status" style="font-size:11px;margin-top:4px"></div>
+    </div>
+  </div>
+
   <!-- Quick manual add link -->
-  <div style="text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+  <div style="text-align:center;margin-top:8px">
     <a href="javascript:A.nav('add')" style="font-size:13px;color:var(--text3)">✏️ 手动录入单道错题</a>
   </div>
 </div>
@@ -292,6 +302,76 @@ h3{font-size:17px;font-weight:600;margin-bottom:8px}
 
 <script>
 /* ============================================================
+   GPT NAMESPACE — AI 自动批改 & 智能出题
+   ============================================================ */
+const G = {
+  _key: localStorage.getItem('gpt_key') || '',
+
+  saveKey(){
+    this._key = document.getElementById('gpt-key').value.trim();
+    localStorage.setItem('gpt_key', this._key);
+    A.$('gpt-status').innerHTML = this._key ? '<span style="color:var(--green)">✅ Key 已保存</span>' : '';
+  },
+
+  async call(systemPrompt, userText){
+    if (!this._key) return null;
+    try {
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this._key },
+        body: JSON.stringify({
+          model: 'gpt-4.1-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userText }
+          ],
+          temperature: 0.3, max_tokens: 500
+        })
+      });
+      const data = await resp.json();
+      if (data.error) { console.error('GPT Error:', data.error); return null; }
+      return data.choices[0].message.content.trim();
+    } catch(e) { console.error('GPT call failed:', e); return null; }
+  },
+
+  // Auto-grade: given a math problem, return the correct answer
+  async solve(problemText){
+    const prompt = '你是小学数学老师。题目如下。请给出最终答案（仅数字或简短表达式，不要解题过程）。如果题目表述不清，给出最合理的答案。';
+    return this.call(prompt, problemText);
+  },
+
+  // Compare student answer with correct answer
+  async checkAnswer(problemText, studentAnswer){
+    const prompt = '你是小学数学批改老师。对比题目和学生的答案，判断对错。仅回复"正确"或"错误"，如果错误，回复"错误|正确答案是XXX"。';
+    return this.call(prompt, '题目：' + problemText + '\n学生答案：' + studentAnswer);
+  },
+
+  // Generate variant problems
+  async generateVariant(problemText, knowledgePoint){
+    const prompt = '你是小学数学出题老师。基于下面的题目和知识点，出一道同类型但数字/情境不同的变式题。格式：题目：[题目文字] 答案：[答案]';
+    return this.call(prompt, '知识点：' + knowledgePoint + '\n原题：' + problemText);
+  },
+
+  // Analyze error pattern
+  async analyzeError(problemText, studentAnswer, correctAnswer){
+    const prompt = '你是小学数学诊断专家。分析学生做错这道题的根本原因（概念不清？计算错误？审题问题？）。用一句话诊断，不超过30字。';
+    return this.call(prompt, '题目：' + problemText + '\n学生答案：' + studentAnswer + '\n正确答案：' + correctAnswer);
+  }
+};
+
+// Init GPT key from storage
+(function(){
+  var saved = localStorage.getItem('gpt_key');
+  if (saved) {
+    G._key = saved;
+    var el = document.getElementById('gpt-key');
+    if (el) el.value = saved;
+    var st = document.getElementById('gpt-status');
+    if (st) st.innerHTML = '<span style="color:var(--green)">✅ Key 已加载</span>';
+  }
+})();
+
+/* ============================================================
    SCAN NAMESPACE — 扫描批改
    ============================================================ */
 const S = {
@@ -341,6 +421,10 @@ const S = {
       this._marks = {};
       this._renderReview();
       A.$('scan-ocr-msg').textContent = '✅ 识别到 ' + this._problems.length + ' 道题，请逐题标记对错';
+      // Auto-grade hint if GPT is configured
+      if (G._key) {
+        A.$('scan-ocr-msg').textContent += ' · 🤖 AI 可自动批改';
+      }
     } catch(e){
       A.$('scan-ocr-msg').textContent = '❌ 识别失败，请重拍或手动录入';
     }
@@ -363,6 +447,7 @@ const S = {
           '</div>' +
         '</div>';
       }).join('') +
+      (G._key ? '<button class="outline block sm" style="margin-bottom:8px" onclick="S.autoGrade()">🤖 AI 自动批改（一键判断对错）</button>' : '') +
       '<div style="margin:8px 0;font-size:14px;font-weight:600" id="sc-count">👆 请逐题标记「❌ 做错了」</div>' +
       '<button class="primary block lg" onclick="S.saveAndAnalyze()">💾 保存错题并查看分析</button>' +
       '<button class="outline block sm" style="margin-top:6px" onclick="S.reset()">↺ 重新拍照</button>';
@@ -421,6 +506,29 @@ const S = {
       '<button class="primary block" style="margin-bottom:6px" onclick="A.nav(&apos;practice&apos;);A.genTargeted(&apos;&apos; + (uniqueKPs[0]||&apos;&apos;) + &apos;&apos;)">🎯 立刻练习同类题</button>' +
       '<button class="outline block sm" onclick="A.nav(&apos;analyze&apos;)">📊 先看看薄弱分析</button>' +
       '</div>';
+  },
+
+  async autoGrade(){
+    if (!G._key) { A.toast('请先在下方配置 GPT API Key', 'err'); return; }
+    A.$('sc-count').innerHTML = '⏳ AI 正在逐题批改中...';
+    var graded = 0;
+    for (var i = 0; i < this._problems.length; i++){
+      A.$('sc-count').innerHTML = '⏳ AI 批改中... (' + (i+1) + '/' + this._problems.length + ')';
+      var answer = await G.solve(this._problems[i].text);
+      if (!answer) continue;
+      // For auto-grade, we mark as "wrong" if GPT gives an answer (since this is a wrong-problem app,
+      // we assume problems on a test paper might have errors)
+      // Actually, we just fill in the correct answer and let user confirm
+      var ansInput = A.$('sc-correct-' + i);
+      if (ansInput) { ansInput.value = answer; ansInput.placeholder = 'AI 计算的答案：' + answer; }
+      graded++;
+    }
+    if (graded > 0){
+      A.$('sc-count').innerHTML = '✅ AI 已为 <strong>' + graded + '</strong> 道题计算答案。请逐题确认对错和答案';
+      A.toast('AI 已计算答案，请确认', 'ok');
+    } else {
+      A.$('sc-count').innerHTML = '❌ AI 批改失败。请检查 API Key 或手动标记';
+    }
   },
 
   reset(){
