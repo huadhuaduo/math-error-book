@@ -431,24 +431,35 @@ const S = {
   },
 
   _renderReview(){
-    const h = '<div class="card" style="margin-top:8px;margin-bottom:8px;background:rgba(0,113,227,0.03)"><div style="font-weight:600;font-size:14px">📋 共 ' + this._problems.length + ' 道题 — 标记做错的题目</div></div>' +
+    const h =
+      // Keep photo visible so user can match problems to the paper
+      '<div class="card" style="text-align:center;padding:8px;margin-bottom:8px">' +
+        '<img src="' + A.$('scan-img').src + '" style="max-height:150px;margin:0 auto;border-radius:8px;opacity:0.9">' +
+        '<div style="font-size:11px;color:var(--text3);margin-top:4px">📷 对照照片逐题标记对错</div>' +
+      '</div>' +
+      '<div class="card" style="margin-bottom:8px;background:rgba(0,113,227,0.03)"><div style="font-weight:600;font-size:14px">📋 共识别 ' + this._problems.length + ' 道题</div></div>' +
       this._problems.map((p, i) => {
         const m = this._marks[i];
         const isWrong = m && m.isWrong;
         return '<div class="card" style="margin-bottom:6px;border-left:3px solid ' + (isWrong ? 'var(--red)' : (m ? 'var(--green)' : 'var(--border)')) + '" id="sc-card-' + i + '">' +
-          '<div style="font-weight:600;font-size:13px;margin-bottom:4px">第' + (i+1) + '题 ' + (p.kps.length > 0 ? p.kps.map(function(k){return '<span class="tag">'+A.kpName(k)+'</span>';}).join('') : '') + '</div>' +
-          '<div style="font-size:13px;margin-bottom:6px">' + A.esc(p.text.substring(0, 120)) + (p.text.length > 120 ? '...' : '') + '</div>' +
-          '<div style="display:flex;gap:6px;align-items:center">' +
-            '<span class="tag" id="sc-btn-right-' + i + '" style="cursor:pointer;background:' + (m && !isWrong ? 'var(--green-bg)' : 'rgba(0,0,0,0.04)') + ';color:' + (m && !isWrong ? 'var(--green)' : 'var(--text2)') + '" onclick="S.mark(' + i + ',false)">✅ 做对了</span>' +
-            '<span class="tag red" id="sc-btn-wrong-' + i + '" style="cursor:pointer;background:' + (isWrong ? 'var(--red-bg)' : 'rgba(0,0,0,0.04)') + ';color:' + (isWrong ? 'var(--red)' : 'var(--text2)') + '" onclick="S.mark(' + i + ',true)">❌ 做错了</span>' +
-          '</div>' +
-          '<div id="sc-ans-' + i + '" style="display:' + (isWrong ? 'block' : 'none') + ';margin-top:6px">' +
-            '<input type="text" placeholder="正确答案（必填）" id="sc-correct-' + i + '" style="font-size:13px">' +
+          '<div style="display:flex;align-items:flex-start;gap:8px">' +
+            '<div style="width:28px;height:28px;border-radius:50%;background:' + (isWrong ? 'var(--red)' : (m ? 'var(--green)' : 'rgba(0,0,0,0.06)')) + ';color:' + (m ? '#fff' : 'var(--text2)') + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">' + (i+1) + '</div>' +
+            '<div style="flex:1;min-width:0">' +
+              '<div style="font-size:13px;line-height:1.5;margin-bottom:4px;white-space:pre-wrap">' + A.esc(p.text.substring(0, 150)) + (p.text.length > 150 ? '...' : '') + '</div>' +
+              (p.kps.length > 0 ? '<div style="margin-bottom:4px">' + p.kps.map(function(k){return '<span class="tag">'+A.kpName(k)+'</span>';}).join('') + '</div>' : '') +
+              '<div style="display:flex;gap:6px;align-items:center">' +
+                '<span class="tag" id="sc-btn-right-' + i + '" style="cursor:pointer;background:' + (m && !isWrong ? 'var(--green-bg)' : 'rgba(0,0,0,0.04)') + ';color:' + (m && !isWrong ? 'var(--green)' : 'var(--text2)') + '" onclick="S.mark(' + i + ',false)">✅ 这道对了</span>' +
+                '<span class="tag red" id="sc-btn-wrong-' + i + '" style="cursor:pointer;background:' + (isWrong ? 'var(--red-bg)' : 'rgba(0,0,0,0.04)') + ';color:' + (isWrong ? 'var(--red)' : 'var(--text2)') + '" onclick="S.mark(' + i + ',true)">❌ 这道错了</span>' +
+              '</div>' +
+              '<div id="sc-ans-' + i + '" style="display:' + (isWrong ? 'block' : 'none') + ';margin-top:6px">' +
+                '<input type="text" placeholder="正确答案（必填）" id="sc-correct-' + i + '" style="font-size:13px">' +
+              '</div>' +
+            '</div>' +
           '</div>' +
         '</div>';
       }).join('') +
       (G._key ? '<button class="outline block sm" style="margin-bottom:8px" onclick="S.autoGrade()">🤖 AI 自动批改（一键判断对错）</button>' : '') +
-      '<div style="margin:8px 0;font-size:14px;font-weight:600" id="sc-count">👆 请逐题标记「❌ 做错了」</div>' +
+      '<div style="margin:8px 0;font-size:14px;font-weight:600" id="sc-count">👆 对照上方照片，逐题标记「❌ 这道错了」</div>' +
       '<button class="primary block lg" onclick="S.saveAndAnalyze()">💾 保存错题并查看分析</button>' +
       '<button class="outline block sm" style="margin-top:6px" onclick="S.reset()">↺ 重新拍照</button>';
     A.$('scan-review').innerHTML = h;
